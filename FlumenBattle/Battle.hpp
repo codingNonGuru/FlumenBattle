@@ -1,9 +1,6 @@
 #pragma once
 
-#include "FlumenCore/Container/Block.hpp"
 #include "FlumenCore/Conventions.hpp"
-
-#include "BattleTypes.hpp"
 
 class Group;
 class Troop;
@@ -23,7 +20,7 @@ struct GroupBattleData
 {
     class Group * Group;
 
-    container::Block <CharacterBattleData, MAXIMUM_TROOP_COUNT> TroopDatas;
+    container::Block <CharacterBattleData, 16> TroopDatas;
 
     GroupBattleData() {}
 

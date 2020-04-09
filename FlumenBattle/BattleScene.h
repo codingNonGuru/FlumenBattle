@@ -4,16 +4,37 @@
 
 class CharacterModel;
 class Group;
+class CharacterInfo;
+class Character;
+class BattleTileModel;
+class BattleMap;
 
 class BattleScene : public Scene 
 {
+    friend class CharacterModel;
+
+    friend class BattleTileModel;
+
+    BattleMap *battleMap;
+
+    CharacterModel* model;
+
+    BattleTileModel* battleTileModel;
+
+    Character* selected;
+
+    Array <Group> groups;
+
     void Initialize() override;
 
     void Render() override;
 
-    CharacterModel* model;
+public:
+    BattleScene();
 
-    Array <Group> groups;
+    void SelectCharacter(Character*);
 
-    friend class CharacterModel;
+    void TargetCharacter(Character*);
+
+    BattleMap* GetBattleMap() {return battleMap;}
 };

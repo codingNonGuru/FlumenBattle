@@ -5,19 +5,72 @@
 #include "Types.hpp"
 
 class CharacterFactory;
+class CharacterInfo;
+class Group;
+class BattleTile;
 
 class Character
 {
-    Position2 position;
+    friend class CharacterFactory;
+
+    friend class CharacterInfo;
+
+    friend class CharacterModel;
+
+    struct Ability 
+    {
+        Integer Score;
+
+        Integer Modifier;
+
+        Ability() {}
+
+        Ability(Integer score) : Score(score) 
+        {
+            Modifier = (Score - 10) / 2;
+        }
+    };
+
+    Group* group;
+
+    CharacterInfo* info;
 
     CharacterTypes type;
 
     Integer level;
 
-    float skill;
+    Integer hitDiceCount;
+
+    Integer hitPointCount;
+
+    Ability strength;
+
+    Ability dexterity;
+
+    Ability constitution;
+
+    Ability intelligence;
+
+    Ability wisdom;
+
+    Ability charisma;
+
+    Ability* primaryAbility;
+
+    Integer armorClass;
+
+    Integer proficiencyBonus;
+
+    BattleTile* tile;
 
     Character();
 
-    friend class CharacterFactory;
-    friend class CharacterInfo;
+public:
+    void Attack(Character&);
+    
+    void Select();
+
+    void Deselect();
+
+    Position2 GetPosition();
 };

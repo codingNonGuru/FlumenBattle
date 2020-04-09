@@ -1,11 +1,22 @@
+#include "FlumenCore/Utility/Utility.hpp"
+
+#include "FlumenEngine/Utility/Color.hpp"
+
 #include "FlumenBattle/GroupFactory.h"
 #include "FlumenBattle/Group.h"
+
+Color colors[] = {Color::RED, Color::GREEN};
+Integer colorIndex = 0;
 
 Group* GroupFactory::Create(Array <Group> &groups)
 {
     auto group = groups.Allocate();
 
-    group->Initialize();
+    *group = Group();
+
+    auto size = utility::GetRandom(3, 6);
+    auto color = colors[colorIndex++];
+    group->Initialize(size, color);
 
     return group;
 }

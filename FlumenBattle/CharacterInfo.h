@@ -2,16 +2,38 @@
 
 #include "FlumenEngine/Interface/Element.hpp"
 
-class Character;
 class Text;
+class Camera;
+
+class Character;
+class BattleScene;
 
 class CharacterInfo : public Element
 {
+    BattleScene* battleScene;
+
     Character* character;
 
     Text* textLabel;
 
+    Text* selectLabel;
+
+    Text* hitpointLabel;
+
+    Camera* camera;
+
     void HandleConfigure() override;
 
+    void HandleUpdate() override;
+
+    void HandleSelection();
+
+    void HandleTargeting();
+
     friend class CharacterModel;
+
+public:
+    void Select();
+
+    void Deselect();
 };

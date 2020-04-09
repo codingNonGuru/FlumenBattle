@@ -10,6 +10,7 @@
 #include "FlumenEngine/Render/ShaderManager.hpp"
 #include "FlumenEngine/Render/Shader.hpp"
 #include "FlumenEngine/Interface/Sprite.hpp"
+#include "FlumenEngine/Render/Camera.hpp"
 
 #include "RenderBuilder.hpp"
 #include "FlumenBattle/Types.hpp"
@@ -33,6 +34,9 @@ void RenderBuilder::Initialize()
 
 	auto backgroundColor = Color(0.5f, 0.2f, 0.7f, 1.0f);
 	RenderManager::SetBackgroundColor(backgroundColor);
+
+	auto camera = new Camera(screen);
+	RenderManager::AddCamera(Cameras::BATTLE, camera);
 }
 
 RenderBuilder::RenderBuilder()

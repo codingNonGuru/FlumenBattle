@@ -34,11 +34,15 @@ void CharacterModel::Initialize()
             auto spriteShader = ShaderManager::GetShaderMap().Get("Sprite");
             auto sprite = new Sprite(nullptr, spriteShader);
 
-            characterInfo = Interface::AddElement("Character", new CharacterInfo());
+            characterInfo = new CharacterInfo();
+            Interface::AddElement("Character", characterInfo);
             characterInfo->character = character;
+            character->info = characterInfo;
             characterInfo->Configure(Size(90, 130), DrawOrder(1), new Transform(Position2(0.0f, 0.0f)), sprite, Opacity(1.0f));
 
             characterInfo->Enable();
+
+            characterInfo->SetInteractivity(true);
 
             *characterInfos.Allocate() = characterInfo;
         }

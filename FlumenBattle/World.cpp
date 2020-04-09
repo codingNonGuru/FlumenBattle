@@ -4,14 +4,14 @@
 
 World::World()
 {
-    bandits = new Group();
+    //bandits = new Group();
 
-    caravan = new Group();
+    //caravan = new Group();
 
-    battle = new Battle(bandits, caravan);
+    //battle = new Battle(bandits, caravan);
 }
 
 void World::Update()
 {
-    battle->Update();
+    //battle->Update();
 }
