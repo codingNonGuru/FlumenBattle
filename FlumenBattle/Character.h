@@ -1,8 +1,7 @@
 #pragma once
 
-#include "FlumenBattle/FlumenTypes/Types.hpp"
-
-#include "Types.hpp"
+#include "FlumenBattle/Types.hpp"
+#include "FlumenBattle/CharacterActionData.h"
 
 class CharacterFactory;
 class CharacterInfo;
@@ -35,13 +34,15 @@ class Character
 
     CharacterInfo* info;
 
-    CharacterTypes type;
+    CharacterClasses type;
 
     Integer level;
 
     Integer hitDiceCount;
 
-    Integer hitPointCount;
+    Integer currentHitPoints;
+
+    Integer maximumHitPoints;
 
     Ability strength;
 
@@ -61,16 +62,54 @@ class Character
 
     Integer proficiencyBonus;
 
+    Integer defaultSpeed;
+
+    Integer movement;
+
+    Integer defaultRange;
+
+    Integer actionCount;
+
     BattleTile* tile;
 
     Character();
 
+    void Initialize();
+
+    bool CanMove() const;
+
+    bool CanAttack() const;
+
+    bool IsAlive() const;
+
+    Integer GetSpeed() const;
+
+    bool SufferDamage(Integer);
+
+    bool HasAdvantage() const;
+
+    bool HasDisadvantage() const;
+
 public:
-    void Attack(Character&);
+    void StartTurn();
+
+    bool CanAttackTarget(const Character &);
+
+    CharacterActionData Attack(Character&);
+
+    void Move(BattleTile*);
     
     void Select();
 
     void Deselect();
 
     Position2 GetPosition();
+
+    Integer GetMovement() const;
+
+    BattleTile* GetTile() const {return tile;}
+
+    Integer RollInitiative() const;
+
+    Word GetName();
 };

@@ -13,6 +13,7 @@
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/BattleScene.h"
 #include "FlumenBattle/Group.h"
+#include "FlumenBattle/BattleInfoPanel.h"
 
 CharacterInfo* characterInfo = nullptr;
 
@@ -25,20 +26,21 @@ void CharacterModel::Initialize()
 
     characterInfos.Initialize(32);
 
+    auto spriteShader = ShaderManager::GetShaderMap().Get("Sprite");
+
     const auto& groups = battleScene->groups;
     for(auto group = groups.GetStart(); group != groups.GetEnd(); ++group)
     {
         const auto& characters = group->characters;
         for(auto character = characters.GetStart(); character != characters.GetEnd(); ++character)
         {
-            auto spriteShader = ShaderManager::GetShaderMap().Get("Sprite");
             auto sprite = new Sprite(nullptr, spriteShader);
 
             characterInfo = new CharacterInfo();
-            Interface::AddElement("Character", characterInfo);
+            Interface::AddElement("CharacterInfo", characterInfo);
             characterInfo->character = character;
             character->info = characterInfo;
-            characterInfo->Configure(Size(90, 130), DrawOrder(1), new Transform(Position2(0.0f, 0.0f)), sprite, Opacity(1.0f));
+            characterInfo->Configure(Size(60, 90), DrawOrder(1), new Transform(Position2(0.0f, 0.0f)), sprite, Opacity(1.0f));
 
             characterInfo->Enable();
 
@@ -47,10 +49,17 @@ void CharacterModel::Initialize()
             *characterInfos.Allocate() = characterInfo;
         }
     }
+
+    auto sprite = new Sprite(nullptr, spriteShader);
+
+    auto battleInfoPanel = new BattleInfoPanel();
+    Interface::AddElement("BattleInfoPanel", battleInfoPanel);
+    battleInfoPanel->Configure(Size(620, 140), DrawOrder(1), new Transform(Position2(-640.0f, 460.0f)), sprite, Opacity(1.0f));
+
+    battleInfoPanel->Enable();
 }
 
 void CharacterModel::Render(Camera*, Light*)
 {
-    //battleScene->Render()
 }
 

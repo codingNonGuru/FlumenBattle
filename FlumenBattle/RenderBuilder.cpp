@@ -11,6 +11,8 @@
 #include "FlumenEngine/Render/Shader.hpp"
 #include "FlumenEngine/Interface/Sprite.hpp"
 #include "FlumenEngine/Render/Camera.hpp"
+#include "FlumenEngine/Render/Mesh.hpp"
+#include "FlumenEngine/Render/MeshManager.hpp"
 
 #include "RenderBuilder.hpp"
 #include "FlumenBattle/Types.hpp"
@@ -34,12 +36,21 @@ void RenderBuilder::Initialize()
 
 	auto backgroundColor = Color(0.5f, 0.2f, 0.7f, 1.0f);
 	RenderManager::SetBackgroundColor(backgroundColor);
+}
+
+void RenderBuilder::HandleEngineInitialized()
+{
+	auto screen = Engine::GetScreen();
 
 	auto camera = new Camera(screen);
 	RenderManager::AddCamera(Cameras::BATTLE, camera);
+
+	auto hexMesh = MeshManager::GetMeshes().Add("Hex"); 
+	*hexMesh = Mesh::GenerateHex();
 }
 
 RenderBuilder::RenderBuilder()
 {
 	RenderManager::OnInitialize()->Add(&RenderBuilder::Initialize);
+	Engine::OnInitialize_.Add(&RenderBuilder::HandleEngineInitialized);
 }

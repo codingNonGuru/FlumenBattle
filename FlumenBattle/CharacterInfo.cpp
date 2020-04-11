@@ -25,10 +25,10 @@ void CharacterInfo::HandleConfigure()
 
     auto textColor = Color::BLACK;
 
-	textLabel = new Text(fontLarge, character->group->GetColor());
+	textLabel = new Text(fontMedium, character->group->GetColor());
     Interface::AddElement("CharacterLabel", textLabel);
 
-	textLabel->Configure(Size(150, 150), DrawOrder(4), new Transform(Position2(-10.0f, 0.0f)), nullptr);
+	textLabel->Configure(Size(150, 150), DrawOrder(4), new Transform(Position2(0.0f, 0.0f)), nullptr);
 
 	textLabel->Enable();
 	textLabel->SetParent(this);
@@ -36,37 +36,35 @@ void CharacterInfo::HandleConfigure()
     selectLabel = new Text(fontSmall, textColor);
     Interface::AddElement("SelectLabel", selectLabel);
 
-	selectLabel->Configure(Size(150, 150), DrawOrder(4), new Transform(Position2(0.0f, 60.0f)), nullptr);
+	selectLabel->Configure(Size(150, 150), DrawOrder(4), new Transform(Position2(0.0f, 30.0f)), nullptr);
 
 	selectLabel->SetParent(this);
 
     selectLabel->Setup("S");
 
-    hitpointLabel = new Text(fontMedium, textColor);
+    hitpointLabel = new Text(fontSmall, textColor);
     Interface::AddElement("HitpointLabel", hitpointLabel);
 
-	hitpointLabel->Configure(Size(150, 150), DrawOrder(4), new Transform(Position2(40.0f, 0.0f)), nullptr);
+	hitpointLabel->Configure(Size(150, 150), DrawOrder(4), new Transform(Position2(30.0f, 0.0f)), nullptr);
 
 	hitpointLabel->SetParent(this);
     hitpointLabel->Enable();
 
     switch(character->type)
     {
-    case CharacterTypes::FIGHTER:
+    case CharacterClasses::FIGHTER:
         textLabel->Setup("F");
         break;
-    case CharacterTypes::RANGER:
+    case CharacterClasses::RANGER:
         textLabel->Setup("R");
         break;
-    case CharacterTypes::CLERIC:
+    case CharacterClasses::CLERIC:
         textLabel->Setup("C");
         break;
-    case CharacterTypes::WIZARD:
+    case CharacterClasses::WIZARD:
         textLabel->Setup("W");
         break;
     }
-
-    //transform_->GetPosition() = Position3(0.0f);//Position3(character->position, 0.0f);
 
     GetLeftClickEvents().Add(this, &CharacterInfo::HandleSelection);
 
@@ -98,11 +96,10 @@ void CharacterInfo::Deselect()
 void CharacterInfo::HandleUpdate()
 {
     auto string = Word();
-	sprintf(string.GetEnd(), "%d", character->hitPointCount);
+	sprintf(string.GetEnd(), "%d", character->currentHitPoints);
     hitpointLabel->Setup(string);
     
-    //auto position = camera->GetScreenPosition(Position3(character->GetPosition(), 0.0f));
-    auto position = camera->GetScreenPosition(Position3(character->GetPosition() * 60.0f, 0.0f));
+    auto position = camera->GetScreenPosition(Position3(character->GetPosition(), 0.0f));
 
     transform_->GetPosition().x = position.x;
     transform_->GetPosition().y = position.y;

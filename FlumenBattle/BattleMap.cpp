@@ -8,37 +8,78 @@ BattleMap::BattleMap(Length size)
 {
     nearbyTiles.Initialize(size * size);
 
-    auto height = (int)((float)size * 0.866f);
+    auto height = size;
     tiles.Initialize(size, height);
+
+    tiles.Bound();
 
     for(Integer i = 0; i < tiles.GetWidth(); ++i)
     {
         for(Integer j = 0; j < tiles.GetHeight(); ++j)
         {
-            auto x = float (i) * 0.866f;
-            auto y = float(j);
+            auto x = float(i);
+            auto y = float(j) * 0.866f;
 
-            if(i % 2 == 1)
+            if(j % 2 == 1)
             {
-                y += 0.5f;
+                x += 0.5f;
             }
 
-            *tiles.Get(i, j) = {Position2(x, y), Integer2(i, j)};
+            auto tile = tiles.Get(i, j);
+            *tile = {Position2(x, y) * TILE_DISTANCING, Integer2(i, j)};
+            tile->Map = this;
         }
     }
 }
 
-BattleTile* GetHex(Integer x, Integer y, Integer z)
+const Array<BattleTile*> & BattleMap::GetNearbyTiles(BattleTile* tile, Integer range)
 {
-    return nullptr;
+    nearbyTiles.Reset();
+
+    for(Integer x = -range; x <= range; ++x)
+    {
+        for(Integer y = -range; y <= range; ++y)
+        {
+            for(Integer z = -range; z <= range; ++z)
+            {
+                if(x + y + z == 0)
+                {
+                    auto nearbyTile = GetTile(tile->HexCoordinates.x + x, tile->HexCoordinates.y + y, tile->HexCoordinates.z + z);
+                    if(nearbyTile != nullptr)
+                    {
+                        *nearbyTiles.Allocate() = nearbyTile;
+                    }
+                }
+            }
+        }
+    }
+
+    return nearbyTiles;
+}
+
+BattleTile* BattleMap::GetTile(Integer x, Integer y, Integer z)
+{
+    return tiles.Get(x + z / 2, z);
 }
 
 BattleTile* BattleMap::GetRandomTile()
 {
-    auto i = utility::GetRandom(0, tiles.GetWidth());
-    auto j = utility::GetRandom(0, tiles.GetHeight());
+    auto i = utility::GetRandom(0, tiles.GetWidth() - 1);
+    auto j = utility::GetRandom(0, tiles.GetHeight() - 1);
 
     return tiles.Get(i, j);
+}
+
+BattleTile* BattleMap::GetEmptyRandomTile()
+{
+    while(true)
+    {
+        auto tile = GetRandomTile();
+        if(tile->Character == nullptr)
+        {
+            return tile;
+        }
+    }
 }
 
 BattleTile* BattleMap::GetCenterTile()

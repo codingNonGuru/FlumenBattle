@@ -17,6 +17,8 @@ class Group
 
     friend class CharacterModel;
 
+    friend class BattleScene;
+
     Group();
 
     void Initialize(Integer size, Color color);

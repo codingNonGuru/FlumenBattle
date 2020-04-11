@@ -14,7 +14,7 @@ Group* GroupFactory::Create(Array <Group> &groups)
 
     *group = Group();
 
-    auto size = utility::GetRandom(3, 6);
+    auto size = 5;//utility::GetRandom(4, 7);
     auto color = colors[colorIndex++];
     group->Initialize(size, color);
 

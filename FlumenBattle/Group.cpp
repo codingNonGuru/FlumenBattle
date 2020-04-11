@@ -15,20 +15,20 @@ void Group::Initialize(Integer size, Color color)
     for(int i = 0; i < size; ++i)
     {
         auto dice = utility::GetRandom(0, 3);
-        CharacterTypes type;
+        CharacterClasses type;
         switch(dice)
         {
         case 0:
-            type = CharacterTypes::FIGHTER;
+            type = CharacterClasses::FIGHTER;
             break;
         case 1:
-            type = CharacterTypes::RANGER;
+            type = CharacterClasses::RANGER;
             break;
         case 2:
-            type = CharacterTypes::CLERIC;
+            type = CharacterClasses::CLERIC;
             break;
         case 3:
-            type = CharacterTypes::WIZARD;
+            type = CharacterClasses::WIZARD;
             break;
         }
 

@@ -8,9 +8,11 @@
 #include "FlumenBattle/BattleScene.h"
 #include "FlumenBattle/BattleMap.h"
 
-Integer abilityScores[6];
+#define ABILITY_COUNT 6
 
-Character* CharacterFactory::Create(CharacterTypes type, Group& group)
+Integer abilityScores[ABILITY_COUNT];
+
+Character* CharacterFactory::Create(CharacterClasses type, Group& group)
 {
     auto character = group.characters.Allocate();
 
@@ -26,9 +28,9 @@ Character* CharacterFactory::Create(CharacterTypes type, Group& group)
         score = GetRandomAbilityScore();
     }
 
-    for(Index i = 0; i < 6; ++i)
+    for(Index i = 0; i <= ABILITY_COUNT / 2; ++i)
     {
-        for(Index j = 0; j < 5; ++j)
+        for(Index j = 0; j < ABILITY_COUNT - 1; ++j)
         {
             if(abilityScores[j] < abilityScores[j + 1])
             {
@@ -41,7 +43,7 @@ Character* CharacterFactory::Create(CharacterTypes type, Group& group)
 
     switch(type)
     {
-    case CharacterTypes::FIGHTER:
+    case CharacterClasses::FIGHTER:
         character->strength = abilityScores[0];
         character->constitution = abilityScores[1];
         character->dexterity = abilityScores[2];
@@ -52,8 +54,10 @@ Character* CharacterFactory::Create(CharacterTypes type, Group& group)
         character->hitDiceCount = 10;
         character->armorClass = 16;
         character->primaryAbility = &character->strength;
+
+        character->defaultRange = 1;
         break;
-    case CharacterTypes::RANGER:
+    case CharacterClasses::RANGER:
         character->dexterity = abilityScores[0];
         character->intelligence = abilityScores[1];
         character->constitution = abilityScores[2];
@@ -64,8 +68,10 @@ Character* CharacterFactory::Create(CharacterTypes type, Group& group)
         character->hitDiceCount = 8;
         character->armorClass = 15;
         character->primaryAbility = &character->dexterity;
+
+        character->defaultRange = 10;
         break;
-    case CharacterTypes::CLERIC:
+    case CharacterClasses::CLERIC:
         character->wisdom = abilityScores[0];
         character->strength = abilityScores[1];
         character->constitution = abilityScores[2];
@@ -76,8 +82,10 @@ Character* CharacterFactory::Create(CharacterTypes type, Group& group)
         character->hitDiceCount = 8;
         character->armorClass = 13;
         character->primaryAbility = &character->wisdom;
+
+        character->defaultRange = 1;
         break;
-    case CharacterTypes::WIZARD:
+    case CharacterClasses::WIZARD:
         character->intelligence = abilityScores[0];
         character->constitution = abilityScores[1];
         character->dexterity = abilityScores[2];
@@ -88,13 +96,19 @@ Character* CharacterFactory::Create(CharacterTypes type, Group& group)
         character->hitDiceCount = 6;
         character->armorClass = 11;
         character->primaryAbility = &character->intelligence;
+        character->defaultRange = 10;
         break;
     }
 
-    character->hitPointCount = character->hitDiceCount + character->constitution.Modifier * character->level;
+    character->maximumHitPoints = character->hitDiceCount + character->constitution.Modifier * character->level;
 
     auto battleScene = (BattleScene*)SceneManager::Get(Scenes::BATTLE);
-    character->tile = battleScene->GetBattleMap()->GetRandomTile();
+    character->tile = battleScene->GetBattleMap()->GetEmptyRandomTile();
+    character->tile->Character = character;
+
+    character->defaultSpeed = utility::GetRandom(4, 6);
+
+    character->Initialize();
 
     return character;
 }
