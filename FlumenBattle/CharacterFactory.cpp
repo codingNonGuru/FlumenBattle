@@ -7,6 +7,8 @@
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/BattleScene.h"
 #include "FlumenBattle/BattleMap.h"
+#include "FlumenBattle/Weapon.h"
+#include "FlumenBattle/Spell.h"
 
 #define ABILITY_COUNT 6
 
@@ -53,23 +55,35 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
 
         character->hitDiceCount = 10;
         character->armorClass = 16;
-        character->primaryAbility = &character->strength;
 
-        character->defaultRange = 1;
+        character->attackAbility = &character->strength;
+        character->spellCastingAbility = nullptr;
+
+        character->actions.Initialize(1);
+        *character->actions.Allocate() = {CharacterActions::ATTACK};
+
+        character->AddWeapon(WeaponFactory::BuildSword());
+        character->AddWeapon(WeaponFactory::BuildGreataxe());
         break;
     case CharacterClasses::RANGER:
         character->dexterity = abilityScores[0];
-        character->intelligence = abilityScores[1];
+        character->wisdom = abilityScores[1];
         character->constitution = abilityScores[2];
-        character->wisdom = abilityScores[3];
+        character->intelligence = abilityScores[3];
         character->charisma = abilityScores[4];
         character->strength = abilityScores[5];
 
         character->hitDiceCount = 8;
         character->armorClass = 15;
-        character->primaryAbility = &character->dexterity;
 
-        character->defaultRange = 10;
+        character->attackAbility = &character->dexterity;
+        character->spellCastingAbility = nullptr;
+
+        character->actions.Initialize(1);
+        *character->actions.Allocate() = {CharacterActions::ATTACK};
+
+        character->AddWeapon(WeaponFactory::BuildShortbow());
+        character->AddWeapon(WeaponFactory::BuildSword());
         break;
     case CharacterClasses::CLERIC:
         character->wisdom = abilityScores[0];
@@ -81,9 +95,18 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
 
         character->hitDiceCount = 8;
         character->armorClass = 13;
-        character->primaryAbility = &character->wisdom;
 
-        character->defaultRange = 1;
+        character->attackAbility = &character->strength;
+        character->spellCastingAbility = &character->wisdom;
+
+        character->actions.Initialize(3);
+        *character->actions.Allocate() = {CharacterActions::ATTACK};
+        *character->actions.Allocate() = {CharacterActions::CAST_SPELL};
+        *character->actions.Allocate() = {CharacterActions::HELP};
+
+        character->AddWeapon(WeaponFactory::BuildMace());
+
+        character->AddSpell(SpellFactory::BuildCureWounds());
         break;
     case CharacterClasses::WIZARD:
         character->intelligence = abilityScores[0];
@@ -95,8 +118,19 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
 
         character->hitDiceCount = 6;
         character->armorClass = 11;
-        character->primaryAbility = &character->intelligence;
-        character->defaultRange = 10;
+
+        character->attackAbility = &character->strength;
+        character->spellCastingAbility = &character->intelligence;
+
+        character->actions.Initialize(2);
+        *character->actions.Allocate() = {CharacterActions::ATTACK};
+        *character->actions.Allocate() = {CharacterActions::CAST_SPELL};
+
+        character->AddWeapon(WeaponFactory::BuildStaff());
+
+        character->AddSpell(SpellFactory::BuildRayOfFrost());
+        character->AddSpell(SpellFactory::BuildShockingGrasp());
+        character->AddSpell(SpellFactory::BuildMagicMissile());
         break;
     }
 

@@ -16,5 +16,5 @@ void main()
 {	
 	fragment = vec4(1.0f);//texture(diffuse, textureCoordinates).rgba;
 	
-	//fragment.a *= opacity;
+	fragment.a *= opacity;
 }

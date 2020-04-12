@@ -21,13 +21,17 @@ static const Float CAMERA_PAN_SPEED = 350.0f;
 
 static const Float CAMERA_ZOOM_SPEED = 5.0f;
 
+static const Length BATTLE_MAP_SIZE = 35;
+
+static const Length MAXIMUM_GROUP_COUNT = 16;
+
 BattleScene::BattleScene() {}
 
 void BattleScene::Initialize()
 {
-    battleMap = new BattleMap(25);
+    battleMap = new BattleMap(BATTLE_MAP_SIZE);
 
-    groups.Initialize(64);
+    groups.Initialize(MAXIMUM_GROUP_COUNT);
     GroupFactory::Create(groups);
     GroupFactory::Create(groups);
 
@@ -40,8 +44,12 @@ void BattleScene::Initialize()
     InputHandler::OnInputUpdate.Add(this, &CheckTileSelection);
     InputHandler::OnRightMouseClick.Add(this, &CheckCharacterMovement);
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, this, &HandleSpacePressed);
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_1, this, &HandleOnePressed);
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_2, this, &HandleTwoPressed);
 
     camera = RenderManager::GetCamera(Cameras::BATTLE);
+
+    selectedCharacter = nullptr;
 
     DetermineTurnOrder();
 }
@@ -63,7 +71,7 @@ void BattleScene::DetermineTurnOrder()
 
     turn = turnOrder.GetStart();
 
-    selectedCharacter = turn->Character;
+    SelectCharacter(turn->Character);
 
     selectedCharacter->StartTurn();
 }
@@ -87,14 +95,70 @@ void BattleScene::CheckCharacterMovement()
 
 void BattleScene::HandleSpacePressed()
 {
-    turn++;
-    if(turn == turnOrder.GetEnd())
+    while(true)
     {
-        turn = turnOrder.GetStart();
+        turn++;
+        if(turn == turnOrder.GetEnd())
+        {
+            turn = turnOrder.GetStart();
+        }
+
+        if(turn->Character->IsAlive())
+        {
+            break;
+        }
+
+        if(turn->Character->IsSavingAgainstDeath())
+        {
+            turn->Character->SaveAgainstDeath();
+        }
     }
 
-    selectedCharacter = turn->Character;
+    SelectCharacter(turn->Character);
+
     selectedCharacter->StartTurn();
+}
+
+void BattleScene::HandleOnePressed()
+{
+    if(selectedCharacter == nullptr)
+        return;
+
+    if(InputHandler::IsPressed(SDL_Scancode::SDL_SCANCODE_LCTRL))
+    {
+        if(selectedCharacter->SelectActionOption(0))
+        {
+            OnSubactionSelected.Invoke();
+        }
+    }
+    else
+    {
+        if(selectedCharacter->SelectAction(0))
+        {
+            OnActionSelected.Invoke();
+        }
+    }
+}
+
+void BattleScene::HandleTwoPressed()
+{
+    if(selectedCharacter == nullptr)
+        return;
+
+    if(InputHandler::IsPressed(SDL_Scancode::SDL_SCANCODE_LCTRL))
+    {
+        if(selectedCharacter->SelectActionOption(1))
+        {
+            OnSubactionSelected.Invoke();
+        }
+    }
+    else
+    {
+        if(selectedCharacter->SelectAction(1))
+        {
+            OnActionSelected.Invoke();
+        }
+    }
 }
 
 void BattleScene::Update()
@@ -141,7 +205,7 @@ void BattleScene::CheckTileSelection()
     auto mesh = MeshManager::GetMesh("Hex");
     for(auto tile = battleMap->tiles.GetStart(); tile != battleMap->tiles.GetEnd(); ++tile)
     {
-        bool isMouseOverTile = PickHandler::CheckCollision(camera, mesh, Position3(tile->Position, 0.0f), 30.0f);
+        bool isMouseOverTile = PickHandler::CheckCollision(camera, mesh, Position3(tile->Position, 0.0f), 33.0f);
         if(isMouseOverTile)
         {
             hoveredTile = tile;
@@ -164,6 +228,8 @@ void BattleScene::SelectCharacter(Character* newlySelected)
     {
         selectedCharacter->Select();
     }
+
+    OnCharacterSelected.Invoke();
 }
 
 void BattleScene::TargetCharacter(Character* target)
@@ -177,10 +243,10 @@ void BattleScene::TargetCharacter(Character* target)
     if(turn->Character != selectedCharacter)
         return;
 
-    if(selectedCharacter->CanAttackTarget(*target) == false)
+    if(selectedCharacter->CanAct(*target) == false)
         return;
 
-    lastActionData = selectedCharacter->Attack(*target);
+    lastActionData = selectedCharacter->Act(*target);
 
     OnCharacterActed.Invoke();
 }

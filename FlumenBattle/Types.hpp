@@ -39,3 +39,7 @@ enum class CharacterClasses {FIGHTER, RANGER, CLERIC, WIZARD};
 enum class CharacterRaces {DWARF, GNOME, HUMAN, HALFLING, ELF, ORC, GOBLIN};
 
 enum class CharacterActions {ATTACK, CAST_SPELL, DASH, DISENGAGE, DODGE, HELP, HIDE, READY, SEARCH, USE_OBJECT};
+
+enum class WeaponTypes {SWORD, GREAT_AXE, SHORT_BOW, LONG_BOW, STAFF, MACE};
+
+enum class SpellTypes {MAGIC_MISSILE, RAY_OF_FROST, SHOCKING_GRASP, CURE_WOUNDS};

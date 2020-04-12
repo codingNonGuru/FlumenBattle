@@ -21,14 +21,14 @@ void CharacterInfo::HandleConfigure()
 
     auto fontSmall = FontManager::GetFont("DominicanSmall");
     auto fontMedium = FontManager::GetFont("DominicanMedium");
-    auto fontLarge = FontManager::GetFont("DominicanLarge");
+    auto fontVerySmall = FontManager::GetFont("DominicanVerySmall");
 
     auto textColor = Color::BLACK;
 
 	textLabel = new Text(fontMedium, character->group->GetColor());
     Interface::AddElement("CharacterLabel", textLabel);
 
-	textLabel->Configure(Size(150, 150), DrawOrder(4), new Transform(Position2(0.0f, 0.0f)), nullptr);
+	textLabel->Configure(Size(150, 150), DrawOrder(4), new Transform(Position2(-5.0f, 0.0f)), nullptr);
 
 	textLabel->Enable();
 	textLabel->SetParent(this);
@@ -45,10 +45,17 @@ void CharacterInfo::HandleConfigure()
     hitpointLabel = new Text(fontSmall, textColor);
     Interface::AddElement("HitpointLabel", hitpointLabel);
 
-	hitpointLabel->Configure(Size(150, 150), DrawOrder(4), new Transform(Position2(30.0f, 0.0f)), nullptr);
+	hitpointLabel->Configure(Size(150, 150), DrawOrder(4), new Transform(Position2(20.0f, 0.0f)), nullptr);
 
 	hitpointLabel->SetParent(this);
     hitpointLabel->Enable();
+
+    deathSavingLabel = new Text(fontVerySmall, textColor);
+    Interface::AddElement("DeathSavingLabel", deathSavingLabel);
+
+	deathSavingLabel->Configure(Size(150, 150), DrawOrder(4), new Transform(Position2(0.0f, 30.0f)), nullptr);
+
+	deathSavingLabel->SetParent(this);
 
     switch(character->type)
     {
@@ -103,4 +110,37 @@ void CharacterInfo::HandleUpdate()
 
     transform_->GetPosition().x = position.x;
     transform_->GetPosition().y = position.y;
+
+    if(character->IsAlive() == false)
+    {
+        SetOpacity(0.5f);
+
+        textLabel->SetOpacity(0.5f);
+
+        hitpointLabel->Disable();
+
+        deathSavingLabel->Enable();
+
+        deathSavingLabel->SetOpacity(0.8f);
+
+        Word text;
+
+        if(character->deathThrowFailureCount < 3 && character->deathThrowSuccesCount < 3)
+        {
+            text << character->deathThrowSuccesCount << "/" << character->deathThrowFailureCount;
+        }
+        else
+        {
+            if(character->deathThrowFailureCount >= 3)
+            {
+                text << "Dead";
+            }
+            else
+            {
+                text << "Stable";
+            }
+        }
+
+        deathSavingLabel->Setup(text);
+    }
 }

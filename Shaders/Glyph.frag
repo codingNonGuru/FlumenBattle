@@ -20,7 +20,7 @@ void main()
 
 	fragment.a = texture(diffuse, textureCoordinates).r;
 	
-	//fragment.a *= opacity;
+	fragment.a *= opacity;
 	
 	//fragment.a = 0.1f;
 }

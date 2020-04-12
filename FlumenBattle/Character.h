@@ -7,9 +7,20 @@ class CharacterFactory;
 class CharacterInfo;
 class Group;
 class BattleTile;
+struct Weapon;
+struct Spell;
 
 class Character
 {
+public:
+    struct Action
+    {
+        CharacterActions Type;
+    };
+
+private:
+    friend class container::Array<Character>;
+
     friend class CharacterFactory;
 
     friend class CharacterInfo;
@@ -56,7 +67,9 @@ class Character
 
     Ability charisma;
 
-    Ability* primaryAbility;
+    Ability* attackAbility;
+
+    Ability* spellCastingAbility;
 
     Integer armorClass;
 
@@ -66,9 +79,25 @@ class Character
 
     Integer movement;
 
-    Integer defaultRange;
+    Integer remainingActionCount;
 
-    Integer actionCount;
+    Array <Action> actions;
+
+    Action * selectedAction;
+
+    Array <Weapon> weapons;
+
+    Weapon * selectedWeapon;
+
+    Array <Spell> spells;
+
+    Spell * selectedSpell;
+
+    bool isSavingAgainstDeath;
+
+    Integer deathThrowSuccesCount;
+
+    Integer deathThrowFailureCount;
 
     BattleTile* tile;
 
@@ -80,9 +109,11 @@ class Character
 
     bool CanAttack() const;
 
-    bool IsAlive() const;
+    bool CanCastSpell() const;
 
     Integer GetSpeed() const;
+
+    Integer GetActionRange() const;
 
     bool SufferDamage(Integer);
 
@@ -90,14 +121,32 @@ class Character
 
     bool HasDisadvantage() const;
 
+    void AddWeapon(Weapon);
+
+    void AddSpell(Spell);
+
+    Integer RollAttackDamage() const;
+
 public:
+    bool IsAlive() const;
+
     void StartTurn();
+
+    bool CanAct(const Character &);
 
     bool CanAttackTarget(const Character &);
 
+    bool CanCastSpellAgainstTarget(const Character &);
+
+    CharacterActionData Act(Character&);
+
     CharacterActionData Attack(Character&);
 
+    CharacterActionData CastSpell(Character&);
+
     void Move(BattleTile*);
+
+    void SaveAgainstDeath();
     
     void Select();
 
@@ -112,4 +161,22 @@ public:
     Integer RollInitiative() const;
 
     Word GetName();
+
+    Array <Action> & GetActions() {return actions;}
+
+    const Array <Weapon> & GetWeapons() {return weapons;}
+
+    const Array <Spell> & GetSpells() {return spells;}
+
+    bool SelectAction(Index);
+
+    bool SelectActionOption(Index);
+
+    Action* GetSelectedAction() const;
+
+    Weapon* GetSelectedWeapon() const {return selectedWeapon;}
+
+    Spell* GetSelectedSpell() const {return selectedSpell;}
+
+    bool IsSavingAgainstDeath() const {return isSavingAgainstDeath;}
 };

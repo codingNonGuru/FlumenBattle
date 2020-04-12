@@ -34,7 +34,7 @@ void RenderBuilder::Initialize()
 	//auto screenTexture = new Texture(screen->GetSize(), TextureFormats::FOUR_BYTE);
 	//TextureManager::AddTexture(screenTexture, "Screen");
 
-	auto backgroundColor = Color(0.5f, 0.2f, 0.7f, 1.0f);
+	auto backgroundColor = Color(0.1f, 0.1f, 0.7f, 1.0f);
 	RenderManager::SetBackgroundColor(backgroundColor);
 }
 

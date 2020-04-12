@@ -36,15 +36,24 @@ void BattleInfoPanel::HandleConfigure()
 	actionLabel->SetParent(this);
 
     actionLabel->Setup("No action");
-
-    GetLeftClickEvents().Add(this, &BattleInfoPanel::HandleCharacterAction);
 }
 
 void BattleInfoPanel::HandleCharacterAction()
 {
     auto actionData = battleScene->GetLastAction();
     auto string = Phrase();
-    string << actionData.Character->GetName() << " rolled " << actionData.AttackRoll << " for attack. ";
+    string << actionData.Character->GetName();
+    
+    if(actionData.ActionType == CharacterActions::ATTACK)
+    {
+        string << " attacked "; 
+    }
+    else if(actionData.ActionType == CharacterActions::CAST_SPELL)
+    {
+        string << " cast spell on "; 
+    }
+
+    string << actionData.Target->GetName() << " for " << actionData.AttackRoll << ". ";
 
     if(actionData.HasHit())
     {

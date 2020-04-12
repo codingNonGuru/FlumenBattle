@@ -20,6 +20,8 @@ class CharacterInfo : public Element
 
     Text* hitpointLabel;
 
+    Text* deathSavingLabel;
+
     Camera* camera;
 
     void HandleConfigure() override;

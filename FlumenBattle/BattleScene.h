@@ -64,8 +64,18 @@ class BattleScene : public Scene
 
     void HandleSpacePressed();
 
+    void HandleOnePressed();
+
+    void HandleTwoPressed();
+
 public:
     Delegate OnCharacterActed;
+
+    Delegate OnCharacterSelected;
+
+    Delegate OnActionSelected;
+
+    Delegate OnSubactionSelected;
 
     BattleScene();
 

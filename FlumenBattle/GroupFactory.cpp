@@ -12,8 +12,6 @@ Group* GroupFactory::Create(Array <Group> &groups)
 {
     auto group = groups.Allocate();
 
-    *group = Group();
-
     auto size = 5;//utility::GetRandom(4, 7);
     auto color = colors[colorIndex++];
     group->Initialize(size, color);

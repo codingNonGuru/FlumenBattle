@@ -7,10 +7,6 @@ class Character;
 
 class Group
 {
-    Color color;
-
-    Array <Character> characters;
-
     friend class CharacterFactory;
 
     friend class GroupFactory;
@@ -18,6 +14,12 @@ class Group
     friend class CharacterModel;
 
     friend class BattleScene;
+
+    friend class container::Array<Group>;
+    
+    Color color;
+
+    Array <Character> characters;
 
     Group();
 

@@ -2,10 +2,14 @@
 
 #include "FlumenCore/Conventions.hpp"
 
+#include "FlumenBattle/Types.hpp"
+
 class Character;
 
 struct CharacterActionData
 {
+    CharacterActions ActionType;
+
     class Character * Character;
 
     class Character * Target;
@@ -18,8 +22,9 @@ struct CharacterActionData
 
     CharacterActionData() : Character(nullptr) {}
 
-    CharacterActionData(class Character * character, class Character * target, Integer attackRoll, Integer targetArmor, Integer damage)
+    CharacterActionData(CharacterActions actionType, class Character * character, class Character * target, Integer attackRoll, Integer targetArmor, Integer damage)
     {
+        ActionType = actionType;
         Character = character;
         Target = target;
         AttackRoll = attackRoll;
