@@ -51,6 +51,11 @@ public:
         return {SpellTypes::SHOCKING_GRASP, 0, 8, 1, 1, "Shocking Grasp", true, true};
     }
 
+    static Spell BuildSacredFlame()
+    {
+        return {SpellTypes::SACRED_FLAME, 0, 8, 1, 12, "Sacred Flame", true, true};
+    }
+
     static Spell BuildMagicMissile()
     {
         return {SpellTypes::MAGIC_MISSILE, 1, 4, 1, 24, "Magic Missile", true, false};

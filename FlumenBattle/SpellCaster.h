@@ -20,6 +20,8 @@ class SpellCaster
 
     static CharacterActionData ApplyShockingGrasp(Character &, const Spell &);
 
+    static CharacterActionData ApplySacredFlame(Character &, const Spell &);
+
     static CharacterActionData ApplyCureWounds(Character &, const Spell &);
 
 public:

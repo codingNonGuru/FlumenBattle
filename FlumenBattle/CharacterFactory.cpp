@@ -113,6 +113,7 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
         character->AddWeapon(WeaponFactory::BuildMace());
 
         character->AddSpell(SpellFactory::BuildCureWounds());
+        character->AddSpell(SpellFactory::BuildSacredFlame());
         break;
     case CharacterClasses::WIZARD:
         character->intelligence = abilityScores[0];

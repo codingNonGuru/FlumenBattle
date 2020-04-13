@@ -29,7 +29,7 @@ void SpellCaster::ComputeDifficultyClass(Character& character)
 void SpellCaster::RollDamage(Character & character, const Spell & spell)
 {
     Integer damage = 0;
-    if((spell.IsAttack && spellResult.HasHit) || !spell.IsAttack)
+    if(spellResult.HasHit)
     {
         damage = utility::GetRandom(1, spell.HitDice);
         character.target->SufferDamage(damage);
@@ -62,10 +62,8 @@ void SpellCaster::RollAttack(Character & character)
 
     attackRoll += character.spellCastingAbility->Modifier + character.proficiencyBonus;
 
-    bool hasHit = attackRoll >= character.target->armorClass;
-
+    spellResult.HasHit = attackRoll >= character.target->armorClass;
     spellResult.AttackRoll = attackRoll;
-    spellResult.HasHit = hasHit;
 }
 
 CharacterActionData SpellCaster::ApplyFrostRay(Character & character, const Spell & spell)
@@ -90,6 +88,19 @@ CharacterActionData SpellCaster::ApplyShockingGrasp(Character & character, const
     RollDamage(character, spell);   
 }
 
+CharacterActionData SpellCaster::ApplySacredFlame(Character & character, const Spell & spell)
+{
+    ComputeDifficultyClass(character);
+
+    auto reflexSavingThrow = utility::GetRandom(1, 20) + character.target->dexterity.Modifier;
+    if(reflexSavingThrow > spellResult.DifficultyClass) 
+    {
+        spellResult.HasHit = true;
+    }
+
+    RollDamage(character, spell);
+}
+
 CharacterActionData SpellCaster::ApplyCureWounds(Character & character, const Spell & spell)
 {
     RollHealing(character, spell);
@@ -97,6 +108,8 @@ CharacterActionData SpellCaster::ApplyCureWounds(Character & character, const Sp
 
 CharacterActionData SpellCaster::ApplyEffect(Character & character, const Spell & spell)
 {
+    spellResult.Reset();
+
     switch(spell.Type)
     {
         case SpellTypes::FROST_RAY:
@@ -104,6 +117,9 @@ CharacterActionData SpellCaster::ApplyEffect(Character & character, const Spell 
             break;
         case SpellTypes::SHOCKING_GRASP:
             ApplyShockingGrasp(character, spell);
+            break;
+        case SpellTypes::SACRED_FLAME:
+            ApplySacredFlame(character, spell);
             break;
         case SpellTypes::CURE_WOUNDS:
             ApplyCureWounds(character, spell);
