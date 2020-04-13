@@ -14,14 +14,15 @@
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/BattleTileModel.h"
 #include "FlumenBattle/BattleMap.h"
+#include "FlumenBattle/BattleTile.h"
 
 static Camera* camera = nullptr;
 
-static const Float CAMERA_PAN_SPEED = 350.0f;
+static const Float CAMERA_PAN_SPEED = 1500.0f;
 
-static const Float CAMERA_ZOOM_SPEED = 5.0f;
+static const Float CAMERA_ZOOM_SPEED = 10.0f;
 
-static const Length BATTLE_MAP_SIZE = 35;
+static const Length BATTLE_MAP_SIZE = 45;
 
 static const Length MAXIMUM_GROUP_COUNT = 16;
 
@@ -32,8 +33,12 @@ void BattleScene::Initialize()
     battleMap = new BattleMap(BATTLE_MAP_SIZE);
 
     groups.Initialize(MAXIMUM_GROUP_COUNT);
-    GroupFactory::Create(groups);
-    GroupFactory::Create(groups);
+
+    auto centerTile = battleMap->GetCenterTile();
+    Integer3 offset = {-4, 12, -8};
+
+    GroupFactory::Create(groups, {centerTile->GetNeighbor(offset)});
+    GroupFactory::Create(groups, {centerTile->GetNeighbor(-offset)});
 
     characterModel = new CharacterModel();
     characterModel->Initialize();
@@ -46,6 +51,8 @@ void BattleScene::Initialize()
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, this, &HandleSpacePressed);
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_1, this, &HandleOnePressed);
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_2, this, &HandleTwoPressed);
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_3, this, &HandleThreePressed);
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_4, this, &HandleFourPressed);
 
     camera = RenderManager::GetCamera(Cameras::BATTLE);
 
@@ -158,6 +165,28 @@ void BattleScene::HandleTwoPressed()
         {
             OnActionSelected.Invoke();
         }
+    }
+}
+
+void BattleScene::HandleThreePressed()
+{
+    if(selectedCharacter == nullptr)
+        return;
+
+    if(selectedCharacter->SelectAction(2))
+    {
+        OnActionSelected.Invoke();
+    }
+}
+
+void BattleScene::HandleFourPressed()
+{
+    if(selectedCharacter == nullptr)
+        return;
+
+    if(selectedCharacter->SelectAction(3))
+    {
+        OnActionSelected.Invoke();
     }
 }
 

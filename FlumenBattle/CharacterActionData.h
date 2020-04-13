@@ -12,8 +12,6 @@ struct CharacterActionData
 
     class Character * Character;
 
-    class Character * Target;
-
     Integer AttackRoll;
 
     Integer TargetArmorClass;
@@ -22,11 +20,10 @@ struct CharacterActionData
 
     CharacterActionData() : Character(nullptr) {}
 
-    CharacterActionData(CharacterActions actionType, class Character * character, class Character * target, Integer attackRoll, Integer targetArmor, Integer damage)
+    CharacterActionData(CharacterActions actionType, class Character * character, Integer attackRoll, Integer targetArmor, Integer damage)
     {
         ActionType = actionType;
         Character = character;
-        Target = target;
         AttackRoll = attackRoll;
         TargetArmorClass = targetArmor;
         Damage = damage;

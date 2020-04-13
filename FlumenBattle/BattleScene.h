@@ -68,6 +68,10 @@ class BattleScene : public Scene
 
     void HandleTwoPressed();
 
+    void HandleThreePressed();
+
+    void HandleFourPressed();
+
 public:
     Delegate OnCharacterActed;
 

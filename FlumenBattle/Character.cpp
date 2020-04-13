@@ -2,14 +2,18 @@
 
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/CharacterInfo.h"
-#include "FlumenBattle/BattleMap.h"
 #include "FlumenBattle/Weapon.h"
 #include "FlumenBattle/Spell.h"
+#include "FlumenBattle/Condition.h"
+#include "FlumenBattle/SpellCaster.h"
+#include "FlumenBattle/BattleTile.h"
 
 Character::Character()
 {
     weapons.Initialize(4);
     spells.Initialize(4);
+    conditions.Initialize(8);
+    spellSlots.Initialize(8);
 }
 
 void Character::Initialize()
@@ -25,6 +29,8 @@ void Character::Initialize()
 
     selectedAction = actions.GetStart();
     selectedSpell = spells.GetStart();
+
+    *spellSlots.Allocate() = {2};
 }
 
 bool Character::CanMove() const
@@ -42,6 +48,16 @@ bool Character::CanCastSpell() const
     return IsAlive() && remainingActionCount > 0;
 }
 
+bool Character::CanDodge() const
+{
+    return IsAlive() && remainingActionCount > 0;
+}
+
+bool Character::CanDash() const
+{
+    return IsAlive() && remainingActionCount > 0;
+}
+
 bool Character::IsAlive() const
 {
     return currentHitPoints > 0;
@@ -51,14 +67,34 @@ bool Character::SufferDamage(Integer damage)
 {
     Integer remainingDamage = damage - currentHitPoints;
     currentHitPoints -= damage;
-    if(currentHitPoints < 0)
+    if(currentHitPoints <= 0)
     {
         currentHitPoints = 0;
         if(remainingDamage < maximumHitPoints)
         {
             isSavingAgainstDeath = true;
+            deathThrowSuccesCount = 0;
+            deathThrowFailureCount = 0;
+        }
+        else
+        {
+            isSavingAgainstDeath = false;
+            deathThrowFailureCount = 3;
         }
     }
+}
+
+bool Character::HealDamage(Integer damage)
+{
+    currentHitPoints += damage;
+    if(currentHitPoints > maximumHitPoints)
+    {
+        currentHitPoints = maximumHitPoints;
+    }
+
+    isSavingAgainstDeath = false;
+    deathThrowSuccesCount = 0;
+    deathThrowFailureCount = 0;
 }
 
 bool Character::HasAdvantage() const
@@ -82,6 +118,11 @@ bool Character::HasDisadvantage() const
         }
     }
 
+    if(target->IsDodging())
+    {
+        return true;
+    }
+
     return false;
 }
 
@@ -97,6 +138,35 @@ void Character::AddSpell(Spell spell)
     selectedSpell = spells.GetEnd() - 1;
 }
 
+void Character::AddCondition(Condition newCondition)
+{
+    bool hasFound = false;
+
+    for(auto condition = conditions.GetStart(); condition != conditions.GetEnd(); ++condition)
+    {
+        if(condition->GetType() == newCondition.GetType())
+        {
+            *condition = newCondition;
+            hasFound = true;
+            break;
+        }
+    }
+    
+    if(!hasFound)
+    {
+        auto condition = conditions.Add();
+        if(condition != nullptr)
+        {
+            *condition = newCondition;
+        }
+        else
+        {
+            std::cout<<"Adding condition on character has failed.\n";
+        }
+        
+    }
+}
+
 Integer Character::RollAttackDamage() const
 {
     auto sum = 0;
@@ -108,9 +178,29 @@ Integer Character::RollAttackDamage() const
     return sum;
 }
 
+bool Character::IsDodging()
+{
+    for(auto condition = conditions.GetStart(); condition != conditions.GetEnd(); ++condition)
+    {
+        if(condition->type == ConditionTypes::EVASION && condition->IsActive())
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void Character::StartTurn()
 {
-    movement = GetSpeed();
+    speedPenalty = 0;
+
+    for(auto condition = conditions.GetStart(); condition != conditions.GetEnd(); ++condition)
+    {
+        condition->Apply();
+    }
+
+    movement = GetCurrentSpeed();
     remainingActionCount = 1;
 }
 
@@ -123,6 +213,14 @@ bool Character::CanAct(const Character & target)
     else if(selectedAction->Type == CharacterActions::CAST_SPELL)
     {
         return CanCastSpellAgainstTarget(target);
+    }
+    else if(selectedAction->Type == CharacterActions::DODGE)
+    {
+        return IsValidDodgeTarget(target);
+    }
+    else if(selectedAction->Type == CharacterActions::DASH)
+    {
+        return IsValidDashTarget(target);
     }
     else
     {
@@ -150,10 +248,7 @@ bool Character::CanAttackTarget(const Character & target)
 
 bool Character::CanCastSpellAgainstTarget(const Character & target)
 {
-    if(this == &target)
-        return false;
-
-    if(group == target.group)
+    if((selectedSpell->IsOffensive && group == target.group) || (!selectedSpell->IsOffensive && group != target.group))
         return false;
 
     if(CanCastSpell() == false)
@@ -161,6 +256,35 @@ bool Character::CanCastSpellAgainstTarget(const Character & target)
 
     auto distance = tile->GetDistanceTo(*(target.tile));
     if(distance > GetActionRange())
+        return false;
+
+    if(selectedSpell->Level == 0)
+        return true;
+    
+    auto slot = spellSlots.Get(selectedSpell->Level - 1);
+    if(slot->Current == 0)
+        return false;
+
+    return true;
+}
+
+bool Character::IsValidDodgeTarget(const Character & target)
+{
+    if(CanDodge() == false)
+        return false;
+
+    if(&target != this)
+        return false;
+
+    return true;
+}
+
+bool Character::IsValidDashTarget(const Character & target)
+{
+    if(CanDash() == false)
+        return false;
+
+    if(&target != this)
         return false;
 
     return true;
@@ -175,7 +299,7 @@ void Character::Move(BattleTile* destination)
         return;
 
     auto distance = tile->GetDistanceTo(*destination);
-    if(distance > GetSpeed())
+    if(distance > movement)
         return;
 
     movement -= distance;
@@ -213,13 +337,23 @@ void Character::SaveAgainstDeath()
 
 CharacterActionData Character::Act(Character& target)
 {
+    this->target = &target;
+
     if(selectedAction->Type == CharacterActions::ATTACK)
     {
-        return Attack(target);
+        return Attack();
     }
     else if(selectedAction->Type == CharacterActions::CAST_SPELL)
     {
-        return CastSpell(target);
+        return CastSpell();
+    }
+    else if(selectedAction->Type == CharacterActions::DODGE)
+    {
+        return Dodge();
+    }
+    else if(selectedAction->Type == CharacterActions::DASH)
+    {
+        return Dash();
     }
     else
     {
@@ -227,7 +361,7 @@ CharacterActionData Character::Act(Character& target)
     }
 }
 
-CharacterActionData Character::Attack(Character& target)
+CharacterActionData Character::Attack()
 {
     bool hasDisadvantage = HasDisadvantage();
 
@@ -240,47 +374,55 @@ CharacterActionData Character::Attack(Character& target)
             attackRoll = newRoll;
         }
     }
+
+    if(GetActionRange() == 1)
+    {
+        attackAbility = &strength;
+    }
+    else
+    {
+        attackAbility = &dexterity;
+    }
+
     attackRoll += attackAbility->Modifier + proficiencyBonus;
 
     Integer damage;
-    if(attackRoll >= target.armorClass)
+    if(attackRoll >= target->armorClass)
     {
         damage = RollAttackDamage() + attackAbility->Modifier;
-        target.SufferDamage(damage);
+        target->SufferDamage(damage);
     }
 
     remainingActionCount--;
 
-    return CharacterActionData(selectedAction->Type, this, &target, attackRoll, target.armorClass, damage);
+    return CharacterActionData(selectedAction->Type, this, attackRoll, target->armorClass, damage);
 }
 
-CharacterActionData Character::CastSpell(Character& target)
+CharacterActionData Character::CastSpell()
 {
-    bool hasDisadvantage = HasDisadvantage();
-
-    auto attackRoll = utility::GetRandom(1, 20);
-    if(hasDisadvantage)
-    {
-        auto newRoll = utility::GetRandom(1, 20);
-        if(newRoll < attackRoll)
-        {
-            attackRoll = newRoll;
-        }
-    }
-
-    attackRoll += spellCastingAbility->Modifier + proficiencyBonus;
-
-    Integer damage;
-    Integer difficultyClass = 8 + spellCastingAbility->Modifier + proficiencyBonus;
-    if(attackRoll >= target.armorClass)
-    {
-        damage = utility::GetRandom(1, selectedSpell->HitDice);
-        target.SufferDamage(damage);
-    }
+    auto actionData = SpellCaster::ApplyEffect(*this, *selectedSpell);
 
     remainingActionCount--;
 
-    return CharacterActionData(selectedAction->Type, this, &target, attackRoll, target.armorClass, damage);
+    return actionData;
+}
+
+CharacterActionData Character::Dodge()
+{
+    AddCondition(Condition(ConditionTypes::EVASION, this));
+
+    remainingActionCount--;
+
+    return {CharacterActions::DODGE, this, 0, 0, 0};
+}
+
+CharacterActionData Character::Dash()
+{
+    movement += GetCurrentSpeed();
+
+    remainingActionCount--;
+
+    return {CharacterActions::DASH, this, 0, 0, 0};
 }
 
 void Character::Select()
@@ -298,11 +440,11 @@ Position2 Character::GetPosition()
     return tile->Position;
 }
 
-Integer Character::GetSpeed() const
+Integer Character::GetCurrentSpeed() const
 {
     if(IsAlive())
     {
-        return defaultSpeed;
+        return defaultSpeed - speedPenalty;
     }
     else
     {

@@ -4,6 +4,7 @@
 #include "FlumenEngine/Utility/Color.hpp"
 
 class Character;
+class BattleTile;
 
 class Group
 {
@@ -16,6 +17,8 @@ class Group
     friend class BattleScene;
 
     friend class container::Array<Group>;
+
+    BattleTile * tile;
     
     Color color;
 

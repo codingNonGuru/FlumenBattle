@@ -9,21 +9,17 @@
 #include "FlumenBattle/BattleMap.h"
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/Character.h"
+#include "FlumenBattle/BattleTile.h"
 
 #define BATTLE_TILE_SIZE 33.0f
 
-const Float4 DEFAULT_TILE_COLOR = Float4(1.0f, 0.5f, 0.5f, 1.0f);
+const Float4 DEFAULT_TILE_COLOR = Float4(0.9f, 0.7f, 0.6f, 1.0f);
 
-const Float4 NEARBY_TILE_COLOR = Float4(0.75f, 0.375f, 0.375f, 1.0f);
+const Float4 NEARBY_TILE_COLOR = DEFAULT_TILE_COLOR * 0.8f;
 
-const Float4 HOVERED_TILE_COLOR = Float4(0.5f, 0.25f, 0.25f, 1.0f);
+const Float4 HOVERED_TILE_COLOR = DEFAULT_TILE_COLOR * 0.6f;
 
 Camera* camera = nullptr;
-
-const Array <BattleTile*> & BattleTile::GetNearbyTiles(Integer range)
-{
-    return Map->GetNearbyTiles(this, range);
-}
 
 void BattleTileModel::Initialize()
 {
@@ -77,7 +73,7 @@ void BattleTileModel::Render()
 
             shader->SetConstant(tile->Position, "hexPosition");
 
-            shader->SetConstant(BATTLE_TILE_SIZE * 0.7f, "hexSize");
+            shader->SetConstant(BATTLE_TILE_SIZE * 0.8f, "hexSize");
 
             shader->SetConstant(NEARBY_TILE_COLOR, "color");
 
@@ -90,7 +86,7 @@ void BattleTileModel::Render()
     {
         shader->SetConstant(hoveredTile->Position, "hexPosition");
 
-        shader->SetConstant(BATTLE_TILE_SIZE * 0.5f, "hexSize");
+        shader->SetConstant(BATTLE_TILE_SIZE * 0.8f, "hexSize");
 
         shader->SetConstant(HOVERED_TILE_COLOR, "color");
 

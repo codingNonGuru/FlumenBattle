@@ -4,9 +4,24 @@
 
 #include "FlumenBattle/Types.hpp"
 
+struct SpellSlot
+{
+    Integer Current;
+
+    Integer Maximum;
+
+    SpellSlot() : Maximum(0), Current(0) {}
+
+    SpellSlot(Integer maximum) : Maximum(maximum), Current(maximum) {}
+
+    void Reset() {Current = Maximum;}
+};
+
 struct Spell
 {
     SpellTypes Type;
+
+    Integer Level;
 
     Integer HitDice;
 
@@ -16,31 +31,33 @@ struct Spell
 
     Word Name;
 
-    bool IsSelfTargeted;
+    bool IsOffensive;
 
-    //Phrase Description;
+    bool IsAttack;
+
+    //const Phrase & Description;
 };
 
 class SpellFactory
 {
 public:
-    static Spell BuildRayOfFrost()
+    static Spell BuildFrostRay()
     {
-        return {SpellTypes::RAY_OF_FROST, 8, 1, 10, "Ray of Frost", false};
+        return {SpellTypes::FROST_RAY, 0, 8, 1, 12, "Frost Ray", true, true};
     }
 
     static Spell BuildShockingGrasp()
     {
-        return {SpellTypes::SHOCKING_GRASP, 8, 1, 1, "Shocking Grasp", false};
+        return {SpellTypes::SHOCKING_GRASP, 0, 8, 1, 1, "Shocking Grasp", true, true};
     }
 
     static Spell BuildMagicMissile()
     {
-        return {SpellTypes::MAGIC_MISSILE, 4, 1, 10, "Magic Missile", false};
+        return {SpellTypes::MAGIC_MISSILE, 1, 4, 1, 24, "Magic Missile", true, false};
     }
 
     static Spell BuildCureWounds()
     {
-        return {SpellTypes::CURE_WOUNDS, 6, 1, 5, "Cure Wounds", true};
+        return {SpellTypes::CURE_WOUNDS, 1, 8, 1, 1, "Cure Wounds", false, false};
     }
 };

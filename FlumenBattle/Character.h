@@ -9,6 +9,8 @@ class Group;
 class BattleTile;
 struct Weapon;
 struct Spell;
+struct SpellSlot;
+class Condition;
 
 class Character
 {
@@ -26,6 +28,10 @@ private:
     friend class CharacterInfo;
 
     friend class CharacterModel;
+
+    friend class Condition; 
+
+    friend class SpellCaster;
 
     struct Ability 
     {
@@ -77,6 +83,8 @@ private:
 
     Integer defaultSpeed;
 
+    Integer speedPenalty;
+
     Integer movement;
 
     Integer remainingActionCount;
@@ -93,11 +101,17 @@ private:
 
     Spell * selectedSpell;
 
+    Array <SpellSlot> spellSlots;
+
+    Character * target;
+
     bool isSavingAgainstDeath;
 
     Integer deathThrowSuccesCount;
 
     Integer deathThrowFailureCount;
+
+    Pool <Condition> conditions;
 
     BattleTile* tile;
 
@@ -111,11 +125,17 @@ private:
 
     bool CanCastSpell() const;
 
-    Integer GetSpeed() const;
+    bool CanDodge() const;
+
+    bool CanDash() const;
+
+    Integer GetCurrentSpeed() const;
 
     Integer GetActionRange() const;
 
     bool SufferDamage(Integer);
+
+    bool HealDamage(Integer);
 
     bool HasAdvantage() const;
 
@@ -125,7 +145,11 @@ private:
 
     void AddSpell(Spell);
 
+    void AddCondition(Condition);
+
     Integer RollAttackDamage() const;
+
+    bool IsDodging();
 
 public:
     bool IsAlive() const;
@@ -138,11 +162,19 @@ public:
 
     bool CanCastSpellAgainstTarget(const Character &);
 
+    bool IsValidDodgeTarget(const Character &);
+
+    bool IsValidDashTarget(const Character &);
+
     CharacterActionData Act(Character&);
 
-    CharacterActionData Attack(Character&);
+    CharacterActionData Attack();
 
-    CharacterActionData CastSpell(Character&);
+    CharacterActionData CastSpell();
+
+    CharacterActionData Dodge();
+
+    CharacterActionData Dash();
 
     void Move(BattleTile*);
 
@@ -177,6 +209,8 @@ public:
     Weapon* GetSelectedWeapon() const {return selectedWeapon;}
 
     Spell* GetSelectedSpell() const {return selectedSpell;}
+
+    Character* GetTarget() const {return target;}
 
     bool IsSavingAgainstDeath() const {return isSavingAgainstDeath;}
 };

@@ -113,6 +113,12 @@ void ActionInfoPanel::HandleCharacterSelected()
             case CharacterActions::HELP:
                 string << "Help";
                 break;
+            case CharacterActions::DODGE:
+                string << "Dodge";
+                break;
+            case CharacterActions::DASH:
+                string << "Dash";
+                break;
             default:
                 string << "Other";
                 break;
@@ -143,6 +149,7 @@ void ActionInfoPanel::HandleSubactionSelected()
             RefreshSpells();
             break;
         default:
+            DisableSubactionLabels();
             break;
     }
 }
@@ -167,33 +174,7 @@ void ActionInfoPanel::RefreshWeapons()
         label->Enable();
 
         auto string = Phrase();
-        string << labelIndex + 1 << " - ";
-
-        switch(weaponIterator->Type)
-        {
-            case WeaponTypes::GREAT_AXE:
-                string << "Great axe";
-                break;
-            case WeaponTypes::LONG_BOW:
-                string << "Long bow";
-                break;
-            case WeaponTypes::MACE:
-                string << "Mace";
-                break;
-            case WeaponTypes::SWORD:
-                string << "Sword";
-                break;
-            case WeaponTypes::STAFF:
-                string << "Staff";
-                break;
-            case WeaponTypes::SHORT_BOW:
-                string << "Short bow";
-                break;
-            default:
-                string << "Other";
-                break;
-        }
-
+        string << labelIndex + 1 << " - " << weaponIterator->Name;
         label->Setup(string);
 
         label->AdjustSize();
@@ -231,6 +212,15 @@ void ActionInfoPanel::RefreshSpells()
     }
 
     HandleSpellSelected();
+}
+
+void ActionInfoPanel::DisableSubactionLabels()
+{
+    for(auto labelIterator = subactionLabels.GetStart(); labelIterator != subactionLabels.GetEnd(); ++labelIterator)
+    {
+        auto label = *labelIterator;
+        label->Disable();
+    }
 }
 
 void ActionInfoPanel::HandleActionSelected()

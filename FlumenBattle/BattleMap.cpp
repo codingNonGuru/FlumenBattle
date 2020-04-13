@@ -1,6 +1,7 @@
 #include "FlumenCore/Utility/Utility.hpp"
 
 #include "FlumenBattle/BattleMap.h"
+#include "FlumenBattle/BattleTile.h"
 
 Array <BattleTile*> nearbyTiles;
 
@@ -44,7 +45,8 @@ const Array<BattleTile*> & BattleMap::GetNearbyTiles(BattleTile* tile, Integer r
             {
                 if(x + y + z == 0)
                 {
-                    auto nearbyTile = GetTile(tile->HexCoordinates.x + x, tile->HexCoordinates.y + y, tile->HexCoordinates.z + z);
+                    //auto nearbyTile = GetTile(tile->HexCoordinates.x + x, tile->HexCoordinates.y + y, tile->HexCoordinates.z + z);
+                    auto nearbyTile = GetTile(tile->HexCoordinates + Integer3(x, y, z));
                     if(nearbyTile != nullptr)
                     {
                         *nearbyTiles.Allocate() = nearbyTile;
@@ -57,9 +59,9 @@ const Array<BattleTile*> & BattleMap::GetNearbyTiles(BattleTile* tile, Integer r
     return nearbyTiles;
 }
 
-BattleTile* BattleMap::GetTile(Integer x, Integer y, Integer z)
+BattleTile* BattleMap::GetTile(Integer3 position)
 {
-    return tiles.Get(x + z / 2, z);
+    return tiles.Get(position.x + position.z / 2, position.z);
 }
 
 BattleTile* BattleMap::GetRandomTile()
@@ -78,6 +80,20 @@ BattleTile* BattleMap::GetEmptyRandomTile()
         if(tile->Character == nullptr)
         {
             return tile;
+        }
+    }
+}
+
+BattleTile* BattleMap::GetEmptyTileAroundTile(BattleTile * tile, Integer range)
+{
+    auto& nearbyTiles = tile->GetNearbyTiles(range);
+    while(true)
+    {
+        auto index = utility::GetRandom(0, nearbyTiles.GetSize() - 1);
+        auto otherTile = *nearbyTiles.Get(index);
+        if(otherTile->Character == nullptr)
+        {
+            return otherTile;
         }
     }
 }

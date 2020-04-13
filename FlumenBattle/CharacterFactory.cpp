@@ -6,7 +6,7 @@
 #include "FlumenBattle/Group.h"
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/BattleScene.h"
-#include "FlumenBattle/BattleMap.h"
+#include "FlumenBattle/BattleTile.h"
 #include "FlumenBattle/Weapon.h"
 #include "FlumenBattle/Spell.h"
 
@@ -59,11 +59,13 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
         character->attackAbility = &character->strength;
         character->spellCastingAbility = nullptr;
 
-        character->actions.Initialize(1);
+        character->actions.Initialize(3);
         *character->actions.Allocate() = {CharacterActions::ATTACK};
+        *character->actions.Allocate() = {CharacterActions::DODGE};
+        *character->actions.Allocate() = {CharacterActions::DASH};
 
-        character->AddWeapon(WeaponFactory::BuildSword());
-        character->AddWeapon(WeaponFactory::BuildGreataxe());
+        character->AddWeapon(WeaponFactory::BuildHandAxe());
+        character->AddWeapon(WeaponFactory::BuildGreatSword());
         break;
     case CharacterClasses::RANGER:
         character->dexterity = abilityScores[0];
@@ -79,11 +81,13 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
         character->attackAbility = &character->dexterity;
         character->spellCastingAbility = nullptr;
 
-        character->actions.Initialize(1);
+        character->actions.Initialize(3);
         *character->actions.Allocate() = {CharacterActions::ATTACK};
+        *character->actions.Allocate() = {CharacterActions::DODGE};
+        *character->actions.Allocate() = {CharacterActions::DASH};
 
-        character->AddWeapon(WeaponFactory::BuildShortbow());
-        character->AddWeapon(WeaponFactory::BuildSword());
+        character->AddWeapon(WeaponFactory::BuildShortSword());
+        character->AddWeapon(WeaponFactory::BuildLongBow());
         break;
     case CharacterClasses::CLERIC:
         character->wisdom = abilityScores[0];
@@ -99,9 +103,11 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
         character->attackAbility = &character->strength;
         character->spellCastingAbility = &character->wisdom;
 
-        character->actions.Initialize(3);
+        character->actions.Initialize(5);
         *character->actions.Allocate() = {CharacterActions::ATTACK};
         *character->actions.Allocate() = {CharacterActions::CAST_SPELL};
+        *character->actions.Allocate() = {CharacterActions::DODGE};
+        *character->actions.Allocate() = {CharacterActions::DASH};
         *character->actions.Allocate() = {CharacterActions::HELP};
 
         character->AddWeapon(WeaponFactory::BuildMace());
@@ -122,13 +128,15 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
         character->attackAbility = &character->strength;
         character->spellCastingAbility = &character->intelligence;
 
-        character->actions.Initialize(2);
+        character->actions.Initialize(4);
         *character->actions.Allocate() = {CharacterActions::ATTACK};
         *character->actions.Allocate() = {CharacterActions::CAST_SPELL};
+        *character->actions.Allocate() = {CharacterActions::DODGE};
+        *character->actions.Allocate() = {CharacterActions::DASH};
 
         character->AddWeapon(WeaponFactory::BuildStaff());
 
-        character->AddSpell(SpellFactory::BuildRayOfFrost());
+        character->AddSpell(SpellFactory::BuildFrostRay());
         character->AddSpell(SpellFactory::BuildShockingGrasp());
         character->AddSpell(SpellFactory::BuildMagicMissile());
         break;
@@ -137,10 +145,11 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
     character->maximumHitPoints = character->hitDiceCount + character->constitution.Modifier * character->level;
 
     auto battleScene = (BattleScene*)SceneManager::Get(Scenes::BATTLE);
-    character->tile = battleScene->GetBattleMap()->GetEmptyRandomTile();
+    //character->tile = battleScene->GetBattleMap()->GetEmptyRandomTile();
+    character->tile = group.tile->GetEmptyTileInRange(5);
     character->tile->Character = character;
 
-    character->defaultSpeed = utility::GetRandom(4, 6);
+    character->defaultSpeed = 5;//utility::GetRandom(4, 6);
 
     character->Initialize();
 

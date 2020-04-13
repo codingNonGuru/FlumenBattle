@@ -8,11 +8,13 @@
 Color colors[] = {Color::RED, Color::GREEN};
 Integer colorIndex = 0;
 
-Group* GroupFactory::Create(Array <Group> &groups)
+Group* GroupFactory::Create(Array <Group> &groups, GroupBuildData buildData)
 {
     auto group = groups.Allocate();
 
-    auto size = 5;//utility::GetRandom(4, 7);
+    group->tile = buildData.Tile;
+
+    auto size = 2;//utility::GetRandom(4, 7);
     auto color = colors[colorIndex++];
     group->Initialize(size, color);
 

@@ -14,6 +14,7 @@
 #include "FlumenBattle/BattleScene.h"
 #include "FlumenBattle/Group.h"
 #include "FlumenBattle/BattleInfoPanel.h"
+#include "FlumenBattle/Spell.h"
 
 static BattleScene* battleScene = nullptr;
 
@@ -43,6 +44,19 @@ void BattleInfoPanel::HandleCharacterAction()
     auto actionData = battleScene->GetLastAction();
     auto string = Phrase();
     string << actionData.Character->GetName();
+
+    if(actionData.ActionType == CharacterActions::DODGE)
+    {
+        string << " is dodging.";
+        actionLabel->Setup(string);
+        return;
+    }
+    else if(actionData.ActionType == CharacterActions::DASH)
+    {
+        string << " has dashed.";
+        actionLabel->Setup(string);
+        return;
+    }
     
     if(actionData.ActionType == CharacterActions::ATTACK)
     {
@@ -50,10 +64,10 @@ void BattleInfoPanel::HandleCharacterAction()
     }
     else if(actionData.ActionType == CharacterActions::CAST_SPELL)
     {
-        string << " cast spell on "; 
+        string << " cast " << actionData.Character->GetSelectedSpell()->Name << " on "; 
     }
 
-    string << actionData.Target->GetName() << " for " << actionData.AttackRoll << ". ";
+    string << actionData.Character->GetTarget()->GetName() << " for " << actionData.AttackRoll << ". ";
 
     if(actionData.HasHit())
     {

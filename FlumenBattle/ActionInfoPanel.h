@@ -29,6 +29,8 @@ class ActionInfoPanel : public Element
 
     void RefreshSpells();
 
+    void DisableSubactionLabels();
+
     void HandleActionSelected();
 
     void HandleSubactionSelected();

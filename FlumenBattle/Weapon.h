@@ -8,6 +8,8 @@ struct Weapon
 {
     WeaponTypes Type;
 
+    Word Name;
+
     Integer HitDice;
 
     Integer RollCount;
@@ -18,33 +20,43 @@ struct Weapon
 class WeaponFactory
 {
 public:
-    static Weapon BuildSword() 
+    static Weapon BuildGreatSword() 
     {
-        return {WeaponTypes::SWORD, 8, 1, 1};
+        return {WeaponTypes::GREAT_SWORD, "Great sword", 6, 2, 1};
     }
 
-    static Weapon BuildGreataxe()
+    static Weapon BuildShortSword() 
     {
-        return {WeaponTypes::GREAT_AXE, 12, 1, 1};
+        return {WeaponTypes::SHORT_SWORD, "Short sword", 6, 1, 1};
     }
 
-    static Weapon BuildShortbow()
+    static Weapon BuildHandAxe()
     {
-        return {WeaponTypes::SHORT_BOW, 6, 1, 10};
+        return {WeaponTypes::HAND_AXE, "Hand axe", 6, 1, 4};
     }
 
-    static Weapon BuildLongbow()
+    static Weapon BuildGreatAxe()
     {
-        return {WeaponTypes::LONG_BOW, 8, 1, 15};
+        return {WeaponTypes::GREAT_AXE, "Great axe", 12, 1, 1};
+    }
+
+    static Weapon BuildShortBow()
+    {
+        return {WeaponTypes::SHORT_BOW, "Short bow", 6, 1, 16};
+    }
+
+    static Weapon BuildLongBow()
+    {
+        return {WeaponTypes::LONG_BOW, "Long bow", 8, 1, 30};
     }
 
     static Weapon BuildMace()
     {
-        return {WeaponTypes::MACE, 6, 1, 1};
+        return {WeaponTypes::MACE, "Mace", 6, 1, 1};
     }
 
     static Weapon BuildStaff()
     {
-        return {WeaponTypes::STAFF, 4, 1, 1};
+        return {WeaponTypes::STAFF, "Staff", 4, 1, 1};
     }
 };
