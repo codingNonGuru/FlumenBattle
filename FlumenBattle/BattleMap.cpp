@@ -45,7 +45,6 @@ const Array<BattleTile*> & BattleMap::GetNearbyTiles(BattleTile* tile, Integer r
             {
                 if(x + y + z == 0)
                 {
-                    //auto nearbyTile = GetTile(tile->HexCoordinates.x + x, tile->HexCoordinates.y + y, tile->HexCoordinates.z + z);
                     auto nearbyTile = GetTile(tile->HexCoordinates + Integer3(x, y, z));
                     if(nearbyTile != nullptr)
                     {

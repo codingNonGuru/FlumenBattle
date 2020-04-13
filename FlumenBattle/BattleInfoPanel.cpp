@@ -48,35 +48,39 @@ void BattleInfoPanel::HandleCharacterAction()
     if(actionData.ActionType == CharacterActions::DODGE)
     {
         string << " is dodging.";
-        actionLabel->Setup(string);
-        return;
     }
     else if(actionData.ActionType == CharacterActions::DASH)
     {
         string << " has dashed.";
-        actionLabel->Setup(string);
-        return;
-    }
-    
-    if(actionData.ActionType == CharacterActions::ATTACK)
-    {
-        string << " attacked "; 
     }
     else if(actionData.ActionType == CharacterActions::CAST_SPELL)
     {
-        string << " cast " << actionData.Character->GetSelectedSpell()->Name << " on "; 
+        string << " cast " << actionData.Character->GetSelectedSpell()->Name << " on " << actionData.Character->GetTarget()->GetName() << ".";
+        if(actionData.Character->GetSelectedSpell()->IsOffensive)
+        {
+            if(actionData.HasSucceeded)
+            {
+                string << " Hit! " << " The victim suffers " << actionData.Damage << " damage.";
+            }
+            else
+            {
+                string << " Miss!";
+            }
+            
+        }
     }
-
-    string << actionData.Character->GetTarget()->GetName() << " for " << actionData.AttackRoll << ". ";
-
-    if(actionData.HasHit())
+    else if(actionData.ActionType == CharacterActions::ATTACK)
     {
-        string << "Hit! ";
-        string << actionData.Damage << " damage was dealt.";
-    }
-    else
-    {
-        string << "Miss!";
+        string << " attacked " << actionData.Character->GetTarget()->GetName() << ".";
+
+        if(actionData.HasSucceeded)
+        {
+            string << " Hit! " << " The victim suffers " << actionData.Damage << " damage.";
+        }
+        else
+        {
+            string << " Miss!";
+        }
     }
 
     actionLabel->Setup(string);

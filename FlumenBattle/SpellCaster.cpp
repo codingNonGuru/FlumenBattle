@@ -139,6 +139,7 @@ CharacterActionData SpellCaster::ApplyEffect(Character & character, const Spell 
         &character, 
         spellResult.AttackRoll, 
         character.target->armorClass, 
-        spellResult.Damage
+        spellResult.Damage,
+        spellResult.HasHit
         );
 }

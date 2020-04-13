@@ -146,7 +146,6 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
     character->maximumHitPoints = character->hitDiceCount + character->constitution.Modifier * character->level;
 
     auto battleScene = (BattleScene*)SceneManager::Get(Scenes::BATTLE);
-    //character->tile = battleScene->GetBattleMap()->GetEmptyRandomTile();
     character->tile = group.tile->GetEmptyTileInRange(5);
     character->tile->Character = character;
 

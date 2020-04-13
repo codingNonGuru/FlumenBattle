@@ -395,7 +395,7 @@ CharacterActionData Character::Attack()
 
     remainingActionCount--;
 
-    return CharacterActionData(selectedAction->Type, this, attackRoll, target->armorClass, damage);
+    return CharacterActionData(selectedAction->Type, this, attackRoll, target->armorClass, damage, attackRoll > target->armorClass);
 }
 
 CharacterActionData Character::CastSpell()
@@ -413,7 +413,7 @@ CharacterActionData Character::Dodge()
 
     remainingActionCount--;
 
-    return {CharacterActions::DODGE, this, 0, 0, 0};
+    return {CharacterActions::DODGE, this, 0, 0, 0, true};
 }
 
 CharacterActionData Character::Dash()
@@ -422,7 +422,7 @@ CharacterActionData Character::Dash()
 
     remainingActionCount--;
 
-    return {CharacterActions::DASH, this, 0, 0, 0};
+    return {CharacterActions::DASH, this, 0, 0, 0, true};
 }
 
 void Character::Select()

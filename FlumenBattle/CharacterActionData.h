@@ -18,16 +18,17 @@ struct CharacterActionData
 
     Integer Damage;
 
+    bool HasSucceeded;
+
     CharacterActionData() : Character(nullptr) {}
 
-    CharacterActionData(CharacterActions actionType, class Character * character, Integer attackRoll, Integer targetArmor, Integer damage)
+    CharacterActionData(CharacterActions actionType, class Character * character, Integer attackRoll, Integer targetArmor, Integer damage, bool hasSucceeded)
     {
         ActionType = actionType;
         Character = character;
         AttackRoll = attackRoll;
         TargetArmorClass = targetArmor;
         Damage = damage;
+        HasSucceeded = hasSucceeded;
     }
-
-    bool HasHit() {return AttackRoll >= TargetArmorClass;}
 };
