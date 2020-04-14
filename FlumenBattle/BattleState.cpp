@@ -1,6 +1,7 @@
 #include "FlumenBattle/BattleState.h"
 #include "FlumenBattle/BattleScene.h"
-#include <iostream>
+#include "FlumenBattle/BattleController.h"
+
 BattleState * BattleState::instance = nullptr;
 
 BattleState::BattleState()
@@ -11,6 +12,9 @@ BattleState::BattleState()
 
 void BattleState::HandleEnter() 
 {
+    controller = BattleController::Get();
+    controller->Initialize();
+
     scene->Enable();
 }
 

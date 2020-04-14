@@ -11,12 +11,12 @@
 
 #include "FlumenBattle/CharacterInfo.h"
 #include "FlumenBattle/Character.h"
-#include "FlumenBattle/BattleScene.h"
+#include "FlumenBattle/BattleController.h"
 #include "FlumenBattle/Group.h"
 
 void CharacterInfo::HandleConfigure() 
 {
-    battleScene = BattleScene::Get();
+    battleController = BattleController::Get();
 
     auto fontSmall = FontManager::GetFont("DominicanSmall");
     auto fontMedium = FontManager::GetFont("DominicanMedium");
@@ -81,12 +81,12 @@ void CharacterInfo::HandleConfigure()
 
 void CharacterInfo::HandleSelection()
 {
-    battleScene->SelectCharacter(character);
+    battleController->SelectCharacter(character);
 }
 
 void CharacterInfo::HandleTargeting()
 {
-    battleScene->TargetCharacter(character);
+    battleController->TargetCharacter(character);
 }
 
 void CharacterInfo::Select()

@@ -14,13 +14,13 @@
 #include "FlumenEngine/Interface/LayoutGroup.h"
 
 #include "FlumenBattle/Character.h"
-#include "FlumenBattle/BattleScene.h"
+#include "FlumenBattle/BattleController.h"
 #include "FlumenBattle/Group.h"
 #include "FlumenBattle/ActionInfoPanel.h"
 #include "FlumenBattle/Weapon.h"
 #include "FlumenBattle/Spell.h"
 
-static BattleScene* battleScene = nullptr;
+static BattleController * battleController = nullptr;
 
 const Color HIGHLIGHTED_COLOR = (Color::RED * 0.5f) + (Color::BLACK * 0.5f);
 
@@ -30,12 +30,12 @@ void ActionInfoPanel::HandleConfigure()
 {
     wasLayoutRefreshed = false;
 
-    battleScene = BattleScene::Get();// (BattleScene*)SceneManager::Get(Scenes::BATTLE);
+    battleController = BattleController::Get();
 
-    battleScene->OnCharacterSelected.Add(this, &HandleCharacterSelected);
-    battleScene->OnActionSelected.Add(this, &HandleActionSelected);
-    battleScene->OnActionSelected.Add(this, &HandleSubactionSelected);
-    battleScene->OnSubactionSelected.Add(this, &HandleSubactionSelected);
+    battleController->OnCharacterSelected.Add(this, &HandleCharacterSelected);
+    battleController->OnActionSelected.Add(this, &HandleActionSelected);
+    battleController->OnActionSelected.Add(this, &HandleSubactionSelected);
+    battleController->OnSubactionSelected.Add(this, &HandleSubactionSelected);
 
     auto fontSmall = FontManager::GetFont("DominicanSmall");
 
@@ -79,7 +79,7 @@ void ActionInfoPanel::HandleUpdate()
 
 void ActionInfoPanel::HandleCharacterSelected()
 {
-    auto character = battleScene->GetSelectedCharacter();
+    auto character = battleController->GetSelectedCharacter();
     if(character == nullptr)
         return;
 
@@ -135,7 +135,7 @@ void ActionInfoPanel::HandleCharacterSelected()
 
 void ActionInfoPanel::HandleSubactionSelected()
 {
-    auto character = battleScene->GetSelectedCharacter();
+    auto character = battleController->GetSelectedCharacter();
     if(character == nullptr)
         return;
 
@@ -155,7 +155,7 @@ void ActionInfoPanel::HandleSubactionSelected()
 
 void ActionInfoPanel::RefreshWeapons()
 {
-    auto character = battleScene->GetSelectedCharacter();
+    auto character = battleController->GetSelectedCharacter();
 
     const auto & weapons = character->GetWeapons();
 
@@ -184,7 +184,7 @@ void ActionInfoPanel::RefreshWeapons()
 
 void ActionInfoPanel::RefreshSpells()
 {
-    auto character = battleScene->GetSelectedCharacter();
+    auto character = battleController->GetSelectedCharacter();
 
     const auto & spells = character->GetSpells();
 
@@ -224,7 +224,7 @@ void ActionInfoPanel::DisableSubactionLabels()
 
 void ActionInfoPanel::HandleActionSelected()
 {
-    auto character = battleScene->GetSelectedCharacter();
+    auto character = battleController->GetSelectedCharacter();
     if(character == nullptr)
         return;
 
@@ -257,7 +257,7 @@ void ActionInfoPanel::HandleActionSelected()
 
 void ActionInfoPanel::HandleWeaponSelected()
 {
-    auto character = battleScene->GetSelectedCharacter();
+    auto character = battleController->GetSelectedCharacter();
     if(character == nullptr)
         return;
 
@@ -288,7 +288,7 @@ void ActionInfoPanel::HandleWeaponSelected()
 
 void ActionInfoPanel::HandleSpellSelected()
 {
-    auto character = battleScene->GetSelectedCharacter();
+    auto character = battleController->GetSelectedCharacter();
     if(character == nullptr)
         return;
 

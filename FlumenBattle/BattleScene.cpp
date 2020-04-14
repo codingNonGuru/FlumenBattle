@@ -2,7 +2,6 @@
 
 #include "FlumenEngine/Render/RenderManager.hpp"
 #include "FlumenEngine/Core/InputHandler.hpp"
-#include "FlumenEngine/Utility/PickHandler.h"
 #include "FlumenEngine/Render/MeshManager.hpp"
 #include "FlumenEngine/Render/Camera.hpp"
 
@@ -48,19 +47,16 @@ void BattleScene::Initialize()
     battleInterface = new BattleInterface();
     battleInterface->Initialize();
 
-    InputHandler::OnInputUpdate.Add(this, &CheckTileSelection);
-    InputHandler::OnRightMouseClick.Add(this, &CheckCharacterMovement);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, this, &HandleSpacePressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_1, this, &HandleOnePressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_2, this, &HandleTwoPressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_3, this, &HandleThreePressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_4, this, &HandleFourPressed);
-
     camera = RenderManager::GetCamera(Cameras::BATTLE);
 
-    selectedCharacter = nullptr;
+    OnInitialized.Invoke();
+}
 
+void BattleScene::HandleEnable()
+{
     DetermineTurnOrder();
+
+    OnEnabled.Invoke();
 }
 
 void BattleScene::DetermineTurnOrder()
@@ -80,33 +76,15 @@ void BattleScene::DetermineTurnOrder()
 
     turn = turnOrder.GetStart();
 
-    SelectCharacter(turn->Character);
-
-    selectedCharacter->StartTurn();
+    turn->Character->StartTurn();
 }
 
-void BattleScene::CheckCharacterMovement()
-{
-    if(hoveredTile == nullptr)
-        return;
-
-    if(selectedCharacter == nullptr)
-        return;
-
-    if(turn->Character != selectedCharacter)
-        return;
-
-    if(InputHandler::GetMouse().CurrentRight_)
-    {
-        selectedCharacter->Move(hoveredTile);
-    }
-}
-
-void BattleScene::HandleSpacePressed()
+void BattleScene::EndTurn()
 {
     while(true)
     {
         turn++;
+
         if(turn == turnOrder.GetEnd())
         {
             turn = turnOrder.GetStart();
@@ -121,74 +99,6 @@ void BattleScene::HandleSpacePressed()
         {
             turn->Character->SaveAgainstDeath();
         }
-    }
-
-    SelectCharacter(turn->Character);
-
-    selectedCharacter->StartTurn();
-}
-
-void BattleScene::HandleOnePressed()
-{
-    if(selectedCharacter == nullptr)
-        return;
-
-    if(InputHandler::IsPressed(SDL_Scancode::SDL_SCANCODE_LCTRL))
-    {
-        if(selectedCharacter->SelectActionOption(0))
-        {
-            OnSubactionSelected.Invoke();
-        }
-    }
-    else
-    {
-        if(selectedCharacter->SelectAction(0))
-        {
-            OnActionSelected.Invoke();
-        }
-    }
-}
-
-void BattleScene::HandleTwoPressed()
-{
-    if(selectedCharacter == nullptr)
-        return;
-
-    if(InputHandler::IsPressed(SDL_Scancode::SDL_SCANCODE_LCTRL))
-    {
-        if(selectedCharacter->SelectActionOption(1))
-        {
-            OnSubactionSelected.Invoke();
-        }
-    }
-    else
-    {
-        if(selectedCharacter->SelectAction(1))
-        {
-            OnActionSelected.Invoke();
-        }
-    }
-}
-
-void BattleScene::HandleThreePressed()
-{
-    if(selectedCharacter == nullptr)
-        return;
-
-    if(selectedCharacter->SelectAction(2))
-    {
-        OnActionSelected.Invoke();
-    }
-}
-
-void BattleScene::HandleFourPressed()
-{
-    if(selectedCharacter == nullptr)
-        return;
-
-    if(selectedCharacter->SelectAction(3))
-    {
-        OnActionSelected.Invoke();
     }
 }
 
@@ -231,58 +141,22 @@ void BattleScene::Render()
     battleTileModel->Render();
 }
 
-void BattleScene::CheckTileSelection()
-{
-    auto mesh = MeshManager::GetMesh("Hex");
-    for(auto tile = battleMap->tiles.GetStart(); tile != battleMap->tiles.GetEnd(); ++tile)
-    {
-        bool isMouseOverTile = PickHandler::CheckCollision(camera, mesh, Position3(tile->Position, 0.0f), 33.0f);
-        if(isMouseOverTile)
-        {
-            hoveredTile = tile;
-            return;
-        }
-    }
-    hoveredTile = nullptr;
-}
-
-void BattleScene::SelectCharacter(Character* newlySelected)
-{
-    if(selectedCharacter != nullptr)
-    {
-        selectedCharacter->Deselect();
-    }
-
-    selectedCharacter = newlySelected;
-
-    if(selectedCharacter != nullptr)
-    {
-        selectedCharacter->Select();
-    }
-
-    OnCharacterSelected.Invoke();
-}
-
-void BattleScene::TargetCharacter(Character* target)
-{
-    if(selectedCharacter == nullptr)
-        return;
-
-    if(target == nullptr)
-        return;
-
-    if(turn->Character != selectedCharacter)
-        return;
-
-    if(selectedCharacter->CanAct(*target) == false)
-        return;
-
-    lastActionData = selectedCharacter->Act(*target);
-
-    OnCharacterActed.Invoke();
-}
-
 bool BattleScene::IsCharactersTurn(Character* character) const
 {
     return character == turn->Character;
+}
+
+Camera * BattleScene::GetCamera() const
+{
+    return camera;
+}
+
+BattleScene* BattleScene::Get()
+{
+    if(instance == nullptr)
+    {
+        instance = new BattleScene();
+    }
+    
+    return instance;
 }

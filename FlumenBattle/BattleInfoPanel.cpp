@@ -11,17 +11,17 @@
 #include "FlumenEngine/Render/Camera.hpp"
 
 #include "FlumenBattle/Character.h"
-#include "FlumenBattle/BattleScene.h"
+#include "FlumenBattle/BattleController.h"
 #include "FlumenBattle/Group.h"
 #include "FlumenBattle/BattleInfoPanel.h"
 #include "FlumenBattle/Spell.h"
 
-static BattleScene* battleScene = nullptr;
+static BattleController * battleController = nullptr;
 
 void BattleInfoPanel::HandleConfigure() 
 {
-    battleScene = BattleScene::Get();
-    battleScene->OnCharacterActed.Add(this, &HandleCharacterAction);
+    battleController = BattleController::Get();
+    battleController->OnCharacterActed.Add(this, &HandleCharacterAction);
 
     auto fontSmall = FontManager::GetFont("DominicanSmall");
 
@@ -41,7 +41,7 @@ void BattleInfoPanel::HandleConfigure()
 
 void BattleInfoPanel::HandleCharacterAction()
 {
-    auto actionData = battleScene->GetLastAction();
+    auto actionData = battleController->GetLastAction();
     auto string = Phrase();
     string << actionData.Character->GetName();
 

@@ -6,11 +6,11 @@ class Text;
 class Camera;
 
 class Character;
-class BattleScene;
+class BattleController;
 
 class CharacterInfo : public Element
 {
-    BattleScene* battleScene;
+    BattleController * battleController;
 
     Character* character;
 

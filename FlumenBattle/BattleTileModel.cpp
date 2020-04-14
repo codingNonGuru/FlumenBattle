@@ -8,6 +8,7 @@
 
 #include "FlumenBattle/BattleTileModel.h"
 #include "FlumenBattle/BattleScene.h"
+#include "FlumenBattle/BattleController.h"
 #include "FlumenBattle/BattleMap.h"
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/Character.h"
@@ -23,6 +24,8 @@ const Float4 HOVERED_TILE_COLOR = DEFAULT_TILE_COLOR * 0.6f;
 
 Camera* camera = nullptr;
 
+static BattleController * battleController = nullptr;
+
 void BattleTileModel::Initialize()
 {
     auto hexMesh = MeshManager::GetMeshes().Add("Hex"); 
@@ -31,6 +34,8 @@ void BattleTileModel::Initialize()
     shader = ShaderManager::GetShader("Hex");
 
     battleScene = BattleScene::Get();
+
+    battleController = BattleController::Get();
     
     auto backgroundColor = Color(0.1f, 0.1f, 0.7f, 1.0f);
 	RenderManager::SetBackgroundColor(backgroundColor);
@@ -74,7 +79,7 @@ void BattleTileModel::Render()
     }
 
     auto map = battleScene->GetBattleMap();
-    auto character = battleScene->GetSelectedCharacter();
+    auto character = battleController->GetSelectedCharacter();
 
     if(character != nullptr)
     {
@@ -95,7 +100,7 @@ void BattleTileModel::Render()
         }
     }
 
-    auto hoveredTile = battleScene->hoveredTile;
+    auto hoveredTile = battleController->GetHoveredTile();
     if(hoveredTile != nullptr)
     {
         shader->SetConstant(hoveredTile->Position, "hexPosition");

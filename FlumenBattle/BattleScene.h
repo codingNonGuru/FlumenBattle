@@ -40,74 +40,42 @@ class BattleScene : public Scene
 
     BattleTileModel * battleTileModel;
 
-    Character * selectedCharacter;
-
-    BattleTile * hoveredTile;
-
     Array <Group> groups;
 
     Array <Turn> turnOrder;
 
     Turn * turn;
 
-    CharacterActionData lastActionData;
-
     static BattleScene* instance;
 
     void Initialize() override;
+
+    void HandleEnable() override;
 
     void Render() override;
 
     void Update() override;
 
-    void CheckTileSelection();
-
     void DetermineTurnOrder();
 
-    void CheckCharacterMovement();
-
-    void HandleSpacePressed();
-
-    void HandleOnePressed();
-
-    void HandleTwoPressed();
-
-    void HandleThreePressed();
-
-    void HandleFourPressed();
-
 public:
-    Delegate OnCharacterActed;
+    Delegate OnInitialized;
 
-    Delegate OnCharacterSelected;
-
-    Delegate OnActionSelected;
-
-    Delegate OnSubactionSelected;
+    Delegate OnEnabled;
 
     BattleScene();
-
-    void SelectCharacter(Character*);
-
-    void TargetCharacter(Character*);
-
-    Character* GetSelectedCharacter() const {return selectedCharacter;}
 
     BattleMap* GetBattleMap() {return battleMap;}
 
     Turn* GetTurn() {return turn;}
 
+    Character * GetActingCharacter() {return turn->Character;}
+
+    Camera * GetCamera() const;
+
     bool IsCharactersTurn(Character*) const;
 
-    const CharacterActionData & GetLastAction() const {return lastActionData;}
+    void EndTurn();
 
-    static BattleScene* Get() 
-    {
-        if(instance == nullptr)
-        {
-            instance = new BattleScene();
-        }
-        
-        return instance;
-    }
+    static BattleScene* Get(); 
 };

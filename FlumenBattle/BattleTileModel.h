@@ -12,7 +12,7 @@ class BattleTileModel : public Model
 
     Shader* shader;
 
-    BattleScene* battleScene;
+    BattleScene * battleScene;
 
     void CreateCamera();
 

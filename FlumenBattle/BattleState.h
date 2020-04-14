@@ -3,10 +3,13 @@
 #include "FlumenEngine/Core/State.hpp"
 
 class BattleScene;
+class BattleController;
 
 class BattleState : public State
 {
     BattleScene * scene;
+
+    BattleController * controller;
 
     static BattleState * instance;
 
