@@ -2,7 +2,9 @@
 #include "FlumenEngine/Render/Shader.hpp"
 #include "FlumenEngine/Render/Camera.hpp"
 #include "FlumenEngine/Render/RenderManager.hpp"
-#include "FlumenEngine/Core/SceneManager.hpp"
+#include "FlumenEngine/Render/MeshManager.hpp"
+#include "FlumenEngine/Render/Mesh.hpp"
+#include "FlumenEngine/Core/Engine.hpp"
 
 #include "FlumenBattle/BattleTileModel.h"
 #include "FlumenBattle/BattleScene.h"
@@ -23,15 +25,27 @@ Camera* camera = nullptr;
 
 void BattleTileModel::Initialize()
 {
+    auto hexMesh = MeshManager::GetMeshes().Add("Hex"); 
+	*hexMesh = Mesh::GenerateHex();
+
     shader = ShaderManager::GetShader("Hex");
 
-    battleScene = (BattleScene*)SceneManager::Get(Scenes::BATTLE);
+    battleScene = BattleScene::Get();
+    
+    auto backgroundColor = Color(0.1f, 0.1f, 0.7f, 1.0f);
+	RenderManager::SetBackgroundColor(backgroundColor);
 
-    camera = RenderManager::GetCamera(Cameras::BATTLE);
+    CreateCamera();
+}
+
+void BattleTileModel::CreateCamera()
+{
+    auto screen = Engine::GetScreen();
+	camera = new Camera(screen);
+	RenderManager::AddCamera(Cameras::BATTLE, camera);
 
     auto centerTile = battleScene->GetBattleMap()->GetCenterTile();
     camera->SetTarget(Position3(centerTile->Position, 0.0f));
-
     camera->Zoom(0.7f);
 }
 

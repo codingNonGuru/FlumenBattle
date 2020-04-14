@@ -6,8 +6,6 @@ class RenderBuilder
 
 	RenderBuilder();
 
-	static void HandleEngineInitialized();
-
 public:
 	static void Initialize();
 };

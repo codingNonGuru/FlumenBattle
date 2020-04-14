@@ -7,7 +7,7 @@
 #include "FlumenEngine/Render/Camera.hpp"
 
 #include "FlumenBattle/BattleScene.h"
-#include "FlumenBattle/CharacterModel.h"
+#include "FlumenBattle/BattleInterface.h"
 #include "FlumenBattle/GroupFactory.h"
 #include "FlumenBattle/Group.h"
 #include "FlumenBattle/CharacterInfo.h"
@@ -26,6 +26,8 @@ static const Length BATTLE_MAP_SIZE = 45;
 
 static const Length MAXIMUM_GROUP_COUNT = 16;
 
+BattleScene* BattleScene::instance = nullptr;
+
 BattleScene::BattleScene() {}
 
 void BattleScene::Initialize()
@@ -40,11 +42,11 @@ void BattleScene::Initialize()
     GroupFactory::Create(groups, {centerTile->GetNeighbor(offset)});
     GroupFactory::Create(groups, {centerTile->GetNeighbor(-offset)});
 
-    characterModel = new CharacterModel();
-    characterModel->Initialize();
-
     battleTileModel = new BattleTileModel();
     battleTileModel->Initialize();
+
+    battleInterface = new BattleInterface();
+    battleInterface->Initialize();
 
     InputHandler::OnInputUpdate.Add(this, &CheckTileSelection);
     InputHandler::OnRightMouseClick.Add(this, &CheckCharacterMovement);

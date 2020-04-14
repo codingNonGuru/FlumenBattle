@@ -6,7 +6,7 @@
 
 #include "FlumenBattle/CharacterActionData.h"
 
-class CharacterModel;
+class BattleInterface;
 class Group;
 class CharacterInfo;
 class Character;
@@ -16,7 +16,7 @@ class BattleTile;
 
 struct Turn
 {
-    Character* Character;
+    Character * Character;
 
     Integer Initiative;
 
@@ -28,13 +28,15 @@ struct Turn
 
 class BattleScene : public Scene 
 {
-    friend class CharacterModel;
+    friend class BattleInterface;
 
     friend class BattleTileModel;
 
+    friend class BattleState;
+
     BattleMap * battleMap;
 
-    CharacterModel * characterModel;
+    BattleInterface * battleInterface;
 
     BattleTileModel * battleTileModel;
 
@@ -49,6 +51,8 @@ class BattleScene : public Scene
     Turn * turn;
 
     CharacterActionData lastActionData;
+
+    static BattleScene* instance;
 
     void Initialize() override;
 
@@ -96,4 +100,14 @@ public:
     bool IsCharactersTurn(Character*) const;
 
     const CharacterActionData & GetLastAction() const {return lastActionData;}
+
+    static BattleScene* Get() 
+    {
+        if(instance == nullptr)
+        {
+            instance = new BattleScene();
+        }
+        
+        return instance;
+    }
 };

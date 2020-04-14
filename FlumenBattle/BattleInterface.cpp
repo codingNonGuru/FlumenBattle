@@ -7,7 +7,7 @@
 #include "FlumenEngine/Interface/Sprite.hpp"
 #include "FlumenEngine/Interface/TextManager.hpp"
 
-#include "FlumenBattle/CharacterModel.h"
+#include "FlumenBattle/BattleInterface.h"
 #include "FlumenBattle/CharacterInfo.h"
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/Types.hpp"
@@ -18,12 +18,12 @@
 
 CharacterInfo* characterInfo = nullptr;
 
-void CharacterModel::Initialize()
+void BattleInterface::Initialize()
 {
     auto glyphShader = ShaderManager::GetShaderMap().Get("Glyph");
     TextManager::Initialize(glyphShader);
 
-    battleScene = (BattleScene*)SceneManager::Get(Scenes::BATTLE);
+    battleScene = BattleScene::Get();
 
     characterInfos.Initialize(32);
 
@@ -66,9 +66,5 @@ void CharacterModel::Initialize()
     actionInfoPanel->Configure(Size(1900, 100), DrawOrder(1), new Transform(Position2(0.0f, -480.0f)), sprite, Opacity(1.0f));
 
     actionInfoPanel->Enable();
-}
-
-void CharacterModel::Render(Camera*, Light*)
-{
 }
 

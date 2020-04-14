@@ -6,7 +6,6 @@
 #include "FlumenEngine/Interface/FontManager.hpp"
 #include "FlumenEngine/Interface/Interface.hpp"
 #include "FlumenEngine/Core/Transform.hpp"
-#include "FlumenEngine/Core/SceneManager.hpp"
 #include "FlumenEngine/Render/RenderManager.hpp"
 #include "FlumenEngine/Render/Camera.hpp"
 
@@ -17,7 +16,7 @@
 
 void CharacterInfo::HandleConfigure() 
 {
-    battleScene = SceneManager::Get(Scenes::BATTLE);
+    battleScene = BattleScene::Get();
 
     auto fontSmall = FontManager::GetFont("DominicanSmall");
     auto fontMedium = FontManager::GetFont("DominicanMedium");

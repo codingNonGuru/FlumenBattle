@@ -6,7 +6,6 @@
 #include "FlumenEngine/Interface/FontManager.hpp"
 #include "FlumenEngine/Interface/Interface.hpp"
 #include "FlumenEngine/Core/Transform.hpp"
-#include "FlumenEngine/Core/SceneManager.hpp"
 #include "FlumenEngine/Render/RenderManager.hpp"
 #include "FlumenEngine/Render/Camera.hpp"
 #include "FlumenEngine/Interface/Sprite.hpp"
@@ -31,7 +30,7 @@ void ActionInfoPanel::HandleConfigure()
 {
     wasLayoutRefreshed = false;
 
-    battleScene = (BattleScene*)SceneManager::Get(Scenes::BATTLE);
+    battleScene = BattleScene::Get();// (BattleScene*)SceneManager::Get(Scenes::BATTLE);
 
     battleScene->OnCharacterSelected.Add(this, &HandleCharacterSelected);
     battleScene->OnActionSelected.Add(this, &HandleActionSelected);

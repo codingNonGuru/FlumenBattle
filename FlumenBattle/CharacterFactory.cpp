@@ -1,7 +1,5 @@
 #include "FlumenCore/Utility/Utility.hpp"
 
-#include "FlumenEngine/Core/SceneManager.hpp"
-
 #include "FlumenBattle/CharacterFactory.h"
 #include "FlumenBattle/Group.h"
 #include "FlumenBattle/Character.h"
@@ -145,7 +143,7 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
 
     character->maximumHitPoints = character->hitDiceCount + character->constitution.Modifier * character->level;
 
-    auto battleScene = (BattleScene*)SceneManager::Get(Scenes::BATTLE);
+    auto battleScene = BattleScene::Get();
     character->tile = group.tile->GetEmptyTileInRange(5);
     character->tile->Character = character;
 

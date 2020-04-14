@@ -27,7 +27,7 @@ private:
 
     friend class CharacterInfo;
 
-    friend class CharacterModel;
+    friend class BattleInterface;
 
     friend class Condition; 
 

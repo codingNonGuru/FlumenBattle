@@ -20,7 +20,7 @@ static BattleScene* battleScene = nullptr;
 
 void BattleInfoPanel::HandleConfigure() 
 {
-    battleScene = (BattleScene*)SceneManager::Get(Scenes::BATTLE);
+    battleScene = BattleScene::Get();
     battleScene->OnCharacterActed.Add(this, &HandleCharacterAction);
 
     auto fontSmall = FontManager::GetFont("DominicanSmall");

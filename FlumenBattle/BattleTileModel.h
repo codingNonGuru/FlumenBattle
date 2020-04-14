@@ -14,6 +14,8 @@ class BattleTileModel : public Model
 
     BattleScene* battleScene;
 
+    void CreateCamera();
+
     void Initialize() override;
 
     void Render();

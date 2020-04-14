@@ -32,7 +32,7 @@ class CharacterInfo : public Element
 
     void HandleTargeting();
 
-    friend class CharacterModel;
+    friend class BattleInterface;
 
 public:
     void Select();

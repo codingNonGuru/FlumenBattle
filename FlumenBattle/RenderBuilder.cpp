@@ -33,24 +33,9 @@ void RenderBuilder::Initialize()
 
 	//auto screenTexture = new Texture(screen->GetSize(), TextureFormats::FOUR_BYTE);
 	//TextureManager::AddTexture(screenTexture, "Screen");
-
-	auto backgroundColor = Color(0.1f, 0.1f, 0.7f, 1.0f);
-	RenderManager::SetBackgroundColor(backgroundColor);
-}
-
-void RenderBuilder::HandleEngineInitialized()
-{
-	auto screen = Engine::GetScreen();
-
-	auto camera = new Camera(screen);
-	RenderManager::AddCamera(Cameras::BATTLE, camera);
-
-	auto hexMesh = MeshManager::GetMeshes().Add("Hex"); 
-	*hexMesh = Mesh::GenerateHex();
 }
 
 RenderBuilder::RenderBuilder()
 {
 	RenderManager::OnInitialize()->Add(&RenderBuilder::Initialize);
-	Engine::OnInitialize_.Add(&RenderBuilder::HandleEngineInitialized);
 }

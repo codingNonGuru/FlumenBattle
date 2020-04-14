@@ -12,7 +12,7 @@ class Group
 
     friend class GroupFactory;
 
-    friend class CharacterModel;
+    friend class BattleInterface;
 
     friend class BattleScene;
 
