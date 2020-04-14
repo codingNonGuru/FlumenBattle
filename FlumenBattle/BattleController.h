@@ -12,19 +12,21 @@ class BattleController
 {
     friend class BattleState;
 
-    BattleScene * battleScene;
+    BattleScene *battleScene;
 
-    Character * selectedCharacter;
+    Character *selectedCharacter;
 
-    BattleTile * hoveredTile;
+    Character *targetedCharacter;
+
+    BattleTile *hoveredTile;
 
     CharacterActionData lastActionData;
 
     bool isInitiatingMove;
 
-    bool isInitiatingAction;
+    bool isInitiatingTargeting;
 
-    static BattleController * instance;
+    static BattleController *instance;
 
     void Initialize();
 
@@ -46,6 +48,8 @@ class BattleController
 
     void HandleMPressed();
 
+    void HandleTPressed();
+
     void HandleAPressed();
 
 public:
@@ -57,13 +61,15 @@ public:
 
     Delegate OnSubactionSelected;
 
-    void SelectCharacter(Character*);
+    void SelectCharacter(Character *);
 
-    void TargetCharacter(Character*);
+    void TargetCharacter(Character *);
 
     BattleTile * GetHoveredTile() const {return hoveredTile;}
 
     Character * GetSelectedCharacter() const {return selectedCharacter;}
+
+    Character * GetTargetedCharacter() const {return targetedCharacter;}
 
     const CharacterActionData & GetLastAction() const {return lastActionData;}
 

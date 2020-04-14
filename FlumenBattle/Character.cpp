@@ -7,6 +7,7 @@
 #include "FlumenBattle/Condition.h"
 #include "FlumenBattle/SpellCaster.h"
 #include "FlumenBattle/BattleTile.h"
+#include "FlumenBattle/BattleController.h"
 
 Character::Character()
 {
@@ -36,26 +37,6 @@ void Character::Initialize()
 bool Character::CanMove() const
 {
     return IsAlive();
-}
-
-bool Character::CanAttack() const 
-{
-    return IsAlive() && remainingActionCount > 0;
-}
-
-bool Character::CanCastSpell() const
-{
-    return IsAlive() && remainingActionCount > 0;
-}
-
-bool Character::CanDodge() const
-{
-    return IsAlive() && remainingActionCount > 0;
-}
-
-bool Character::CanDash() const
-{
-    return IsAlive() && remainingActionCount > 0;
 }
 
 bool Character::IsAlive() const
@@ -204,23 +185,25 @@ void Character::StartTurn()
     remainingActionCount = 1;
 }
 
-bool Character::CanAct(const Character & target)
+bool Character::CanAct()
 {
+    target = BattleController::Get()->GetTargetedCharacter();
+
     if(selectedAction->Type == CharacterActions::ATTACK)
     {
-        return CanAttackTarget(target);
+        return CanStrike();
     }
     else if(selectedAction->Type == CharacterActions::CAST_SPELL)
     {
-        return CanCastSpellAgainstTarget(target);
+        return CanCastSpell();
     }
     else if(selectedAction->Type == CharacterActions::DODGE)
     {
-        return IsValidDodgeTarget(target);
+        return CanDodge();
     }
     else if(selectedAction->Type == CharacterActions::DASH)
     {
-        return IsValidDashTarget(target);
+        return CanDash();
     }
     else
     {
@@ -228,33 +211,39 @@ bool Character::CanAct(const Character & target)
     }
 }
 
-bool Character::CanAttackTarget(const Character & target)
+bool Character::CanStrike() const
 {
-    if(this == &target)
+    if(target == nullptr)
         return false;
 
-    if(group == target.group)
+    if(this == target)
         return false;
 
-    if(CanAttack() == false)
+    if(group == target->group)
         return false;
 
-    auto distance = tile->GetDistanceTo(*(target.tile));
+    if(!IsAlive() || remainingActionCount == 0)
+        return false;
+
+    auto distance = tile->GetDistanceTo(*(target->tile));
     if(distance > GetActionRange())
         return false;
 
     return true;
 }
 
-bool Character::CanCastSpellAgainstTarget(const Character & target)
+bool Character::CanCastSpell() const
 {
-    if((selectedSpell->IsOffensive && group == target.group) || (!selectedSpell->IsOffensive && group != target.group))
+    if(target == nullptr)
+        return;
+
+    if((selectedSpell->IsOffensive && group == target->group) || (!selectedSpell->IsOffensive && group != target->group))
         return false;
 
-    if(CanCastSpell() == false)
+    if(!IsAlive() || remainingActionCount == 0)
         return false;
 
-    auto distance = tile->GetDistanceTo(*(target.tile));
+    auto distance = tile->GetDistanceTo(*(target->tile));
     if(distance > GetActionRange())
         return false;
 
@@ -268,26 +257,14 @@ bool Character::CanCastSpellAgainstTarget(const Character & target)
     return true;
 }
 
-bool Character::IsValidDodgeTarget(const Character & target)
+bool Character::CanDodge() const
 {
-    if(CanDodge() == false)
-        return false;
-
-    if(&target != this)
-        return false;
-
-    return true;
+    return IsAlive() && remainingActionCount > 0;
 }
 
-bool Character::IsValidDashTarget(const Character & target)
+bool Character::CanDash() const
 {
-    if(CanDash() == false)
-        return false;
-
-    if(&target != this)
-        return false;
-
-    return true;
+    return IsAlive() && remainingActionCount > 0;
 }
 
 void Character::Move(BattleTile* destination)
@@ -335,10 +312,8 @@ void Character::SaveAgainstDeath()
     }
 }
 
-CharacterActionData Character::Act(Character& target)
+CharacterActionData Character::Act()
 {
-    this->target = &target;
-
     if(selectedAction->Type == CharacterActions::ATTACK)
     {
         return Attack();

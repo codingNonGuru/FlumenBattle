@@ -17,20 +17,21 @@ void BattleController::Initialize()
     battleScene = BattleScene::Get();
 
     InputHandler::OnInputUpdate.Add(this, &CheckTileSelection);
-    InputHandler::OnRightMouseClick.Add(this, &CheckCharacterMovement);
+    InputHandler::OnLeftMouseClick.Add(this, &CheckCharacterMovement);
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, this, &HandleSpacePressed);
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_1, this, &HandleOnePressed);
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_2, this, &HandleTwoPressed);
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_3, this, &HandleThreePressed);
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_4, this, &HandleFourPressed);
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_M, this, &HandleMPressed);
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_T, this, &HandleTPressed);
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_A, this, &HandleAPressed);
 
     selectedCharacter = nullptr;
 
     isInitiatingMove = false;
 
-    isInitiatingAction = false;
+    isInitiatingTargeting = false;
 
     camera = battleScene->GetCamera();
 
@@ -81,6 +82,8 @@ void BattleController::CheckTileSelection()
 
 void BattleController::HandleSpacePressed()
 {
+    targetedCharacter = nullptr;
+
     battleScene->EndTurn();
 
     SelectCharacter(battleScene->GetActingCharacter());
@@ -161,31 +164,49 @@ void BattleController::HandleMPressed()
     else
     {
         isInitiatingMove = true;
-        isInitiatingAction = false;
+        isInitiatingTargeting = false;
+    }
+}
+
+void BattleController::HandleTPressed()
+{
+    if(isInitiatingTargeting)
+    {
+        isInitiatingTargeting = false;
+    }
+    else
+    {
+        isInitiatingTargeting = true;
+        isInitiatingMove = false;
     }
 }
 
 void BattleController::HandleAPressed()
 {
-    if(isInitiatingAction)
-    {
-        isInitiatingAction = false;
-    }
-    else
-    {
-        isInitiatingAction = true;
-        isInitiatingMove = false;
-    }
+    if(selectedCharacter == nullptr)
+        return;
+
+    if(battleScene->IsCharactersTurn(selectedCharacter) == false)
+        return;
+
+    if(selectedCharacter->CanAct() == false)
+        return;
+
+    lastActionData = selectedCharacter->Act();
+
+    OnCharacterActed.Invoke();
+
+    targetedCharacter = nullptr;
 }
 
-void BattleController::SelectCharacter(Character* newlySelected)
+void BattleController::SelectCharacter(Character *character)
 {
     if(selectedCharacter != nullptr)
     {
         selectedCharacter->Deselect();
     }
 
-    selectedCharacter = newlySelected;
+    selectedCharacter = character;
 
     if(selectedCharacter != nullptr)
     {
@@ -195,9 +216,9 @@ void BattleController::SelectCharacter(Character* newlySelected)
     OnCharacterSelected.Invoke();
 }
 
-void BattleController::TargetCharacter(Character* target)
+void BattleController::TargetCharacter(Character *target)
 {
-    if(isInitiatingAction == false)
+    if(isInitiatingTargeting == false)
         return;
 
     if(selectedCharacter == nullptr)
@@ -209,14 +230,9 @@ void BattleController::TargetCharacter(Character* target)
     if(battleScene->IsCharactersTurn(selectedCharacter) == false)
         return;
 
-    if(selectedCharacter->CanAct(*target) == false)
-        return;
+    isInitiatingTargeting = false;
 
-    isInitiatingAction = false;
-
-    lastActionData = selectedCharacter->Act(*target);
-
-    OnCharacterActed.Invoke();
+    targetedCharacter = target;
 }
 
 BattleController * BattleController::Get()

@@ -10,6 +10,8 @@ class BattleController;
 
 class CharacterInfo : public Element
 {
+    friend class BattleInterface;
+
     BattleController * battleController;
 
     Character* character;
@@ -28,11 +30,7 @@ class CharacterInfo : public Element
 
     void HandleUpdate() override;
 
-    void HandleSelection();
-
     void HandleTargeting();
-
-    friend class BattleInterface;
 
 public:
     void Select();

@@ -72,16 +72,9 @@ void CharacterInfo::HandleConfigure()
         break;
     }
 
-    GetLeftClickEvents().Add(this, &CharacterInfo::HandleSelection);
-
-    GetRightClickEvents().Add(this, &CharacterInfo::HandleTargeting);
+    GetLeftClickEvents().Add(this, &CharacterInfo::HandleTargeting);
 
     camera = RenderManager::GetCamera(Cameras::BATTLE);
-}
-
-void CharacterInfo::HandleSelection()
-{
-    battleController->SelectCharacter(character);
 }
 
 void CharacterInfo::HandleTargeting()

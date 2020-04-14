@@ -121,13 +121,21 @@ private:
 
     bool CanMove() const;
 
-    bool CanAttack() const;
+    bool CanStrike() const;
 
     bool CanCastSpell() const;
 
     bool CanDodge() const;
 
     bool CanDash() const;
+
+    CharacterActionData Attack();
+
+    CharacterActionData CastSpell();
+
+    CharacterActionData Dodge();
+
+    CharacterActionData Dash();
 
     Integer GetCurrentSpeed() const;
 
@@ -156,25 +164,9 @@ public:
 
     void StartTurn();
 
-    bool CanAct(const Character &);
+    bool CanAct();
 
-    bool CanAttackTarget(const Character &);
-
-    bool CanCastSpellAgainstTarget(const Character &);
-
-    bool IsValidDodgeTarget(const Character &);
-
-    bool IsValidDashTarget(const Character &);
-
-    CharacterActionData Act(Character&);
-
-    CharacterActionData Attack();
-
-    CharacterActionData CastSpell();
-
-    CharacterActionData Dodge();
-
-    CharacterActionData Dash();
+    CharacterActionData Act();
 
     void Move(BattleTile*);
 
