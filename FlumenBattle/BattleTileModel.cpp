@@ -100,16 +100,19 @@ void BattleTileModel::Render()
         }
     }
 
-    auto hoveredTile = battleController->GetHoveredTile();
-    if(hoveredTile != nullptr)
+    if(battleController->IsMoveInitiated())
     {
-        shader->SetConstant(hoveredTile->Position, "hexPosition");
+        auto hoveredTile = battleController->GetHoveredTile();
+        if(hoveredTile != nullptr)
+        {
+            shader->SetConstant(hoveredTile->Position, "hexPosition");
 
-        shader->SetConstant(BATTLE_TILE_SIZE * 0.8f, "hexSize");
+            shader->SetConstant(BATTLE_TILE_SIZE * 0.8f, "hexSize");
 
-        shader->SetConstant(HOVERED_TILE_COLOR, "color");
+            shader->SetConstant(HOVERED_TILE_COLOR, "color");
 
-        glDrawArrays(GL_TRIANGLES, 0, 18);
+            glDrawArrays(GL_TRIANGLES, 0, 18);
+        }
     }
 
 	shader->Unbind();

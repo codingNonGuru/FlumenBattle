@@ -23,8 +23,14 @@ void BattleController::Initialize()
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_2, this, &HandleTwoPressed);
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_3, this, &HandleThreePressed);
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_4, this, &HandleFourPressed);
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_M, this, &HandleMPressed);
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_A, this, &HandleAPressed);
 
     selectedCharacter = nullptr;
+
+    isInitiatingMove = false;
+
+    isInitiatingAction = false;
 
     camera = battleScene->GetCamera();
 
@@ -38,6 +44,9 @@ void BattleController::HandleSceneEnabled()
 
 void BattleController::CheckCharacterMovement()
 {
+    if(isInitiatingMove == false)
+        return;
+
     if(hoveredTile == nullptr)
         return;
 
@@ -46,6 +55,8 @@ void BattleController::CheckCharacterMovement()
 
     if(battleScene->IsCharactersTurn(selectedCharacter) == false)
         return;
+
+    isInitiatingMove = false;
 
     selectedCharacter->Move(hoveredTile);
 }
@@ -141,6 +152,32 @@ void BattleController::HandleFourPressed()
     }
 }
 
+void BattleController::HandleMPressed()
+{
+    if(isInitiatingMove)
+    {
+        isInitiatingMove = false;
+    }
+    else
+    {
+        isInitiatingMove = true;
+        isInitiatingAction = false;
+    }
+}
+
+void BattleController::HandleAPressed()
+{
+    if(isInitiatingAction)
+    {
+        isInitiatingAction = false;
+    }
+    else
+    {
+        isInitiatingAction = true;
+        isInitiatingMove = false;
+    }
+}
+
 void BattleController::SelectCharacter(Character* newlySelected)
 {
     if(selectedCharacter != nullptr)
@@ -160,6 +197,9 @@ void BattleController::SelectCharacter(Character* newlySelected)
 
 void BattleController::TargetCharacter(Character* target)
 {
+    if(isInitiatingAction == false)
+        return;
+
     if(selectedCharacter == nullptr)
         return;
 
@@ -171,6 +211,8 @@ void BattleController::TargetCharacter(Character* target)
 
     if(selectedCharacter->CanAct(*target) == false)
         return;
+
+    isInitiatingAction = false;
 
     lastActionData = selectedCharacter->Act(*target);
 

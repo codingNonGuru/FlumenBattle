@@ -20,6 +20,10 @@ class BattleController
 
     CharacterActionData lastActionData;
 
+    bool isInitiatingMove;
+
+    bool isInitiatingAction;
+
     static BattleController * instance;
 
     void Initialize();
@@ -40,6 +44,10 @@ class BattleController
 
     void HandleFourPressed();
 
+    void HandleMPressed();
+
+    void HandleAPressed();
+
 public:
     Delegate OnCharacterActed;
 
@@ -58,6 +66,8 @@ public:
     Character * GetSelectedCharacter() const {return selectedCharacter;}
 
     const CharacterActionData & GetLastAction() const {return lastActionData;}
+
+    bool IsMoveInitiated() const {return isInitiatingMove;}
 
     static BattleController * Get();
 };
