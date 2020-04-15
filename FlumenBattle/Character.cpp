@@ -29,6 +29,7 @@ void Character::Initialize()
     isSavingAgainstDeath = false;
 
     selectedAction = actions.GetStart();
+    selectedWeapon = weapons.GetStart();
     selectedSpell = spells.GetStart();
 
     *spellSlots.Allocate() = {2};
@@ -185,9 +186,23 @@ void Character::StartTurn()
     remainingActionCount = 1;
 }
 
-bool Character::CanAct()
+bool Character::CanTarget() const
 {
-    target = BattleController::Get()->GetTargetedCharacter();
+    if(!IsAlive() || remainingActionCount == 0)
+        return false;
+
+    if(selectedAction->Type == CharacterActions::DODGE)
+        return false;
+
+    if(selectedAction->Type == CharacterActions::DASH)
+        return false;
+    
+    return true;
+}
+
+bool Character::CanAct(Character *possibleTarget)
+{
+    target = possibleTarget;
 
     if(selectedAction->Type == CharacterActions::ATTACK)
     {
@@ -312,8 +327,10 @@ void Character::SaveAgainstDeath()
     }
 }
 
-CharacterActionData Character::Act()
+CharacterActionData Character::Act(Character *finalTarget)
 {
+    target = finalTarget;
+
     if(selectedAction->Type == CharacterActions::ATTACK)
     {
         return Attack();
@@ -511,6 +528,24 @@ bool Character::SelectActionOption(Index index)
         default:
             return false;
             break;
+    }
+}
+
+Index Character::GetSelectedActionIndex() const
+{
+    return selectedAction - actions.GetStart();
+}
+
+Index Character::GetSelectedSubactionIndex() const
+{
+    switch(selectedAction->Type)
+    {
+        case CharacterActions::ATTACK:
+            return selectedWeapon - weapons.GetStart();
+        case CharacterActions::CAST_SPELL:
+            return selectedSpell - spells.GetStart();
+        default:
+            return 0;
     }
 }
 

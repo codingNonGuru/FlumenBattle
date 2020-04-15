@@ -20,6 +20,8 @@ class CharacterInfo : public Element
 
     Text* selectLabel;
 
+    Text *targetedLabel;
+
     Text* hitpointLabel;
 
     Text* deathSavingLabel;

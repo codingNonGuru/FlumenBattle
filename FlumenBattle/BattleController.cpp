@@ -96,20 +96,7 @@ void BattleController::HandleOnePressed()
     if(selectedCharacter == nullptr)
         return;
 
-    if(InputHandler::IsPressed(SDL_Scancode::SDL_SCANCODE_LCTRL))
-    {
-        if(selectedCharacter->SelectActionOption(0))
-        {
-            OnSubactionSelected.Invoke();
-        }
-    }
-    else
-    {
-        if(selectedCharacter->SelectAction(0))
-        {
-            OnActionSelected.Invoke();
-        }
-    }
+    ChangeActionSelection(0);
 }
 
 void BattleController::HandleTwoPressed()
@@ -117,20 +104,7 @@ void BattleController::HandleTwoPressed()
     if(selectedCharacter == nullptr)
         return;
 
-    if(InputHandler::IsPressed(SDL_Scancode::SDL_SCANCODE_LCTRL))
-    {
-        if(selectedCharacter->SelectActionOption(1))
-        {
-            OnSubactionSelected.Invoke();
-        }
-    }
-    else
-    {
-        if(selectedCharacter->SelectAction(1))
-        {
-            OnActionSelected.Invoke();
-        }
-    }
+    ChangeActionSelection(1);
 }
 
 void BattleController::HandleThreePressed()
@@ -138,10 +112,7 @@ void BattleController::HandleThreePressed()
     if(selectedCharacter == nullptr)
         return;
 
-    if(selectedCharacter->SelectAction(2))
-    {
-        OnActionSelected.Invoke();
-    }
+    ChangeActionSelection(2);
 }
 
 void BattleController::HandleFourPressed()
@@ -149,9 +120,38 @@ void BattleController::HandleFourPressed()
     if(selectedCharacter == nullptr)
         return;
 
-    if(selectedCharacter->SelectAction(3))
+    ChangeActionSelection(3);
+}
+
+void BattleController::ChangeActionSelection(Integer actionIndex)
+{
+    if(InputHandler::IsPressed(SDL_Scancode::SDL_SCANCODE_LCTRL))
     {
-        OnActionSelected.Invoke();
+        auto currentSubactionIndex = selectedCharacter->GetSelectedSubactionIndex();
+        if(selectedCharacter->SelectActionOption(actionIndex))
+        {
+            if(actionIndex != currentSubactionIndex)
+            {
+                targetedCharacter = nullptr;
+                isInitiatingTargeting = false;
+            }
+
+            OnSubactionSelected.Invoke();
+        }
+    }
+    else
+    {
+        auto currentActionIndex = selectedCharacter->GetSelectedActionIndex();
+        if(selectedCharacter->SelectAction(actionIndex))
+        {
+            if(actionIndex != currentActionIndex)
+            {
+                targetedCharacter = nullptr;
+                isInitiatingTargeting = false;
+            }
+
+            OnActionSelected.Invoke();
+        }
     }
 }
 
@@ -170,6 +170,9 @@ void BattleController::HandleMPressed()
 
 void BattleController::HandleTPressed()
 {
+    if(selectedCharacter->CanTarget() == false)
+        return;
+
     if(isInitiatingTargeting)
     {
         isInitiatingTargeting = false;
@@ -189,10 +192,10 @@ void BattleController::HandleAPressed()
     if(battleScene->IsCharactersTurn(selectedCharacter) == false)
         return;
 
-    if(selectedCharacter->CanAct() == false)
+    if(selectedCharacter->CanAct(targetedCharacter) == false)
         return;
 
-    lastActionData = selectedCharacter->Act();
+    lastActionData = selectedCharacter->Act(targetedCharacter);
 
     OnCharacterActed.Invoke();
 
@@ -230,9 +233,16 @@ void BattleController::TargetCharacter(Character *target)
     if(battleScene->IsCharactersTurn(selectedCharacter) == false)
         return;
 
-    isInitiatingTargeting = false;
+    if(selectedCharacter->CanAct(target))
+    {
+        targetedCharacter = target;
+    }
+    else
+    {
+        targetedCharacter = nullptr;    
+    }
 
-    targetedCharacter = target;
+    isInitiatingTargeting = false;
 }
 
 BattleController * BattleController::Get()

@@ -12,6 +12,8 @@ class BattleController
 {
     friend class BattleState;
 
+    friend class ActionInfoPanel;
+
     BattleScene *battleScene;
 
     Character *selectedCharacter;
@@ -45,6 +47,8 @@ class BattleController
     void HandleThreePressed();
 
     void HandleFourPressed();
+
+    void ChangeActionSelection(Integer);
 
     void HandleMPressed();
 

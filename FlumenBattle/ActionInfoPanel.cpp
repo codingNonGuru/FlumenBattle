@@ -26,6 +26,8 @@ const Color HIGHLIGHTED_COLOR = (Color::RED * 0.5f) + (Color::BLACK * 0.5f);
 
 const Color DEFAULT_COLOR = (Color::RED * 0.5f) + (Color::WHITE * 0.5f);
 
+const Color TARGETING_COLOR = Color::RED;
+
 void ActionInfoPanel::HandleConfigure() 
 {
     wasLayoutRefreshed = false;
@@ -75,6 +77,23 @@ void ActionInfoPanel::HandleConfigure()
 void ActionInfoPanel::HandleUpdate() 
 {
     wasLayoutRefreshed = false; 
+
+    auto character = battleController->GetSelectedCharacter();
+    for(Index i = 0; i < subactionLabels.GetSize(); ++i)
+    {
+        auto label = *subactionLabels.Get(i);
+        if(i == character->GetSelectedSubactionIndex())
+        {
+            if(battleController->isInitiatingTargeting)
+            {
+                label->SetColor(TARGETING_COLOR);
+            }
+            else
+            {
+                label->SetColor(HIGHLIGHTED_COLOR);
+            }
+        }
+    }
 }
 
 void ActionInfoPanel::HandleCharacterSelected()

@@ -164,9 +164,11 @@ public:
 
     void StartTurn();
 
-    bool CanAct();
+    bool CanTarget() const;
 
-    CharacterActionData Act();
+    bool CanAct(Character *);
+
+    CharacterActionData Act(Character *);
 
     void Move(BattleTile*);
 
@@ -195,6 +197,10 @@ public:
     bool SelectAction(Index);
 
     bool SelectActionOption(Index);
+
+    Index GetSelectedActionIndex() const;
+
+    Index GetSelectedSubactionIndex() const;
 
     Action* GetSelectedAction() const;
 

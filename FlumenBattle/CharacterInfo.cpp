@@ -41,6 +41,15 @@ void CharacterInfo::HandleConfigure()
 
     selectLabel->Setup("S");
 
+    targetedLabel = new Text(fontSmall, textColor);
+    Interface::AddElement("TargetedLabel", targetedLabel);
+
+	targetedLabel->Configure(Size(150, 150), DrawOrder(4), new Transform(Position2(0.0f, -30.0f)), nullptr);
+
+	targetedLabel->SetParent(this);
+
+    targetedLabel->Setup("x");
+
     hitpointLabel = new Text(fontSmall, textColor);
     Interface::AddElement("HitpointLabel", hitpointLabel);
 
@@ -94,9 +103,17 @@ void CharacterInfo::Deselect()
 
 void CharacterInfo::HandleUpdate()
 {
-    auto string = Word();
-	sprintf(string.GetEnd(), "%d", character->currentHitPoints);
+    auto string = Word() << character->currentHitPoints;
     hitpointLabel->Setup(string);
+
+    if(battleController->GetTargetedCharacter() == character)
+    {
+        targetedLabel->Enable();
+    }
+    else
+    {
+        targetedLabel->Disable();
+    }
     
     auto position = camera->GetScreenPosition(Position3(character->GetPosition(), 0.0f));
 
