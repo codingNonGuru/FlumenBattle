@@ -7,6 +7,7 @@
 class Character;
 struct BattleTile;
 class BattleScene;
+class Group;
 
 class BattleController
 {
@@ -16,6 +17,10 @@ class BattleController
 
     BattleScene *battleScene;
 
+    Group *playerControlledGroup;
+
+    Group *computerControlledGroup;
+
     Character *selectedCharacter;
 
     Character *targetedCharacter;
@@ -23,6 +28,8 @@ class BattleController
     BattleTile *hoveredTile;
 
     CharacterActionData lastActionData;
+
+    bool isPlayerInputEnabled;
 
     bool isInitiatingMove;
 
@@ -33,6 +40,8 @@ class BattleController
     void Initialize();
 
     void HandleSceneEnabled();
+
+    void DetermineCharacterController();
 
     void CheckCharacterMovement();
 
@@ -55,6 +64,10 @@ class BattleController
     void HandleTPressed();
 
     void HandleAPressed();
+
+    void UpdateNonPlayerCharacter();
+
+    void EndTurn();
 
 public:
     Delegate OnCharacterActed;

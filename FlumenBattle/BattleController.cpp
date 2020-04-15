@@ -1,3 +1,5 @@
+#include "FlumenEngine/Core/TaskManager.hpp"
+#include "FlumenEngine/Core/Task.hpp"
 #include "FlumenEngine/Core/InputHandler.hpp"
 #include "FlumenEngine/Utility/PickHandler.h"
 #include "FlumenEngine/Render/MeshManager.hpp"
@@ -5,6 +7,7 @@
 #include "FlumenBattle/BattleController.h"
 #include "FlumenBattle/BattleScene.h"
 #include "FlumenBattle/Character.h"
+#include "FlumenBattle/Group.h"
 #include "FlumenBattle/BattleMap.h"
 #include "FlumenBattle/BattleTile.h"
 
@@ -15,6 +18,9 @@ static Camera* camera = nullptr;
 void BattleController::Initialize()
 {
     battleScene = BattleScene::Get();
+
+    playerControlledGroup = battleScene->groups.Get(0);
+    computerControlledGroup = battleScene->groups.Get(1);
 
     InputHandler::OnInputUpdate.Add(this, &CheckTileSelection);
     InputHandler::OnLeftMouseClick.Add(this, &CheckCharacterMovement);
@@ -41,6 +47,21 @@ void BattleController::Initialize()
 void BattleController::HandleSceneEnabled()
 {
     SelectCharacter(battleScene->GetActingCharacter());
+
+    DetermineCharacterController();
+}
+
+void BattleController::DetermineCharacterController()
+{
+    if(selectedCharacter->GetGroup() == playerControlledGroup)
+    {
+        isPlayerInputEnabled = true;
+    }
+    else
+    {
+        isPlayerInputEnabled = false;
+        TaskManager::Add()->Initialize(this, &BattleController::UpdateNonPlayerCharacter, 1.0f);
+    }
 }
 
 void BattleController::CheckCharacterMovement()
@@ -82,13 +103,7 @@ void BattleController::CheckTileSelection()
 
 void BattleController::HandleSpacePressed()
 {
-    targetedCharacter = nullptr;
-
-    battleScene->EndTurn();
-
-    SelectCharacter(battleScene->GetActingCharacter());
-
-    selectedCharacter->StartTurn();
+    EndTurn();
 }
 
 void BattleController::HandleOnePressed()
@@ -200,6 +215,24 @@ void BattleController::HandleAPressed()
     OnCharacterActed.Invoke();
 
     targetedCharacter = nullptr;
+}
+
+void BattleController::UpdateNonPlayerCharacter()
+{
+    TaskManager::Add()->Initialize(this, &BattleController::EndTurn, 1.0f);
+}
+
+void BattleController::EndTurn()
+{
+    targetedCharacter = nullptr;
+
+    battleScene->EndTurn();
+
+    SelectCharacter(battleScene->GetActingCharacter());
+
+    selectedCharacter->StartTurn();
+
+    DetermineCharacterController();
 }
 
 void BattleController::SelectCharacter(Character *character)

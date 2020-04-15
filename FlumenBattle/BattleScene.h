@@ -34,6 +34,8 @@ class BattleScene : public Scene
 
     friend class BattleState;
 
+    friend class BattleController;
+
     BattleMap * battleMap;
 
     BattleInterface * battleInterface;
@@ -72,6 +74,8 @@ public:
     Character * GetActingCharacter() {return turn->Character;}
 
     Camera * GetCamera() const;
+
+    Group * GetRandomGroup();
 
     bool IsCharactersTurn(Character*) const;
 

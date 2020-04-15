@@ -188,6 +188,8 @@ public:
 
     Word GetName();
 
+    Group * GetGroup() const {return group;}
+
     Array <Action> & GetActions() {return actions;}
 
     const Array <Weapon> & GetWeapons() {return weapons;}

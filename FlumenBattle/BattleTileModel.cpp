@@ -14,13 +14,15 @@
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/BattleTile.h"
 
-#define BATTLE_TILE_SIZE 33.0f
+#define BATTLE_TILE_SIZE 34.0f
 
 const Float4 DEFAULT_TILE_COLOR = Float4(0.9f, 0.7f, 0.6f, 1.0f);
 
 const Float4 NEARBY_TILE_COLOR = DEFAULT_TILE_COLOR * 0.8f;
 
 const Float4 HOVERED_TILE_COLOR = DEFAULT_TILE_COLOR * 0.6f;
+
+const Float CAMERA_SHIFT_DURATION = 0.7f;
 
 Camera* camera = nullptr;
 
@@ -36,6 +38,8 @@ void BattleTileModel::Initialize()
     battleScene = BattleScene::Get();
 
     battleController = BattleController::Get();
+
+    battleController->OnCharacterSelected.Add(this, &BattleTileModel::HandleCharacterSelected);
     
     auto backgroundColor = Color(0.1f, 0.1f, 0.7f, 1.0f);
 	RenderManager::SetBackgroundColor(backgroundColor);
@@ -52,6 +56,12 @@ void BattleTileModel::CreateCamera()
     auto centerTile = battleScene->GetBattleMap()->GetCenterTile();
     camera->SetTarget(Position3(centerTile->Position, 0.0f));
     camera->Zoom(0.7f);
+}
+
+void BattleTileModel::HandleCharacterSelected()
+{
+    auto character = battleController->GetSelectedCharacter();
+    camera->SetTarget(Position3(character->GetPosition(), 0.0f), CAMERA_SHIFT_DURATION);
 }
 
 void BattleTileModel::Render() 

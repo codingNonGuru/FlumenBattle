@@ -30,4 +30,6 @@ class Group
 
 public:
     const Color& GetColor() const {return color;} 
+
+    Array <Character> & GetCharacters() {return characters;}
 };

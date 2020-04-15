@@ -1,4 +1,5 @@
 #include "FlumenCore/Time.hpp"
+#include "FlumenCore/Utility/Utility.hpp"
 
 #include "FlumenEngine/Render/RenderManager.hpp"
 #include "FlumenEngine/Core/InputHandler.hpp"
@@ -149,6 +150,12 @@ bool BattleScene::IsCharactersTurn(Character* character) const
 Camera * BattleScene::GetCamera() const
 {
     return camera;
+}
+
+Group * BattleScene::GetRandomGroup()
+{
+    auto index = utility::GetRandom(0, groups.GetSize() - 1);
+    return groups.Get(index);
 }
 
 BattleScene* BattleScene::Get()

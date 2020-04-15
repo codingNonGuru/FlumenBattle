@@ -16,6 +16,8 @@ class BattleTileModel : public Model
 
     void CreateCamera();
 
+    void HandleCharacterSelected();
+
     void Initialize() override;
 
     void Render();
