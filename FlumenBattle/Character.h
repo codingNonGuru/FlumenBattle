@@ -18,6 +18,12 @@ public:
     struct Action
     {
         CharacterActions Type;
+
+        Action() : Type() {}
+
+        Action(CharacterActions type) : Type(type) {}
+
+        bool operator== (const Action &other) {return this->Type == other.Type;}
     };
 
 private:
@@ -32,6 +38,8 @@ private:
     friend class Condition; 
 
     friend class SpellCaster;
+
+    friend class ArtificialController;
 
     struct Ability 
     {
@@ -201,6 +209,8 @@ public:
     bool SelectAction(Index);
 
     bool SelectActionOption(Index);
+
+    bool SelectAction(CharacterActions);
 
     Index GetSelectedActionIndex() const;
 

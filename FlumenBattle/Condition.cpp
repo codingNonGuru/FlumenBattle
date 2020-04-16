@@ -25,7 +25,7 @@ Condition::Condition(ConditionTypes _type, Character * _character, Integer _diff
 
 void Condition::Apply()
 {
-    if(duration == 0)
+    if(IsActive() == false)
         return;
 
     duration--;
@@ -57,8 +57,11 @@ void Condition::ApplyCold()
     auto savingThrow = utility::GetRandom(1, 20) + character->constitution.Modifier;
     if(savingThrow > difficultyClass)
     {
-        duration = 0;
-        character->conditions.Remove(this);
+        if(duration != 0)
+        {
+            character->conditions.Remove(this);
+            duration = 0;
+        }
         return;
     }
 

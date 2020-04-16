@@ -19,10 +19,16 @@ struct TileMoveData
 
 Array <TileMoveData> tileMoveDatas = Array <TileMoveData> (64);
 
-void ArtificialController::UpdateCharacter()
+Character *targetCharacter = nullptr;
+
+Integer targetDistance = 0;
+
+void ArtificialController::DetermineActionCourse()
 {
     auto battleController = BattleController::Get();
     auto selectedCharacter = battleController->selectedCharacter;
+
+    selectedCharacter->SelectAction(CharacterActions::ATTACK);
 
     Character *closestCharacter = nullptr;
     Integer closestDistance = INT_MAX;
@@ -30,6 +36,9 @@ void ArtificialController::UpdateCharacter()
     auto &characters = battleController->playerControlledGroup->GetCharacters();
     for(auto character = characters.GetStart(); character != characters.GetEnd(); ++character)
     {
+        if(character->IsAlive() == false)
+            continue;
+
         auto distance = selectedCharacter->GetDistanceTo(character);
         if(distance < closestDistance)
         {
@@ -38,10 +47,19 @@ void ArtificialController::UpdateCharacter()
         }
     }
 
-    if(closestCharacter != nullptr)
+    targetCharacter = closestCharacter;
+    targetDistance = closestDistance;
+}
+
+void ArtificialController::MoveCharacter()
+{
+    auto battleController = BattleController::Get();
+    auto selectedCharacter = battleController->selectedCharacter;
+
+    if(targetCharacter != nullptr)
     {
         BattleTile *targetTile = nullptr;
-        closestDistance = INT_MAX;
+        Integer closestDistance = INT_MAX;
 
         auto &nearbyTiles = selectedCharacter->GetTile()->GetNearbyTiles(1);
         for(auto tileIterator = nearbyTiles.GetStart(); tileIterator != nearbyTiles.GetEnd(); ++tileIterator)
@@ -51,7 +69,7 @@ void ArtificialController::UpdateCharacter()
                 continue;
 
             Integer distance = selectedCharacter->GetTile()->GetDistanceTo(*tile);
-            distance += tile->GetDistanceTo(*closestCharacter->GetTile());
+            distance += tile->GetDistanceTo(*targetCharacter->GetTile());
 
             *tileMoveDatas.Allocate() = {tile, distance};
         }
@@ -74,15 +92,47 @@ void ArtificialController::UpdateCharacter()
         bool hasMoved = selectedCharacter->Move(targetTile);
 
         tileMoveDatas.Reset();
+
+        targetDistance = selectedCharacter->GetDistanceTo(targetCharacter);
     }
+}
+
+void ArtificialController::UpdateCharacter()
+{
+    auto battleController = BattleController::Get();
+    auto selectedCharacter = battleController->selectedCharacter;
+
+    DetermineActionCourse();
+
+    bool isWithinRange = selectedCharacter->GetActionRange() >= targetDistance;
 
     auto movement = selectedCharacter->GetMovement();
-    if(movement > 0)
+    if(movement > 0 && isWithinRange == false)
     {
-        TaskManager::Add()->Initialize(this, &ArtificialController::UpdateCharacter, 0.5f);
+        MoveCharacter();
+
+        TaskManager::Add()->Initialize(this, &ArtificialController::UpdateCharacter, 0.3f);
     }
-    else
+    else 
     {
+        if(isWithinRange)
+        {
+            if(selectedCharacter->CanAct(targetCharacter))
+            {
+                //std::cout<<"ACT\n";
+                selectedCharacter->Act(targetCharacter);
+            }
+        }
+        else
+        {
+            selectedCharacter->SelectAction(CharacterActions::DODGE);
+            if(selectedCharacter->CanAct(targetCharacter))
+            {
+                //std::cout<<"DODGE\n";
+                selectedCharacter->Act(targetCharacter);
+            }
+        }
+
         TaskManager::Add()->Initialize(battleController, &BattleController::EndTurn, 1.0f);
     }
 }

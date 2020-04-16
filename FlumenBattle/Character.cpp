@@ -126,7 +126,7 @@ void Character::AddCondition(Condition newCondition)
 
     for(auto condition = conditions.GetStart(); condition != conditions.GetEnd(); ++condition)
     {
-        if(condition->GetType() == newCondition.GetType())
+        if(condition->GetType() == newCondition.GetType() && condition->IsActive())
         {
             *condition = newCondition;
             hasFound = true;
@@ -465,7 +465,7 @@ Integer Character::GetActionRange() const
         }
         else
         {
-            return 1;
+            return 0;
         }
     }
     else
@@ -536,6 +536,13 @@ bool Character::SelectActionOption(Index index)
             return false;
             break;
     }
+}
+
+bool Character::SelectAction(CharacterActions action)
+{
+    selectedAction = actions.Find(action);
+
+    return true;
 }
 
 Index Character::GetSelectedActionIndex() const

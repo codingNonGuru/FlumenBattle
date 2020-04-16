@@ -62,8 +62,8 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
         *character->actions.Allocate() = {CharacterActions::DODGE};
         *character->actions.Allocate() = {CharacterActions::DASH};
 
-        character->AddWeapon(WeaponFactory::BuildHandAxe());
         character->AddWeapon(WeaponFactory::BuildGreatSword());
+        character->AddWeapon(WeaponFactory::BuildHandAxe());
         break;
     case CharacterClasses::RANGER:
         character->dexterity = abilityScores[0];
@@ -84,8 +84,8 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
         *character->actions.Allocate() = {CharacterActions::DODGE};
         *character->actions.Allocate() = {CharacterActions::DASH};
 
-        character->AddWeapon(WeaponFactory::BuildShortSword());
         character->AddWeapon(WeaponFactory::BuildLongBow());
+        character->AddWeapon(WeaponFactory::BuildShortSword());
         break;
     case CharacterClasses::CLERIC:
         character->wisdom = abilityScores[0];

@@ -3,7 +3,11 @@
 class ArtificialController
 {
     friend class BattleController;
-    
+
+    void DetermineActionCourse();
+
+    void MoveCharacter();
+
     void UpdateCharacter();
 
 public:
