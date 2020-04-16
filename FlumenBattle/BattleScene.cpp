@@ -73,7 +73,7 @@ void BattleScene::DetermineTurnOrder()
         }
     }
 
-    turnOrder.Sort();
+    turnOrder.SortDescendantly();
 
     turn = turnOrder.GetStart();
 

@@ -5,6 +5,7 @@
 #include "FlumenEngine/Render/MeshManager.hpp"
 
 #include "FlumenBattle/BattleController.h"
+#include "FlumenBattle/ArtificialController.h"
 #include "FlumenBattle/BattleScene.h"
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/Group.h"
@@ -60,7 +61,8 @@ void BattleController::DetermineCharacterController()
     else
     {
         isPlayerInputEnabled = false;
-        TaskManager::Add()->Initialize(this, &BattleController::UpdateNonPlayerCharacter, 1.0f);
+        //ArtificialController::Get().UpdateCharacter();
+        TaskManager::Add()->Initialize(&ArtificialController::Get(), &ArtificialController::UpdateCharacter, 1.0f);
     }
 }
 
@@ -215,11 +217,6 @@ void BattleController::HandleAPressed()
     OnCharacterActed.Invoke();
 
     targetedCharacter = nullptr;
-}
-
-void BattleController::UpdateNonPlayerCharacter()
-{
-    TaskManager::Add()->Initialize(this, &BattleController::EndTurn, 1.0f);
 }
 
 void BattleController::EndTurn()

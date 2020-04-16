@@ -282,23 +282,25 @@ bool Character::CanDash() const
     return IsAlive() && remainingActionCount > 0;
 }
 
-void Character::Move(BattleTile* destination)
+bool Character::Move(BattleTile* destination)
 {
     if(destination->Character != nullptr)
-        return;
+        return false;
 
     if(CanMove() == false)
-        return;
+        return false;
 
     auto distance = tile->GetDistanceTo(*destination);
     if(distance > movement)
-        return;
+        return false;
 
     movement -= distance;
 
     tile->Character = nullptr;
     tile = destination;
     destination->Character = this;
+
+    return true;
 }
 
 void Character::SaveAgainstDeath()
@@ -430,6 +432,11 @@ void Character::Deselect()
 Position2 Character::GetPosition()
 {
     return tile->Position;
+}
+
+Integer Character::GetDistanceTo(Character *other) const
+{
+    return tile->GetDistanceTo(*other->tile);
 }
 
 Integer Character::GetCurrentSpeed() const

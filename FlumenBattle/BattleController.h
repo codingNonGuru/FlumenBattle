@@ -15,6 +15,8 @@ class BattleController
 
     friend class ActionInfoPanel;
 
+    friend class ArtificialController;
+
     BattleScene *battleScene;
 
     Group *playerControlledGroup;
@@ -64,8 +66,6 @@ class BattleController
     void HandleTPressed();
 
     void HandleAPressed();
-
-    void UpdateNonPlayerCharacter();
 
     void EndTurn();
 

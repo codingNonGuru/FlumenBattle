@@ -55,13 +55,13 @@ void BattleTileModel::CreateCamera()
 
     auto centerTile = battleScene->GetBattleMap()->GetCenterTile();
     camera->SetTarget(Position3(centerTile->Position, 0.0f));
-    camera->Zoom(0.7f);
+    camera->Zoom(2.0f);
 }
 
 void BattleTileModel::HandleCharacterSelected()
 {
-    auto character = battleController->GetSelectedCharacter();
-    camera->SetTarget(Position3(character->GetPosition(), 0.0f), CAMERA_SHIFT_DURATION);
+    //auto character = battleController->GetSelectedCharacter();
+    //camera->SetTarget(Position3(character->GetPosition(), 0.0f), CAMERA_SHIFT_DURATION);
 }
 
 void BattleTileModel::Render() 

@@ -170,7 +170,7 @@ public:
 
     CharacterActionData Act(Character *);
 
-    void Move(BattleTile*);
+    bool Move(BattleTile*);
 
     void SaveAgainstDeath();
     
@@ -183,6 +183,8 @@ public:
     Integer GetMovement() const;
 
     BattleTile* GetTile() const {return tile;}
+
+    Integer GetDistanceTo(Character *) const;
 
     Integer RollInitiative() const;
 
