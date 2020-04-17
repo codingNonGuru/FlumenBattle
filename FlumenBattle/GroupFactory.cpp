@@ -14,7 +14,7 @@ Group* GroupFactory::Create(Array <Group> &groups, GroupBuildData buildData)
 
     group->tile = buildData.Tile;
 
-    auto size = 1;//utility::GetRandom(4, 7);
+    auto size = 6;//utility::GetRandom(4, 7);
     auto color = colors[colorIndex++];
     group->Initialize(size, color);
 

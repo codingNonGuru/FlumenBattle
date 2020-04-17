@@ -172,6 +172,8 @@ private:
 public:
     bool IsAlive() const;
 
+    Float GetHealth() const {return (Float)currentHitPoints / (Float)maximumHitPoints;}
+
     void StartTurn();
 
     bool CanTarget() const;
@@ -213,6 +215,14 @@ public:
     bool SelectActionOption(Index);
 
     bool SelectAction(CharacterActions);
+
+    bool SelectWeapon(Weapon *);
+
+    bool SelectWeapon(WeaponTypes);
+
+    bool SelectSpell(Spell *);
+
+    bool SelectSpell(SpellTypes);
 
     Index GetSelectedActionIndex() const;
 

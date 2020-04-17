@@ -15,6 +15,21 @@ struct Weapon
     Integer RollCount;
 
     Integer Range;
+
+    Weapon() {}
+
+    Weapon(WeaponTypes type) : Type(type) {}
+
+    Weapon(WeaponTypes type, Word name, Integer hitDice, Integer rollCount, Integer range) : 
+        Type(type), Name(name), HitDice(hitDice), RollCount(rollCount), Range(range) {}
+
+    bool operator== (const Weapon &other) {return this->Type == other.Type;}
+
+    Integer GetAverageDamage() const 
+    {
+        auto damage = RollCount + RollCount * HitDice;
+        return damage / 2;
+    }
 };
 
 class WeaponFactory

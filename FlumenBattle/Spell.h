@@ -36,6 +36,16 @@ struct Spell
     bool IsAttack;
 
     //const Phrase & Description;
+
+    Spell() {}
+
+    Spell(SpellTypes type) : Type(type) {}
+
+    Spell(SpellTypes type, Integer level, Integer hitDice, Integer rollCount, Integer range, Word name, bool isOffensive, bool isAttack) :
+        Type(type), Level(level), HitDice(hitDice), RollCount(rollCount), Range(range), Name(name), IsOffensive(isOffensive), IsAttack(isAttack)
+        {}
+
+    bool operator== (const Spell &other) {return other.Type == this->Type;}
 };
 
 class SpellFactory

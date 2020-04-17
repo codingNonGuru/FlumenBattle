@@ -545,6 +545,32 @@ bool Character::SelectAction(CharacterActions action)
     return true;
 }
 
+bool Character::SelectWeapon(Weapon *weapon)
+{
+    selectedWeapon = weapon;
+
+    return true;
+}
+
+bool Character::SelectWeapon(WeaponTypes type)
+{
+    selectedWeapon = weapons.Find(type);
+}
+
+bool Character::SelectSpell(Spell *spell)
+{
+    selectedSpell = spell;
+
+    return true;
+}
+
+bool Character::SelectSpell(SpellTypes type)
+{
+    selectedSpell = spells.Find(type);
+
+    return true;
+}
+
 Index Character::GetSelectedActionIndex() const
 {
     return selectedAction - actions.GetStart();
