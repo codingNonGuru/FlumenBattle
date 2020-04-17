@@ -4,6 +4,13 @@
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/CharacterFactory.h"
 
+Array <CharacterClasses> groupMakeup = {
+    CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, 
+    CharacterClasses::RANGER, CharacterClasses::RANGER, CharacterClasses::RANGER, 
+    CharacterClasses::CLERIC,
+    CharacterClasses::WIZARD, CharacterClasses::WIZARD
+    };
+
 Group::Group() {}
 
 void Group::Initialize(Integer size, Color color)
@@ -14,24 +21,8 @@ void Group::Initialize(Integer size, Color color)
 
     for(int i = 0; i < size; ++i)
     {
-        auto dice = utility::GetRandom(0, 3);
-        CharacterClasses type;
-        switch(dice)
-        {
-        case 0:
-            type = CharacterClasses::FIGHTER;
-            break;
-        case 1:
-            type = CharacterClasses::RANGER;
-            break;
-        case 2:
-            type = CharacterClasses::CLERIC;
-            break;
-        case 3:
-            type = CharacterClasses::WIZARD;
-            break;
-        }
-
+        auto dice = utility::GetRandom(0, groupMakeup.GetSize() - 1);
+        CharacterClasses type = *groupMakeup.Get(dice);
         CharacterFactory::Create(type, *this);
     }
 }
