@@ -8,7 +8,7 @@ class BattleMap
 {
     friend class BattleScene;
 
-    friend class BattleController;
+    friend class HumanController;
 
     friend class BattleTileModel;
 

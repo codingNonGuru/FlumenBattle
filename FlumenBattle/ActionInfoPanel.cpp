@@ -15,12 +15,15 @@
 
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/BattleController.h"
+#include "FlumenBattle/HumanController.h"
 #include "FlumenBattle/Group.h"
 #include "FlumenBattle/ActionInfoPanel.h"
 #include "FlumenBattle/Weapon.h"
 #include "FlumenBattle/Spell.h"
 
 static BattleController * battleController = nullptr;
+
+static HumanController * humanController = nullptr;
 
 const Color HIGHLIGHTED_COLOR = (Color::RED * 0.5f) + (Color::BLACK * 0.5f);
 
@@ -31,6 +34,8 @@ const Color TARGETING_COLOR = Color::RED;
 void ActionInfoPanel::HandleConfigure() 
 {
     wasLayoutRefreshed = false;
+
+    humanController = HumanController::Get();
 
     battleController = BattleController::Get();
 
@@ -84,7 +89,7 @@ void ActionInfoPanel::HandleUpdate()
         auto label = *subactionLabels.Get(i);
         if(i == character->GetSelectedSubactionIndex())
         {
-            if(battleController->isInitiatingTargeting)
+            if(humanController->isInitiatingTargeting)
             {
                 label->SetColor(TARGETING_COLOR);
             }

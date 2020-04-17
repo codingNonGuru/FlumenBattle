@@ -41,6 +41,8 @@ private:
 
     friend class ArtificialController;
 
+    friend class HumanController;
+
     struct Ability 
     {
         Integer Score;

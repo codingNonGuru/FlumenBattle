@@ -17,25 +17,23 @@ class BattleController
 
     friend class ArtificialController;
 
+    friend class HumanController;
+
     BattleScene *battleScene;
 
     Group *playerControlledGroup;
 
     Group *computerControlledGroup;
 
+    BattleTile *targetedTile;
+
     Character *selectedCharacter;
 
     Character *targetedCharacter;
 
-    BattleTile *hoveredTile;
-
     CharacterActionData lastActionData;
 
     bool isPlayerInputEnabled;
-
-    bool isInitiatingMove;
-
-    bool isInitiatingTargeting;
 
     static BattleController *instance;
 
@@ -45,33 +43,19 @@ class BattleController
 
     void DetermineCharacterController();
 
-    void CheckCharacterMovement();
+    void Move();
 
     void CheckTileSelection();
 
-    void HandleSpacePressed();
+    void SelectAction(Integer);
 
-    void HandleOnePressed();
+    void SelectSubaction(Integer);
 
-    void HandleTwoPressed();
+    void Act();
 
-    void HandleThreePressed();
-
-    void HandleFourPressed();
-
-    void ChangeActionSelection(Integer);
-
-    void HandleMPressed();
-
-    void HandleTPressed();
-
-    void HandleAPressed();
+    //void ChangeActionSelection(Integer);
 
     void EndTurn();
-
-    void EnablePlayerInput();
-
-    void DisablePlayerInput();
 
 public:
     Delegate OnCharacterActed;
@@ -86,15 +70,15 @@ public:
 
     void TargetCharacter(Character *);
 
-    BattleTile * GetHoveredTile() const {return hoveredTile;}
+    void TargetTile(BattleTile * tile) {targetedTile = tile;}
+
+    BattleTile * GetTargetedTile() const {return targetedTile;}
 
     Character * GetSelectedCharacter() const {return selectedCharacter;}
 
     Character * GetTargetedCharacter() const {return targetedCharacter;}
 
     const CharacterActionData & GetLastAction() const {return lastActionData;}
-
-    bool IsMoveInitiated() const {return isInitiatingMove;}
 
     static BattleController * Get();
 };

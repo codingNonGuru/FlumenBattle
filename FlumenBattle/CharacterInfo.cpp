@@ -12,6 +12,7 @@
 #include "FlumenBattle/CharacterInfo.h"
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/BattleController.h"
+#include "FlumenBattle/HumanController.h"
 #include "FlumenBattle/Group.h"
 
 void CharacterInfo::HandleConfigure() 
@@ -88,7 +89,7 @@ void CharacterInfo::HandleConfigure()
 
 void CharacterInfo::HandleTargeting()
 {
-    battleController->TargetCharacter(character);
+    HumanController::Get()->TargetCharacter(character);
 }
 
 void CharacterInfo::Select()

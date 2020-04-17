@@ -6,15 +6,13 @@
 
 #include "FlumenBattle/BattleController.h"
 #include "FlumenBattle/ArtificialController.h"
+#include "FlumenBattle/HumanController.h"
 #include "FlumenBattle/BattleScene.h"
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/Group.h"
-#include "FlumenBattle/BattleMap.h"
 #include "FlumenBattle/BattleTile.h"
 
 BattleController * BattleController::instance = nullptr;
-
-static Camera* camera = nullptr;
 
 void BattleController::Initialize()
 {
@@ -25,11 +23,7 @@ void BattleController::Initialize()
 
     selectedCharacter = nullptr;
 
-    isInitiatingMove = false;
-
-    isInitiatingTargeting = false;
-
-    camera = battleScene->GetCamera();
+    HumanController::Get()->Initialize();
 
     battleScene->OnEnabled.Add(this, &HandleSceneEnabled);
 }
@@ -43,11 +37,12 @@ void BattleController::HandleSceneEnabled()
 
 void BattleController::DetermineCharacterController()
 {
+    auto humanController = HumanController::Get();
     if(selectedCharacter->GetGroup() == playerControlledGroup)
     {
         if(!isPlayerInputEnabled)
         {
-            EnablePlayerInput();
+            humanController->EnablePlayerInput();
         }
 
         isPlayerInputEnabled = true;
@@ -56,7 +51,7 @@ void BattleController::DetermineCharacterController()
     {
         if(isPlayerInputEnabled)
         {
-            DisablePlayerInput();
+            humanController->DisablePlayerInput();
         }
 
         isPlayerInputEnabled = false;
@@ -65,12 +60,9 @@ void BattleController::DetermineCharacterController()
     }
 }
 
-void BattleController::CheckCharacterMovement()
+void BattleController::Move()
 {
-    if(isInitiatingMove == false)
-        return;
-
-    if(hoveredTile == nullptr)
+    if(targetedTile == nullptr)
         return;
 
     if(selectedCharacter == nullptr)
@@ -79,128 +71,41 @@ void BattleController::CheckCharacterMovement()
     if(battleScene->IsCharactersTurn(selectedCharacter) == false)
         return;
 
-    isInitiatingMove = false;
-
-    selectedCharacter->Move(hoveredTile);
+    selectedCharacter->Move(targetedTile);
 }
 
-void BattleController::CheckTileSelection()
+void BattleController::SelectSubaction(Integer actionIndex)
 {
-    auto mesh = MeshManager::GetMesh("Hex"); 
+    auto battleController = BattleController::Get();
+    auto selectedCharacter = battleController->selectedCharacter;
 
-    auto battleMap = battleScene->GetBattleMap();
-    for(auto tile = battleMap->tiles.GetStart(); tile != battleMap->tiles.GetEnd(); ++tile) 
+    auto currentIndex = selectedCharacter->GetSelectedSubactionIndex();
+    if(selectedCharacter->SelectActionOption(actionIndex))
     {
-        bool isMouseOverTile = PickHandler::CheckCollision(camera, mesh, Position3(tile->Position, 0.0f), 33.0f); 
-        if(isMouseOverTile)
+        if(actionIndex != currentIndex)
         {
-            hoveredTile = tile;
-            return;
+            targetedCharacter = nullptr;
         }
+
+        OnSubactionSelected.Invoke();
     }
-
-    hoveredTile = nullptr;
 }
 
-void BattleController::HandleSpacePressed()
+void BattleController::SelectAction(Integer actionIndex)
 {
-    EndTurn();
-}
-
-void BattleController::HandleOnePressed()
-{
-    if(selectedCharacter == nullptr)
-        return;
-
-    ChangeActionSelection(0);
-}
-
-void BattleController::HandleTwoPressed()
-{
-    if(selectedCharacter == nullptr)
-        return;
-
-    ChangeActionSelection(1);
-}
-
-void BattleController::HandleThreePressed()
-{
-    if(selectedCharacter == nullptr)
-        return;
-
-    ChangeActionSelection(2);
-}
-
-void BattleController::HandleFourPressed()
-{
-    if(selectedCharacter == nullptr)
-        return;
-
-    ChangeActionSelection(3);
-}
-
-void BattleController::ChangeActionSelection(Integer actionIndex)
-{
-    if(InputHandler::IsPressed(SDL_Scancode::SDL_SCANCODE_LCTRL))
+    auto currentIndex = selectedCharacter->GetSelectedActionIndex();
+    if(selectedCharacter->SelectAction(actionIndex))
     {
-        auto currentSubactionIndex = selectedCharacter->GetSelectedSubactionIndex();
-        if(selectedCharacter->SelectActionOption(actionIndex))
+        if(actionIndex != currentIndex)
         {
-            if(actionIndex != currentSubactionIndex)
-            {
-                targetedCharacter = nullptr;
-                isInitiatingTargeting = false;
-            }
-
-            OnSubactionSelected.Invoke();
+            targetedCharacter = nullptr;
         }
-    }
-    else
-    {
-        auto currentActionIndex = selectedCharacter->GetSelectedActionIndex();
-        if(selectedCharacter->SelectAction(actionIndex))
-        {
-            if(actionIndex != currentActionIndex)
-            {
-                targetedCharacter = nullptr;
-                isInitiatingTargeting = false;
-            }
 
-            OnActionSelected.Invoke();
-        }
+        OnActionSelected.Invoke();
     }
 }
 
-void BattleController::HandleMPressed()
-{
-    if(isInitiatingMove)
-    {
-        isInitiatingMove = false;
-    }
-    else
-    {
-        isInitiatingMove = true;
-        isInitiatingTargeting = false;
-    }
-}
-
-void BattleController::HandleTPressed()
-{
-    if(selectedCharacter->CanTarget() == false)
-        return;
-
-    if(isInitiatingTargeting)
-    {
-        isInitiatingTargeting = false;
-    }
-    else
-    {
-        isInitiatingTargeting = true;
-        isInitiatingMove = false;
-    }
-}
-
-void BattleController::HandleAPressed()
+void BattleController::Act()
 {
     if(selectedCharacter == nullptr)
         return;
@@ -231,34 +136,6 @@ void BattleController::EndTurn()
     DetermineCharacterController();
 }
 
-void BattleController::EnablePlayerInput()
-{
-    InputHandler::OnInputUpdate.Add(this, &CheckTileSelection);
-    InputHandler::OnLeftMouseClick.Add(this, &CheckCharacterMovement);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, this, &HandleSpacePressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_1, this, &HandleOnePressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_2, this, &HandleTwoPressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_3, this, &HandleThreePressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_4, this, &HandleFourPressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_M, this, &HandleMPressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_T, this, &HandleTPressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_A, this, &HandleAPressed);
-}
-
-void BattleController::DisablePlayerInput()
-{
-    InputHandler::OnInputUpdate.Remove(this, &CheckTileSelection);
-    InputHandler::OnLeftMouseClick.Remove(this, &CheckCharacterMovement);
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, this, &HandleSpacePressed);
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_1, this, &HandleOnePressed);
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_2, this, &HandleTwoPressed);
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_3, this, &HandleThreePressed);
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_4, this, &HandleFourPressed);
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_M, this, &HandleMPressed);
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_T, this, &HandleTPressed);
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_A, this, &HandleAPressed);
-}
-
 void BattleController::SelectCharacter(Character *character)
 {
     if(selectedCharacter != nullptr)
@@ -278,9 +155,6 @@ void BattleController::SelectCharacter(Character *character)
 
 void BattleController::TargetCharacter(Character *target)
 {
-    if(isInitiatingTargeting == false)
-        return;
-
     if(selectedCharacter == nullptr)
         return;
 
@@ -298,8 +172,6 @@ void BattleController::TargetCharacter(Character *target)
     {
         targetedCharacter = nullptr;    
     }
-
-    isInitiatingTargeting = false;
 }
 
 BattleController * BattleController::Get()

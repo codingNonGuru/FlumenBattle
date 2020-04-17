@@ -10,9 +10,9 @@ class BattleTileModel : public Model
 {
     friend class BattleScene;
 
-    Shader* shader;
+    Shader *shader;
 
-    BattleScene * battleScene;
+    BattleScene *battleScene;
 
     void CreateCamera();
 
