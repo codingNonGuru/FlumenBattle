@@ -69,6 +69,10 @@ class BattleController
 
     void EndTurn();
 
+    void EnablePlayerInput();
+
+    void DisablePlayerInput();
+
 public:
     Delegate OnCharacterActed;
 

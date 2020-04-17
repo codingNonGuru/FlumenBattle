@@ -19,7 +19,7 @@ struct TileMoveData
 
 Array <TileMoveData> tileMoveDatas = Array <TileMoveData> (64);
 
-Character *targetCharacter = nullptr;
+Character *attackTarget = nullptr;
 
 Integer targetDistance = 0;
 
@@ -47,7 +47,7 @@ void ArtificialController::DetermineActionCourse()
         }
     }
 
-    targetCharacter = closestCharacter;
+    attackTarget = closestCharacter;
     targetDistance = closestDistance;
 }
 
@@ -56,7 +56,7 @@ void ArtificialController::MoveCharacter()
     auto battleController = BattleController::Get();
     auto selectedCharacter = battleController->selectedCharacter;
 
-    if(targetCharacter != nullptr)
+    if(attackTarget != nullptr)
     {
         BattleTile *targetTile = nullptr;
         Integer closestDistance = INT_MAX;
@@ -69,7 +69,7 @@ void ArtificialController::MoveCharacter()
                 continue;
 
             Integer distance = selectedCharacter->GetTile()->GetDistanceTo(*tile);
-            distance += tile->GetDistanceTo(*targetCharacter->GetTile());
+            distance += tile->GetDistanceTo(*attackTarget->GetTile());
 
             *tileMoveDatas.Allocate() = {tile, distance};
         }
@@ -93,7 +93,7 @@ void ArtificialController::MoveCharacter()
 
         tileMoveDatas.Reset();
 
-        targetDistance = selectedCharacter->GetDistanceTo(targetCharacter);
+        targetDistance = selectedCharacter->GetDistanceTo(attackTarget);
     }
 }
 
@@ -111,28 +111,28 @@ void ArtificialController::UpdateCharacter()
     {
         MoveCharacter();
 
-        TaskManager::Add()->Initialize(this, &ArtificialController::UpdateCharacter, 0.3f);
+        TaskManager::Add()->Initialize(this, &ArtificialController::UpdateCharacter, 0.1f);
     }
     else 
     {
         if(isWithinRange)
         {
-            if(selectedCharacter->CanAct(targetCharacter))
+            if(selectedCharacter->CanAct(attackTarget))
             {
                 //std::cout<<"ACT\n";
-                selectedCharacter->Act(targetCharacter);
+                selectedCharacter->Act(attackTarget);
             }
         }
         else
         {
             selectedCharacter->SelectAction(CharacterActions::DODGE);
-            if(selectedCharacter->CanAct(targetCharacter))
+            if(selectedCharacter->CanAct(attackTarget))
             {
                 //std::cout<<"DODGE\n";
-                selectedCharacter->Act(targetCharacter);
+                selectedCharacter->Act(attackTarget);
             }
         }
 
-        TaskManager::Add()->Initialize(battleController, &BattleController::EndTurn, 1.0f);
+        TaskManager::Add()->Initialize(battleController, &BattleController::EndTurn, 0.7f);
     }
 }

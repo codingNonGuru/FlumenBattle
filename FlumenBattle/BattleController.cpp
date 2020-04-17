@@ -23,17 +23,6 @@ void BattleController::Initialize()
     playerControlledGroup = battleScene->groups.Get(0);
     computerControlledGroup = battleScene->groups.Get(1);
 
-    InputHandler::OnInputUpdate.Add(this, &CheckTileSelection);
-    InputHandler::OnLeftMouseClick.Add(this, &CheckCharacterMovement);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, this, &HandleSpacePressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_1, this, &HandleOnePressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_2, this, &HandleTwoPressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_3, this, &HandleThreePressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_4, this, &HandleFourPressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_M, this, &HandleMPressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_T, this, &HandleTPressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_A, this, &HandleAPressed);
-
     selectedCharacter = nullptr;
 
     isInitiatingMove = false;
@@ -56,13 +45,23 @@ void BattleController::DetermineCharacterController()
 {
     if(selectedCharacter->GetGroup() == playerControlledGroup)
     {
+        if(!isPlayerInputEnabled)
+        {
+            EnablePlayerInput();
+        }
+
         isPlayerInputEnabled = true;
     }
     else
     {
+        if(isPlayerInputEnabled)
+        {
+            DisablePlayerInput();
+        }
+
         isPlayerInputEnabled = false;
-        //ArtificialController::Get().UpdateCharacter();
-        TaskManager::Add()->Initialize(&ArtificialController::Get(), &ArtificialController::UpdateCharacter, 1.0f);
+        
+        TaskManager::Add()->Initialize(&ArtificialController::Get(), &ArtificialController::UpdateCharacter, 0.7f);
     }
 }
 
@@ -230,6 +229,34 @@ void BattleController::EndTurn()
     selectedCharacter->StartTurn();
 
     DetermineCharacterController();
+}
+
+void BattleController::EnablePlayerInput()
+{
+    InputHandler::OnInputUpdate.Add(this, &CheckTileSelection);
+    InputHandler::OnLeftMouseClick.Add(this, &CheckCharacterMovement);
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, this, &HandleSpacePressed);
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_1, this, &HandleOnePressed);
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_2, this, &HandleTwoPressed);
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_3, this, &HandleThreePressed);
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_4, this, &HandleFourPressed);
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_M, this, &HandleMPressed);
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_T, this, &HandleTPressed);
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_A, this, &HandleAPressed);
+}
+
+void BattleController::DisablePlayerInput()
+{
+    InputHandler::OnInputUpdate.Remove(this, &CheckTileSelection);
+    InputHandler::OnLeftMouseClick.Remove(this, &CheckCharacterMovement);
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, this, &HandleSpacePressed);
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_1, this, &HandleOnePressed);
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_2, this, &HandleTwoPressed);
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_3, this, &HandleThreePressed);
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_4, this, &HandleFourPressed);
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_M, this, &HandleMPressed);
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_T, this, &HandleTPressed);
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_A, this, &HandleAPressed);
 }
 
 void BattleController::SelectCharacter(Character *character)

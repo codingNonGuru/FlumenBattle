@@ -22,7 +22,7 @@ const Float4 NEARBY_TILE_COLOR = DEFAULT_TILE_COLOR * 0.8f;
 
 const Float4 HOVERED_TILE_COLOR = DEFAULT_TILE_COLOR * 0.6f;
 
-const Float CAMERA_SHIFT_DURATION = 0.7f;
+const Float CAMERA_SHIFT_DURATION = 0.5f;
 
 Camera* camera = nullptr;
 
@@ -60,8 +60,8 @@ void BattleTileModel::CreateCamera()
 
 void BattleTileModel::HandleCharacterSelected()
 {
-    //auto character = battleController->GetSelectedCharacter();
-    //camera->SetTarget(Position3(character->GetPosition(), 0.0f), CAMERA_SHIFT_DURATION);
+    auto character = battleController->GetSelectedCharacter();
+    camera->SetTarget(Position3(character->GetPosition(), 0.0f), CAMERA_SHIFT_DURATION);
 }
 
 void BattleTileModel::Render() 
