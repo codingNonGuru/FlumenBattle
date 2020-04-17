@@ -93,7 +93,7 @@ CharacterActionData SpellCaster::ApplySacredFlame(Character & character, const S
     ComputeDifficultyClass(character);
 
     auto reflexSavingThrow = utility::GetRandom(1, 20) + character.target->dexterity.Modifier;
-    if(reflexSavingThrow > spellResult.DifficultyClass) 
+    if(reflexSavingThrow < spellResult.DifficultyClass) 
     {
         spellResult.HasHit = true;
     }

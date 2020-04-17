@@ -60,7 +60,7 @@ void BattleInfoPanel::HandleCharacterAction()
         {
             if(actionData.HasSucceeded)
             {
-                string << " Hit! " << " The victim suffers " << actionData.Damage << " damage.";
+                string << " Hit! The victim suffers " << actionData.Damage << " damage.";
             }
             else
             {
@@ -75,7 +75,7 @@ void BattleInfoPanel::HandleCharacterAction()
 
         if(actionData.HasSucceeded)
         {
-            string << " Hit! " << " The victim suffers " << actionData.Damage << " damage.";
+            string << " Hit! The victim suffers " << actionData.Damage << " damage.";
         }
         else
         {
@@ -83,6 +83,7 @@ void BattleInfoPanel::HandleCharacterAction()
         }
     }
 
+    std::cout<<string<<"\n";
     actionLabel->Setup(string);
 }
 

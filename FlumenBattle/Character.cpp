@@ -389,7 +389,7 @@ CharacterActionData Character::Attack()
 
     remainingActionCount--;
 
-    return CharacterActionData(selectedAction->Type, this, attackRoll, target->armorClass, damage, attackRoll > target->armorClass);
+    return CharacterActionData(selectedAction->Type, this, attackRoll, target->armorClass, damage, attackRoll >= target->armorClass);
 }
 
 CharacterActionData Character::CastSpell()
