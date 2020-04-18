@@ -15,6 +15,7 @@
 #include "FlumenBattle/Group.h"
 #include "FlumenBattle/BattleInfoPanel.h"
 #include "FlumenBattle/ActionInfoPanel.h"
+#include "FlumenBattle/CharacterDetailPanel.h"
 
 CharacterInfo* characterInfo = nullptr;
 
@@ -66,5 +67,13 @@ void BattleInterface::Initialize()
     actionInfoPanel->Configure(Size(1900, 100), DrawOrder(1), new Transform(Position2(0.0f, -480.0f)), sprite, Opacity(1.0f));
 
     actionInfoPanel->Enable();
+
+    sprite = new Sprite(nullptr, spriteShader);
+
+    auto characterDetailPanel = new CharacterDetailPanel();
+    Interface::AddElement("CharacterDetailPanel", characterDetailPanel);
+    characterDetailPanel->Configure(Size(620, 140), DrawOrder(1), new Transform(Position2(640.0f, 460.0f)), sprite, Opacity(1.0f));
+
+    characterDetailPanel->Enable();
 }
 

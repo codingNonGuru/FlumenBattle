@@ -36,6 +36,8 @@ private:
 
     friend class CharacterInfo;
 
+    friend class CharacterDetailPanel;
+
     friend class BattleInterface;
 
     friend class Condition; 
@@ -58,7 +60,7 @@ private:
 
         Ability(Integer score) : Score(score) 
         {
-            Modifier = (Score - 10) / 2;
+            Modifier = Score / 2 - 5;
         }
     };
 
