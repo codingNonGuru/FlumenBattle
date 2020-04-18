@@ -7,6 +7,7 @@
 #include "FlumenBattle/BattleTile.h"
 #include "FlumenBattle/Weapon.h"
 #include "FlumenBattle/Spell.h"
+#include "FlumenBattle/ProficiencyFactory.h"
 
 #define ABILITY_COUNT 6
 
@@ -63,7 +64,9 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
         *character->actions.Allocate() = {CharacterActions::DASH};
 
         character->AddWeapon(WeaponFactory::BuildGreatSword());
-        character->AddWeapon(WeaponFactory::BuildHandAxe());
+        character->AddWeapon(WeaponFactory::BuildHatchet());
+
+        character->AddProficiency(ProficiencyFactory::BuildReflexSaveProficiency(ProficiencyLevels::TRAINED));
         break;
     case CharacterClasses::RANGER:
         character->dexterity = abilityScores[0];

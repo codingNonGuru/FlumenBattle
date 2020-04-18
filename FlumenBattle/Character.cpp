@@ -149,6 +149,11 @@ void Character::AddCondition(Condition newCondition)
     }
 }
 
+void Character::AddProficiency(Proficiency proficiency)
+{
+    proficiencies.AddProficiency(proficiency);
+}
+
 Integer Character::RollAttackDamage() const
 {
     auto sum = 0;

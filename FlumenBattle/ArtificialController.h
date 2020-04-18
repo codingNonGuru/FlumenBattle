@@ -18,6 +18,8 @@ class ArtificialController
 
     void UpdateCharacter();
 
+    bool CheckOpportunity();
+
 public:
     static ArtificialController& Get()
     {

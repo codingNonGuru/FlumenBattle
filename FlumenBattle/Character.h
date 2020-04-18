@@ -2,6 +2,8 @@
 
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/CharacterActionData.h"
+#include "FlumenBattle/Proficiency.h"
+#include "FlumenBattle/ProficiencyHandler.h"
 
 class CharacterFactory;
 class CharacterInfo;
@@ -11,6 +13,7 @@ struct Weapon;
 struct Spell;
 struct SpellSlot;
 class Condition;
+class ProficiencyHandler;
 
 class Character
 {
@@ -43,6 +46,8 @@ private:
 
     friend class HumanController;
 
+    friend class ProficiencyHandler;
+
     struct Ability 
     {
         Integer Score;
@@ -57,13 +62,15 @@ private:
         }
     };
 
-    Group* group;
+    Group *group;
 
-    CharacterInfo* info;
+    CharacterInfo *info;
 
     CharacterClasses type;
 
     Integer level;
+
+    ProficiencyHandler proficiencies;
 
     Integer hitDiceCount;
 
@@ -83,9 +90,9 @@ private:
 
     Ability charisma;
 
-    Ability* attackAbility;
+    Ability *attackAbility;
 
-    Ability* spellCastingAbility;
+    Ability *spellCastingAbility;
 
     Integer armorClass;
 
@@ -101,19 +108,19 @@ private:
 
     Array <Action> actions;
 
-    Action * selectedAction;
+    Action *selectedAction;
 
     Array <Weapon> weapons;
 
-    Weapon * selectedWeapon;
+    Weapon *selectedWeapon;
 
     Array <Spell> spells;
 
-    Spell * selectedSpell;
+    Spell *selectedSpell;
 
     Array <SpellSlot> spellSlots;
 
-    Character * target;
+    Character *target;
 
     bool isSavingAgainstDeath;
 
@@ -164,6 +171,8 @@ private:
     void AddSpell(Spell);
 
     void AddCondition(Condition);
+
+    void AddProficiency(Proficiency);
 
     Integer RollAttackDamage() const;
 

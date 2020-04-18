@@ -171,6 +171,7 @@ void ArtificialController::DetermineActionCourse()
             selectedCharacter->SelectWeapon(strongestWeapon);
 
             primaryTarget = {&enemyData, ActionTriggers::NONE, strongestWeapon->Type};
+            opportunityTarget = primaryTarget;
             break;
         case CharacterClasses::RANGER:
             selectedCharacter->SelectAction(CharacterActions::ATTACK);
@@ -189,6 +190,7 @@ void ArtificialController::DetermineActionCourse()
             selectedCharacter->SelectWeapon(strongestWeapon);
 
             primaryTarget = {&enemyData, ActionTriggers::NONE, strongestWeapon->Type};
+            opportunityTarget = primaryTarget;
             break;
         case CharacterClasses::CLERIC:
             if(allyData.Character != nullptr)
@@ -198,7 +200,7 @@ void ArtificialController::DetermineActionCourse()
 
                 primaryTarget = {&allyData, ActionTriggers::TARGET_DAMAGED, SpellTypes::CURE_WOUNDS};
 
-                opportunityTarget = {&enemyData, ActionTriggers::ALL, SpellTypes::SACRED_FLAME};
+                opportunityTarget = {&enemyData, ActionTriggers::NONE, SpellTypes::SACRED_FLAME};
             }
             else
             {
@@ -215,6 +217,7 @@ void ArtificialController::DetermineActionCourse()
             selectedCharacter->SelectSpell(SpellTypes::FROST_RAY);
 
             primaryTarget = {&enemyData, ActionTriggers::NONE, SpellTypes::FROST_RAY};
+            opportunityTarget = primaryTarget;
             break;
     }
 }
@@ -287,29 +290,20 @@ void ArtificialController::PerformAction()
             battleController->TargetCharacter(primaryTarget.Target->Character);
             battleController->Act();
         }
-        else if(opportunityTarget.IsTriggerValid())
-        {
-            selectedCharacter->SelectAction(opportunityTarget.Action);
+        else if(CheckOpportunity())
+        {}
 
-            if(opportunityTarget.Action == CharacterActions::ATTACK)
-            {
-                selectedCharacter->SelectWeapon(opportunityTarget.WeaponType);
-            }
-            else
-            {
-                selectedCharacter->SelectSpell(opportunityTarget.SpellType);
-            }
-
-            battleController->TargetCharacter(opportunityTarget.Target->Character);
-            battleController->Act();
-        }
-        
-        hasActed = true;
+        hasActed = true;   
     }
     else
     {
-        selectedCharacter->SelectAction(CharacterActions::DODGE);
-        battleController->Act();
+        if(CheckOpportunity())
+        {}
+        else
+        {
+            selectedCharacter->SelectAction(CharacterActions::DODGE);
+            battleController->Act();
+        }
 
         TaskManager::Add()->Initialize(battleController, &BattleController::EndTurn, 0.7f);
     }        
@@ -318,6 +312,38 @@ void ArtificialController::PerformAction()
     {
         TaskManager::Add()->Initialize(battleController, &BattleController::EndTurn, 0.7f);
     }
+}
+
+bool ArtificialController::CheckOpportunity()
+{
+    auto battleController = BattleController::Get();
+    auto selectedCharacter = battleController->selectedCharacter;
+
+    if(opportunityTarget.IsTriggerValid())
+    {
+        selectedCharacter->SelectAction(opportunityTarget.Action);
+
+        if(opportunityTarget.Action == CharacterActions::ATTACK)
+        {
+            selectedCharacter->SelectWeapon(opportunityTarget.WeaponType);
+        }
+        else
+        {
+            selectedCharacter->SelectSpell(opportunityTarget.SpellType);
+        }
+
+        bool isWithinRange = selectedCharacter->GetActionRange() >= opportunityTarget.Target->Distance;  
+
+        if(isWithinRange)
+        {
+            battleController->TargetCharacter(opportunityTarget.Target->Character);
+            battleController->Act();
+
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void ArtificialController::UpdateCharacter()

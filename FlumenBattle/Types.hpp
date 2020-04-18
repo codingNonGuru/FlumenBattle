@@ -47,3 +47,29 @@ enum class SpellTypes {
 	CURE_WOUNDS, MAGIC_MISSILE};
 
 enum class ConditionTypes {CHILL, PARALYSIS, CHARM, EVASION, NONE};
+
+enum class SavingThrows
+{
+	REFLEX_SAVE, FORTITUDE_SAVE, WILL_SAVE
+};
+
+enum class WeaponClasses
+{
+    SIMPLE_WEAPONS, MARTIAL_WEAPONS, ADVANCED_WEAPONS, UNARMED_COMBAT
+};
+
+enum class MagicTraditions
+{
+    ARCANE_MAGIC, DIVINE_MAGIC, OCCULT_MAGIC, PRIMAL_MAGIC
+};
+
+enum class ArmorClasses
+{
+    LIGHT_ARMOR, MEDIUM_ARMOR, HEAVY_ARMOR, UNARMORED
+};
+
+enum class SkillTypes
+{
+	ACROBATICS, ATHLETICS, CRAFTING, DECEPTION, LORE, PERFORMANCE, STEALTH
+};
+
