@@ -23,7 +23,7 @@ static SpellResult spellResult;
 
 void SpellCaster::ComputeDifficultyClass(Character& character)
 {
-    spellResult.DifficultyClass = 8 + character.spellCastingAbility->Modifier + character.proficiencyBonus;
+    spellResult.DifficultyClass = 8 + character.spellCastingAbility->Modifier + character.GetMagicProficiencyBonus();
 }
 
 void SpellCaster::RollDamage(Character & character, const Spell & spell)
@@ -60,7 +60,7 @@ void SpellCaster::RollAttack(Character & character)
         }
     }
 
-    attackRoll += character.spellCastingAbility->Modifier + character.proficiencyBonus;
+    attackRoll += character.spellCastingAbility->Modifier + character.GetMagicProficiencyBonus();
 
     spellResult.HasHit = attackRoll >= character.target->armorClass;
     spellResult.AttackRoll = attackRoll;
@@ -92,7 +92,7 @@ CharacterActionData SpellCaster::ApplySacredFlame(Character & character, const S
 {
     ComputeDifficultyClass(character);
 
-    auto reflexSavingThrow = utility::GetRandom(1, 20) + character.target->dexterity.Modifier;
+    auto reflexSavingThrow = utility::GetRandom(1, 20) + character.GetReflexSaveBonus();
     if(reflexSavingThrow < spellResult.DifficultyClass) 
     {
         spellResult.HasHit = true;

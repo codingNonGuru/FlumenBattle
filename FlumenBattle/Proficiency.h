@@ -6,7 +6,7 @@
 
 enum class ProficiencyLevels
 {
-    UNTRAINED, TRAINED, EXPERT, MASTER, LEGENDARY
+    UNTRAINED, APPRENTICE, TRAINED, EXPERIENCED, MASTER, LEGENDARY
 };
 
 enum class ProficiencyClasses
@@ -28,9 +28,15 @@ union ProficiencyIdentifier
 
     ProficiencyIdentifier() {}
 
+    ProficiencyIdentifier (WeaponClasses weaponClass) {WeaponClass = weaponClass;}
+
     ProficiencyIdentifier (SavingThrows savingThrow) {SavingThrow = savingThrow;}
 
+    ProficiencyIdentifier (MagicTraditions magicTradition) {MagicTradition = magicTradition;}
+
     bool operator== (WeaponClasses weaponClass) {return WeaponClass == weaponClass;}
+
+    bool operator== (SavingThrows savingThrow) {return SavingThrow == savingThrow;}
 };
 
 struct ProficiencyType

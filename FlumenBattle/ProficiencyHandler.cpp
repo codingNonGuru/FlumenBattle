@@ -33,8 +33,36 @@ Integer ProficiencyHandler::GetWeaponBonus(const Character &character, WeaponCla
         if(iterator->Type->Identifier == weaponClass)
         {
             modifier += GetLevelModifier(*iterator);
+            break;
         }
     }
+
+    return modifier;
+}
+
+Integer ProficiencyHandler::GetSaveBonus(const Character &character, SavingThrows savingThrow)
+{
+    Integer modifier = 0;
+    modifier += character.level / 6;
+    
+    for(auto iterator = savingThrows.GetFirst(); iterator != savingThrows.GetLast(); ++iterator)
+    {
+        if(iterator->Type->Identifier == savingThrow)
+        {
+            modifier += GetLevelModifier(*iterator);
+            break;
+        }
+    }
+
+    return modifier;
+}
+
+Integer ProficiencyHandler::GetMagicBonus(const Character & character)
+{
+    Integer modifier = 0;
+    modifier += character.level / 6;
+
+    modifier += GetLevelModifier(magicalTradition);
 
     return modifier;
 }

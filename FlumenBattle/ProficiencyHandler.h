@@ -25,9 +25,13 @@ class ProficiencyHandler
 public:
     Integer GetPerceptionBonus(const Character &);
 
+    Integer GetSaveBonus(const Character &, SavingThrows);
+
     Integer GetWeaponBonus(const Character &, WeaponClasses);
 
     Integer GetWeaponBonus(const Character &);
+
+    Integer GetMagicBonus(const Character &);
 
     void AddProficiency(Proficiency proficiency);
 };

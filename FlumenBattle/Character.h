@@ -96,8 +96,6 @@ private:
 
     Integer armorClass;
 
-    Integer proficiencyBonus;
-
     Integer defaultSpeed;
 
     Integer speedPenalty;
@@ -212,6 +210,14 @@ public:
     Word GetName();
 
     Group * GetGroup() const {return group;}
+
+    Integer GetMagicProficiencyBonus() {return proficiencies.GetMagicBonus(*this);}
+
+    Integer GetReflexSaveBonus();
+
+    Integer GetFortitudeSaveBonus();
+
+    Integer GetWillSaveBonus();
 
     Array <Action> & GetActions() {return actions;}
 

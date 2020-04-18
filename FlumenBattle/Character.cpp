@@ -383,7 +383,9 @@ CharacterActionData Character::Attack()
         attackAbility = &dexterity;
     }
 
-    attackRoll += attackAbility->Modifier + proficiencyBonus;
+    attackRoll += attackAbility->Modifier;
+
+    attackRoll += proficiencies.GetWeaponBonus(*this);
 
     Integer damage;
     if(attackRoll >= target->armorClass)
@@ -508,6 +510,21 @@ Word Character::GetName()
         return "Wizard";
         break;
     }
+}
+
+Integer Character::GetReflexSaveBonus()
+{
+    return proficiencies.GetSaveBonus(*this, SavingThrows::REFLEX_SAVE) + dexterity.Modifier;
+}
+
+Integer Character::GetFortitudeSaveBonus()
+{
+    return proficiencies.GetSaveBonus(*this, SavingThrows::FORTITUDE_SAVE) + constitution.Modifier;
+}
+
+Integer Character::GetWillSaveBonus()
+{
+    return proficiencies.GetSaveBonus(*this, SavingThrows::WILL_SAVE) + wisdom.Modifier;
 }
 
 bool Character::SelectAction(Index index)

@@ -22,8 +22,6 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
     character->type = type;
     character->level = 1;
 
-    character->proficiencyBonus = 2;
-
     for(auto& score : abilityScores)
     {
         score = GetRandomAbilityScore();
@@ -66,7 +64,15 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
         character->AddWeapon(WeaponFactory::BuildGreatSword());
         character->AddWeapon(WeaponFactory::BuildHatchet());
 
-        character->AddProficiency(ProficiencyFactory::BuildReflexSaveProficiency(ProficiencyLevels::TRAINED));
+        character->AddProficiency(ProficiencyFactory::BuildPerceptionProficiency(ProficiencyLevels::APPRENTICE));
+
+        character->AddProficiency(ProficiencyFactory::BuildReflexSaveProficiency(ProficiencyLevels::APPRENTICE));
+        character->AddProficiency(ProficiencyFactory::BuildFortitudeSaveProficiency(ProficiencyLevels::TRAINED));
+        character->AddProficiency(ProficiencyFactory::BuildWillSaveProficiency(ProficiencyLevels::APPRENTICE));
+
+        character->AddProficiency(ProficiencyFactory::BuildSimpleWeaponsProficiency(ProficiencyLevels::TRAINED));
+        character->AddProficiency(ProficiencyFactory::BuildMartialWeaponsProficiency(ProficiencyLevels::APPRENTICE));
+        character->AddProficiency(ProficiencyFactory::BuildUnarmedCombatProficiency(ProficiencyLevels::TRAINED));
         break;
     case CharacterClasses::RANGER:
         character->dexterity = abilityScores[0];
@@ -89,6 +95,16 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
 
         character->AddWeapon(WeaponFactory::BuildLongBow());
         character->AddWeapon(WeaponFactory::BuildShortSword());
+
+        character->AddProficiency(ProficiencyFactory::BuildPerceptionProficiency(ProficiencyLevels::TRAINED));
+
+        character->AddProficiency(ProficiencyFactory::BuildReflexSaveProficiency(ProficiencyLevels::TRAINED));
+        character->AddProficiency(ProficiencyFactory::BuildFortitudeSaveProficiency(ProficiencyLevels::APPRENTICE));
+        character->AddProficiency(ProficiencyFactory::BuildWillSaveProficiency(ProficiencyLevels::APPRENTICE));
+
+        character->AddProficiency(ProficiencyFactory::BuildSimpleWeaponsProficiency(ProficiencyLevels::TRAINED));
+        character->AddProficiency(ProficiencyFactory::BuildMartialWeaponsProficiency(ProficiencyLevels::APPRENTICE));
+        character->AddProficiency(ProficiencyFactory::BuildUnarmedCombatProficiency(ProficiencyLevels::APPRENTICE));
         break;
     case CharacterClasses::CLERIC:
         character->wisdom = abilityScores[0];
@@ -115,6 +131,17 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
 
         character->AddSpell(SpellFactory::BuildCureWounds());
         character->AddSpell(SpellFactory::BuildSacredFlame());
+
+        character->AddProficiency(ProficiencyFactory::BuildPerceptionProficiency(ProficiencyLevels::APPRENTICE));
+
+        character->AddProficiency(ProficiencyFactory::BuildReflexSaveProficiency(ProficiencyLevels::APPRENTICE));
+        character->AddProficiency(ProficiencyFactory::BuildFortitudeSaveProficiency(ProficiencyLevels::APPRENTICE));
+        character->AddProficiency(ProficiencyFactory::BuildWillSaveProficiency(ProficiencyLevels::TRAINED));
+
+        character->AddProficiency(ProficiencyFactory::BuildSimpleWeaponsProficiency(ProficiencyLevels::TRAINED));
+        character->AddProficiency(ProficiencyFactory::BuildUnarmedCombatProficiency(ProficiencyLevels::APPRENTICE));
+
+        character->AddProficiency(ProficiencyFactory::BuildDivineMagicProficiency(ProficiencyLevels::TRAINED));
         break;
     case CharacterClasses::WIZARD:
         character->intelligence = abilityScores[0];
@@ -141,6 +168,16 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
         character->AddSpell(SpellFactory::BuildFrostRay());
         character->AddSpell(SpellFactory::BuildShockingGrasp());
         character->AddSpell(SpellFactory::BuildMagicMissile());
+
+        character->AddProficiency(ProficiencyFactory::BuildPerceptionProficiency(ProficiencyLevels::APPRENTICE));
+
+        character->AddProficiency(ProficiencyFactory::BuildReflexSaveProficiency(ProficiencyLevels::APPRENTICE));
+        character->AddProficiency(ProficiencyFactory::BuildFortitudeSaveProficiency(ProficiencyLevels::APPRENTICE));
+        character->AddProficiency(ProficiencyFactory::BuildWillSaveProficiency(ProficiencyLevels::TRAINED));
+
+        character->AddProficiency(ProficiencyFactory::BuildSimpleWeaponsProficiency(ProficiencyLevels::APPRENTICE));
+
+        character->AddProficiency(ProficiencyFactory::BuildArcaneMagicProficiency(ProficiencyLevels::TRAINED));
         break;
     }
 

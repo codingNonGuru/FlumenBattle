@@ -54,7 +54,7 @@ void Condition::InitializeCold()
 
 void Condition::ApplyCold() 
 {   
-    auto savingThrow = utility::GetRandom(1, 20) + character->constitution.Modifier;
+    auto savingThrow = utility::GetRandom(1, 20) + character->GetFortitudeSaveBonus();
     if(savingThrow > difficultyClass)
     {
         if(duration != 0)
