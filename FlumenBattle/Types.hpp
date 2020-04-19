@@ -3,6 +3,8 @@
 #include "FlumenEngine/Core/Types.hpp"
 #include "FlumenCore/Conventions.hpp"
 
+#define ABILITY_COUNT 6
+
 enum class Scenes
 {
 	BATTLE
@@ -36,7 +38,7 @@ typedef float Labor;
 
 enum class CharacterClasses {FIGHTER, RANGER, CLERIC, WIZARD};
 
-enum class CharacterRaces {DWARF, GNOME, HUMAN, HALFLING, ELF, ORC, GOBLIN};
+enum class RaceTypes {DWARF, GNOME, HUMAN, HALFLING, ELF, ORC, GOBLIN};
 
 enum class CharacterActions {ATTACK, CAST_SPELL, DASH, DISENGAGE, DODGE, HELP, HIDE, READY, SEARCH, USE_OBJECT};
 

@@ -4,11 +4,12 @@
 
 class Character;
 class Group;
+struct Race;
 
 class CharacterFactory
 {
     static Integer GetRandomAbilityScore();
 
 public:
-    static Character* Create(CharacterClasses type, Group& group); 
+    static Character* Create(const Race *, CharacterClasses, Group &); 
 };

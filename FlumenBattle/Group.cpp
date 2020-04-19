@@ -3,8 +3,9 @@
 #include "FlumenBattle/Group.h"
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/CharacterFactory.h"
+#include "FlumenBattle/RaceFactory.h"
 
-Array <CharacterClasses> groupMakeup = {
+Array <CharacterClasses> classMakeup = {
     CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, 
     CharacterClasses::RANGER, CharacterClasses::RANGER, CharacterClasses::RANGER, 
     CharacterClasses::CLERIC,
@@ -21,9 +22,12 @@ void Group::Initialize(Integer size, Color color)
 
     for(int i = 0; i < size; ++i)
     {
-        auto dice = utility::GetRandom(0, groupMakeup.GetSize() - 1);
-        CharacterClasses type = *groupMakeup.Get(dice);
-        CharacterFactory::Create(type, *this);
+        auto dice = utility::GetRandom(0, classMakeup.GetSize() - 1);
+        CharacterClasses type = *classMakeup.Get(dice);
+
+        auto race = RaceFactory::BuildRandomRace();
+
+        CharacterFactory::Create(race, type, *this);
     }
 }
 

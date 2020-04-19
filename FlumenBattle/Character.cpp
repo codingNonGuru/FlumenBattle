@@ -513,6 +513,11 @@ Word Character::GetName()
     }
 }
 
+void Character::BoostAbility(AbilityTypes type, Integer boost)
+{
+    abilities.Boost(type, boost);
+}
+
 Integer Character::GetReflexSaveBonus()
 {
     return proficiencies.GetSaveBonus(*this, SavingThrows::REFLEX_SAVE) + abilities.GetModifier(AbilityTypes::DEXTERITY);

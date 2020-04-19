@@ -6,6 +6,7 @@
 #include "FlumenBattle/ProficiencyHandler.h"
 #include "FlumenBattle/Ability.h"
 #include "FlumenBattle/AbilityHandler.h"
+#include "FlumenBattle/Race.h"
 
 class CharacterFactory;
 class CharacterInfo;
@@ -58,6 +59,8 @@ private:
     CharacterInfo *info;
 
     CharacterClasses type;
+
+    const Race *race;
 
     Integer level;
 
@@ -186,6 +189,8 @@ public:
 
     Word GetName();
 
+    const Race * GetRace() const {return race;}
+
     Group * GetGroup() const {return group;}
 
     const Ability & GetAbility(AbilityTypes type) {return *abilities.GetAbility(type);}
@@ -193,6 +198,8 @@ public:
     const Ability & GetAttackAbility() {return *abilities.GetAttackAbility();}
 
     const Ability & GetSpellCastingAbility() {return *abilities.GetSpellCastingAbility();}
+
+    void BoostAbility(AbilityTypes, Integer);
 
     Integer GetMagicProficiencyBonus() {return proficiencies.GetMagicBonus(*this);}
 

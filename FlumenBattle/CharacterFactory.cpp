@@ -8,12 +8,11 @@
 #include "FlumenBattle/Weapon.h"
 #include "FlumenBattle/Spell.h"
 #include "FlumenBattle/ProficiencyFactory.h"
-
-#define ABILITY_COUNT 6
+#include "FlumenBattle/RaceFactory.h"
 
 Integer abilityScores[ABILITY_COUNT];
 
-Character* CharacterFactory::Create(CharacterClasses type, Group& group)
+Character* CharacterFactory::Create(const Race *race, CharacterClasses type, Group& group)
 {
     auto character = group.characters.Allocate();
 
@@ -179,7 +178,15 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
         break;
     }
 
-    character->maximumHitPoints = character->hitDiceCount + character->abilities.GetModifier(AbilityTypes::CONSTITUTION) * character->level;
+    character->race = race;
+    for(auto boost : race->Boosts)
+    {
+        character->BoostAbility(boost.Type, boost.Boost);
+    }
+
+    character->maximumHitPoints = character->hitDiceCount;
+    character->maximumHitPoints += character->abilities.GetModifier(AbilityTypes::CONSTITUTION) * character->level;
+    character->maximumHitPoints += race->HitPointBonus;
 
     auto battleScene = BattleScene::Get();
     character->tile = group.tile->GetEmptyTileInRange(5);

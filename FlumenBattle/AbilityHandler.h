@@ -35,6 +35,12 @@ public:
     {
         GetAbility(type)->SetScore(score);
     }
+
+    void Boost(AbilityTypes type, Integer amount)
+    {
+        auto ability = GetAbility(type);
+        ability->SetScore(ability->Score + amount);
+    }
     
     Ability * GetAttackAbility()
     {

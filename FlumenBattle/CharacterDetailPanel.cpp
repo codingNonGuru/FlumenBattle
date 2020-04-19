@@ -65,9 +65,10 @@ void CharacterDetailPanel::HandleConfigure()
 void CharacterDetailPanel::HandleUpdate()
 {
     auto character = battleController->GetSelectedCharacter();
+    auto race = character->GetRace();
 
     Word string;
-    string << character->GetName() << ", level " << character->level;
+    string << race->Name << " " << character->GetName() << ", level " << character->level;
 
     headerLabel->Setup(string);
 }
