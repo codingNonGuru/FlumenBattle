@@ -11,7 +11,7 @@ Integer ProficiencyHandler::GetPerceptionBonus(const Character &character)
 {
     auto levelModifier = character.level / 6;
     auto perceptionModifier = GetLevelModifier(perception);
-    auto abilityModifier = character.wisdom.Modifier;
+    auto abilityModifier = character.GetAbility(AbilityTypes::WISDOM).Modifier;
     return abilityModifier + perceptionModifier + levelModifier;
 }
 

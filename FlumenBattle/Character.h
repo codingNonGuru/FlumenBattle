@@ -4,6 +4,8 @@
 #include "FlumenBattle/CharacterActionData.h"
 #include "FlumenBattle/Proficiency.h"
 #include "FlumenBattle/ProficiencyHandler.h"
+#include "FlumenBattle/Ability.h"
+#include "FlumenBattle/AbilityHandler.h"
 
 class CharacterFactory;
 class CharacterInfo;
@@ -13,7 +15,6 @@ struct Weapon;
 struct Spell;
 struct SpellSlot;
 class Condition;
-class ProficiencyHandler;
 
 class Character
 {
@@ -50,19 +51,7 @@ private:
 
     friend class ProficiencyHandler;
 
-    struct Ability 
-    {
-        Integer Score;
-
-        Integer Modifier;
-
-        Ability() {}
-
-        Ability(Integer score) : Score(score) 
-        {
-            Modifier = Score / 2 - 5;
-        }
-    };
+    friend class AbilityHandler;
 
     Group *group;
 
@@ -72,6 +61,8 @@ private:
 
     Integer level;
 
+    AbilityHandler abilities;
+
     ProficiencyHandler proficiencies;
 
     Integer hitDiceCount;
@@ -79,22 +70,6 @@ private:
     Integer currentHitPoints;
 
     Integer maximumHitPoints;
-
-    Ability strength;
-
-    Ability dexterity;
-
-    Ability constitution;
-
-    Ability intelligence;
-
-    Ability wisdom;
-
-    Ability charisma;
-
-    Ability *attackAbility;
-
-    Ability *spellCastingAbility;
 
     Integer armorClass;
 
@@ -212,6 +187,12 @@ public:
     Word GetName();
 
     Group * GetGroup() const {return group;}
+
+    const Ability & GetAbility(AbilityTypes type) {return *abilities.GetAbility(type);}
+
+    const Ability & GetAttackAbility() {return *abilities.GetAttackAbility();}
+
+    const Ability & GetSpellCastingAbility() {return *abilities.GetSpellCastingAbility();}
 
     Integer GetMagicProficiencyBonus() {return proficiencies.GetMagicBonus(*this);}
 

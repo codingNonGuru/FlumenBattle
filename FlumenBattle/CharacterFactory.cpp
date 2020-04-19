@@ -43,18 +43,17 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
     switch(type)
     {
     case CharacterClasses::FIGHTER:
-        character->strength = abilityScores[0];
-        character->constitution = abilityScores[1];
-        character->dexterity = abilityScores[2];
-        character->wisdom = abilityScores[3];
-        character->charisma = abilityScores[4];
-        character->intelligence = abilityScores[5];
+        character->abilities.SetScore(AbilityTypes::STRENGTH, abilityScores[0]);
+        character->abilities.SetScore(AbilityTypes::CONSTITUTION, abilityScores[1]);
+        character->abilities.SetScore(AbilityTypes::DEXTERITY, abilityScores[2]);
+        character->abilities.SetScore(AbilityTypes::WISDOM, abilityScores[3]);
+        character->abilities.SetScore(AbilityTypes::CHARISMA, abilityScores[4]);
+        character->abilities.SetScore(AbilityTypes::INTELLIGENCE, abilityScores[5]);
 
         character->hitDiceCount = 10;
         character->armorClass = 16;
 
-        character->attackAbility = &character->strength;
-        character->spellCastingAbility = nullptr;
+        character->abilities.SetAttackAbility(AbilityTypes::STRENGTH);
 
         character->actions.Initialize(3);
         *character->actions.Allocate() = {CharacterActions::ATTACK};
@@ -75,18 +74,17 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
         character->AddProficiency(ProficiencyFactory::BuildUnarmedCombatProficiency(ProficiencyLevels::TRAINED));
         break;
     case CharacterClasses::RANGER:
-        character->dexterity = abilityScores[0];
-        character->wisdom = abilityScores[1];
-        character->constitution = abilityScores[2];
-        character->intelligence = abilityScores[3];
-        character->charisma = abilityScores[4];
-        character->strength = abilityScores[5];
+        character->abilities.SetScore(AbilityTypes::DEXTERITY, abilityScores[0]);
+        character->abilities.SetScore(AbilityTypes::WISDOM, abilityScores[1]);
+        character->abilities.SetScore(AbilityTypes::CONSTITUTION, abilityScores[2]);
+        character->abilities.SetScore(AbilityTypes::INTELLIGENCE, abilityScores[3]);
+        character->abilities.SetScore(AbilityTypes::CHARISMA, abilityScores[4]);
+        character->abilities.SetScore(AbilityTypes::STRENGTH, abilityScores[5]);
 
         character->hitDiceCount = 8;
         character->armorClass = 15;
 
-        character->attackAbility = &character->dexterity;
-        character->spellCastingAbility = nullptr;
+        character->abilities.SetAttackAbility(AbilityTypes::DEXTERITY);
 
         character->actions.Initialize(3);
         *character->actions.Allocate() = {CharacterActions::ATTACK};
@@ -107,18 +105,18 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
         character->AddProficiency(ProficiencyFactory::BuildUnarmedCombatProficiency(ProficiencyLevels::APPRENTICE));
         break;
     case CharacterClasses::CLERIC:
-        character->wisdom = abilityScores[0];
-        character->strength = abilityScores[1];
-        character->constitution = abilityScores[2];
-        character->charisma = abilityScores[3];
-        character->intelligence = abilityScores[4];
-        character->dexterity = abilityScores[5];
+        character->abilities.SetScore(AbilityTypes::WISDOM, abilityScores[0]);
+        character->abilities.SetScore(AbilityTypes::STRENGTH, abilityScores[1]);
+        character->abilities.SetScore(AbilityTypes::CONSTITUTION, abilityScores[2]);
+        character->abilities.SetScore(AbilityTypes::CHARISMA, abilityScores[3]);
+        character->abilities.SetScore(AbilityTypes::INTELLIGENCE, abilityScores[4]);
+        character->abilities.SetScore(AbilityTypes::DEXTERITY, abilityScores[5]);
 
         character->hitDiceCount = 8;
         character->armorClass = 13;
 
-        character->attackAbility = &character->strength;
-        character->spellCastingAbility = &character->wisdom;
+        character->abilities.SetAttackAbility(AbilityTypes::STRENGTH);
+        character->abilities.SetSpellCastingAbility(AbilityTypes::WISDOM);
 
         character->actions.Initialize(5);
         *character->actions.Allocate() = {CharacterActions::ATTACK};
@@ -144,18 +142,18 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
         character->AddProficiency(ProficiencyFactory::BuildDivineMagicProficiency(ProficiencyLevels::TRAINED));
         break;
     case CharacterClasses::WIZARD:
-        character->intelligence = abilityScores[0];
-        character->constitution = abilityScores[1];
-        character->dexterity = abilityScores[2];
-        character->wisdom = abilityScores[3];
-        character->charisma = abilityScores[4];
-        character->strength = abilityScores[5];
+        character->abilities.SetScore(AbilityTypes::INTELLIGENCE, abilityScores[0]);
+        character->abilities.SetScore(AbilityTypes::CONSTITUTION, abilityScores[1]);
+        character->abilities.SetScore(AbilityTypes::DEXTERITY, abilityScores[2]);
+        character->abilities.SetScore(AbilityTypes::WISDOM, abilityScores[3]);
+        character->abilities.SetScore(AbilityTypes::CHARISMA, abilityScores[4]);
+        character->abilities.SetScore(AbilityTypes::STRENGTH, abilityScores[5]);
 
         character->hitDiceCount = 6;
         character->armorClass = 11;
 
-        character->attackAbility = &character->strength;
-        character->spellCastingAbility = &character->intelligence;
+        character->abilities.SetAttackAbility(AbilityTypes::STRENGTH);
+        character->abilities.SetSpellCastingAbility(AbilityTypes::INTELLIGENCE);
 
         character->actions.Initialize(4);
         *character->actions.Allocate() = {CharacterActions::ATTACK};
@@ -181,7 +179,7 @@ Character* CharacterFactory::Create(CharacterClasses type, Group& group)
         break;
     }
 
-    character->maximumHitPoints = character->hitDiceCount + character->constitution.Modifier * character->level;
+    character->maximumHitPoints = character->hitDiceCount + character->abilities.GetModifier(AbilityTypes::CONSTITUTION) * character->level;
 
     auto battleScene = BattleScene::Get();
     character->tile = group.tile->GetEmptyTileInRange(5);

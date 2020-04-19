@@ -376,13 +376,14 @@ CharacterActionData Character::Attack()
 
     if(GetActionRange() == 1)
     {
-        attackAbility = &strength;
+        abilities.SetAttackAbility(AbilityTypes::STRENGTH);
     }
     else
     {
-        attackAbility = &dexterity;
+        abilities.SetAttackAbility(AbilityTypes::DEXTERITY);
     }
 
+    auto attackAbility = abilities.GetAttackAbility();
     attackRoll += attackAbility->Modifier;
 
     attackRoll += proficiencies.GetWeaponBonus(*this);
@@ -489,7 +490,7 @@ Integer Character::GetMovement() const
 Integer Character::RollInitiative() const
 {
     auto initiative = utility::GetRandom(1, 20);
-    initiative += dexterity.Modifier;
+    initiative += abilities.GetModifier(AbilityTypes::DEXTERITY);
     return initiative;
 }
 
@@ -514,17 +515,17 @@ Word Character::GetName()
 
 Integer Character::GetReflexSaveBonus()
 {
-    return proficiencies.GetSaveBonus(*this, SavingThrows::REFLEX_SAVE) + dexterity.Modifier;
+    return proficiencies.GetSaveBonus(*this, SavingThrows::REFLEX_SAVE) + abilities.GetModifier(AbilityTypes::DEXTERITY);
 }
 
 Integer Character::GetFortitudeSaveBonus()
 {
-    return proficiencies.GetSaveBonus(*this, SavingThrows::FORTITUDE_SAVE) + constitution.Modifier;
+    return proficiencies.GetSaveBonus(*this, SavingThrows::FORTITUDE_SAVE) + abilities.GetModifier(AbilityTypes::CONSTITUTION);
 }
 
 Integer Character::GetWillSaveBonus()
 {
-    return proficiencies.GetSaveBonus(*this, SavingThrows::WILL_SAVE) + wisdom.Modifier;
+    return proficiencies.GetSaveBonus(*this, SavingThrows::WILL_SAVE) + abilities.GetModifier(AbilityTypes::WISDOM);
 }
 
 bool Character::SelectAction(Index index)

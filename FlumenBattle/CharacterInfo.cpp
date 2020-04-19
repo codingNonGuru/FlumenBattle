@@ -28,7 +28,7 @@ void CharacterInfo::HandleConfigure()
 	textLabel = new Text(fontMedium, character->group->GetColor());
     Interface::AddElement("CharacterLabel", textLabel);
 
-	textLabel->Configure(Size(150, 150), DrawOrder(4), new Transform(Position2(-5.0f, 0.0f)), nullptr);
+	textLabel->Configure(Size(150, 150), DrawOrder(2), new Transform(Position2(-5.0f, 0.0f)), nullptr);
 
 	textLabel->Enable();
 	textLabel->SetParent(this);
@@ -36,7 +36,7 @@ void CharacterInfo::HandleConfigure()
     selectLabel = new Text(fontSmall, textColor);
     Interface::AddElement("SelectLabel", selectLabel);
 
-	selectLabel->Configure(Size(150, 150), DrawOrder(4), new Transform(Position2(0.0f, 30.0f)), nullptr);
+	selectLabel->Configure(Size(150, 150), DrawOrder(2), new Transform(Position2(0.0f, 30.0f)), nullptr);
 
 	selectLabel->SetParent(this);
 
@@ -45,7 +45,7 @@ void CharacterInfo::HandleConfigure()
     targetedLabel = new Text(fontSmall, textColor);
     Interface::AddElement("TargetedLabel", targetedLabel);
 
-	targetedLabel->Configure(Size(150, 150), DrawOrder(4), new Transform(Position2(0.0f, -30.0f)), nullptr);
+	targetedLabel->Configure(Size(150, 150), DrawOrder(2), new Transform(Position2(0.0f, -30.0f)), nullptr);
 
 	targetedLabel->SetParent(this);
 
@@ -54,7 +54,7 @@ void CharacterInfo::HandleConfigure()
     hitpointLabel = new Text(fontSmall, textColor);
     Interface::AddElement("HitpointLabel", hitpointLabel);
 
-	hitpointLabel->Configure(Size(150, 150), DrawOrder(4), new Transform(Position2(20.0f, 0.0f)), nullptr);
+	hitpointLabel->Configure(Size(150, 150), DrawOrder(2), new Transform(Position2(20.0f, 0.0f)), nullptr);
 
 	hitpointLabel->SetParent(this);
     hitpointLabel->Enable();
@@ -62,7 +62,7 @@ void CharacterInfo::HandleConfigure()
     deathSavingLabel = new Text(fontVerySmall, textColor);
     Interface::AddElement("DeathSavingLabel", deathSavingLabel);
 
-	deathSavingLabel->Configure(Size(150, 150), DrawOrder(4), new Transform(Position2(0.0f, 30.0f)), nullptr);
+	deathSavingLabel->Configure(Size(150, 150), DrawOrder(2), new Transform(Position2(0.0f, 30.0f)), nullptr);
 
 	deathSavingLabel->SetParent(this);
 

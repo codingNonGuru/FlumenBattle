@@ -9,62 +9,77 @@
 #include "FlumenBattle/BattleController.h"
 #include "FlumenBattle/Character.h"
 
+struct AbilityLabelData
+{
+    AbilityTypes Type;
+
+    Word Prefix;
+};
+
 BattleController *battleController = nullptr;
 
 void CharacterDetailPanel::HandleConfigure()
 {
     battleController = BattleController::Get();
 
-    auto fontSmall = FontManager::GetFont("DominicanSmall");
     auto fontMedium = FontManager::GetFont("JSLAncientMedium");
-    auto fontVerySmall = FontManager::GetFont("DominicanVerySmall");
+    auto fontLarge = FontManager::GetFont("JSLAncientLarge");
 
     auto textColor = (Color::RED * 0.3f) + (Color::BLACK * 0.7f);
 
-	strengthLabel = new Text(fontMedium, textColor);
-    Interface::AddElement("CharacterLabel", strengthLabel);
+    AbilityLabelData labelData[] = {
+        {AbilityTypes::STRENGTH, Word("Str")}, {AbilityTypes::DEXTERITY, Word("Dex")}, {AbilityTypes::CONSTITUTION, Word("Con")},
+        {AbilityTypes::INTELLIGENCE, Word("Int")}, {AbilityTypes::WISDOM, Word("Wis")}, {AbilityTypes::CHARISMA, Word("Cha")}
+        };
 
-	strengthLabel->Configure(Size(150, 150), DrawOrder(4), new Transform(Position2(-180.0f, 0.0f)), nullptr);
+    auto position = Position2(-180.0f, -30.0f);
+    for(Index i = 0; i < 6; ++i)
+    {
+        auto data = labelData[i];
 
-	strengthLabel->Enable();
-	strengthLabel->SetParent(this);
+        auto label = new CharacterAbilityLabel(fontMedium, textColor, data.Type, data.Prefix);
+        Interface::AddElement("AbilityLabel", label);
 
-    dexterityLabel = new Text(fontMedium, textColor);
-    Interface::AddElement("CharacterLabel", dexterityLabel);
+        label->Configure(Size(150, 150), drawOrder_ + 1, new Transform(position), nullptr);
 
-	dexterityLabel->Configure(Size(150, 150), DrawOrder(4), new Transform(Position2(0.0f, 0.0f)), nullptr);
+        label->Enable();
+        label->SetParent(this);
 
-	dexterityLabel->Enable();
-	dexterityLabel->SetParent(this);
+        position.x += 180.0f;
+        if(i == 2)
+        {
+            position.x = -180.0f;
+            position.y += 35.0f;
+        }
+    }
 
-    constitutionLabel = new Text(fontMedium, textColor);
-    Interface::AddElement("CharacterLabel", constitutionLabel);
+    headerLabel = new Text(fontLarge, textColor);
+    Interface::AddElement("HeaderLabel", headerLabel);
 
-	constitutionLabel->Configure(Size(150, 150), DrawOrder(4), new Transform(Position2(180.0f, 0.0f)), nullptr);
+    headerLabel->Configure(Size(150, 150), drawOrder_ + 1, new Transform(Position2(0.0f, -80.0f)), nullptr);
 
-	constitutionLabel->Enable();
-	constitutionLabel->SetParent(this);
+    headerLabel->Enable();
+    headerLabel->SetParent(this);
 }
 
 void CharacterDetailPanel::HandleUpdate()
 {
     auto character = battleController->GetSelectedCharacter();
 
-    auto modifier = character->strength.Modifier;
-    auto sign = modifier > 0 ? "+" : "";
-    auto string = Word() << "Str: " << character->strength.Score << " (" << sign << modifier << ")";
+    Word string;
+    string << character->GetName() << ", level " << character->level;
 
-    strengthLabel->Setup(string);
+    headerLabel->Setup(string);
+}
 
-    modifier = character->dexterity.Modifier;
-    sign = modifier > 0 ? "+" : "";
-    string = Word() << "Dex: " << character->dexterity.Score << " (" << sign << modifier << ")";
+void CharacterAbilityLabel::HandleUpdate()
+{
+    auto character = battleController->GetSelectedCharacter();
 
-    dexterityLabel->Setup(string);
+    const auto& ability = character->GetAbility(abilityType);
+    auto sign = ability.Modifier > 0 ? "+" : "";
+    auto string = abilityPrefix;
+    string << ": " << ability.Score << " (" << sign << ability.Modifier << ")";
 
-    modifier = character->constitution.Modifier;
-    sign = modifier > 0 ? "+" : "";
-    string = Word() << "Con: " << character->constitution.Score << " (" << sign << modifier << ")";
-
-    constitutionLabel->Setup(string);
+    Setup(string);
 }

@@ -23,7 +23,7 @@ static SpellResult spellResult;
 
 void SpellCaster::ComputeDifficultyClass(Character& character)
 {
-    spellResult.DifficultyClass = 8 + character.spellCastingAbility->Modifier + character.GetMagicProficiencyBonus();
+    spellResult.DifficultyClass = 8 + character.GetSpellCastingAbility().Modifier + character.GetMagicProficiencyBonus();
 }
 
 void SpellCaster::RollDamage(Character & character, const Spell & spell)
@@ -40,7 +40,7 @@ void SpellCaster::RollDamage(Character & character, const Spell & spell)
 
 void SpellCaster::RollHealing(Character & character, const Spell & spell)
 {
-    Integer damage = character.spellCastingAbility->Modifier + utility::GetRandom(1, spell.HitDice);
+    Integer damage = character.GetSpellCastingAbility().Modifier + utility::GetRandom(1, spell.HitDice);
     character.target->HealDamage(damage);
 
     spellResult.Damage = damage;
@@ -60,7 +60,7 @@ void SpellCaster::RollAttack(Character & character)
         }
     }
 
-    attackRoll += character.spellCastingAbility->Modifier + character.GetMagicProficiencyBonus();
+    attackRoll += character.GetSpellCastingAbility().Modifier + character.GetMagicProficiencyBonus();
 
     spellResult.HasHit = attackRoll >= character.target->armorClass;
     spellResult.AttackRoll = attackRoll;
