@@ -6,6 +6,7 @@
 
 class Character;
 class Battle;
+enum class RaceTypes;
 
 class Group
 {
@@ -31,7 +32,7 @@ class Group
 
     Group();
 
-    void Initialize(Integer size, Color color);
+    void Initialize(Integer, Color, RaceTypes);
 
 public:
     const Color& GetColor() const {return color;} 

@@ -15,7 +15,7 @@ Array <CharacterClasses> classMakeup; /*= {
 
 Group::Group() {}
 
-void Group::Initialize(Integer size, Color color)
+void Group::Initialize(Integer size, Color color, RaceTypes raceType)
 {
     this->color = color;
 
@@ -23,9 +23,7 @@ void Group::Initialize(Integer size, Color color)
 
     for(int i = 0; i < size; ++i)
     {
-        auto race = RaceFactory::BuildRandomRace();
-
-        switch(race->Type)
+        switch(raceType)
         {
             case RaceTypes::DWARF:
                 classMakeup = {CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, CharacterClasses::CLERIC};
@@ -52,6 +50,8 @@ void Group::Initialize(Integer size, Color color)
 
         auto dice = utility::GetRandom(0, classMakeup.GetSize() - 1);
         CharacterClasses type = *classMakeup.Get(dice);
+
+        auto race = RaceFactory::BuildRandomRace();
 
         CharacterFactory::Create(race, &ClassFactory::BuildClass(type), *this);
     }

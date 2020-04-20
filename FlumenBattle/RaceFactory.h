@@ -27,7 +27,28 @@ public:
             case RaceTypes::ORC:
                 return BuildOrcRace();
         }
-    }   
+    }  
+
+    static const Race * BuildRace(RaceTypes type)
+    {
+        switch(type)
+        {
+            case RaceTypes::DWARF:
+                return BuildDwarfRace();
+            case RaceTypes::ELF:
+                return BuildElfRace();
+            case RaceTypes::HUMAN:
+                return BuildHumanRace();
+            case RaceTypes::HALFLING:
+                return BuildHalflingRace();
+            case RaceTypes::GNOME:
+                return BuildGnomeRace();
+            case RaceTypes::GOBLIN:
+                return BuildGoblinRace();
+            case RaceTypes::ORC:
+                return BuildOrcRace();
+        }
+    } 
 
     static const Race * BuildDwarfRace()
     {

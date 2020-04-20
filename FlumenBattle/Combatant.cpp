@@ -299,7 +299,7 @@ CharacterActionData Combatant::Strike()
 
     bool isCriticalHit = attackRoll == 20;
 
-    if(character->GetActionRange() == 1)
+    if(character->GetActionRange() == 1 || character->selectedWeapon->IsThrown == false)
     {
         character->abilities.SetAttackAbility(AbilityTypes::STRENGTH);
     }

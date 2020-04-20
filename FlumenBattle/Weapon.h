@@ -18,12 +18,14 @@ struct Weapon
 
     Integer Range;
 
+    bool IsThrown;
+
     Weapon() {}
 
     Weapon(WeaponTypes type) : Type(type) {}
 
-    Weapon(WeaponClasses weaponClass, WeaponTypes type, Word name, Integer hitDice, Integer rollCount, Integer range) : 
-        Class(weaponClass), Type(type), Name(name), HitDice(hitDice), RollCount(rollCount), Range(range) {}
+    Weapon(WeaponClasses weaponClass, WeaponTypes type, Word name, Integer hitDice, Integer rollCount, Integer range, bool isThrown) : 
+        Class(weaponClass), Type(type), Name(name), HitDice(hitDice), RollCount(rollCount), Range(range), IsThrown(isThrown) {}
 
     bool operator== (const Weapon &other) {return this->Type == other.Type;}
 
@@ -39,41 +41,41 @@ class WeaponFactory
 public:
     static Weapon BuildGreatSword() 
     {
-        return {WeaponClasses::MARTIAL_WEAPONS, WeaponTypes::GREAT_SWORD, "Great sword", 6, 2, 1};
+        return {WeaponClasses::MARTIAL_WEAPONS, WeaponTypes::GREAT_SWORD, "Great sword", 6, 2, 1, false};
     }
 
     static Weapon BuildShortSword() 
     {
-        return {WeaponClasses::MARTIAL_WEAPONS, WeaponTypes::SHORT_SWORD, "Short sword", 6, 1, 1};
+        return {WeaponClasses::MARTIAL_WEAPONS, WeaponTypes::SHORT_SWORD, "Short sword", 6, 1, 1, false};
     }
 
     static Weapon BuildHatchet()
     {
-        return {WeaponClasses::MARTIAL_WEAPONS, WeaponTypes::HAND_AXE, "Hatchet", 6, 1, 4};
+        return {WeaponClasses::MARTIAL_WEAPONS, WeaponTypes::HAND_AXE, "Hatchet", 6, 1, 4, true};
     }
 
     static Weapon BuildGreatAxe()
     {
-        return {WeaponClasses::MARTIAL_WEAPONS, WeaponTypes::GREAT_AXE, "Great axe", 12, 1, 1};
+        return {WeaponClasses::MARTIAL_WEAPONS, WeaponTypes::GREAT_AXE, "Great axe", 12, 1, 1, false};
     }
 
     static Weapon BuildShortBow()
     {
-        return {WeaponClasses::MARTIAL_WEAPONS, WeaponTypes::SHORT_BOW, "Short bow", 6, 1, 16};
+        return {WeaponClasses::MARTIAL_WEAPONS, WeaponTypes::SHORT_BOW, "Short bow", 6, 1, 16, false};
     }
 
     static Weapon BuildLongBow()
     {
-        return {WeaponClasses::MARTIAL_WEAPONS, WeaponTypes::LONG_BOW, "Long bow", 8, 1, 30};
+        return {WeaponClasses::MARTIAL_WEAPONS, WeaponTypes::LONG_BOW, "Long bow", 8, 1, 30, false};
     }
 
     static Weapon BuildMace()
     {
-        return {WeaponClasses::SIMPLE_WEAPONS, WeaponTypes::MACE, "Mace", 6, 1, 1};
+        return {WeaponClasses::SIMPLE_WEAPONS, WeaponTypes::MACE, "Mace", 6, 1, 1, false};
     }
 
     static Weapon BuildStaff()
     {
-        return {WeaponClasses::SIMPLE_WEAPONS, WeaponTypes::STAFF, "Staff", 4, 1, 1};
+        return {WeaponClasses::SIMPLE_WEAPONS, WeaponTypes::STAFF, "Staff", 4, 1, 1, false};
     }
 };
