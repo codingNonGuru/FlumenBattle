@@ -29,7 +29,6 @@ static const Length BATTLE_MAP_SIZE = 55;
 
 BattleScene::BattleScene() 
 {
-    std::cout<<"BATTLE SCENE\n";
     battleMap = new BattleMap(BATTLE_MAP_SIZE);
 
     playerGroup = new CombatGroup();
@@ -38,7 +37,6 @@ BattleScene::BattleScene()
 
 void BattleScene::Initialize()
 {
-    std::cout<<"BATTLE SCENE INITIALIZE\n";
     auto battle = WorldScene::Get()->GetBattle();
 
     auto centerTile = battleMap->GetCenterTile();

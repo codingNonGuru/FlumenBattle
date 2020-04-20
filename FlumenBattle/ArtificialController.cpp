@@ -11,6 +11,7 @@
 #include "FlumenBattle/Spell.h"
 #include "FlumenBattle/Combatant.h"
 #include "FlumenBattle/CombatGroup.h"
+#include "FlumenBattle/CharacterClass.h"
 
 enum class ActionTriggers
 {
@@ -126,7 +127,7 @@ CombatantData ArtificialController::FindClosestAlly()
         if(combatant->IsAlive() == false)
             continue;
 
-        if(combatant->character->type != CharacterClasses::FIGHTER)
+        if(combatant->character->type->IsClass(CharacterClasses::FIGHTER) == false)
             continue;
 
         auto distance = selectedCombatant->GetDistanceTo(combatant);
@@ -151,7 +152,7 @@ void ArtificialController::DetermineActionCourse()
     Integer highestDamage;
     Weapon *strongestWeapon;
 
-    switch(selectedCombatant->character->type)
+    switch(selectedCombatant->character->type->Class)
     {
         case CharacterClasses::FIGHTER:
             selectedCombatant->character->SelectAction(CharacterActions::ATTACK);

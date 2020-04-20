@@ -5,11 +5,12 @@
 class Character;
 class Group;
 struct Race;
+struct CharacterClass;
 
 class CharacterFactory
 {
     static Integer GetRandomAbilityScore();
 
 public:
-    static Character* Create(const Race *, CharacterClasses, Group &); 
+    static Character* Create(const Race *, const CharacterClass *, Group &); 
 };

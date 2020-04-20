@@ -9,6 +9,7 @@
 #include "FlumenBattle/CharacterInfo.h"
 #include "FlumenBattle/Weapon.h"
 #include "FlumenBattle/CombatGroup.h"
+#include "FlumenBattle/CharacterClass.h"
 
 Combatant::Combatant()
 {
@@ -29,7 +30,7 @@ void Combatant::Initialize(CombatGroup *_group, Character *_character, BattleTil
 
     isSavingAgainstDeath = false;
 
-    armorClass = 15;
+    armorClass = character->type->ArmorClass;
 }
 
 bool Combatant::HasAdvantage() const

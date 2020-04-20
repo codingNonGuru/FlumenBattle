@@ -16,6 +16,7 @@
 #include "FlumenBattle/BattleController.h"
 #include "FlumenBattle/HumanController.h"
 #include "FlumenBattle/Group.h"
+#include "FlumenBattle/CharacterClass.h"
 
 void CharacterInfo::HandleConfigure() 
 {
@@ -75,21 +76,8 @@ void CharacterInfo::HandleEnable()
 {
     camera = RenderManager::GetCamera(Cameras::BATTLE);
     
-    switch(combatant->character->type)
-    {
-    case CharacterClasses::FIGHTER:
-        textLabel->Setup("F");
-        break;
-    case CharacterClasses::RANGER:
-        textLabel->Setup("R");
-        break;
-    case CharacterClasses::CLERIC:
-        textLabel->Setup("C");
-        break;
-    case CharacterClasses::WIZARD:
-        textLabel->Setup("W");
-        break;
-    }
+    auto className = combatant->character->type->Name;
+    textLabel->Setup(className.GetFirstCharacter());
 
     textLabel->SetColor(combatant->GetGroup()->GetGroup()->GetColor());
 }

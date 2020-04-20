@@ -10,6 +10,7 @@
 #include "FlumenBattle/BattleController.h"
 #include "FlumenBattle/Group.h"
 #include "FlumenBattle/Combatant.h"
+#include "FlumenBattle/CharacterClass.h"
 
 Character::Character()
 {
@@ -76,21 +77,7 @@ Integer Character::GetActionRange() const
 
 Word Character::GetName()
 {
-    switch(type)
-    {
-    case CharacterClasses::FIGHTER:
-        return "Fighter";
-        break;
-    case CharacterClasses::RANGER:
-        return "Ranger";
-        break;
-    case CharacterClasses::CLERIC:
-        return "Cleric";
-        break;
-    case CharacterClasses::WIZARD:
-        return "Wizard";
-        break;
-    }
+    return type->Name;
 }
 
 void Character::BoostAbility(AbilityTypes type, Integer boost)

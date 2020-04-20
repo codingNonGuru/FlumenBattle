@@ -4,6 +4,7 @@
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/CharacterFactory.h"
 #include "FlumenBattle/RaceFactory.h"
+#include "FlumenBattle/ClassFactory.h"
 
 Array <CharacterClasses> classMakeup; /*= {
     CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, 
@@ -52,7 +53,7 @@ void Group::Initialize(Integer size, Color color)
         auto dice = utility::GetRandom(0, classMakeup.GetSize() - 1);
         CharacterClasses type = *classMakeup.Get(dice);
 
-        CharacterFactory::Create(race, type, *this);
+        CharacterFactory::Create(race, &ClassFactory::BuildClass(type), *this);
     }
 }
 

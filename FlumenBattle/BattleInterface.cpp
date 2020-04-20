@@ -22,13 +22,10 @@ CharacterInfo* characterInfo = nullptr;
 
 BattleInterface::BattleInterface()
 {
-    std::cout<<"BATTLE INTERFACE START\n";
     auto glyphShader = ShaderManager::GetShaderMap().Get("Glyph");
     TextManager::Initialize(glyphShader);
 
     battleScene = BattleScene::Get();
-
-    std::cout<<"BATTLE INTERFACE MIDDLE\n";
 
     characterInfos.Initialize(32);
 
@@ -65,8 +62,6 @@ BattleInterface::BattleInterface()
     characterDetailPanel = new CharacterDetailPanel();
     Interface::AddElement("CharacterDetailPanel", characterDetailPanel);
     characterDetailPanel->Configure(Size(540, 220), DrawOrder(3), new Transform(Position2(680.0f, 420.0f)), sprite, Opacity(1.0f));
-
-    std::cout<<"BATTLE INTERFACE END\n";
 }
 
 void BattleInterface::Initialize()

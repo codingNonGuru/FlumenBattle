@@ -17,6 +17,7 @@ struct Spell;
 struct SpellSlot;
 class Condition;
 class Combatant;
+class CharacterClass;
 
 class Character
 {
@@ -59,7 +60,7 @@ private:
 
     Group *group;
 
-    CharacterClasses type;
+    const CharacterClass *type;
 
     const Race *race;
 
@@ -68,8 +69,6 @@ private:
     AbilityHandler abilities;
 
     ProficiencyHandler proficiencies;
-
-    Integer hitDiceCount;
 
     Integer currentHitPoints;
 

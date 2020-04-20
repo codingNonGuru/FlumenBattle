@@ -9,10 +9,11 @@
 #include "FlumenBattle/Spell.h"
 #include "FlumenBattle/ProficiencyFactory.h"
 #include "FlumenBattle/RaceFactory.h"
+#include "FlumenBattle/ClassFactory.h"
 
 Integer abilityScores[ABILITY_COUNT];
 
-Character* CharacterFactory::Create(const Race *race, CharacterClasses type, Group& group)
+Character* CharacterFactory::Create(const Race *race, const CharacterClass *type, Group& group)
 {
     auto character = group.characters.Allocate();
 
@@ -39,7 +40,7 @@ Character* CharacterFactory::Create(const Race *race, CharacterClasses type, Gro
         }   
     }
 
-    switch(type)
+    switch(type->Class)
     {
     case CharacterClasses::FIGHTER:
         character->abilities.SetScore(AbilityTypes::STRENGTH, abilityScores[0]);
@@ -48,8 +49,6 @@ Character* CharacterFactory::Create(const Race *race, CharacterClasses type, Gro
         character->abilities.SetScore(AbilityTypes::WISDOM, abilityScores[3]);
         character->abilities.SetScore(AbilityTypes::CHARISMA, abilityScores[4]);
         character->abilities.SetScore(AbilityTypes::INTELLIGENCE, abilityScores[5]);
-
-        character->hitDiceCount = 10;
 
         character->abilities.SetAttackAbility(AbilityTypes::STRENGTH);
 
@@ -79,8 +78,6 @@ Character* CharacterFactory::Create(const Race *race, CharacterClasses type, Gro
         character->abilities.SetScore(AbilityTypes::CHARISMA, abilityScores[4]);
         character->abilities.SetScore(AbilityTypes::STRENGTH, abilityScores[5]);
 
-        character->hitDiceCount = 8;
-
         character->abilities.SetAttackAbility(AbilityTypes::DEXTERITY);
 
         character->actions.Initialize(3);
@@ -108,8 +105,6 @@ Character* CharacterFactory::Create(const Race *race, CharacterClasses type, Gro
         character->abilities.SetScore(AbilityTypes::CHARISMA, abilityScores[3]);
         character->abilities.SetScore(AbilityTypes::INTELLIGENCE, abilityScores[4]);
         character->abilities.SetScore(AbilityTypes::DEXTERITY, abilityScores[5]);
-
-        character->hitDiceCount = 8;
 
         character->abilities.SetAttackAbility(AbilityTypes::STRENGTH);
         character->abilities.SetSpellCastingAbility(AbilityTypes::WISDOM);
@@ -145,8 +140,6 @@ Character* CharacterFactory::Create(const Race *race, CharacterClasses type, Gro
         character->abilities.SetScore(AbilityTypes::CHARISMA, abilityScores[4]);
         character->abilities.SetScore(AbilityTypes::STRENGTH, abilityScores[5]);
 
-        character->hitDiceCount = 6;
-
         character->abilities.SetAttackAbility(AbilityTypes::STRENGTH);
         character->abilities.SetSpellCastingAbility(AbilityTypes::INTELLIGENCE);
 
@@ -180,7 +173,7 @@ Character* CharacterFactory::Create(const Race *race, CharacterClasses type, Gro
         character->BoostAbility(boost.Type, boost.Boost);
     }
 
-    character->maximumHitPoints = character->hitDiceCount;
+    character->maximumHitPoints = type->HitDice;
     character->maximumHitPoints += character->abilities.GetModifier(AbilityTypes::CONSTITUTION) * character->level;
     character->maximumHitPoints += race->HitPointBonus;
 
