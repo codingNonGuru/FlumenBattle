@@ -13,11 +13,13 @@ struct SpellResult
 
     bool HasHit;
 
+    bool IsCritical;
+
     Integer Damage;
 
     Integer DifficultyClass;
 
-    void Reset() {AttackRoll = 0; HasHit = false; Damage = 0; DifficultyClass = 0;}
+    void Reset() {AttackRoll = 0; HasHit = false; IsCritical = false; Damage = 0; DifficultyClass = 0;}
 };
 
 static SpellResult spellResult;
@@ -32,7 +34,16 @@ void SpellCaster::RollDamage(Combatant &combatant, const Spell & spell)
     Integer damage = 0;
     if(spellResult.HasHit)
     {
-        damage = utility::GetRandom(1, spell.HitDice);
+        for(Index i = 0; i < spell.RollCount; ++i)
+        {
+            damage += utility::GetRandom(1, spell.HitDice);
+        }
+
+        if(spellResult.IsCritical)
+        {
+            damage += spell.HitDice * spell.RollCount;
+        }
+
         combatant.target->SufferDamage(damage);
     }
 
@@ -60,6 +71,8 @@ void SpellCaster::RollAttack(Combatant &combatant)
             attackRoll = newRoll;
         }
     }
+
+    spellResult.IsCritical = attackRoll == 20;
 
     attackRoll += combatant.character->GetSpellCastingAbility().Modifier + combatant.character->GetMagicProficiencyBonus();
 

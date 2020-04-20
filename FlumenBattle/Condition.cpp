@@ -55,8 +55,8 @@ void Condition::InitializeCold()
 
 void Condition::ApplyCold() 
 {   
-    auto savingThrow = utility::GetRandom(1, 20) + combatant->character->GetFortitudeSaveBonus();
-    if(savingThrow > difficultyClass)
+    auto roll = utility::GetRandom(1, 20);
+    if(roll == 20)
     {
         if(duration != 0)
         {
@@ -65,8 +65,22 @@ void Condition::ApplyCold()
         }
         return;
     }
-
-    combatant->speedPenalty += 3;
+    else if(roll == 1)
+    {
+        combatant->speedPenalty += 4;
+    }
+    else
+    {
+        auto savingThrow = roll + combatant->character->GetFortitudeSaveBonus();
+        if(savingThrow > difficultyClass)
+        {
+            combatant->speedPenalty += 0;
+        }
+        else
+        {
+            combatant->speedPenalty += 2;
+        }
+    }
 }
 
 void Condition::InitializeEvasion()

@@ -119,7 +119,7 @@ class Combatant
 
     void Deselect();
 
-    Integer RollAttackDamage() const;
+    Integer RollAttackDamage(bool) const;
 
     bool IsDodging();
 

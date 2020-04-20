@@ -297,6 +297,8 @@ CharacterActionData Combatant::Strike()
         }
     }
 
+    bool isCriticalHit = attackRoll == 20;
+
     if(character->GetActionRange() == 1)
     {
         character->abilities.SetAttackAbility(AbilityTypes::STRENGTH);
@@ -306,21 +308,25 @@ CharacterActionData Combatant::Strike()
         character->abilities.SetAttackAbility(AbilityTypes::DEXTERITY);
     }
 
-    auto attackAbility = character->abilities.GetAttackAbility();
-    attackRoll += attackAbility->Modifier;
+    auto attackModifier = attackRoll;
 
-    attackRoll += character->proficiencies.GetWeaponBonus(*character);
+    auto attackAbility = character->abilities.GetAttackAbility();
+    attackModifier += attackAbility->Modifier;
+
+    attackModifier += character->proficiencies.GetWeaponBonus(*character);
 
     Integer damage;
-    if(attackRoll >= target->armorClass)
+    bool hasHit = attackModifier >= target->armorClass || isCriticalHit;
+    if(hasHit)
     {
-        damage = RollAttackDamage() + attackAbility->Modifier;
+        damage = RollAttackDamage(isCriticalHit) + attackAbility->Modifier;
+
         target->SufferDamage(damage);
     }
 
     remainingActionCount--;
 
-    return CharacterActionData(character->selectedAction->Type, this, attackRoll, target->armorClass, damage, attackRoll >= target->armorClass);
+    return CharacterActionData(character->selectedAction->Type, this, attackModifier, target->armorClass, damage, hasHit);
 }
 
 CharacterActionData Combatant::CastSpell()
@@ -425,12 +431,19 @@ void Combatant::Deselect()
     info->Deselect();
 }
 
-Integer Combatant::RollAttackDamage() const
+Integer Combatant::RollAttackDamage(bool isCritical) const
 {
+    auto weapon = character->selectedWeapon;
+
     auto sum = 0;
-    for(Index i = 0; i < character->selectedWeapon->RollCount; ++i)
+    for(Index i = 0; i < weapon->RollCount; ++i)
     {
-        sum += utility::GetRandom(1, character->selectedWeapon->HitDice);
+        sum += utility::GetRandom(1, weapon->HitDice);
+    }
+
+    if(isCritical)
+    {
+        sum += weapon->RollCount * weapon->HitDice;
     }
 
     return sum;
