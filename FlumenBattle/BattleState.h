@@ -13,13 +13,13 @@ class BattleState : public State
 
     static BattleState * instance;
 
+    BattleState();
+
     void HandleEnter() override;
 
     void HandleExit() override;
 
 public:
-    BattleState();
-
     static BattleState * Get()
     {
         if(instance == nullptr)

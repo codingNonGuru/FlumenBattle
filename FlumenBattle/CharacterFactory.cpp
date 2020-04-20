@@ -50,7 +50,6 @@ Character* CharacterFactory::Create(const Race *race, CharacterClasses type, Gro
         character->abilities.SetScore(AbilityTypes::INTELLIGENCE, abilityScores[5]);
 
         character->hitDiceCount = 10;
-        character->armorClass = 16;
 
         character->abilities.SetAttackAbility(AbilityTypes::STRENGTH);
 
@@ -81,7 +80,6 @@ Character* CharacterFactory::Create(const Race *race, CharacterClasses type, Gro
         character->abilities.SetScore(AbilityTypes::STRENGTH, abilityScores[5]);
 
         character->hitDiceCount = 8;
-        character->armorClass = 15;
 
         character->abilities.SetAttackAbility(AbilityTypes::DEXTERITY);
 
@@ -112,7 +110,6 @@ Character* CharacterFactory::Create(const Race *race, CharacterClasses type, Gro
         character->abilities.SetScore(AbilityTypes::DEXTERITY, abilityScores[5]);
 
         character->hitDiceCount = 8;
-        character->armorClass = 13;
 
         character->abilities.SetAttackAbility(AbilityTypes::STRENGTH);
         character->abilities.SetSpellCastingAbility(AbilityTypes::WISDOM);
@@ -149,7 +146,6 @@ Character* CharacterFactory::Create(const Race *race, CharacterClasses type, Gro
         character->abilities.SetScore(AbilityTypes::STRENGTH, abilityScores[5]);
 
         character->hitDiceCount = 6;
-        character->armorClass = 11;
 
         character->abilities.SetAttackAbility(AbilityTypes::STRENGTH);
         character->abilities.SetSpellCastingAbility(AbilityTypes::INTELLIGENCE);
@@ -187,10 +183,6 @@ Character* CharacterFactory::Create(const Race *race, CharacterClasses type, Gro
     character->maximumHitPoints = character->hitDiceCount;
     character->maximumHitPoints += character->abilities.GetModifier(AbilityTypes::CONSTITUTION) * character->level;
     character->maximumHitPoints += race->HitPointBonus;
-
-    auto battleScene = BattleScene::Get();
-    character->tile = group.tile->GetEmptyTileInRange(5);
-    character->tile->Character = character;
 
     character->defaultSpeed = 5;//utility::GetRandom(4, 6);
 

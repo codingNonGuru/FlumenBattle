@@ -16,7 +16,7 @@ struct AbilityLabelData
     Word Prefix;
 };
 
-BattleController *battleController = nullptr;
+static BattleController *battleController = nullptr;
 
 void CharacterDetailPanel::HandleConfigure()
 {

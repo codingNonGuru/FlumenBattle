@@ -2,10 +2,11 @@
 
 #include "FlumenBattle/Condition.h"
 #include "FlumenBattle/Character.h"
+#include "FlumenBattle/Combatant.h"
 
 Condition::Condition() {duration = 0;}
 
-Condition::Condition(ConditionTypes _type, Character * _character, Integer _difficultyClass) : character(_character)
+Condition::Condition(ConditionTypes _type, Combatant * _combatant, Integer _difficultyClass) : combatant(_combatant)
 {
     type = _type;
     difficultyClass = _difficultyClass;
@@ -31,7 +32,7 @@ void Condition::Apply()
     duration--;
     if(duration == 0)
     {
-        character->conditions.Remove(this);
+        combatant->conditions.Remove(this);
     }
 
     switch(type)
@@ -54,18 +55,18 @@ void Condition::InitializeCold()
 
 void Condition::ApplyCold() 
 {   
-    auto savingThrow = utility::GetRandom(1, 20) + character->GetFortitudeSaveBonus();
+    auto savingThrow = utility::GetRandom(1, 20) + combatant->character->GetFortitudeSaveBonus();
     if(savingThrow > difficultyClass)
     {
         if(duration != 0)
         {
-            character->conditions.Remove(this);
+            combatant->conditions.Remove(this);
             duration = 0;
         }
         return;
     }
 
-    character->speedPenalty += 3;
+    combatant->speedPenalty += 3;
 }
 
 void Condition::InitializeEvasion()

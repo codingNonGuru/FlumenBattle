@@ -28,7 +28,7 @@ Integer ProficiencyHandler::GetWeaponBonus(const Character &character, WeaponCla
     Integer modifier = 0;
     modifier += character.level / 6;
     
-    for(auto iterator = weaponClasses.GetFirst(); iterator != weaponClasses.GetLast(); ++iterator)
+    for(Proficiency *iterator = weaponClasses.GetFirst(); iterator != weaponClasses.GetLast(); ++iterator)
     {
         if(iterator->Type->Identifier == weaponClass)
         {

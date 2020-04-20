@@ -39,10 +39,10 @@ void ActionInfoPanel::HandleConfigure()
 
     battleController = BattleController::Get();
 
-    battleController->OnCharacterSelected.Add(this, &HandleCharacterSelected);
-    battleController->OnActionSelected.Add(this, &HandleActionSelected);
-    battleController->OnActionSelected.Add(this, &HandleSubactionSelected);
-    battleController->OnSubactionSelected.Add(this, &HandleSubactionSelected);
+    battleController->OnCharacterSelected.Add(this, &ActionInfoPanel::HandleCharacterSelected);
+    battleController->OnActionSelected.Add(this, &ActionInfoPanel::HandleActionSelected);
+    battleController->OnActionSelected.Add(this, &ActionInfoPanel::HandleSubactionSelected);
+    battleController->OnSubactionSelected.Add(this, &ActionInfoPanel::HandleSubactionSelected);
 
     auto fontSmall = FontManager::GetFont("DominicanSmall");
 

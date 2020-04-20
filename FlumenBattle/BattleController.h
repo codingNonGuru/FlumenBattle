@@ -5,6 +5,7 @@
 #include "FlumenBattle/CharacterActionData.h"
 
 class Character;
+class Combatant;
 struct BattleTile;
 class BattleScene;
 class Group;
@@ -27,9 +28,9 @@ class BattleController
 
     BattleTile *targetedTile;
 
-    Character *selectedCharacter;
+    Combatant *selectedCombatant;
 
-    Character *targetedCharacter;
+    Combatant *targetedCombatant;
 
     CharacterActionData lastActionData;
 
@@ -53,8 +54,6 @@ class BattleController
 
     void Act();
 
-    //void ChangeActionSelection(Integer);
-
     void EndTurn();
 
 public:
@@ -66,17 +65,21 @@ public:
 
     Delegate OnSubactionSelected;
 
-    void SelectCharacter(Character *);
+    void SelectCombatant(Combatant *);
 
-    void TargetCharacter(Character *);
+    void TargetCombatant(Combatant *);
 
     void TargetTile(BattleTile * tile) {targetedTile = tile;}
 
     BattleTile * GetTargetedTile() const {return targetedTile;}
 
-    Character * GetSelectedCharacter() const {return selectedCharacter;}
+    Combatant * GetSelectedCombatant() const {return selectedCombatant;}
 
-    Character * GetTargetedCharacter() const {return targetedCharacter;}
+    Combatant * GetTargetedCombatant() const {return targetedCombatant;}
+
+    Character * GetSelectedCharacter() const;
+
+    Character * GetTargetedCharacter() const;
 
     const CharacterActionData & GetLastAction() const {return lastActionData;}
 

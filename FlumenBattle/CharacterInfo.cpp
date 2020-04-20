@@ -11,6 +11,8 @@
 
 #include "FlumenBattle/CharacterInfo.h"
 #include "FlumenBattle/Character.h"
+#include "FlumenBattle/Combatant.h"
+#include "FlumenBattle/CombatGroup.h"
 #include "FlumenBattle/BattleController.h"
 #include "FlumenBattle/HumanController.h"
 #include "FlumenBattle/Group.h"
@@ -25,7 +27,7 @@ void CharacterInfo::HandleConfigure()
 
     auto textColor = Color::BLACK;
 
-	textLabel = new Text(fontMedium, character->group->GetColor());
+	textLabel = new Text(fontMedium, combatant->GetGroup()->GetGroup()->GetColor());
     Interface::AddElement("CharacterLabel", textLabel);
 
 	textLabel->Configure(Size(150, 150), DrawOrder(2), new Transform(Position2(-5.0f, 0.0f)), nullptr);
@@ -66,7 +68,7 @@ void CharacterInfo::HandleConfigure()
 
 	deathSavingLabel->SetParent(this);
 
-    switch(character->type)
+    switch(combatant->character->type)
     {
     case CharacterClasses::FIGHTER:
         textLabel->Setup("F");
@@ -89,7 +91,7 @@ void CharacterInfo::HandleConfigure()
 
 void CharacterInfo::HandleTargeting()
 {
-    HumanController::Get()->TargetCharacter(character);
+    HumanController::Get()->TargetCombatant(combatant);
 }
 
 void CharacterInfo::Select()
@@ -104,10 +106,10 @@ void CharacterInfo::Deselect()
 
 void CharacterInfo::HandleUpdate()
 {
-    auto string = Word() << character->currentHitPoints;
+    auto string = Word() << combatant->character->currentHitPoints;
     hitpointLabel->Setup(string);
 
-    if(battleController->GetTargetedCharacter() == character)
+    if(battleController->GetTargetedCombatant() == combatant)
     {
         targetedLabel->Enable();
     }
@@ -116,12 +118,12 @@ void CharacterInfo::HandleUpdate()
         targetedLabel->Disable();
     }
     
-    auto position = camera->GetScreenPosition(Position3(character->GetPosition(), 0.0f));
+    auto position = camera->GetScreenPosition(Position3(combatant->GetPosition(), 0.0f));
 
     transform_->GetPosition().x = position.x;
     transform_->GetPosition().y = position.y;
 
-    if(character->IsAlive() == false)
+    if(combatant->IsAlive() == false)
     {
         SetOpacity(0.5f);
 
@@ -135,13 +137,13 @@ void CharacterInfo::HandleUpdate()
 
         Word text;
 
-        if(character->deathThrowFailureCount < 3 && character->deathThrowSuccesCount < 3)
+        if(combatant->deathThrowFailureCount < 3 && combatant->deathThrowSuccesCount < 3)
         {
-            text << character->deathThrowSuccesCount << "/" << character->deathThrowFailureCount;
+            text << combatant->deathThrowSuccesCount << "/" << combatant->deathThrowFailureCount;
         }
         else
         {
-            if(character->deathThrowFailureCount >= 3)
+            if(combatant->deathThrowFailureCount >= 3)
             {
                 text << "Dead";
             }
@@ -153,4 +155,10 @@ void CharacterInfo::HandleUpdate()
 
         deathSavingLabel->Setup(text);
     }
+}
+
+void CharacterInfo::SetCombatant(Combatant *_combatant) 
+{
+    combatant = _combatant;
+    combatant->info = this;
 }

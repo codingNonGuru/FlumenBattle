@@ -7,16 +7,16 @@
 #include "FlumenBattle/CharacterActionData.h"
 
 class BattleInterface;
-class Group;
 class CharacterInfo;
-class Character;
+class Combatant;
+class CombatGroup;
 class BattleTileModel;
 class BattleMap;
 class BattleTile;
 
 struct Turn
 {
-    Character * Character;
+    class Combatant * Combatant;
 
     Integer Initiative;
 
@@ -36,17 +36,19 @@ class BattleScene : public Scene
 
     friend class BattleController;
 
-    BattleMap * battleMap;
+    BattleInterface *battleInterface;
 
-    BattleInterface * battleInterface;
+    BattleTileModel *battleTileModel;
 
-    BattleTileModel * battleTileModel;
+    BattleMap *battleMap;
 
-    Array <Group> groups;
+    CombatGroup *playerGroup;
+
+    CombatGroup *computerGroup;
 
     Array <Turn> turnOrder;
 
-    Turn * turn;
+    Turn *turn;
 
     static BattleScene* instance;
 
@@ -71,13 +73,15 @@ public:
 
     Turn* GetTurn() {return turn;}
 
-    Character * GetActingCharacter() {return turn->Character;}
+    Combatant * GetActingCharacter() {return turn->Combatant;}
 
     Camera * GetCamera() const;
 
-    Group * GetRandomGroup();
+    CombatGroup * GetPlayerGroup() const {return playerGroup;}
 
-    bool IsCharactersTurn(Character*) const;
+    CombatGroup * GetComputerGroup() const {return computerGroup;}
+
+    bool IsCharactersTurn(Combatant *) const;
 
     void EndTurn();
 

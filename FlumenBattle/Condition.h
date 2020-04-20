@@ -5,10 +5,12 @@
 #include "FlumenBattle/Types.hpp"
 
 #define ADD_FRIEND_CLASSES friend class Character;\
+    friend class Combatant;\
     friend class SpellCaster;\
     friend class container::Pool<Condition>;\
 
 class Character;
+class Combatant;
 
 class Condition
 {
@@ -20,11 +22,11 @@ class Condition
 
     Integer difficultyClass;
 
-    Character * character;
+    Combatant *combatant;
 
     Condition();
 
-    Condition(ConditionTypes, Character *, Integer = 0);
+    Condition(ConditionTypes, Combatant *, Integer = 0);
 
     void InitializeCold();
 

@@ -10,9 +10,10 @@
 #include "FlumenBattle/BattleInterface.h"
 #include "FlumenBattle/CharacterInfo.h"
 #include "FlumenBattle/Character.h"
+#include "FlumenBattle/Combatant.h"
+#include "FlumenBattle/CombatGroup.h"
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/BattleScene.h"
-#include "FlumenBattle/Group.h"
 #include "FlumenBattle/BattleInfoPanel.h"
 #include "FlumenBattle/ActionInfoPanel.h"
 #include "FlumenBattle/CharacterDetailPanel.h"
@@ -30,18 +31,18 @@ void BattleInterface::Initialize()
 
     auto spriteShader = ShaderManager::GetShaderMap().Get("Sprite");
 
-    const auto& groups = battleScene->groups;
-    for(auto group = groups.GetStart(); group != groups.GetEnd(); ++group)
+    auto groups = {battleScene->GetPlayerGroup(), battleScene->GetComputerGroup()};
+    //for(auto group = groups.GetStart(); group != groups.GetEnd(); ++group)
+    for(auto group : groups)
     {
-        const auto& characters = group->characters;
-        for(auto character = characters.GetStart(); character != characters.GetEnd(); ++character)
+        const auto& combatants = group->GetCombatants();
+        for(auto combatant = combatants.GetStart(); combatant != combatants.GetEnd(); ++combatant)
         {
             auto sprite = new Sprite(nullptr, spriteShader);
 
             characterInfo = new CharacterInfo();
             Interface::AddElement("CharacterInfo", characterInfo);
-            characterInfo->character = character;
-            character->info = characterInfo;
+            characterInfo->SetCombatant(combatant);
             characterInfo->Configure(Size(60, 90), DrawOrder(1), new Transform(Position2(0.0f, 0.0f)), sprite, Opacity(1.0f));
 
             characterInfo->Enable();

@@ -16,6 +16,7 @@ struct Weapon;
 struct Spell;
 struct SpellSlot;
 class Condition;
+class Combatant;
 
 class Character
 {
@@ -54,9 +55,9 @@ private:
 
     friend class AbilityHandler;
 
-    Group *group;
+    friend class Combatant;
 
-    CharacterInfo *info;
+    Group *group;
 
     CharacterClasses type;
 
@@ -74,15 +75,7 @@ private:
 
     Integer maximumHitPoints;
 
-    Integer armorClass;
-
-    Integer defaultSpeed;
-
-    Integer speedPenalty;
-
-    Integer movement;
-
-    Integer remainingActionCount;
+    Integer defaultSpeed; //Combatant
 
     Array <Action> actions;
 
@@ -90,102 +83,32 @@ private:
 
     Array <Weapon> weapons;
 
-    Weapon *selectedWeapon;
+    Weapon *selectedWeapon; //Combatant 
 
     Array <Spell> spells;
 
-    Spell *selectedSpell;
+    Spell *selectedSpell; //Combatant
 
     Array <SpellSlot> spellSlots;
 
-    Character *target;
-
-    bool isSavingAgainstDeath;
-
-    Integer deathThrowSuccesCount;
-
-    Integer deathThrowFailureCount;
-
-    Pool <Condition> conditions;
-
-    BattleTile* tile;
+    Combatant *combatant;
 
     Character();
 
     void Initialize();
 
-    bool CanMove() const;
-
-    bool CanStrike() const;
-
-    bool CanCastSpell() const;
-
-    bool CanDodge() const;
-
-    bool CanDash() const;
-
-    CharacterActionData Attack();
-
-    CharacterActionData CastSpell();
-
-    CharacterActionData Dodge();
-
-    CharacterActionData Dash();
-
-    Integer GetCurrentSpeed() const;
-
     Integer GetActionRange() const;
-
-    bool SufferDamage(Integer);
-
-    bool HealDamage(Integer);
-
-    bool HasAdvantage() const;
-
-    bool HasDisadvantage() const;
 
     void AddWeapon(Weapon);
 
     void AddSpell(Spell);
 
-    void AddCondition(Condition);
-
     void AddProficiency(Proficiency);
-
-    Integer RollAttackDamage() const;
-
-    bool IsDodging();
 
 public:
     bool IsAlive() const;
 
     Float GetHealth() const {return (Float)currentHitPoints / (Float)maximumHitPoints;}
-
-    void StartTurn();
-
-    bool CanTarget() const;
-
-    bool CanAct(Character *);
-
-    CharacterActionData Act(Character *);
-
-    bool Move(BattleTile*);
-
-    void SaveAgainstDeath();
-    
-    void Select();
-
-    void Deselect();
-
-    Position2 GetPosition();
-
-    Integer GetMovement() const;
-
-    BattleTile* GetTile() const {return tile;}
-
-    Integer GetDistanceTo(Character *) const;
-
-    Integer RollInitiative() const;
 
     Word GetName();
 
@@ -193,7 +116,7 @@ public:
 
     Group * GetGroup() const {return group;}
 
-    const Ability & GetAbility(AbilityTypes type) {return *abilities.GetAbility(type);}
+    const Ability & GetAbility(AbilityTypes type) const {return *abilities.GetAbility(type);}
 
     const Ability & GetAttackAbility() {return *abilities.GetAttackAbility();}
 
@@ -238,8 +161,4 @@ public:
     Weapon* GetSelectedWeapon() const {return selectedWeapon;}
 
     Spell* GetSelectedSpell() const {return selectedSpell;}
-
-    Character* GetTarget() const {return target;}
-
-    bool IsSavingAgainstDeath() const {return isSavingAgainstDeath;}
 };

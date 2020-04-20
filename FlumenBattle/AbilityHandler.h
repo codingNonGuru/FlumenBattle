@@ -21,33 +21,35 @@ public:
         }
     }
 
-    Ability * GetAbility(AbilityTypes type)
+    const Ability * GetAbility(AbilityTypes type) const
     {
-        return abilities[(int)type];
+        auto ability = abilities.Get((int)type);
+        return ability;
     }
 
-    Integer GetModifier(AbilityTypes type)
+    Integer GetModifier(AbilityTypes type) const
     {
-        return abilities[(int)type]->Modifier;
+        return GetAbility(type)->Modifier;
     }
 
     void SetScore(AbilityTypes type, Integer score)
     {
-        GetAbility(type)->SetScore(score);
+        auto ability = abilities[(int)type];
+        ability->SetScore(score);
     }
 
     void Boost(AbilityTypes type, Integer amount)
     {
-        auto ability = GetAbility(type);
+        auto ability = abilities[(int)type];
         ability->SetScore(ability->Score + amount);
     }
     
-    Ability * GetAttackAbility()
+    const Ability * GetAttackAbility()
     {
         return GetAbility(attackAbility);
     }
 
-    Ability * GetSpellCastingAbility()
+    const Ability * GetSpellCastingAbility()
     {
         return GetAbility(spellCastingAbility);
     }

@@ -1,6 +1,6 @@
 #include "World.hpp"
 #include "Group.h"
-#include "Battle.hpp"
+#include "Battle.h"
 
 World::World()
 {

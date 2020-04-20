@@ -76,7 +76,7 @@ BattleTile* BattleMap::GetEmptyRandomTile()
     while(true)
     {
         auto tile = GetRandomTile();
-        if(tile->Character == nullptr)
+        if(tile->Combatant == nullptr)
         {
             return tile;
         }
@@ -90,7 +90,7 @@ BattleTile* BattleMap::GetEmptyTileAroundTile(BattleTile * tile, Integer range)
     {
         auto index = utility::GetRandom(0, nearbyTiles.GetSize() - 1);
         auto otherTile = *nearbyTiles.Get(index);
-        if(otherTile->Character == nullptr)
+        if(otherTile->Combatant == nullptr)
         {
             return otherTile;
         }

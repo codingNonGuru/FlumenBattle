@@ -1,11 +1,11 @@
 #include "FlumenEngine/Core/Engine.hpp"
-#include "FlumenBattle/BattleState.h"
+#include "FlumenBattle/WorldState.h"
 
 int main()
 {
 	Engine::OnGameLoopStarted.Add
 	(
-		[](){ BattleState::Get()->Enter(); }
+		[]{ WorldState::Get()->Enter(); }
 	);
 
 	auto screenSize = Size(1920, 1080);

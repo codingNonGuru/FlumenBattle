@@ -1,9 +1,4 @@
-#include "Battle.hpp"
-
-GroupBattleData::GroupBattleData(class Group * group) : Group(group)
-{
-    //TroopDatas.
-}
+#include "FlumenBattle/Battle.h"
 
 Battle::Battle(Group * first_, Group * second_) : first(first_), second(second_)
 {

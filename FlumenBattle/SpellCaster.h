@@ -2,28 +2,28 @@
 
 #include "FlumenCore/Conventions.hpp"
 
-class Character;
+class Combatant;
 struct Spell;
 struct CharacterActionData;
 
 class SpellCaster
 {
-    static void ComputeDifficultyClass(Character&);
+    static void ComputeDifficultyClass(Combatant &);
 
-    static void RollAttack(Character&);
+    static void RollAttack(Combatant &);
 
-    static void RollDamage(Character&, const Spell &);
+    static void RollDamage(Combatant &, const Spell &);
 
-    static void RollHealing(Character&, const Spell &);
+    static void RollHealing(Combatant &, const Spell &);
 
-    static CharacterActionData ApplyFrostRay(Character &, const Spell &);
+    static CharacterActionData ApplyFrostRay(Combatant &, const Spell &);
 
-    static CharacterActionData ApplyShockingGrasp(Character &, const Spell &);
+    static CharacterActionData ApplyShockingGrasp(Combatant &, const Spell &);
 
-    static CharacterActionData ApplySacredFlame(Character &, const Spell &);
+    static CharacterActionData ApplySacredFlame(Combatant &, const Spell &);
 
-    static CharacterActionData ApplyCureWounds(Character &, const Spell &);
+    static CharacterActionData ApplyCureWounds(Combatant &, const Spell &);
 
 public:
-    static CharacterActionData ApplyEffect(Character &, const Spell &);
+    static CharacterActionData ApplyEffect(Combatant &, const Spell &);
 };

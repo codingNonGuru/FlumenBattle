@@ -5,7 +5,7 @@
 class Text;
 class Camera;
 
-class Character;
+class Combatant;
 class BattleController;
 
 class CharacterInfo : public Element
@@ -14,7 +14,7 @@ class CharacterInfo : public Element
 
     BattleController * battleController;
 
-    Character* character;
+    Combatant* combatant;
 
     Text* textLabel;
 
@@ -38,4 +38,6 @@ public:
     void Select();
 
     void Deselect();
+
+    void SetCombatant(Combatant *);
 };

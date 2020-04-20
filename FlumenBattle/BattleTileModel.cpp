@@ -13,6 +13,7 @@
 #include "FlumenBattle/BattleMap.h"
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/Character.h"
+#include "FlumenBattle/Combatant.h"
 #include "FlumenBattle/BattleTile.h"
 
 #define BATTLE_TILE_SIZE 34.0f
@@ -65,8 +66,8 @@ void BattleTileModel::CreateCamera()
 
 void BattleTileModel::HandleCharacterSelected()
 {
-    auto character = battleController->GetSelectedCharacter();
-    camera->SetTarget(Position3(character->GetPosition(), 0.0f), CAMERA_SHIFT_DURATION);
+    auto combatant = battleController->GetSelectedCombatant();
+    camera->SetTarget(Position3(combatant->GetPosition(), 0.0f), CAMERA_SHIFT_DURATION);
 }
 
 void BattleTileModel::Render() 
@@ -94,11 +95,11 @@ void BattleTileModel::Render()
     }
 
     auto map = battleScene->GetBattleMap();
-    auto character = battleController->GetSelectedCharacter();
+    auto combatant = battleController->GetSelectedCombatant();
 
-    if(character != nullptr)
+    if(combatant != nullptr)
     {
-        const auto &nearbyTiles = map->GetNearbyTiles(character->GetTile(), character->GetMovement());
+        const auto &nearbyTiles = map->GetNearbyTiles(combatant->GetTile(), combatant->GetMovement());
         for(auto tileIterator = nearbyTiles.GetStart(); tileIterator != nearbyTiles.GetEnd(); ++tileIterator)
         {
             auto tile = *tileIterator;

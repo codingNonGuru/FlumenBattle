@@ -2,13 +2,15 @@
 
 #include "FlumenCore/Conventions.hpp"
 
+#include "FlumenBattle/Types.hpp"
+
 class Character;
 class Group;
 struct BattleTile;
 
 struct GroupBuildData
 {
-    BattleTile * Tile;
+    RaceTypes Race;
 };
 
 class GroupFactory

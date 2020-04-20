@@ -11,10 +11,13 @@
 #include "FlumenBattle/GroupFactory.h"
 #include "FlumenBattle/Group.h"
 #include "FlumenBattle/CharacterInfo.h"
-#include "FlumenBattle/Character.h"
+#include "FlumenBattle/Combatant.h"
 #include "FlumenBattle/BattleTileModel.h"
 #include "FlumenBattle/BattleMap.h"
 #include "FlumenBattle/BattleTile.h"
+#include "FlumenBattle/CombatGroup.h"
+#include "FlumenBattle/WorldScene.h"
+#include "FlumenBattle/Battle.h"
 
 static Camera* camera = nullptr;
 
@@ -22,25 +25,27 @@ static const Float CAMERA_PAN_SPEED = 1500.0f;
 
 static const Float CAMERA_ZOOM_SPEED = 10.0f;
 
-static const Length BATTLE_MAP_SIZE = 45;
-
-static const Length MAXIMUM_GROUP_COUNT = 16;
+static const Length BATTLE_MAP_SIZE = 55;
 
 BattleScene* BattleScene::instance = nullptr;
 
-BattleScene::BattleScene() {}
-
-void BattleScene::Initialize()
+BattleScene::BattleScene() 
 {
     battleMap = new BattleMap(BATTLE_MAP_SIZE);
 
-    groups.Initialize(MAXIMUM_GROUP_COUNT);
+    playerGroup = new CombatGroup();
+    computerGroup = new CombatGroup();
+}
+
+void BattleScene::Initialize()
+{
+    auto battle = WorldScene::Get()->GetBattle();
 
     auto centerTile = battleMap->GetCenterTile();
     Integer3 offset = {-4, 12, -8};
 
-    GroupFactory::Create(groups, {centerTile->GetNeighbor(offset)});
-    GroupFactory::Create(groups, {centerTile->GetNeighbor(-offset)});
+    playerGroup->Initialize(battle->GetFirst(), centerTile->GetNeighbor(offset));
+    computerGroup->Initialize(battle->GetSecond(), centerTile->GetNeighbor(-offset));
 
     battleTileModel = new BattleTileModel();
     battleTileModel->Initialize();
@@ -64,12 +69,12 @@ void BattleScene::DetermineTurnOrder()
 {
     turnOrder.Initialize(256);
 
-    for(auto group = groups.GetStart(); group != groups.GetEnd(); ++group)
-    {
-        for(auto character = group->characters.GetStart(); character != group->characters.GetEnd(); ++character)
+    for(auto group : {playerGroup, computerGroup})
+    {    
+        for(auto combatant = group->combatants.GetStart(); combatant != group->combatants.GetEnd(); ++combatant)
         {
-            auto initiative = character->RollInitiative();
-            *turnOrder.Allocate() = {character, initiative};
+            auto initiative = combatant->RollInitiative();
+            *turnOrder.Allocate() = {combatant, initiative};
         }
     }
 
@@ -77,7 +82,7 @@ void BattleScene::DetermineTurnOrder()
 
     turn = turnOrder.GetStart();
 
-    turn->Character->StartTurn();
+    turn->Combatant->StartTurn();
 }
 
 void BattleScene::EndTurn()
@@ -91,14 +96,14 @@ void BattleScene::EndTurn()
             turn = turnOrder.GetStart();
         }
 
-        if(turn->Character->IsAlive())
+        if(turn->Combatant->IsAlive())
         {
             break;
         }
 
-        if(turn->Character->IsSavingAgainstDeath())
+        if(turn->Combatant->IsSavingAgainstDeath())
         {
-            turn->Character->SaveAgainstDeath();
+            turn->Combatant->SaveAgainstDeath();
         }
     }
 }
@@ -142,20 +147,14 @@ void BattleScene::Render()
     battleTileModel->Render();
 }
 
-bool BattleScene::IsCharactersTurn(Character* character) const
+bool BattleScene::IsCharactersTurn(Combatant *character) const
 {
-    return character == turn->Character;
+    return character == turn->Combatant;
 }
 
 Camera * BattleScene::GetCamera() const
 {
     return camera;
-}
-
-Group * BattleScene::GetRandomGroup()
-{
-    auto index = utility::GetRandom(0, groups.GetSize() - 1);
-    return groups.Get(index);
 }
 
 BattleScene* BattleScene::Get()

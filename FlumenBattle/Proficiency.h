@@ -34,9 +34,9 @@ union ProficiencyIdentifier
 
     ProficiencyIdentifier (MagicTraditions magicTradition) {MagicTradition = magicTradition;}
 
-    bool operator== (WeaponClasses weaponClass) {return WeaponClass == weaponClass;}
+    bool operator== (WeaponClasses weaponClass) const {return WeaponClass == weaponClass;}
 
-    bool operator== (SavingThrows savingThrow) {return SavingThrow == savingThrow;}
+    bool operator== (SavingThrows savingThrow) const {return SavingThrow == savingThrow;}
 };
 
 struct ProficiencyType

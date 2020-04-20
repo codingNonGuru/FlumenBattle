@@ -4,11 +4,13 @@
 
 #include "FlumenBattle/ArtificialController.h"
 #include "FlumenBattle/BattleController.h"
-#include "FlumenBattle/Group.h"
+#include "FlumenBattle/BattleScene.h"
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/BattleTile.h"
 #include "FlumenBattle/Weapon.h"
 #include "FlumenBattle/Spell.h"
+#include "FlumenBattle/Combatant.h"
+#include "FlumenBattle/CombatGroup.h"
 
 enum class ActionTriggers
 {
@@ -17,7 +19,7 @@ enum class ActionTriggers
 
 struct CombatantData
 {
-    Character *Character;
+    class Combatant *Combatant;
 
     Integer Distance;
 };
@@ -47,7 +49,7 @@ struct CombatTarget
         switch(Trigger)
         {
             case ActionTriggers::TARGET_DAMAGED:
-                return Target->Character->GetHealth() < 0.5f;
+                return Target->Combatant->GetHealth() < 0.5f;
                 break;
             case ActionTriggers::NONE:
                 return true;
@@ -82,21 +84,24 @@ CombatTarget primaryTarget;
 
 CombatTarget opportunityTarget;
 
+BattleController *battleController = nullptr;
+
+BattleScene *battleScene = nullptr;
+
+Combatant *selectedCombatant = nullptr;
+
 CombatantData ArtificialController::FindClosestEnemy()
 {
-    auto battleController = BattleController::Get();
-    auto selectedCharacter = battleController->selectedCharacter;
-
-    Character *closestCharacter = nullptr;
+    Combatant *closestCharacter = nullptr;
     Integer closestDistance = INT_MAX;
 
-    auto &characters = battleController->playerControlledGroup->GetCharacters();
-    for(auto character = characters.GetStart(); character != characters.GetEnd(); ++character)
+    auto &combatants = battleScene->GetPlayerGroup()->GetCombatants();
+    for(auto character = combatants.GetStart(); character != combatants.GetEnd(); ++character)
     {
         if(character->IsAlive() == false)
             continue;
 
-        auto distance = selectedCharacter->GetDistanceTo(character);
+        auto distance = selectedCombatant->GetDistanceTo(character);
         if(distance < closestDistance)
         {
             closestCharacter = character;
@@ -109,28 +114,25 @@ CombatantData ArtificialController::FindClosestEnemy()
 
 CombatantData ArtificialController::FindClosestAlly()
 {
-    auto battleController = BattleController::Get();
-    auto selectedCharacter = battleController->selectedCharacter;
-
-    Character *closestCharacter = nullptr;
+    Combatant *closestCharacter = nullptr;
     Integer closestDistance = INT_MAX;
 
-    auto &characters = battleController->computerControlledGroup->GetCharacters();
-    for(auto character = characters.GetStart(); character != characters.GetEnd(); ++character)
+    auto &characters = battleScene->GetComputerGroup()->GetCombatants();
+    for(auto combatant = characters.GetStart(); combatant != characters.GetEnd(); ++combatant)
     {
-        if(character == selectedCharacter)
+        if(combatant == selectedCombatant)
             continue;
 
-        if(character->IsAlive() == false)
+        if(combatant->IsAlive() == false)
             continue;
 
-        if(character->type != CharacterClasses::FIGHTER)
+        if(combatant->character->type != CharacterClasses::FIGHTER)
             continue;
 
-        auto distance = selectedCharacter->GetDistanceTo(character);
+        auto distance = selectedCombatant->GetDistanceTo(combatant);
         if(distance < closestDistance)
         {
-            closestCharacter = character;
+            closestCharacter = combatant;
             closestDistance = distance;
         }
     }
@@ -140,26 +142,23 @@ CombatantData ArtificialController::FindClosestAlly()
 
 void ArtificialController::DetermineActionCourse()
 {
-    auto battleController = BattleController::Get();
-    auto selectedCharacter = battleController->selectedCharacter;
-
     enemyData = FindClosestEnemy();
     
     allyData = FindClosestAlly();
 
-    selfData = {selectedCharacter, 0};
+    selfData = {selectedCombatant, 0};
 
     Integer highestDamage;
     Weapon *strongestWeapon;
 
-    switch(selectedCharacter->type)
+    switch(selectedCombatant->character->type)
     {
         case CharacterClasses::FIGHTER:
-            selectedCharacter->SelectAction(CharacterActions::ATTACK);
+            selectedCombatant->character->SelectAction(CharacterActions::ATTACK);
 
             highestDamage = 0;
             strongestWeapon = nullptr;
-            for(auto weapon = selectedCharacter->weapons.GetStart(); weapon != selectedCharacter->weapons.GetEnd(); ++weapon)
+            for(auto weapon = selectedCombatant->character->weapons.GetStart(); weapon != selectedCombatant->character->weapons.GetEnd(); ++weapon)
             {
                 if(weapon->GetAverageDamage() > highestDamage)
                 {
@@ -168,17 +167,17 @@ void ArtificialController::DetermineActionCourse()
                 }
             }
 
-            selectedCharacter->SelectWeapon(strongestWeapon);
+            selectedCombatant->character->SelectWeapon(strongestWeapon);
 
             primaryTarget = {&enemyData, ActionTriggers::NONE, strongestWeapon->Type};
             opportunityTarget = primaryTarget;
             break;
         case CharacterClasses::RANGER:
-            selectedCharacter->SelectAction(CharacterActions::ATTACK);
+            selectedCombatant->character->SelectAction(CharacterActions::ATTACK);
 
             highestDamage = 0;
             strongestWeapon = nullptr;
-            for(auto weapon = selectedCharacter->weapons.GetStart(); weapon != selectedCharacter->weapons.GetEnd(); ++weapon)
+            for(auto weapon = selectedCombatant->character->weapons.GetStart(); weapon != selectedCombatant->character->weapons.GetEnd(); ++weapon)
             {
                 if(weapon->GetAverageDamage() > highestDamage && weapon->Range > 1)
                 {
@@ -187,16 +186,16 @@ void ArtificialController::DetermineActionCourse()
                 }
             }
 
-            selectedCharacter->SelectWeapon(strongestWeapon);
+            selectedCombatant->character->SelectWeapon(strongestWeapon);
 
             primaryTarget = {&enemyData, ActionTriggers::NONE, strongestWeapon->Type};
             opportunityTarget = primaryTarget;
             break;
         case CharacterClasses::CLERIC:
-            if(allyData.Character != nullptr)
+            if(allyData.Combatant != nullptr)
             {
-                selectedCharacter->SelectAction(CharacterActions::CAST_SPELL);
-                selectedCharacter->SelectSpell(SpellTypes::CURE_WOUNDS);
+                selectedCombatant->character->SelectAction(CharacterActions::CAST_SPELL);
+                selectedCombatant->character->SelectSpell(SpellTypes::CURE_WOUNDS);
 
                 primaryTarget = {&allyData, ActionTriggers::TARGET_DAMAGED, SpellTypes::CURE_WOUNDS};
 
@@ -204,8 +203,8 @@ void ArtificialController::DetermineActionCourse()
             }
             else
             {
-                selectedCharacter->SelectAction(CharacterActions::CAST_SPELL);
-                selectedCharacter->SelectSpell(SpellTypes::SACRED_FLAME);
+                selectedCombatant->character->SelectAction(CharacterActions::CAST_SPELL);
+                selectedCombatant->character->SelectSpell(SpellTypes::SACRED_FLAME);
                 
                 primaryTarget = {&enemyData, ActionTriggers::NONE, SpellTypes::SACRED_FLAME};
 
@@ -213,8 +212,8 @@ void ArtificialController::DetermineActionCourse()
             }
             break;
         case CharacterClasses::WIZARD:
-            selectedCharacter->SelectAction(CharacterActions::CAST_SPELL);
-            selectedCharacter->SelectSpell(SpellTypes::FROST_RAY);
+            selectedCombatant->character->SelectAction(CharacterActions::CAST_SPELL);
+            selectedCombatant->character->SelectSpell(SpellTypes::FROST_RAY);
 
             primaryTarget = {&enemyData, ActionTriggers::NONE, SpellTypes::FROST_RAY};
             opportunityTarget = primaryTarget;
@@ -224,23 +223,20 @@ void ArtificialController::DetermineActionCourse()
 
 void ArtificialController::MoveCharacter()
 {
-    auto battleController = BattleController::Get();
-    auto selectedCharacter = battleController->selectedCharacter;
-
-    if(primaryTarget.Target->Character != nullptr)
+    if(primaryTarget.Target->Combatant != nullptr)
     {
         BattleTile *targetedTile = nullptr;
         Integer closestDistance = INT_MAX;
 
-        auto &nearbyTiles = selectedCharacter->GetTile()->GetNearbyTiles(1);
+        auto &nearbyTiles = selectedCombatant->tile->GetNearbyTiles(1);
         for(auto tileIterator = nearbyTiles.GetStart(); tileIterator != nearbyTiles.GetEnd(); ++tileIterator)
         {
             auto tile = *tileIterator;
-            if(tile->Character != nullptr)
+            if(tile->Combatant != nullptr)
                 continue;
 
-            Integer distance = selectedCharacter->GetTile()->GetDistanceTo(*tile);
-            distance += tile->GetDistanceTo(*primaryTarget.Target->Character->GetTile());
+            Integer distance = selectedCombatant->tile->GetDistanceTo(*tile);
+            distance += tile->GetDistanceTo(*primaryTarget.Target->Combatant->tile);
 
             *tileMoveDatas.Allocate() = {tile, distance};
         }
@@ -265,17 +261,14 @@ void ArtificialController::MoveCharacter()
 
         tileMoveDatas.Reset();
 
-        primaryTarget.Target->Distance = selectedCharacter->GetDistanceTo(primaryTarget.Target->Character);
+        primaryTarget.Target->Distance = selectedCombatant->GetDistanceTo(primaryTarget.Target->Combatant);
     }
 }
 
 void ArtificialController::PerformAction()
 {
-    auto battleController = BattleController::Get();
-    auto selectedCharacter = battleController->selectedCharacter;
-
-    auto movement = selectedCharacter->GetMovement();
-    bool isWithinRange = selectedCharacter->GetActionRange() >= primaryTarget.Target->Distance;
+    auto movement = selectedCombatant->GetMovement();
+    bool isWithinRange = selectedCombatant->character->GetActionRange() >= primaryTarget.Target->Distance;
     
     if(movement > 0 && isWithinRange == false) 
     {
@@ -287,7 +280,7 @@ void ArtificialController::PerformAction()
     {
         if(primaryTarget.IsTriggerValid())
         {
-            battleController->TargetCharacter(primaryTarget.Target->Character);
+            battleController->TargetCombatant(primaryTarget.Target->Combatant);
             battleController->Act();
         }
         else if(CheckOpportunity())
@@ -301,7 +294,7 @@ void ArtificialController::PerformAction()
         {}
         else
         {
-            selectedCharacter->SelectAction(CharacterActions::DODGE);
+            selectedCombatant->character->SelectAction(CharacterActions::DODGE);
             battleController->Act();
         }
 
@@ -316,27 +309,24 @@ void ArtificialController::PerformAction()
 
 bool ArtificialController::CheckOpportunity()
 {
-    auto battleController = BattleController::Get();
-    auto selectedCharacter = battleController->selectedCharacter;
-
     if(opportunityTarget.IsTriggerValid())
     {
-        selectedCharacter->SelectAction(opportunityTarget.Action);
+        selectedCombatant->character->SelectAction(opportunityTarget.Action);
 
         if(opportunityTarget.Action == CharacterActions::ATTACK)
         {
-            selectedCharacter->SelectWeapon(opportunityTarget.WeaponType);
+            selectedCombatant->character->SelectWeapon(opportunityTarget.WeaponType);
         }
         else
         {
-            selectedCharacter->SelectSpell(opportunityTarget.SpellType);
+            selectedCombatant->character->SelectSpell(opportunityTarget.SpellType);
         }
 
-        bool isWithinRange = selectedCharacter->GetActionRange() >= opportunityTarget.Target->Distance;  
+        bool isWithinRange = selectedCombatant->character->GetActionRange() >= opportunityTarget.Target->Distance;  
 
         if(isWithinRange)
         {
-            battleController->TargetCharacter(opportunityTarget.Target->Character);
+            battleController->TargetCombatant(opportunityTarget.Target->Combatant);
             battleController->Act();
 
             return true;
@@ -348,6 +338,10 @@ bool ArtificialController::CheckOpportunity()
 
 void ArtificialController::UpdateCharacter()
 {
+    battleController = BattleController::Get();
+    battleScene = BattleScene::Get();
+    selectedCombatant = battleController->GetSelectedCombatant();
+
     hasActed = false;
 
     DetermineActionCourse();

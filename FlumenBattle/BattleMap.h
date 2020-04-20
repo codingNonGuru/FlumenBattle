@@ -21,7 +21,7 @@ class BattleMap
     BattleTile* GetRandomTile();
 
 public:
-    static const Float TILE_DISTANCING = 60.0f;
+    static constexpr Float TILE_DISTANCING = 60.0f; 
 
     BattleTile* GetTile(Integer3);
 

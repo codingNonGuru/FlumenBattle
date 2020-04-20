@@ -8,9 +8,11 @@
 #include "FlumenBattle/ArtificialController.h"
 #include "FlumenBattle/HumanController.h"
 #include "FlumenBattle/BattleScene.h"
+#include "FlumenBattle/Combatant.h"
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/Group.h"
 #include "FlumenBattle/BattleTile.h"
+#include "FlumenBattle/CombatGroup.h"
 
 BattleController * BattleController::instance = nullptr;
 
@@ -18,19 +20,18 @@ void BattleController::Initialize()
 {
     battleScene = BattleScene::Get();
 
-    playerControlledGroup = battleScene->groups.Get(0);
-    computerControlledGroup = battleScene->groups.Get(1);
-
-    selectedCharacter = nullptr;
+    selectedCombatant = nullptr;
 
     HumanController::Get()->Initialize();
 
-    battleScene->OnEnabled.Add(this, &HandleSceneEnabled);
+    battleScene->OnEnabled.Add(this, &BattleController::HandleSceneEnabled);
 }
 
 void BattleController::HandleSceneEnabled()
 {
-    SelectCharacter(battleScene->GetActingCharacter());
+    SelectCombatant(battleScene->GetActingCharacter());
+
+    isPlayerInputEnabled = false;
 
     DetermineCharacterController();
 }
@@ -38,7 +39,7 @@ void BattleController::HandleSceneEnabled()
 void BattleController::DetermineCharacterController()
 {
     auto humanController = HumanController::Get();
-    if(selectedCharacter->GetGroup() == playerControlledGroup)
+    if(selectedCombatant->GetGroup() == battleScene->GetPlayerGroup())
     {
         if(!isPlayerInputEnabled)
         {
@@ -65,26 +66,25 @@ void BattleController::Move()
     if(targetedTile == nullptr)
         return;
 
-    if(selectedCharacter == nullptr)
+    if(selectedCombatant == nullptr)
         return;
 
-    if(battleScene->IsCharactersTurn(selectedCharacter) == false)
+    if(battleScene->IsCharactersTurn(selectedCombatant) == false)
         return;
 
-    selectedCharacter->Move(targetedTile);
+    selectedCombatant->Move(targetedTile);
 }
 
 void BattleController::SelectSubaction(Integer actionIndex)
 {
-    auto battleController = BattleController::Get();
-    auto selectedCharacter = battleController->selectedCharacter;
+    auto character = selectedCombatant->character;
 
-    auto currentIndex = selectedCharacter->GetSelectedSubactionIndex();
-    if(selectedCharacter->SelectActionOption(actionIndex))
+    auto currentIndex = character->GetSelectedSubactionIndex();
+    if(character->SelectActionOption(actionIndex))
     {
         if(actionIndex != currentIndex)
         {
-            targetedCharacter = nullptr;
+            targetedCombatant = nullptr;
         }
 
         OnSubactionSelected.Invoke();
@@ -93,12 +93,14 @@ void BattleController::SelectSubaction(Integer actionIndex)
 
 void BattleController::SelectAction(Integer actionIndex)
 {
-    auto currentIndex = selectedCharacter->GetSelectedActionIndex();
-    if(selectedCharacter->SelectAction(actionIndex))
+    auto character = selectedCombatant->character;
+
+    auto currentIndex = character->GetSelectedActionIndex();
+    if(character->SelectAction(actionIndex))
     {
         if(actionIndex != currentIndex)
         {
-            targetedCharacter = nullptr;
+            targetedCombatant = nullptr;
         }
 
         OnActionSelected.Invoke();
@@ -107,72 +109,76 @@ void BattleController::SelectAction(Integer actionIndex)
 
 void BattleController::Act()
 {
-    if(selectedCharacter == nullptr)
+    if(selectedCombatant == nullptr)
         return;
 
-    if(battleScene->IsCharactersTurn(selectedCharacter) == false)
+    if(battleScene->IsCharactersTurn(selectedCombatant) == false)
         return;
 
-    if(selectedCharacter->CanAct(targetedCharacter) == false)
+    if(selectedCombatant->CanAct(targetedCombatant) == false)
         return;
 
-    lastActionData = selectedCharacter->Act(targetedCharacter);
+    lastActionData = selectedCombatant->Act(targetedCombatant);
 
     OnCharacterActed.Invoke();
 
-    targetedCharacter = nullptr;
+    targetedCombatant = nullptr;
 }
 
 void BattleController::EndTurn()
 {
-    targetedCharacter = nullptr;
+    targetedCombatant = nullptr;
 
     battleScene->EndTurn();
 
-    SelectCharacter(battleScene->GetActingCharacter());
+    SelectCombatant(battleScene->GetActingCharacter());
 
-    selectedCharacter->StartTurn();
+    selectedCombatant->StartTurn();
 
     DetermineCharacterController();
 }
 
-void BattleController::SelectCharacter(Character *character)
+void BattleController::SelectCombatant(Combatant *combatant)
 {
-    if(selectedCharacter != nullptr)
+    if(selectedCombatant != nullptr)
     {
-        selectedCharacter->Deselect();
+        selectedCombatant->Deselect();
     }
 
-    selectedCharacter = character;
+    selectedCombatant = combatant;
 
-    if(selectedCharacter != nullptr)
+    if(selectedCombatant != nullptr)
     {
-        selectedCharacter->Select();
+        selectedCombatant->Select();
     }
 
     OnCharacterSelected.Invoke();
 }
 
-void BattleController::TargetCharacter(Character *target)
+void BattleController::TargetCombatant(Combatant *target)
 {
-    if(selectedCharacter == nullptr)
+    if(selectedCombatant == nullptr)
         return;
 
     if(target == nullptr)
         return;
 
-    if(battleScene->IsCharactersTurn(selectedCharacter) == false)
+    if(battleScene->IsCharactersTurn(selectedCombatant) == false)
         return;
 
-    if(selectedCharacter->CanAct(target))
+    if(selectedCombatant->CanAct(target))
     {
-        targetedCharacter = target;
+        targetedCombatant = target;
     }
     else
     {
-        targetedCharacter = nullptr;    
+        targetedCombatant = nullptr;    
     }
 }
+
+Character * BattleController::GetSelectedCharacter() const {return selectedCombatant->character;}
+
+Character * BattleController:: GetTargetedCharacter() const {return targetedCombatant->character;}
 
 BattleController * BattleController::Get()
 {

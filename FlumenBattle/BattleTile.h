@@ -2,7 +2,7 @@
 
 #include "FlumenCore/Conventions.hpp"
 
-class Character;
+class Combatant;
 class BattleMap;
 
 struct BattleTile
@@ -19,11 +19,11 @@ public:
 
     Integer3 HexCoordinates;
 
-    Character* Character;
+    class Combatant *Combatant;
 
     BattleTile() {}
 
-    BattleTile(Position2 position, Integer2 squareCoordinates) : Position(position), SquareCoordinates(squareCoordinates), Character(nullptr)
+    BattleTile(Position2 position, Integer2 squareCoordinates) : Position(position), SquareCoordinates(squareCoordinates), Combatant(nullptr)
     {
         HexCoordinates.x = squareCoordinates.x - squareCoordinates.y / 2;
         HexCoordinates.z = squareCoordinates.y;

@@ -4,13 +4,13 @@
 
 #include "FlumenBattle/Types.hpp"
 
-class Character;
+class Combatant;
 
 struct CharacterActionData
 {
     CharacterActions ActionType;
 
-    class Character * Character;
+    class Combatant * Combatant;
 
     Integer AttackRoll;
 
@@ -20,12 +20,12 @@ struct CharacterActionData
 
     bool HasSucceeded;
 
-    CharacterActionData() : Character(nullptr) {}
+    CharacterActionData() : Combatant(nullptr) {}
 
-    CharacterActionData(CharacterActions actionType, class Character * character, Integer attackRoll, Integer targetArmor, Integer damage, bool hasSucceeded)
+    CharacterActionData(CharacterActions actionType, class Combatant * combatant, Integer attackRoll, Integer targetArmor, Integer damage, bool hasSucceeded)
     {
         ActionType = actionType;
-        Character = character;
+        Combatant = combatant;
         AttackRoll = attackRoll;
         TargetArmorClass = targetArmor;
         Damage = damage;

@@ -11,6 +11,7 @@
 #include "FlumenEngine/Render/Camera.hpp"
 
 #include "FlumenBattle/Character.h"
+#include "FlumenBattle/Combatant.h"
 #include "FlumenBattle/BattleController.h"
 #include "FlumenBattle/Group.h"
 #include "FlumenBattle/BattleInfoPanel.h"
@@ -21,7 +22,7 @@ static BattleController * battleController = nullptr;
 void BattleInfoPanel::HandleConfigure() 
 {
     battleController = BattleController::Get();
-    battleController->OnCharacterActed.Add(this, &HandleCharacterAction);
+    battleController->OnCharacterActed.Add(this, &BattleInfoPanel::HandleCharacterAction);
 
     auto fontSmall = FontManager::GetFont("DominicanSmall");
 
@@ -42,8 +43,10 @@ void BattleInfoPanel::HandleConfigure()
 void BattleInfoPanel::HandleCharacterAction()
 {
     auto actionData = battleController->GetLastAction();
+    auto character = actionData.Combatant->GetCharacter();
+
     auto string = Phrase();
-    string << actionData.Character->GetName();
+    string << character->GetName();
 
     if(actionData.ActionType == CharacterActions::DODGE)
     {
@@ -55,8 +58,8 @@ void BattleInfoPanel::HandleCharacterAction()
     }
     else if(actionData.ActionType == CharacterActions::CAST_SPELL)
     {
-        string << " cast " << actionData.Character->GetSelectedSpell()->Name << " on " << actionData.Character->GetTarget()->GetName() << ".";
-        if(actionData.Character->GetSelectedSpell()->IsOffensive)
+        string << " cast " << character->GetSelectedSpell()->Name << " on " << actionData.Combatant->GetTarget()->GetCharacter()->GetName() << ".";
+        if(character->GetSelectedSpell()->IsOffensive)
         {
             if(actionData.HasSucceeded)
             {
@@ -71,7 +74,7 @@ void BattleInfoPanel::HandleCharacterAction()
     }
     else if(actionData.ActionType == CharacterActions::ATTACK)
     {
-        string << " attacked " << actionData.Character->GetTarget()->GetName() << ".";
+        string << " attacked " << actionData.Combatant->GetTarget()->GetCharacter()->GetName() << ".";
 
         if(actionData.HasSucceeded)
         {

@@ -1,25 +1,30 @@
 #pragma once
 
-#include "FlumenCore/Conventions.hpp"
+//#include "FlumenCore/Conventions.hpp"
+
 #include "FlumenEngine/Utility/Color.hpp"
 
 class Character;
-class BattleTile;
+class Battle;
 
 class Group
 {
+    friend class container::Array <Group>;
+
     friend class CharacterFactory;
 
     friend class GroupFactory;
 
     friend class BattleInterface;
 
-    friend class BattleScene;
+    friend class WorldScene;
 
-    friend class container::Array<Group>;
+    friend class Character;
 
-    BattleTile * tile;
-    
+    friend class CombatGroup;
+
+    Battle *battle;
+
     Color color;
 
     Array <Character> characters;

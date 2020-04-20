@@ -3,7 +3,7 @@
 #include "FlumenCore/Conventions.hpp"
 
 struct BattleTile;
-class Character;
+class Combatant;
 
 class HumanController
 {
@@ -54,7 +54,7 @@ class HumanController
 public:
     bool IsMoveInitiated() const {return isInitiatingMove;}
 
-    void TargetCharacter(Character *);
+    void TargetCombatant(Combatant *);
 
     BattleTile * GetHoveredTile() const {return hoveredTile;}
 
