@@ -32,7 +32,7 @@ static BattleController * battleController = nullptr;
 
 static HumanController * humanController = nullptr;
 
-void BattleTileModel::Initialize()
+BattleTileModel::BattleTileModel()
 {
     auto hexMesh = MeshManager::GetMeshes().Add("Hex"); 
 	*hexMesh = Mesh::GenerateHex();
@@ -43,14 +43,17 @@ void BattleTileModel::Initialize()
 
     battleController = BattleController::Get();
 
+    battleController->OnCharacterSelected.Add(this, &BattleTileModel::HandleCharacterSelected);
+
     humanController = HumanController::Get();
 
-    battleController->OnCharacterSelected.Add(this, &BattleTileModel::HandleCharacterSelected);
-    
+    CreateCamera();
+}
+
+void BattleTileModel::Initialize()
+{   
     auto backgroundColor = Color(0.1f, 0.1f, 0.7f, 1.0f);
 	RenderManager::SetBackgroundColor(backgroundColor);
-
-    CreateCamera();
 }
 
 void BattleTileModel::CreateCamera()

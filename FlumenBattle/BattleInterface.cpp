@@ -20,60 +20,72 @@
 
 CharacterInfo* characterInfo = nullptr;
 
-void BattleInterface::Initialize()
+BattleInterface::BattleInterface()
 {
+    std::cout<<"BATTLE INTERFACE START\n";
     auto glyphShader = ShaderManager::GetShaderMap().Get("Glyph");
     TextManager::Initialize(glyphShader);
 
     battleScene = BattleScene::Get();
 
+    std::cout<<"BATTLE INTERFACE MIDDLE\n";
+
     characterInfos.Initialize(32);
 
     auto spriteShader = ShaderManager::GetShaderMap().Get("Sprite");
 
-    auto groups = {battleScene->GetPlayerGroup(), battleScene->GetComputerGroup()};
-    //for(auto group = groups.GetStart(); group != groups.GetEnd(); ++group)
-    for(auto group : groups)
+
+    for(Index i = 0; i < characterInfos.GetCapacity(); ++i)
     {
-        const auto& combatants = group->GetCombatants();
-        for(auto combatant = combatants.GetStart(); combatant != combatants.GetEnd(); ++combatant)
-        {
-            auto sprite = new Sprite(nullptr, spriteShader);
+        auto sprite = new Sprite(nullptr, spriteShader);
 
-            characterInfo = new CharacterInfo();
-            Interface::AddElement("CharacterInfo", characterInfo);
-            characterInfo->SetCombatant(combatant);
-            characterInfo->Configure(Size(60, 90), DrawOrder(1), new Transform(Position2(0.0f, 0.0f)), sprite, Opacity(1.0f));
+        characterInfo = new CharacterInfo();
+        Interface::AddElement("CharacterInfo", characterInfo);
+        characterInfo->Configure(Size(60, 90), DrawOrder(1), new Transform(Position2(0.0f, 0.0f)), sprite, Opacity(1.0f));
 
-            characterInfo->Enable();
+        characterInfo->SetInteractivity(true);
 
-            characterInfo->SetInteractivity(true);
-
-            *characterInfos.Allocate() = characterInfo;
-        }
+        *characterInfos.Allocate() = characterInfo;
     }
 
     auto sprite = new Sprite(nullptr, spriteShader);
 
-    auto battleInfoPanel = new BattleInfoPanel();
+    battleInfoPanel = new BattleInfoPanel();
     Interface::AddElement("BattleInfoPanel", battleInfoPanel);
     battleInfoPanel->Configure(Size(620, 140), DrawOrder(3), new Transform(Position2(-640.0f, 460.0f)), sprite, Opacity(1.0f));
 
-    battleInfoPanel->Enable();
-
     sprite = new Sprite(nullptr, spriteShader);
 
-    auto actionInfoPanel = new ActionInfoPanel();
+    actionInfoPanel = new ActionInfoPanel();
     Interface::AddElement("ActionInfoPanel", actionInfoPanel);
     actionInfoPanel->Configure(Size(1900, 100), DrawOrder(3), new Transform(Position2(0.0f, -480.0f)), sprite, Opacity(1.0f));
 
-    actionInfoPanel->Enable();
-
     sprite = new Sprite(nullptr, spriteShader);
 
-    auto characterDetailPanel = new CharacterDetailPanel();
+    characterDetailPanel = new CharacterDetailPanel();
     Interface::AddElement("CharacterDetailPanel", characterDetailPanel);
     characterDetailPanel->Configure(Size(540, 220), DrawOrder(3), new Transform(Position2(680.0f, 420.0f)), sprite, Opacity(1.0f));
+
+    std::cout<<"BATTLE INTERFACE END\n";
+}
+
+void BattleInterface::Initialize()
+{
+    auto characterInfo = characterInfos.GetStart();
+    auto groups = {battleScene->GetPlayerGroup(), battleScene->GetComputerGroup()};
+    for(auto group : groups)
+    {
+        const auto& combatants = group->GetCombatants();
+        for(auto combatant = combatants.GetStart(); combatant != combatants.GetEnd(); ++combatant, ++characterInfo)
+        {
+            (*characterInfo)->SetCombatant(combatant);
+            (*characterInfo)->Enable();
+        }
+    }
+
+    battleInfoPanel->Enable();
+
+    actionInfoPanel->Enable();
 
     characterDetailPanel->Enable();
 }

@@ -28,6 +28,8 @@ class CharacterInfo : public Element
 
     Camera* camera;
 
+    void HandleEnable() override;
+
     void HandleConfigure() override;
 
     void HandleUpdate() override;

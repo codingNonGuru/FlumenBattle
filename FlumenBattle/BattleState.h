@@ -11,8 +11,6 @@ class BattleState : public State
 
     BattleController * controller;
 
-    static BattleState * instance;
-
     BattleState();
 
     void HandleEnter() override;
@@ -22,11 +20,8 @@ class BattleState : public State
 public:
     static BattleState * Get()
     {
-        if(instance == nullptr)
-        {
-            instance = new BattleState();
-        }
+        static BattleState state;
 
-        return instance;
+        return &state;
     }
 };

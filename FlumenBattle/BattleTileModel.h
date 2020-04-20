@@ -2,23 +2,28 @@
 
 #include "FlumenEngine/Render/Model.hpp"
 
+#include "FlumenBattle/Singleton.h"
+
 class Shader;
 
 class BattleScene;
 
-class BattleTileModel : public Model
+class BattleTileModel : public Model, public Singleton <BattleTileModel>
 {
-    friend class BattleScene;
+    friend class Singleton;
 
     Shader *shader;
 
     BattleScene *battleScene;
 
-    void CreateCamera();
+    BattleTileModel();
 
-    void HandleCharacterSelected();
-
+public:
     void Initialize() override;
 
     void Render();
+
+    void CreateCamera();
+
+    void HandleCharacterSelected();
 };

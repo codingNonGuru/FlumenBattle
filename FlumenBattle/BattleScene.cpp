@@ -27,10 +27,9 @@ static const Float CAMERA_ZOOM_SPEED = 10.0f;
 
 static const Length BATTLE_MAP_SIZE = 55;
 
-BattleScene* BattleScene::instance = nullptr;
-
 BattleScene::BattleScene() 
 {
+    std::cout<<"BATTLE SCENE\n";
     battleMap = new BattleMap(BATTLE_MAP_SIZE);
 
     playerGroup = new CombatGroup();
@@ -39,6 +38,7 @@ BattleScene::BattleScene()
 
 void BattleScene::Initialize()
 {
+    std::cout<<"BATTLE SCENE INITIALIZE\n";
     auto battle = WorldScene::Get()->GetBattle();
 
     auto centerTile = battleMap->GetCenterTile();
@@ -46,12 +46,6 @@ void BattleScene::Initialize()
 
     playerGroup->Initialize(battle->GetFirst(), centerTile->GetNeighbor(offset));
     computerGroup->Initialize(battle->GetSecond(), centerTile->GetNeighbor(-offset));
-
-    battleTileModel = new BattleTileModel();
-    battleTileModel->Initialize();
-
-    battleInterface = new BattleInterface();
-    battleInterface->Initialize();
 
     camera = RenderManager::GetCamera(Cameras::BATTLE);
 
@@ -144,7 +138,8 @@ void BattleScene::Update()
 
 void BattleScene::Render()
 {
-    battleTileModel->Render();
+    BattleTileModel::Get()->Render();
+    //battleTileModel->Render();
 }
 
 bool BattleScene::IsCharactersTurn(Combatant *character) const
@@ -157,12 +152,9 @@ Camera * BattleScene::GetCamera() const
     return camera;
 }
 
-BattleScene* BattleScene::Get()
+/*BattleScene* BattleScene::Get()
 {
-    if(instance == nullptr)
-    {
-        instance = new BattleScene();
-    }
+    static BattleScene scene;
     
-    return instance;
-}
+    return &scene;
+}*/

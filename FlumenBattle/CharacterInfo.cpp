@@ -27,7 +27,7 @@ void CharacterInfo::HandleConfigure()
 
     auto textColor = Color::BLACK;
 
-	textLabel = new Text(fontMedium, combatant->GetGroup()->GetGroup()->GetColor());
+	textLabel = new Text(fontMedium, textColor);
     Interface::AddElement("CharacterLabel", textLabel);
 
 	textLabel->Configure(Size(150, 150), DrawOrder(2), new Transform(Position2(-5.0f, 0.0f)), nullptr);
@@ -68,6 +68,13 @@ void CharacterInfo::HandleConfigure()
 
 	deathSavingLabel->SetParent(this);
 
+    GetLeftClickEvents().Add(this, &CharacterInfo::HandleTargeting);
+}
+
+void CharacterInfo::HandleEnable() 
+{
+    camera = RenderManager::GetCamera(Cameras::BATTLE);
+    
     switch(combatant->character->type)
     {
     case CharacterClasses::FIGHTER:
@@ -84,9 +91,7 @@ void CharacterInfo::HandleConfigure()
         break;
     }
 
-    GetLeftClickEvents().Add(this, &CharacterInfo::HandleTargeting);
-
-    camera = RenderManager::GetCamera(Cameras::BATTLE);
+    textLabel->SetColor(combatant->GetGroup()->GetGroup()->GetColor());
 }
 
 void CharacterInfo::HandleTargeting()

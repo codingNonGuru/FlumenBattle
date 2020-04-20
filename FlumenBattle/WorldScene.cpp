@@ -19,12 +19,15 @@ void WorldScene::Initialize()
     GroupFactory::Create(groups, {RaceTypes::HUMAN});
     GroupFactory::Create(groups, {RaceTypes::GNOME});
     GroupFactory::Create(groups, {RaceTypes::HALFLING});
+
+    std::cout<<"YO\n";
 }
 
 void WorldScene::Update() 
 {
     if(InputHandler::IsPressed(SDL_Scancode::SDL_SCANCODE_G) && !InputHandler::WasPressed(SDL_Scancode::SDL_SCANCODE_G))
     {
+        std::cout<<"YO2\n";
         battle = new Battle(groups.Get(0), groups.Get(1));
 
         BattleState::Get()->Enter();

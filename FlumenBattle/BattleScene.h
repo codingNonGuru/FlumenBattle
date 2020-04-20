@@ -6,6 +6,8 @@
 
 #include "FlumenBattle/CharacterActionData.h"
 
+#include "Singleton.h"
+
 class BattleInterface;
 class CharacterInfo;
 class Combatant;
@@ -26,7 +28,7 @@ struct Turn
     }
 };
 
-class BattleScene : public Scene 
+class BattleScene : public Scene, public Singleton<BattleScene>
 {
     friend class BattleInterface;
 
@@ -35,8 +37,6 @@ class BattleScene : public Scene
     friend class BattleState;
 
     friend class BattleController;
-
-    BattleInterface *battleInterface;
 
     BattleTileModel *battleTileModel;
 
@@ -49,8 +49,6 @@ class BattleScene : public Scene
     Array <Turn> turnOrder;
 
     Turn *turn;
-
-    static BattleScene* instance;
 
     void Initialize() override;
 
@@ -85,5 +83,5 @@ public:
 
     void EndTurn();
 
-    static BattleScene* Get(); 
+    //static BattleScene* Get(); 
 };

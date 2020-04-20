@@ -1,19 +1,33 @@
 #include "FlumenBattle/BattleState.h"
 #include "FlumenBattle/BattleScene.h"
 #include "FlumenBattle/BattleController.h"
+#include "FlumenBattle/BattleInterface.h"
+#include "FlumenBattle/BattleTileModel.h"
 
-BattleState * BattleState::instance = nullptr;
+static BattleTileModel *tileModel = nullptr;
+
+static BattleInterface *interface = nullptr;
 
 BattleState::BattleState()
 {
     scene = BattleScene::Get();
-    scene->Initialize();
+
+    controller = BattleController::Get();
+
+    tileModel = BattleTileModel::Get();
+
+    interface = new BattleInterface();
 }
 
 void BattleState::HandleEnter() 
 {
-    controller = BattleController::Get();
+    scene->Initialize();
+    
     controller->Initialize();
+
+    tileModel->Initialize();
+
+    interface->Initialize();
 
     scene->Enable();
 }
