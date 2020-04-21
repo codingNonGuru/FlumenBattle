@@ -13,7 +13,7 @@ void WorldScene::Initialize()
     groups.Initialize(MAXIMUM_GROUP_COUNT);
 
     GroupFactory::Create(groups, {RaceTypes::DWARF});
-    GroupFactory::Create(groups, {RaceTypes::ORC});
+    GroupFactory::Create(groups, {RaceTypes::ELF});
     GroupFactory::Create(groups, {RaceTypes::GOBLIN});
     GroupFactory::Create(groups, {RaceTypes::ELF});
     GroupFactory::Create(groups, {RaceTypes::HUMAN});

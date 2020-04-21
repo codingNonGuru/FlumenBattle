@@ -13,11 +13,6 @@
 #include "FlumenBattle/CombatGroup.h"
 #include "FlumenBattle/CharacterClass.h"
 
-enum class ActionTriggers
-{
-    TARGET_DAMAGED, NONE, ALL
-};
-
 struct CombatantData
 {
     class Combatant *Combatant;
@@ -25,11 +20,11 @@ struct CombatantData
     Integer Distance;
 };
 
-struct CombatTarget
+struct ActionData
 {
-    CombatantData *Target;
+    Combatant *Target;
 
-    ActionTriggers Trigger;
+    BattleTile *Destination;
 
     CharacterActions Action;
 
@@ -37,29 +32,17 @@ struct CombatTarget
 
     SpellTypes SpellType;
 
-    CombatTarget() {}
+    ActionData() {}
 
-    CombatTarget(CombatantData *target, ActionTriggers trigger, WeaponTypes weaponType) :
-        Target(target), Trigger(trigger), WeaponType(weaponType), Action(CharacterActions::ATTACK) {}
+    ActionData(CharacterActions action) : Action(action) {}
 
-    CombatTarget(CombatantData *target, ActionTriggers trigger, SpellTypes spellType) :
-        Target(target), Trigger(trigger), SpellType(spellType), Action(CharacterActions::CAST_SPELL) {}
+    ActionData(BattleTile *destination) : Action(CharacterActions::MOVE), Destination(destination) {}
 
-    bool IsTriggerValid()
-    {
-        switch(Trigger)
-        {
-            case ActionTriggers::TARGET_DAMAGED:
-                return Target->Combatant->GetHealth() < 0.5f;
-                break;
-            case ActionTriggers::NONE:
-                return true;
-                break;
-            case ActionTriggers::ALL:
-                return false;
-                break;
-        }
-    }
+    ActionData(Combatant *target, WeaponTypes weaponType) :
+        Target(target), WeaponType(weaponType), Action(CharacterActions::ATTACK) {}
+
+    ActionData(Combatant *target, SpellTypes spellType) :
+        Target(target), SpellType(spellType), Action(CharacterActions::CAST_SPELL) {}
 };
 
 struct TileMoveData
@@ -73,127 +56,155 @@ struct TileMoveData
 
 Array <TileMoveData> tileMoveDatas = Array <TileMoveData> (64);
 
-bool hasActed = false;
-
-CombatantData enemyData;
-
-CombatantData allyData;
-
-CombatantData selfData;
-
-CombatTarget primaryTarget;
-
-CombatTarget opportunityTarget;
-
 BattleController *battleController = nullptr;
 
 BattleScene *battleScene = nullptr;
 
 Combatant *selectedCombatant = nullptr;
 
-CombatantData ArtificialController::FindClosestEnemy()
-{
-    Combatant *closestCharacter = nullptr;
-    Integer closestDistance = INT_MAX;
+static Array <ActionData> actionQueue = Array <ActionData> (32);
 
-    auto &combatants = battleScene->GetPlayerGroup()->GetCombatants();
-    for(auto character = combatants.GetStart(); character != combatants.GetEnd(); ++character)
+static Integer currentActionIndex = 0;
+
+BattleTile * ArtificialController::FindClosestFreeTile(BattleTile *source, BattleTile *destination)
+{
+    auto &nearbyTiles = source->GetNearbyTiles(1);
+    for(auto tileIterator = nearbyTiles.GetStart(); tileIterator != nearbyTiles.GetEnd(); ++tileIterator)
     {
-        if(character->IsAlive() == false)
+        auto tile = *tileIterator;
+        if(tile->Combatant != nullptr)
             continue;
 
-        auto distance = selectedCombatant->GetDistanceTo(character);
-        if(distance < closestDistance)
+        bool hasVisited = false;
+        for(auto action = actionQueue.GetStart(); action != actionQueue.GetEnd(); ++action)
         {
-            closestCharacter = character;
-            closestDistance = distance;
+            if(action->Action == CharacterActions::MOVE && action->Destination == tile)
+            {
+                hasVisited = true;
+                break;
+            }
+        }
+
+        if(hasVisited)
+            continue;
+
+        Integer distance = tile->GetDistanceTo(*destination);
+
+        *tileMoveDatas.Allocate() = {tile, distance};
+    }
+
+    tileMoveDatas.SortAscendantly();
+
+    Integer closestDistance = tileMoveDatas.GetStart()->Distance;
+    Index dataIndex = 0;
+    for(auto data = tileMoveDatas.GetStart(); data != tileMoveDatas.GetEnd(); ++data, ++dataIndex)
+    {
+        if(data->Distance > closestDistance)
+        {
+            break;
         }
     }
 
-    return {closestCharacter, closestDistance};
+    dataIndex = utility::GetRandom(0, dataIndex - 1);
+    BattleTile *targetedTile = tileMoveDatas.Get(dataIndex)->Tile;
+
+    tileMoveDatas.Reset();
+
+    return targetedTile;
 }
 
-CombatantData ArtificialController::FindClosestAlly()
+CombatantData ArtificialController::FindCombatant(FilterList filterData, CombatantSinglingCriteria singlingCriterion)
 {
-    Combatant *closestCharacter = nullptr;
-    Integer closestDistance = INT_MAX;
+    static Array <CombatSearchFilter> filters = Array <CombatSearchFilter> (16);
+    filters.Reset();
 
-    auto &characters = battleScene->GetComputerGroup()->GetCombatants();
-    for(auto combatant = characters.GetStart(); combatant != characters.GetEnd(); ++combatant)
+    for(auto filter : filterData)
     {
-        if(combatant == selectedCombatant)
-            continue;
+        *filters.Allocate() = filter;
+    }
 
-        if(combatant->IsAlive() == false)
-            continue;
+    static Array <CombatGroup *> groups = Array <CombatGroup *> (2);
+    groups.Reset();
 
-        if(combatant->character->type->IsClass(CharacterClasses::FIGHTER) == false)
-            continue;
+    if(filters.Find(CombatSearchFilterTypes::IS_ALLY))
+    {
+        *groups.Allocate() = battleScene->GetComputerGroup();
+    }
 
-        auto distance = selectedCombatant->GetDistanceTo(combatant);
-        if(distance < closestDistance)
+    if(filters.Find(CombatSearchFilterTypes::IS_ENEMY))
+    {
+        *groups.Allocate() = battleScene->GetPlayerGroup();
+    }
+
+    Combatant *searchResult = nullptr;
+
+    for(auto group = groups.GetStart(); group != groups.GetEnd(); ++group)
+    {
+        auto &combatants = (*group)->GetCombatants();
+        for(auto combatant = combatants.GetStart(); combatant != combatants.GetEnd(); ++combatant)
         {
-            closestCharacter = combatant;
-            closestDistance = distance;
+            if(filters.Find(CombatSearchFilterTypes::IS_ALIVE))
+            {
+                if(combatant->IsAlive() == false)
+                    continue;
+            }
+
+            if(auto filter = filters.Find(CombatSearchFilterTypes::IS_WITHIN_RANGE))
+            {
+                auto distance = selectedCombatant->GetDistanceTo(combatant);
+                if(distance > filter->Value)
+                    continue;
+            }
+
+            if(filters.Find(CombatSearchFilterTypes::IS_VULNERABLE))
+            {   
+                if(combatant->GetHealth() > 0.5f && combatant->armorClass > 12)
+                    continue;
+            }
+
+            if(searchResult != nullptr)
+            {
+                if(singlingCriterion == CombatantSinglingCriteria::IS_CLOSEST)
+                {
+                    auto distance = selectedCombatant->GetDistanceTo(combatant);
+                    if(distance < selectedCombatant->GetDistanceTo(searchResult))
+                    {
+                        searchResult = combatant;
+                    }
+                }
+                else if(singlingCriterion == CombatantSinglingCriteria::IS_MOST_VULNERABLE)
+                {
+                    if(combatant->GetHealth() < searchResult->GetHealth())
+                    {
+                        searchResult = combatant;
+                    }
+                }
+            }
+            else
+            {
+                searchResult = combatant;
+            }
         }
     }
 
-    return {closestCharacter, closestDistance};
+    auto distance = searchResult != nullptr ? selectedCombatant->GetDistanceTo(searchResult) : 0;
+    return {searchResult, distance};
 }
 
 void ArtificialController::DetermineActionCourse()
 {
-    enemyData = FindClosestEnemy();
-    
-    allyData = FindClosestAlly();
-
-    selfData = {selectedCombatant, 0};
-
-    Integer highestDamage;
-    Weapon *strongestWeapon;
+    actionQueue.Reset();
 
     switch(selectedCombatant->character->type->Class)
     {
         case CharacterClasses::FIGHTER:
-            selectedCombatant->character->SelectAction(CharacterActions::ATTACK);
-
-            highestDamage = 0;
-            strongestWeapon = nullptr;
-            for(auto weapon = selectedCombatant->character->weapons.GetStart(); weapon != selectedCombatant->character->weapons.GetEnd(); ++weapon)
-            {
-                if(weapon->GetAverageDamage() > highestDamage)
-                {
-                    highestDamage = weapon->GetAverageDamage();
-                    strongestWeapon = weapon;
-                }
-            }
-
-            selectedCombatant->character->SelectWeapon(strongestWeapon);
-
-            primaryTarget = {&enemyData, ActionTriggers::NONE, strongestWeapon->Type};
-            opportunityTarget = primaryTarget;
+            DetermineFighterBehavior();
             break;
         case CharacterClasses::RANGER:
-            selectedCombatant->character->SelectAction(CharacterActions::ATTACK);
-
-            highestDamage = 0;
-            strongestWeapon = nullptr;
-            for(auto weapon = selectedCombatant->character->weapons.GetStart(); weapon != selectedCombatant->character->weapons.GetEnd(); ++weapon)
-            {
-                if(weapon->GetAverageDamage() > highestDamage && weapon->Range > 1)
-                {
-                    highestDamage = weapon->GetAverageDamage();
-                    strongestWeapon = weapon;
-                }
-            }
-
-            selectedCombatant->character->SelectWeapon(strongestWeapon);
-
-            primaryTarget = {&enemyData, ActionTriggers::NONE, strongestWeapon->Type};
-            opportunityTarget = primaryTarget;
+            DetermineRangerBehavior();
             break;
         case CharacterClasses::CLERIC:
-            if(allyData.Combatant != nullptr)
+            /*if(allyData.Combatant != nullptr)
             {
                 selectedCombatant->character->SelectAction(CharacterActions::CAST_SPELL);
                 selectedCombatant->character->SelectSpell(SpellTypes::CURE_WOUNDS);
@@ -210,131 +221,213 @@ void ArtificialController::DetermineActionCourse()
                 primaryTarget = {&enemyData, ActionTriggers::NONE, SpellTypes::SACRED_FLAME};
 
                 opportunityTarget = {&selfData, ActionTriggers::TARGET_DAMAGED, SpellTypes::CURE_WOUNDS};
-            }
+            }*/
             break;
         case CharacterClasses::WIZARD:
-            selectedCombatant->character->SelectAction(CharacterActions::CAST_SPELL);
+            /*selectedCombatant->character->SelectAction(CharacterActions::CAST_SPELL);
             selectedCombatant->character->SelectSpell(SpellTypes::FROST_RAY);
 
             primaryTarget = {&enemyData, ActionTriggers::NONE, SpellTypes::FROST_RAY};
-            opportunityTarget = primaryTarget;
+            opportunityTarget = primaryTarget;*/
             break;
+    }
+}
+
+void ArtificialController::DetermineFighterBehavior()
+{
+    selectedCombatant->character->SelectAction(CharacterActions::ATTACK);
+
+    selectedCombatant->character->SelectWeapon(WeaponTypes::GREAT_SWORD);
+
+    auto combatantData = FindCombatant(
+        {CombatSearchFilterTypes::IS_ALIVE, CombatSearchFilterTypes::IS_ENEMY, {CombatSearchFilterTypes::IS_WITHIN_RANGE, 1}}, 
+        CombatantSinglingCriteria::IS_MOST_VULNERABLE);
+
+    if(combatantData.Combatant != nullptr)
+    {
+        *actionQueue.Allocate() = {combatantData.Combatant, WeaponTypes::GREAT_SWORD};
+    }
+    else
+    {
+        auto combatantData = FindCombatant(
+            {CombatSearchFilterTypes::IS_ALIVE, CombatSearchFilterTypes::IS_ENEMY}, 
+            CombatantSinglingCriteria::IS_CLOSEST);
+
+        if(combatantData.Combatant != nullptr)
+        {
+            auto movement = selectedCombatant->GetMovement();
+            bool hasReached = false; 
+
+            auto startTile = selectedCombatant->GetTile();
+            auto endTile = combatantData.Combatant->GetTile();
+            while(true)
+            {
+                startTile = FindClosestFreeTile(startTile, endTile);
+
+                *actionQueue.Allocate() = {startTile};
+
+                movement--;
+                
+                hasReached = startTile->GetDistanceTo(*endTile) == 1;
+
+                if(movement == 0 || hasReached)
+                {
+                    break;
+                }
+            }
+
+            if(hasReached)
+            {
+                *actionQueue.Allocate() = {combatantData.Combatant, WeaponTypes::GREAT_SWORD};
+            }
+            else
+            {
+                *actionQueue.Allocate() = {CharacterActions::DODGE};
+            }
+        }
+    }
+}
+
+void ArtificialController::DetermineRangerBehavior()
+{
+    selectedCombatant->character->SelectAction(CharacterActions::ATTACK);
+
+    auto combatantData = FindCombatant(
+        {CombatSearchFilterTypes::IS_ALIVE, CombatSearchFilterTypes::IS_ENEMY, {CombatSearchFilterTypes::IS_WITHIN_RANGE, 1}}, 
+        CombatantSinglingCriteria::IS_MOST_VULNERABLE);
+
+    if(combatantData.Combatant != nullptr)
+    {
+        *actionQueue.Allocate() = {combatantData.Combatant, WeaponTypes::SHORT_SWORD};
+    }
+    else
+    {
+        selectedCombatant->character->SelectWeapon(WeaponTypes::LONG_BOW);
+        auto range = selectedCombatant->character->GetActionRange();
+
+        auto mostVulnerableEnemy = FindCombatant(
+            {CombatSearchFilterTypes::IS_ALIVE, CombatSearchFilterTypes::IS_ENEMY, {CombatSearchFilterTypes::IS_WITHIN_RANGE, range}}, 
+            CombatantSinglingCriteria::IS_MOST_VULNERABLE);
+
+        auto closestVulnerableEnemy = FindCombatant(
+            {CombatSearchFilterTypes::IS_ALIVE, CombatSearchFilterTypes::IS_ENEMY, CombatSearchFilterTypes::IS_VULNERABLE}, 
+            CombatantSinglingCriteria::IS_CLOSEST);
+
+        auto closestEnemy = FindCombatant(
+            {CombatSearchFilterTypes::IS_ALIVE, CombatSearchFilterTypes::IS_ENEMY}, 
+            CombatantSinglingCriteria::IS_CLOSEST);
+
+        CombatantData target;
+        if(mostVulnerableEnemy.Combatant != nullptr)
+        {
+            target = mostVulnerableEnemy;
+        }
+        else if(closestVulnerableEnemy.Combatant != nullptr)
+        {
+            target = closestVulnerableEnemy;
+        }
+        else
+        {
+            target = closestEnemy;
+        }
+
+        if(target.Combatant != nullptr && target.Distance > range)
+        {
+            auto movement = selectedCombatant->GetMovement();
+            bool hasReached = false; 
+
+            auto startTile = selectedCombatant->GetTile();
+            auto endTile = target.Combatant->GetTile();
+            while(true)
+            {
+                startTile = FindClosestFreeTile(startTile, endTile);
+
+                *actionQueue.Allocate() = {startTile};
+
+                movement--;
+                
+                hasReached = startTile->GetDistanceTo(*endTile) == range;
+
+                if(movement == 0 || hasReached)
+                {
+                    break;
+                }
+            }
+
+            if(hasReached)
+            {
+                *actionQueue.Allocate() = {target.Combatant, WeaponTypes::LONG_BOW};
+            }
+            else
+            {
+                *actionQueue.Allocate() = {CharacterActions::DODGE};
+            }
+        }
+        else if(target.Distance <= range)
+        {
+            *actionQueue.Allocate() = {target.Combatant, WeaponTypes::LONG_BOW};
+        }
     }
 }
 
 void ArtificialController::MoveCharacter()
 {
-    if(primaryTarget.Target->Combatant != nullptr)
+    auto action = actionQueue.Get(currentActionIndex);
+
+    if(action->Destination != nullptr)
     {
-        BattleTile *targetedTile = nullptr;
-        Integer closestDistance = INT_MAX;
-
-        auto &nearbyTiles = selectedCombatant->tile->GetNearbyTiles(1);
-        for(auto tileIterator = nearbyTiles.GetStart(); tileIterator != nearbyTiles.GetEnd(); ++tileIterator)
-        {
-            auto tile = *tileIterator;
-            if(tile->Combatant != nullptr)
-                continue;
-
-            Integer distance = selectedCombatant->tile->GetDistanceTo(*tile);
-            distance += tile->GetDistanceTo(*primaryTarget.Target->Combatant->tile);
-
-            *tileMoveDatas.Allocate() = {tile, distance};
-        }
-
-        tileMoveDatas.SortAscendantly();
-
-        closestDistance = tileMoveDatas.GetStart()->Distance;
-        Index dataIndex = 0;
-        for(auto data = tileMoveDatas.GetStart(); data != tileMoveDatas.GetEnd(); ++data, ++dataIndex)
-        {
-            if(data->Distance > closestDistance)
-            {
-                break;
-            }
-        }
-
-        dataIndex = utility::GetRandom(0, dataIndex - 1);
-        targetedTile = tileMoveDatas.Get(dataIndex)->Tile;
-
-        battleController->TargetTile(targetedTile);
+        battleController->TargetTile(action->Destination);
         battleController->Move();
-
-        tileMoveDatas.Reset();
-
-        primaryTarget.Target->Distance = selectedCombatant->GetDistanceTo(primaryTarget.Target->Combatant);
     }
 }
 
 void ArtificialController::PerformAction()
 {
-    auto movement = selectedCombatant->GetMovement();
-    bool isWithinRange = selectedCombatant->character->GetActionRange() >= primaryTarget.Target->Distance;
-    
-    if(movement > 0 && isWithinRange == false) 
+    if(actionQueue.IsEmpty())
+    {
+        TaskManager::Add()->Initialize(battleController, &BattleController::EndTurn, 0.7f);
+        return;
+    }
+
+    auto action = actionQueue.Get(currentActionIndex);
+
+    if(action->Action == CharacterActions::MOVE)
     {
         MoveCharacter();
-
-        TaskManager::Add()->Initialize(this, &ArtificialController::PerformAction, 0.1f);
     }
-    else if(isWithinRange == true)
+    else if(action->Action == CharacterActions::ATTACK)
     {
-        if(primaryTarget.IsTriggerValid())
-        {
-            battleController->TargetCombatant(primaryTarget.Target->Combatant);
-            battleController->Act();
-        }
-        else if(CheckOpportunity())
-        {}
+        selectedCombatant->character->SelectAction(action->Action);
+        selectedCombatant->character->SelectWeapon(action->WeaponType);
 
-        hasActed = true;   
+        battleController->TargetCombatant(action->Target);
+        battleController->Act();
+    }
+    else if(action->Action == CharacterActions::CAST_SPELL)
+    {
+        selectedCombatant->character->SelectAction(action->Action);
+        selectedCombatant->character->SelectSpell(action->SpellType);
+
+        battleController->TargetCombatant(action->Target);
+        battleController->Act();
     }
     else
     {
-        if(CheckOpportunity())
-        {}
-        else
-        {
-            selectedCombatant->character->SelectAction(CharacterActions::DODGE);
-            battleController->Act();
-        }
+        selectedCombatant->character->SelectAction(action->Action); 
 
-        TaskManager::Add()->Initialize(battleController, &BattleController::EndTurn, 0.7f);
-    }        
+        battleController->Act();
+    }
 
-    if(hasActed)
+    currentActionIndex++;
+
+    if(currentActionIndex == actionQueue.GetSize())
     {
         TaskManager::Add()->Initialize(battleController, &BattleController::EndTurn, 0.7f);
     }
-}
-
-bool ArtificialController::CheckOpportunity()
-{
-    if(opportunityTarget.IsTriggerValid())
+    else
     {
-        selectedCombatant->character->SelectAction(opportunityTarget.Action);
-
-        if(opportunityTarget.Action == CharacterActions::ATTACK)
-        {
-            selectedCombatant->character->SelectWeapon(opportunityTarget.WeaponType);
-        }
-        else
-        {
-            selectedCombatant->character->SelectSpell(opportunityTarget.SpellType);
-        }
-
-        bool isWithinRange = selectedCombatant->character->GetActionRange() >= opportunityTarget.Target->Distance;  
-
-        if(isWithinRange)
-        {
-            battleController->TargetCombatant(opportunityTarget.Target->Combatant);
-            battleController->Act();
-
-            return true;
-        }
+        TaskManager::Add()->Initialize(this, &ArtificialController::PerformAction, 0.1f);
     }
-
-    return false;
 }
 
 void ArtificialController::UpdateCharacter()
@@ -343,7 +436,7 @@ void ArtificialController::UpdateCharacter()
     battleScene = BattleScene::Get();
     selectedCombatant = battleController->GetSelectedCombatant();
 
-    hasActed = false;
+    currentActionIndex = 0;
 
     DetermineActionCourse();
 

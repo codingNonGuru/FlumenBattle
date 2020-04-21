@@ -51,7 +51,7 @@ void Group::Initialize(Integer size, Color color, RaceTypes raceType)
         auto dice = utility::GetRandom(0, classMakeup.GetSize() - 1);
         CharacterClasses type = *classMakeup.Get(dice);
 
-        auto race = RaceFactory::BuildRandomRace();
+        auto race = RaceFactory::BuildRace(raceType);
 
         CharacterFactory::Create(race, &ClassFactory::BuildClass(type), *this);
     }
