@@ -13,11 +13,42 @@
 #include "FlumenBattle/CombatGroup.h"
 #include "FlumenBattle/CharacterClass.h"
 
+enum class NarrowingCriteria
+{
+    IS_NOT_SELF, IS_ALLY, IS_ENEMY, IS_VULNERABLE, IS_WITHIN_RANGE, IS_ALIVE, IS_CLASS, IS_NOT_CLASS
+};
+
+enum class SinglingCriteria
+{
+    IS_CLOSEST, IS_LEAST_HEALTHY, IS_LEAST_ARMORED
+};
+
+struct CombatSearchFilter
+{
+    NarrowingCriteria Type;
+
+    Integer Value;
+
+    bool operator== (const CombatSearchFilter &filter) {return Type == filter.Type;}
+
+    CombatSearchFilter() {}
+
+    CombatSearchFilter(NarrowingCriteria type) : Type(type) {}
+
+    CombatSearchFilter(NarrowingCriteria type, Integer value) : Type(type), Value(value) {}
+
+    CombatSearchFilter(NarrowingCriteria type, CharacterClasses value) : Type(type), Value((Integer)value) {}
+};
+
 struct CombatantData
 {
     class Combatant *Combatant;
 
     Integer Distance;
+
+    operator bool() {return Combatant != nullptr;}
+
+    operator class Combatant *() {return Combatant;}
 };
 
 struct ActionData
@@ -113,11 +144,13 @@ BattleTile * ArtificialController::FindClosestFreeTile(BattleTile *source, Battl
     return targetedTile;
 }
 
-CombatantData ArtificialController::FindCombatant(FilterList filterData, CombatantSinglingCriteria singlingCriterion)
+CombatantData ArtificialController::FindCombatant(FilterList filterData, SinglingCriteria singlingCriterion)
 {
-    static Array <CombatSearchFilter> filters = Array <CombatSearchFilter> (16);
-    filters.Reset();
+    auto virtualPosition = GetVirtualTile();
 
+    static Array <CombatSearchFilter> filters = Array <CombatSearchFilter> (16);
+
+    filters.Reset();
     for(auto filter : filterData)
     {
         *filters.Allocate() = filter;
@@ -126,12 +159,12 @@ CombatantData ArtificialController::FindCombatant(FilterList filterData, Combata
     static Array <CombatGroup *> groups = Array <CombatGroup *> (2);
     groups.Reset();
 
-    if(filters.Find(CombatSearchFilterTypes::IS_ALLY))
+    if(filters.Find(NarrowingCriteria::IS_ALLY))
     {
         *groups.Allocate() = battleScene->GetComputerGroup();
     }
 
-    if(filters.Find(CombatSearchFilterTypes::IS_ENEMY))
+    if(filters.Find(NarrowingCriteria::IS_ENEMY))
     {
         *groups.Allocate() = battleScene->GetPlayerGroup();
     }
@@ -143,38 +176,63 @@ CombatantData ArtificialController::FindCombatant(FilterList filterData, Combata
         auto &combatants = (*group)->GetCombatants();
         for(auto combatant = combatants.GetStart(); combatant != combatants.GetEnd(); ++combatant)
         {
-            if(filters.Find(CombatSearchFilterTypes::IS_ALIVE))
+            if(filters.Find(NarrowingCriteria::IS_NOT_SELF))
+            {
+                if(combatant == selectedCombatant)
+                    continue;
+            }
+            
+            if(filters.Find(NarrowingCriteria::IS_ALIVE))
             {
                 if(combatant->IsAlive() == false)
                     continue;
             }
 
-            if(auto filter = filters.Find(CombatSearchFilterTypes::IS_WITHIN_RANGE))
+            if(auto filter = filters.Find(NarrowingCriteria::IS_WITHIN_RANGE))
             {
-                auto distance = selectedCombatant->GetDistanceTo(combatant);
+                auto distance = virtualPosition->GetDistanceTo(*combatant->GetTile());
                 if(distance > filter->Value)
                     continue;
             }
 
-            if(filters.Find(CombatSearchFilterTypes::IS_VULNERABLE))
+            if(filters.Find(NarrowingCriteria::IS_VULNERABLE))
             {   
-                if(combatant->GetHealth() > 0.5f && combatant->armorClass > 12)
+                if(combatant->GetHealth() > 0.5f)
+                    continue;
+            }
+
+            if(auto filter = filters.Find(NarrowingCriteria::IS_CLASS))
+            {   
+                if(combatant->character->type->Class != (CharacterClasses)filter->Value)
+                    continue;
+            }
+
+            if(auto filter = filters.Find(NarrowingCriteria::IS_NOT_CLASS))
+            {   
+                if(combatant->character->type->Class == (CharacterClasses)filter->Value)
                     continue;
             }
 
             if(searchResult != nullptr)
             {
-                if(singlingCriterion == CombatantSinglingCriteria::IS_CLOSEST)
+                if(singlingCriterion == SinglingCriteria::IS_CLOSEST)
                 {
-                    auto distance = selectedCombatant->GetDistanceTo(combatant);
-                    if(distance < selectedCombatant->GetDistanceTo(searchResult))
+                    auto distance = virtualPosition->GetDistanceTo(*combatant->GetTile());
+                    if(distance < virtualPosition->GetDistanceTo(*searchResult->GetTile()))
                     {
                         searchResult = combatant;
                     }
                 }
-                else if(singlingCriterion == CombatantSinglingCriteria::IS_MOST_VULNERABLE)
+                else if(singlingCriterion == SinglingCriteria::IS_LEAST_HEALTHY)
                 {
-                    if(combatant->GetHealth() < searchResult->GetHealth())
+                    if(combatant->character->currentHitPoints < searchResult->character->currentHitPoints)
+                    {
+                        searchResult = combatant;
+                    }
+                }
+                else if(singlingCriterion == SinglingCriteria::IS_LEAST_ARMORED)
+                {
+                    if(combatant->armorClass < searchResult->armorClass)
                     {
                         searchResult = combatant;
                     }
@@ -187,12 +245,54 @@ CombatantData ArtificialController::FindCombatant(FilterList filterData, Combata
         }
     }
 
-    auto distance = searchResult != nullptr ? selectedCombatant->GetDistanceTo(searchResult) : 0;
+    auto distance = searchResult != nullptr ? virtualPosition->GetDistanceTo(*searchResult->GetTile()) : 0;
     return {searchResult, distance};
+}
+
+Integer virtualMovement = 0;
+
+bool ArtificialController::ApproachTile(BattleTile *destination, Integer range)
+{
+    bool hasReached = false; 
+
+    auto startTile = GetVirtualTile();
+    while(true)
+    {
+        startTile = FindClosestFreeTile(startTile, destination);
+
+        *actionQueue.Allocate() = {startTile};
+
+        virtualMovement--;
+        
+        hasReached = startTile->GetDistanceTo(*destination) == range;
+
+        if(virtualMovement == 0 || hasReached)
+        {
+            break;
+        }
+    }
+
+    return hasReached;
+}
+
+BattleTile * ArtificialController::GetVirtualTile()
+{
+    ActionData *lastAction = nullptr;
+    for(auto action = actionQueue.GetStart(); action != actionQueue.GetEnd(); ++action)
+    {
+        if(action->Action == CharacterActions::MOVE)
+        {
+            lastAction = action;
+        }
+    }
+
+    return lastAction ? lastAction->Destination : selectedCombatant->GetTile();
 }
 
 void ArtificialController::DetermineActionCourse()
 {
+    virtualMovement = selectedCombatant->GetMovement();
+
     actionQueue.Reset();
 
     switch(selectedCombatant->character->type->Class)
@@ -204,24 +304,7 @@ void ArtificialController::DetermineActionCourse()
             DetermineRangerBehavior();
             break;
         case CharacterClasses::CLERIC:
-            /*if(allyData.Combatant != nullptr)
-            {
-                selectedCombatant->character->SelectAction(CharacterActions::CAST_SPELL);
-                selectedCombatant->character->SelectSpell(SpellTypes::CURE_WOUNDS);
-
-                primaryTarget = {&allyData, ActionTriggers::TARGET_DAMAGED, SpellTypes::CURE_WOUNDS};
-
-                opportunityTarget = {&enemyData, ActionTriggers::NONE, SpellTypes::SACRED_FLAME};
-            }
-            else
-            {
-                selectedCombatant->character->SelectAction(CharacterActions::CAST_SPELL);
-                selectedCombatant->character->SelectSpell(SpellTypes::SACRED_FLAME);
-                
-                primaryTarget = {&enemyData, ActionTriggers::NONE, SpellTypes::SACRED_FLAME};
-
-                opportunityTarget = {&selfData, ActionTriggers::TARGET_DAMAGED, SpellTypes::CURE_WOUNDS};
-            }*/
+            DetermineClericBehavior();
             break;
         case CharacterClasses::WIZARD:
             /*selectedCombatant->character->SelectAction(CharacterActions::CAST_SPELL);
@@ -239,46 +322,27 @@ void ArtificialController::DetermineFighterBehavior()
 
     selectedCombatant->character->SelectWeapon(WeaponTypes::GREAT_SWORD);
 
-    auto combatantData = FindCombatant(
-        {CombatSearchFilterTypes::IS_ALIVE, CombatSearchFilterTypes::IS_ENEMY, {CombatSearchFilterTypes::IS_WITHIN_RANGE, 1}}, 
-        CombatantSinglingCriteria::IS_MOST_VULNERABLE);
+    auto nearbyEnemy = FindCombatant(
+        {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ENEMY, {NarrowingCriteria::IS_WITHIN_RANGE, 1}}, 
+        SinglingCriteria::IS_LEAST_HEALTHY);
 
-    if(combatantData.Combatant != nullptr)
+    if(nearbyEnemy != nullptr)
     {
-        *actionQueue.Allocate() = {combatantData.Combatant, WeaponTypes::GREAT_SWORD};
+        *actionQueue.Allocate() = {nearbyEnemy, WeaponTypes::GREAT_SWORD};
     }
     else
     {
-        auto combatantData = FindCombatant(
-            {CombatSearchFilterTypes::IS_ALIVE, CombatSearchFilterTypes::IS_ENEMY}, 
-            CombatantSinglingCriteria::IS_CLOSEST);
+        auto closestEnemy = FindCombatant(
+            {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ENEMY}, 
+            SinglingCriteria::IS_CLOSEST);
 
-        if(combatantData.Combatant != nullptr)
+        if(closestEnemy != nullptr)
         {
-            auto movement = selectedCombatant->GetMovement();
-            bool hasReached = false; 
-
-            auto startTile = selectedCombatant->GetTile();
-            auto endTile = combatantData.Combatant->GetTile();
-            while(true)
-            {
-                startTile = FindClosestFreeTile(startTile, endTile);
-
-                *actionQueue.Allocate() = {startTile};
-
-                movement--;
-                
-                hasReached = startTile->GetDistanceTo(*endTile) == 1;
-
-                if(movement == 0 || hasReached)
-                {
-                    break;
-                }
-            }
+            bool hasReached = ApproachTile(closestEnemy.Combatant->GetTile(), 1);
 
             if(hasReached)
             {
-                *actionQueue.Allocate() = {combatantData.Combatant, WeaponTypes::GREAT_SWORD};
+                *actionQueue.Allocate() = {closestEnemy, WeaponTypes::GREAT_SWORD};
             }
             else
             {
@@ -292,13 +356,13 @@ void ArtificialController::DetermineRangerBehavior()
 {
     selectedCombatant->character->SelectAction(CharacterActions::ATTACK);
 
-    auto combatantData = FindCombatant(
-        {CombatSearchFilterTypes::IS_ALIVE, CombatSearchFilterTypes::IS_ENEMY, {CombatSearchFilterTypes::IS_WITHIN_RANGE, 1}}, 
-        CombatantSinglingCriteria::IS_MOST_VULNERABLE);
+    auto nearbyEnemy = FindCombatant(
+        {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ENEMY, {NarrowingCriteria::IS_WITHIN_RANGE, 1}}, 
+        SinglingCriteria::IS_LEAST_HEALTHY);
 
-    if(combatantData.Combatant != nullptr)
+    if(nearbyEnemy)
     {
-        *actionQueue.Allocate() = {combatantData.Combatant, WeaponTypes::SHORT_SWORD};
+        *actionQueue.Allocate() = {nearbyEnemy, WeaponTypes::SHORT_SWORD};
     }
     else
     {
@@ -306,57 +370,38 @@ void ArtificialController::DetermineRangerBehavior()
         auto range = selectedCombatant->character->GetActionRange();
 
         auto mostVulnerableEnemy = FindCombatant(
-            {CombatSearchFilterTypes::IS_ALIVE, CombatSearchFilterTypes::IS_ENEMY, {CombatSearchFilterTypes::IS_WITHIN_RANGE, range}}, 
-            CombatantSinglingCriteria::IS_MOST_VULNERABLE);
+            {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ENEMY, NarrowingCriteria::IS_VULNERABLE, {NarrowingCriteria::IS_WITHIN_RANGE, range}}, 
+            SinglingCriteria::IS_LEAST_ARMORED);
 
-        auto closestVulnerableEnemy = FindCombatant(
-            {CombatSearchFilterTypes::IS_ALIVE, CombatSearchFilterTypes::IS_ENEMY, CombatSearchFilterTypes::IS_VULNERABLE}, 
-            CombatantSinglingCriteria::IS_CLOSEST);
+        auto closeVulnerableEnemy = FindCombatant(
+            {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ENEMY, {NarrowingCriteria::IS_WITHIN_RANGE, range}}, 
+            SinglingCriteria::IS_LEAST_ARMORED);
 
         auto closestEnemy = FindCombatant(
-            {CombatSearchFilterTypes::IS_ALIVE, CombatSearchFilterTypes::IS_ENEMY}, 
-            CombatantSinglingCriteria::IS_CLOSEST);
+            {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ENEMY}, 
+            SinglingCriteria::IS_CLOSEST);
 
         CombatantData target;
-        if(mostVulnerableEnemy.Combatant != nullptr)
+        if(mostVulnerableEnemy)
         {
             target = mostVulnerableEnemy;
         }
-        else if(closestVulnerableEnemy.Combatant != nullptr)
+        else if(closeVulnerableEnemy)
         {
-            target = closestVulnerableEnemy;
+            target = closeVulnerableEnemy;
         }
         else
         {
             target = closestEnemy;
         }
 
-        if(target.Combatant != nullptr && target.Distance > range)
+        if(target && target.Distance > range)
         {
-            auto movement = selectedCombatant->GetMovement();
-            bool hasReached = false; 
-
-            auto startTile = selectedCombatant->GetTile();
-            auto endTile = target.Combatant->GetTile();
-            while(true)
-            {
-                startTile = FindClosestFreeTile(startTile, endTile);
-
-                *actionQueue.Allocate() = {startTile};
-
-                movement--;
-                
-                hasReached = startTile->GetDistanceTo(*endTile) == range;
-
-                if(movement == 0 || hasReached)
-                {
-                    break;
-                }
-            }
+            bool hasReached = ApproachTile(target.Combatant->GetTile(), range);
 
             if(hasReached)
             {
-                *actionQueue.Allocate() = {target.Combatant, WeaponTypes::LONG_BOW};
+                *actionQueue.Allocate() = {target, WeaponTypes::LONG_BOW};
             }
             else
             {
@@ -365,8 +410,106 @@ void ArtificialController::DetermineRangerBehavior()
         }
         else if(target.Distance <= range)
         {
-            *actionQueue.Allocate() = {target.Combatant, WeaponTypes::LONG_BOW};
+            *actionQueue.Allocate() = {target, WeaponTypes::LONG_BOW};
         }
+    }
+}
+
+void ArtificialController::DetermineClericBehavior()
+{
+    auto nearbyEndangeredAlly = FindCombatant(
+        {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ALLY, NarrowingCriteria::IS_VULNERABLE, {NarrowingCriteria::IS_WITHIN_RANGE, 1}}, 
+        SinglingCriteria::IS_LEAST_HEALTHY);
+
+    auto nearbyDangerousEnemy = FindCombatant(
+        {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ENEMY, {NarrowingCriteria::IS_WITHIN_RANGE, 1}}, 
+        SinglingCriteria::IS_LEAST_ARMORED);
+
+    bool hasAction = false;
+
+    if(nearbyEndangeredAlly && nearbyDangerousEnemy)
+    {
+        *actionQueue.Allocate() = {nearbyEndangeredAlly, SpellTypes::CURE_WOUNDS};
+        hasAction = true;
+    }
+    else if(nearbyDangerousEnemy)
+    {
+        *actionQueue.Allocate() = {nearbyDangerousEnemy, WeaponTypes::MACE};
+        hasAction = true;
+    }
+
+    if(hasAction == false)
+    {
+        auto mostVulnerableAlly = FindCombatant(
+            {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ALLY, NarrowingCriteria::IS_VULNERABLE, {NarrowingCriteria::IS_WITHIN_RANGE, virtualMovement}}, 
+            SinglingCriteria::IS_LEAST_HEALTHY);
+
+        if(mostVulnerableAlly)
+        {
+            if(mostVulnerableAlly != selectedCombatant)
+            {
+                bool hasReached = ApproachTile(mostVulnerableAlly.Combatant->GetTile(), 1);
+
+                if(hasReached)
+                {
+                    *actionQueue.Allocate() = {mostVulnerableAlly, SpellTypes::CURE_WOUNDS};
+                    hasAction = true;
+                }
+            }
+            else
+            {
+                *actionQueue.Allocate() = {mostVulnerableAlly, SpellTypes::CURE_WOUNDS};
+                hasAction = true;
+            }
+        }
+    }
+
+    auto FindSacredFlameTarget = [this, &hasAction]
+    {
+        auto range = SpellFactory::BuildSacredFlame().Range;
+
+        auto mostVulnerableEnemy = FindCombatant(
+            {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ENEMY, NarrowingCriteria::IS_VULNERABLE, {NarrowingCriteria::IS_WITHIN_RANGE, range}}, 
+            SinglingCriteria::IS_LEAST_HEALTHY);
+
+        auto closeVulnerableEnemy = FindCombatant(
+            {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ENEMY, {NarrowingCriteria::IS_WITHIN_RANGE, range}}, 
+            SinglingCriteria::IS_LEAST_HEALTHY);
+
+        if(mostVulnerableEnemy)
+        {
+            *actionQueue.Allocate() = {mostVulnerableEnemy, SpellTypes::SACRED_FLAME};
+        }
+        else if(closeVulnerableEnemy)
+        {
+            *actionQueue.Allocate() = {closeVulnerableEnemy, SpellTypes::SACRED_FLAME};
+        }
+
+        hasAction = true;
+    };
+
+    if(hasAction == false)
+    {
+        FindSacredFlameTarget();
+    }
+
+    auto escortableAlly = FindCombatant(
+        {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ALLY, {NarrowingCriteria::IS_CLASS, CharacterClasses::FIGHTER}}, 
+        SinglingCriteria::IS_CLOSEST);
+
+    if(escortableAlly)
+    {
+        ApproachTile(escortableAlly.Combatant->GetTile(), 1);
+    }
+
+    if(hasAction == false)
+    {
+        FindSacredFlameTarget();
+    }
+
+    if(hasAction == false)
+    {
+        *actionQueue.Allocate() = {CharacterActions::DODGE};
     }
 }
 
@@ -395,25 +538,22 @@ void ArtificialController::PerformAction()
     {
         MoveCharacter();
     }
-    else if(action->Action == CharacterActions::ATTACK)
-    {
-        selectedCombatant->character->SelectAction(action->Action);
-        selectedCombatant->character->SelectWeapon(action->WeaponType);
-
-        battleController->TargetCombatant(action->Target);
-        battleController->Act();
-    }
-    else if(action->Action == CharacterActions::CAST_SPELL)
-    {
-        selectedCombatant->character->SelectAction(action->Action);
-        selectedCombatant->character->SelectSpell(action->SpellType);
-
-        battleController->TargetCombatant(action->Target);
-        battleController->Act();
-    }
     else
     {
-        selectedCombatant->character->SelectAction(action->Action); 
+        selectedCombatant->character->SelectAction(action->Action);
+
+        if(action->Action == CharacterActions::ATTACK)
+        {
+            selectedCombatant->character->SelectWeapon(action->WeaponType);
+
+            battleController->TargetCombatant(action->Target);
+        }
+        else if(action->Action == CharacterActions::CAST_SPELL)
+        {
+            selectedCombatant->character->SelectSpell(action->SpellType);
+
+            battleController->TargetCombatant(action->Target);
+        }
 
         battleController->Act();
     }

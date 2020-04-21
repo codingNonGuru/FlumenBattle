@@ -12,7 +12,7 @@ Group* GroupFactory::Create(Array <Group> &groups, GroupBuildData buildData)
 {
     auto group = groups.Allocate();
 
-    auto size = 6;//utility::GetRandom(4, 7);
+    auto size = 7;//utility::GetRandom(4, 7);
     auto color = colors[colorIndex++];
     group->Initialize(size, color, buildData.Race);
 

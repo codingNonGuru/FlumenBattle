@@ -1,32 +1,12 @@
 #pragma once
 
+#include "FlumenBattle/Types.hpp"
+
 struct CombatantData;
 struct BattleTile;
 
-enum class CombatSearchFilterTypes
-{
-    IS_ALLY, IS_ENEMY, IS_VULNERABLE, IS_WITHIN_RANGE, IS_ALIVE
-};
-
-enum class CombatantSinglingCriteria
-{
-    IS_CLOSEST, IS_MOST_VULNERABLE
-};
-
-struct CombatSearchFilter
-{
-    CombatSearchFilterTypes Type;
-
-    Integer Value;
-
-    bool operator== (const CombatSearchFilter &filter) {return Type == filter.Type;}
-
-    CombatSearchFilter() {}
-
-    CombatSearchFilter(CombatSearchFilterTypes type) : Type(type) {}
-
-    CombatSearchFilter(CombatSearchFilterTypes type, Integer value) : Type(type), Value(value) {}
-};
+struct CombatSearchFilter;
+enum class SinglingCriteria;
 
 typedef std::initializer_list <CombatSearchFilter> FilterList;
 
@@ -36,13 +16,21 @@ class ArtificialController
 
     BattleTile * FindClosestFreeTile(BattleTile *, BattleTile *);
 
-    CombatantData FindCombatant(FilterList, CombatantSinglingCriteria);
+    CombatantData FindCombatant(FilterList, SinglingCriteria);
+
+    bool ApproachTile(BattleTile *, Integer);
+
+    BattleTile * GetVirtualTile();
 
     void DetermineActionCourse();
 
     void DetermineFighterBehavior();
 
     void DetermineRangerBehavior();
+
+    void DetermineClericBehavior();
+
+    void DetermineWizardBehavior();
 
     void PerformAction();
 

@@ -16,7 +16,7 @@
 #include "FlumenBattle/Combatant.h"
 #include "FlumenBattle/BattleTile.h"
 
-#define BATTLE_TILE_SIZE 35.0f
+#define BATTLE_TILE_SIZE 34.0f
 
 const Float4 DEFAULT_TILE_COLOR = Float4(0.9f, 0.7f, 0.6f, 1.0f);
 
