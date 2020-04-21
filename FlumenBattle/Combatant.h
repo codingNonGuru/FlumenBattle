@@ -49,6 +49,8 @@ class Combatant
 
     Integer remainingActionCount; 
 
+    Integer bonusActionCount; 
+
     Combatant *target; 
 
     bool isSavingAgainstDeath; 

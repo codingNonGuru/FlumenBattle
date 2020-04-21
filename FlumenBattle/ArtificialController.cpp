@@ -253,9 +253,15 @@ Integer virtualMovement = 0;
 
 bool ArtificialController::ApproachTile(BattleTile *destination, Integer range)
 {
+    if(virtualMovement == 0)
+    {
+        return false;
+    }
+
     bool hasReached = false; 
 
     auto startTile = GetVirtualTile();
+
     while(true)
     {
         startTile = FindClosestFreeTile(startTile, destination);
@@ -346,7 +352,10 @@ void ArtificialController::DetermineFighterBehavior()
             }
             else
             {
-                *actionQueue.Allocate() = {CharacterActions::DODGE};
+                *actionQueue.Allocate() = {CharacterActions::DASH};
+                virtualMovement += selectedCombatant->GetMovement();
+
+                ApproachTile(closestEnemy.Combatant->GetTile(), 1);
             }
         }
     }

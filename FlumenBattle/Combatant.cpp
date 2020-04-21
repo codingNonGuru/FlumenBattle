@@ -23,7 +23,9 @@ void Combatant::Initialize(CombatGroup *_group, Character *_character, BattleTil
     tile = _tile;
 
     movement = 0;
+
     remainingActionCount = 0;
+    bonusActionCount = 0;
 
     deathThrowSuccesCount = 0;
     deathThrowFailureCount = 0;
@@ -99,7 +101,9 @@ void Combatant::StartTurn()
     }
 
     movement = GetCurrentSpeed();
+
     remainingActionCount = 1;
+    bonusActionCount = 1;
 }
 
 Integer Combatant::RollInitiative() const
@@ -116,8 +120,25 @@ bool Combatant::CanMove() const
 
 bool Combatant::CanTarget() const
 {
-    if(!character->IsAlive() || remainingActionCount == 0)
+    if(!character->IsAlive())
         return false;
+
+    if(character->selectedAction->Type == CharacterActions::ATTACK && remainingActionCount == 0)
+        return false;
+
+    if(character->selectedAction->Type == CharacterActions::CAST_SPELL)
+    {
+        if(character->selectedSpell->IsBonusAction)
+        {
+            if(bonusActionCount == 0)
+                return false;
+        }
+        else
+        {
+            if(remainingActionCount == 0)
+                return false;
+        }
+    }
 
     if(character->selectedAction->Type == CharacterActions::DODGE)
         return false;
@@ -183,8 +204,19 @@ bool Combatant::CanCastSpell() const
     if((character->selectedSpell->IsOffensive && GetGroup() == target->GetGroup()) || (!character->selectedSpell->IsOffensive && GetGroup() != target->GetGroup()))
         return false;
 
-    if(!character->IsAlive() || remainingActionCount == 0)
+    if(!character->IsAlive())
         return false;
+
+    if(character->selectedSpell->IsBonusAction)
+    {
+        if(bonusActionCount == 0)
+            return false;
+    }
+    else
+    {
+        if(remainingActionCount == 0)
+            return false;
+    }
 
     auto distance = tile->GetDistanceTo(*(target->tile));
     if(distance > character->GetActionRange())
@@ -333,7 +365,14 @@ CharacterActionData Combatant::CastSpell()
 {
     auto actionData = SpellCaster::ApplyEffect(*this, *character->selectedSpell);
 
-    remainingActionCount--;
+    if(character->selectedSpell->IsBonusAction)
+    {
+        bonusActionCount--;
+    }
+    else
+    {
+        remainingActionCount--;
+    }
 
     return actionData;
 }

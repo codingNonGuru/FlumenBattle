@@ -35,14 +35,16 @@ struct Spell
 
     bool IsAttack;
 
+    bool IsBonusAction;
+
     //const Phrase & Description;
 
     Spell() {}
 
     Spell(SpellTypes type) : Type(type) {}
 
-    Spell(SpellTypes type, Integer level, Integer hitDice, Integer rollCount, Integer range, Word name, bool isOffensive, bool isAttack) :
-        Type(type), Level(level), HitDice(hitDice), RollCount(rollCount), Range(range), Name(name), IsOffensive(isOffensive), IsAttack(isAttack)
+    Spell(SpellTypes type, Integer level, Integer hitDice, Integer rollCount, Integer range, Word name, bool isOffensive, bool isAttack, bool isBonusAction) :
+        Type(type), Level(level), HitDice(hitDice), RollCount(rollCount), Range(range), Name(name), IsOffensive(isOffensive), IsAttack(isAttack), IsBonusAction(isBonusAction)
         {}
 
     bool operator== (const Spell &other) {return other.Type == this->Type;}
@@ -53,26 +55,26 @@ class SpellFactory
 public:
     static Spell BuildFrostRay()
     {
-        return {SpellTypes::FROST_RAY, 0, 8, 1, 12, "Frost Ray", true, true};
+        return {SpellTypes::FROST_RAY, 0, 8, 1, 12, "Frost Ray", true, true, false};
     }
 
     static Spell BuildShockingGrasp()
     {
-        return {SpellTypes::SHOCKING_GRASP, 0, 8, 1, 1, "Shocking Grasp", true, true};
+        return {SpellTypes::SHOCKING_GRASP, 0, 8, 1, 1, "Shocking Grasp", true, true, false};
     }
 
     static Spell BuildSacredFlame()
     {
-        return {SpellTypes::SACRED_FLAME, 0, 8, 1, 12, "Sacred Flame", true, true};
+        return {SpellTypes::SACRED_FLAME, 0, 8, 1, 12, "Sacred Flame", true, true, false};
     }
 
     static Spell BuildMagicMissile()
     {
-        return {SpellTypes::MAGIC_MISSILE, 1, 4, 1, 24, "Magic Missile", true, false};
+        return {SpellTypes::MAGIC_MISSILE, 1, 4, 1, 24, "Magic Missile", true, false, false};
     }
 
     static Spell BuildCureWounds()
     {
-        return {SpellTypes::CURE_WOUNDS, 1, 8, 1, 1, "Cure Wounds", false, false};
+        return {SpellTypes::CURE_WOUNDS, 1, 8, 1, 1, "Cure Wounds", false, false, false};
     }
 };
