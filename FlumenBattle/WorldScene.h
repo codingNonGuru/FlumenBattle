@@ -19,6 +19,8 @@ class WorldScene : Scene
 
     void Render() override;
 
+    void HandleStateExit();
+
 public:
     static WorldScene * Get() 
     {

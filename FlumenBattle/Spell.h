@@ -17,7 +17,6 @@ struct SpellSlot
     void Reset() {Current = Maximum;}
 };
 
-#include <functional>
 struct Spell
 {
     SpellTypes Type;
