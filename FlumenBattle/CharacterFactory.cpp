@@ -154,6 +154,7 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
 
         character->AddSpell(SpellFactory::BuildFrostRay());
         character->AddSpell(SpellFactory::BuildShockingGrasp());
+        character->AddSpell(SpellFactory::BuildFireBolt());
         character->AddSpell(SpellFactory::BuildMagicMissile());
 
         character->AddProficiency(ProficiencyFactory::BuildPerceptionProficiency(ProficiencyLevels::APPRENTICE));

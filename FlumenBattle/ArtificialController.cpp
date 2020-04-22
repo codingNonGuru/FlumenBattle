@@ -605,7 +605,7 @@ void ArtificialController::DetermineWizardBehavior()
         if(hasActed)
             return;
 
-        auto range = SpellFactory::BuildFrostRay().Range;
+        auto range = SpellFactory::BuildFireBolt().Range;
 
         auto mostVulnerableEnemy = FindCombatant(
             {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ENEMY, NarrowingCriteria::IS_VULNERABLE, {NarrowingCriteria::IS_WITHIN_RANGE, range}}, 
@@ -613,7 +613,7 @@ void ArtificialController::DetermineWizardBehavior()
 
         if(mostVulnerableEnemy)
         {
-            *actionQueue.Allocate() = {mostVulnerableEnemy, SpellTypes::FROST_RAY};
+            *actionQueue.Allocate() = {mostVulnerableEnemy, SpellTypes::FIRE_BOLT};
             hasActed = true;
             return;
         }
@@ -624,7 +624,7 @@ void ArtificialController::DetermineWizardBehavior()
 
         if(closeVulnerableEnemy)
         {
-            *actionQueue.Allocate() = {closeVulnerableEnemy, SpellTypes::FROST_RAY};
+            *actionQueue.Allocate() = {closeVulnerableEnemy, SpellTypes::FIRE_BOLT};
             hasActed = true;
         }
     };
@@ -637,13 +637,13 @@ void ArtificialController::DetermineWizardBehavior()
 
         if(closestEnemy)
         {
-            auto range = SpellFactory::BuildFrostRay().Range;
+            auto range = SpellFactory::BuildFireBolt().Range;
 
             auto hasReached = ApproachTile(closestEnemy.Combatant->GetTile(), range);
 
             if(hasReached && !hasActed)
             {
-                *actionQueue.Allocate() = {closestEnemy, SpellTypes::FROST_RAY};
+                *actionQueue.Allocate() = {closestEnemy, SpellTypes::FIRE_BOLT};
                 hasActed = true;
             }
         }

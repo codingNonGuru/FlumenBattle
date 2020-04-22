@@ -95,11 +95,11 @@ CharacterActionData SpellCaster::ApplyFrostRay(Combatant &combatant, const Spell
     }
 }
 
-CharacterActionData SpellCaster::ApplyShockingGrasp(Combatant & character, const Spell & spell)
+CharacterActionData SpellCaster::ApplyShockingGrasp(Combatant &combatant, const Spell & spell)
 {
-    RollAttack(character);
+    RollAttack(combatant);
 
-    RollDamage(character, spell);   
+    RollDamage(combatant, spell);   
 }
 
 CharacterActionData SpellCaster::ApplySacredFlame(Combatant &combatant, const Spell & spell)
@@ -113,6 +113,13 @@ CharacterActionData SpellCaster::ApplySacredFlame(Combatant &combatant, const Sp
     }
 
     RollDamage(combatant, spell);
+}
+
+CharacterActionData SpellCaster::ApplyFireBolt(Combatant &combatant, const Spell & spell)
+{
+    RollAttack(combatant);
+
+    RollDamage(combatant, spell);   
 }
 
 CharacterActionData SpellCaster::ApplyCureWounds(Combatant &combatant, const Spell &spell)
@@ -139,6 +146,9 @@ CharacterActionData SpellCaster::ApplyEffect(Combatant &combatant, const Spell &
             break;
         case SpellTypes::SACRED_FLAME:
             ApplySacredFlame(combatant, spell);
+            break;
+        case SpellTypes::FIRE_BOLT:
+            ApplyFireBolt(combatant, spell);
             break;
         case SpellTypes::CURE_WOUNDS:
             ApplyCureWounds(combatant, spell);

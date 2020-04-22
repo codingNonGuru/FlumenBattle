@@ -22,6 +22,8 @@ class SpellCaster
 
     static CharacterActionData ApplySacredFlame(Combatant &, const Spell &);
 
+    static CharacterActionData ApplyFireBolt(Combatant &, const Spell &);
+
     static CharacterActionData ApplyCureWounds(Combatant &, const Spell &);
 
     static CharacterActionData ApplyHealingWord(Combatant &, const Spell &);

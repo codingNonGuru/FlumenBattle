@@ -17,6 +17,7 @@ struct SpellSlot
     void Reset() {Current = Maximum;}
 };
 
+#include <functional>
 struct Spell
 {
     SpellTypes Type;
@@ -44,8 +45,7 @@ struct Spell
     Spell(SpellTypes type) : Type(type) {}
 
     Spell(SpellTypes type, Integer level, Integer hitDice, Integer rollCount, Integer range, Word name, bool isOffensive, bool isAttack, bool isBonusAction) :
-        Type(type), Level(level), HitDice(hitDice), RollCount(rollCount), Range(range), Name(name), IsOffensive(isOffensive), IsAttack(isAttack), IsBonusAction(isBonusAction)
-        {}
+        Type(type), Level(level), HitDice(hitDice), RollCount(rollCount), Range(range), Name(name), IsOffensive(isOffensive), IsAttack(isAttack), IsBonusAction(isBonusAction) {}
 
     bool operator== (const Spell &other) {return other.Type == this->Type;}
 };
@@ -66,6 +66,11 @@ public:
     static Spell BuildSacredFlame()
     {
         return {SpellTypes::SACRED_FLAME, 0, 8, 1, 12, "Sacred Flame", true, true, false};
+    }
+
+    static Spell BuildFireBolt()
+    {
+        return {SpellTypes::FIRE_BOLT, 0, 10, 1, 24, "Fire Bolt", true, true, false};
     }
 
     static Spell BuildMagicMissile()

@@ -15,7 +15,7 @@
 Character::Character()
 {
     weapons.Initialize(4);
-    spells.Initialize(4);
+    spells.Initialize(8);
     spellSlots.Initialize(8);
 }
 
