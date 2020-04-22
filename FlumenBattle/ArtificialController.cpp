@@ -95,6 +95,8 @@ Combatant *selectedCombatant = nullptr;
 
 bool isPlanningAhead = false;
 
+bool hasActed = false;
+
 static Array <ActionData> actionQueue = Array <ActionData> (32);
 
 static Integer currentActionIndex = 0;
@@ -318,11 +320,7 @@ void ArtificialController::DetermineActionCourse()
             DetermineClericBehavior();
             break;
         case CharacterClasses::WIZARD:
-            /*selectedCombatant->character->SelectAction(CharacterActions::CAST_SPELL);
-            selectedCombatant->character->SelectSpell(SpellTypes::FROST_RAY);
-
-            primaryTarget = {&enemyData, ActionTriggers::NONE, SpellTypes::FROST_RAY};
-            opportunityTarget = primaryTarget;*/
+            DetermineWizardBehavior();
             break;
     }
 }
@@ -429,15 +427,10 @@ void ArtificialController::DetermineRangerBehavior()
     }
 }
 
-bool hasActed = false;
-
 void ArtificialController::DetermineClericBehavior()
 {
     auto CoverImmediateNeeds = [this]
     {
-        if(hasActed)
-            return isPlanningAhead;
-
         auto nearbyEndangeredAlly = FindCombatant(
             {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ALLY, NarrowingCriteria::IS_VULNERABLE, {NarrowingCriteria::IS_WITHIN_RANGE, 1}}, 
             SinglingCriteria::IS_LEAST_HEALTHY);
@@ -445,6 +438,14 @@ void ArtificialController::DetermineClericBehavior()
         auto nearbyDangerousEnemy = FindCombatant(
             {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ENEMY, {NarrowingCriteria::IS_WITHIN_RANGE, 1}}, 
             SinglingCriteria::IS_LEAST_ARMORED);
+
+        if(hasActed)
+        {
+            if(nearbyDangerousEnemy)
+                return true;
+            else
+                return false;
+        }
 
         if(nearbyEndangeredAlly && nearbyDangerousEnemy && selectedCombatant->HasSlot(SpellTypes::CURE_WOUNDS))
         {
@@ -561,6 +562,95 @@ void ArtificialController::DetermineClericBehavior()
     ExploitAttackOpportunity();
 
     EscortAlly();
+
+    ExploitAttackOpportunity();
+
+    FindAttackOpportunity();
+
+    if(hasActed == false)
+    {
+        *actionQueue.Allocate() = {CharacterActions::DODGE};
+    }
+}
+
+void ArtificialController::DetermineWizardBehavior()
+{
+    auto CoverImmediateNeeds = [this]
+    {
+        auto nearbyDangerousEnemy = FindCombatant(
+            {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ENEMY, {NarrowingCriteria::IS_WITHIN_RANGE, 1}}, 
+            SinglingCriteria::IS_LEAST_HEALTHY);
+
+        if(hasActed)
+        {
+            if(nearbyDangerousEnemy)
+                return true;
+            else
+                return false;
+        }
+
+        if(nearbyDangerousEnemy)
+        {
+            *actionQueue.Allocate() = {nearbyDangerousEnemy, SpellTypes::SHOCKING_GRASP};
+            hasActed = true;
+
+            isPlanningAhead = true;
+        }
+
+        return isPlanningAhead;
+    };
+
+    auto ExploitAttackOpportunity = [this]
+    {
+        if(hasActed)
+            return;
+
+        auto range = SpellFactory::BuildFrostRay().Range;
+
+        auto mostVulnerableEnemy = FindCombatant(
+            {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ENEMY, NarrowingCriteria::IS_VULNERABLE, {NarrowingCriteria::IS_WITHIN_RANGE, range}}, 
+            SinglingCriteria::IS_LEAST_HEALTHY);
+
+        if(mostVulnerableEnemy)
+        {
+            *actionQueue.Allocate() = {mostVulnerableEnemy, SpellTypes::FROST_RAY};
+            hasActed = true;
+            return;
+        }
+
+        auto closeVulnerableEnemy = FindCombatant(
+            {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ENEMY, {NarrowingCriteria::IS_WITHIN_RANGE, range}}, 
+            SinglingCriteria::IS_LEAST_HEALTHY);
+
+        if(closeVulnerableEnemy)
+        {
+            *actionQueue.Allocate() = {closeVulnerableEnemy, SpellTypes::FROST_RAY};
+            hasActed = true;
+        }
+    };
+
+    auto FindAttackOpportunity = [this]
+    {
+        auto closestEnemy = FindCombatant(
+            {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ENEMY}, 
+            SinglingCriteria::IS_CLOSEST);
+
+        if(closestEnemy)
+        {
+            auto range = SpellFactory::BuildFrostRay().Range;
+
+            auto hasReached = ApproachTile(closestEnemy.Combatant->GetTile(), range);
+
+            if(hasReached && !hasActed)
+            {
+                *actionQueue.Allocate() = {closestEnemy, SpellTypes::FROST_RAY};
+                hasActed = true;
+            }
+        }
+    };
+
+    if(CoverImmediateNeeds())
+        return;
 
     ExploitAttackOpportunity();
 
