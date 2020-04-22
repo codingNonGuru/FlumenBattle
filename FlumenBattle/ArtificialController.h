@@ -22,6 +22,8 @@ class ArtificialController
 
     BattleTile * GetVirtualTile();
 
+    void RepeatActionCycle();
+
     void DetermineActionCourse();
 
     void DetermineFighterBehavior();

@@ -8,6 +8,7 @@ struct BattleTile;
 struct CharacterActionData;
 class CombatGroup;
 class Condition;
+enum class SpellTypes;
 
 class Combatant
 {
@@ -92,6 +93,8 @@ class Combatant
     bool CanStrike() const;
 
     bool CanCastSpell() const;
+
+    bool HasSlot(SpellTypes);
 
     bool CanDodge() const;
 

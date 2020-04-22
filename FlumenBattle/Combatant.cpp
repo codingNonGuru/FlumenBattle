@@ -232,6 +232,20 @@ bool Combatant::CanCastSpell() const
     return true;
 }
 
+bool Combatant::HasSlot(SpellTypes spellType)
+{
+    auto &spells = character->GetSpells();
+    if(auto spell = spells.Find(spellType))
+    {
+        auto slot = character->spellSlots.Get(spell->Level - 1);
+        return slot->Current > 0;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 bool Combatant::CanDodge() const
 {
     return character->IsAlive() && remainingActionCount > 0;

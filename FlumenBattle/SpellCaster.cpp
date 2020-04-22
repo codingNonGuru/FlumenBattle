@@ -53,7 +53,6 @@ void SpellCaster::RollDamage(Combatant &combatant, const Spell & spell)
 void SpellCaster::RollHealing(Combatant &combatant, const Spell & spell)
 {
     Integer damage = combatant.character->GetSpellCastingAbility().Modifier + utility::GetRandom(1, spell.HitDice);
-    std::cout<<"HEAL "<<damage<<"    SPELL MODIFIER "<<combatant.character->GetSpellCastingAbility().Modifier<<"\n";
     combatant.GetTarget()->HealDamage(damage);
 
     spellResult.Damage = damage;

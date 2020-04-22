@@ -93,6 +93,8 @@ BattleScene *battleScene = nullptr;
 
 Combatant *selectedCombatant = nullptr;
 
+bool isPlanningAhead = false;
+
 static Array <ActionData> actionQueue = Array <ActionData> (32);
 
 static Integer currentActionIndex = 0;
@@ -427,31 +429,44 @@ void ArtificialController::DetermineRangerBehavior()
     }
 }
 
+bool hasActed = false;
+
 void ArtificialController::DetermineClericBehavior()
 {
-    auto nearbyEndangeredAlly = FindCombatant(
-        {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ALLY, NarrowingCriteria::IS_VULNERABLE, {NarrowingCriteria::IS_WITHIN_RANGE, 1}}, 
-        SinglingCriteria::IS_LEAST_HEALTHY);
-
-    auto nearbyDangerousEnemy = FindCombatant(
-        {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ENEMY, {NarrowingCriteria::IS_WITHIN_RANGE, 1}}, 
-        SinglingCriteria::IS_LEAST_ARMORED);
-
-    bool hasAction = false;
-
-    if(nearbyEndangeredAlly && nearbyDangerousEnemy)
+    auto CoverImmediateNeeds = [this]
     {
-        *actionQueue.Allocate() = {nearbyEndangeredAlly, SpellTypes::CURE_WOUNDS};
-        hasAction = true;
-    }
-    else if(nearbyDangerousEnemy)
-    {
-        *actionQueue.Allocate() = {nearbyDangerousEnemy, WeaponTypes::MACE};
-        hasAction = true;
-    }
+        if(hasActed)
+            return isPlanningAhead;
 
-    if(hasAction == false)
+        auto nearbyEndangeredAlly = FindCombatant(
+            {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ALLY, NarrowingCriteria::IS_VULNERABLE, {NarrowingCriteria::IS_WITHIN_RANGE, 1}}, 
+            SinglingCriteria::IS_LEAST_HEALTHY);
+
+        auto nearbyDangerousEnemy = FindCombatant(
+            {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ENEMY, {NarrowingCriteria::IS_WITHIN_RANGE, 1}}, 
+            SinglingCriteria::IS_LEAST_ARMORED);
+
+        if(nearbyEndangeredAlly && nearbyDangerousEnemy && selectedCombatant->HasSlot(SpellTypes::CURE_WOUNDS))
+        {
+            *actionQueue.Allocate() = {nearbyEndangeredAlly, SpellTypes::CURE_WOUNDS};
+            hasActed = true;
+        }
+        else if(nearbyDangerousEnemy)
+        {
+            *actionQueue.Allocate() = {nearbyDangerousEnemy, WeaponTypes::MACE};
+            hasActed = true;
+
+            isPlanningAhead = true;
+        }
+
+        return isPlanningAhead;
+    };
+
+    auto FindHealingOpportunity = [this]
     {
+        if(hasActed || !selectedCombatant->HasSlot(SpellTypes::CURE_WOUNDS))
+            return;
+
         auto mostVulnerableAlly = FindCombatant(
             {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ALLY, NarrowingCriteria::IS_VULNERABLE, {NarrowingCriteria::IS_WITHIN_RANGE, virtualMovement}}, 
             SinglingCriteria::IS_LEAST_HEALTHY);
@@ -465,19 +480,22 @@ void ArtificialController::DetermineClericBehavior()
                 if(hasReached)
                 {
                     *actionQueue.Allocate() = {mostVulnerableAlly, SpellTypes::CURE_WOUNDS};
-                    hasAction = true;
+                    hasActed = true;
                 }
             }
             else
             {
                 *actionQueue.Allocate() = {mostVulnerableAlly, SpellTypes::CURE_WOUNDS};
-                hasAction = true;
+                hasActed = true;
             }
         }
-    }
+    };
 
-    auto FindSacredFlameTarget = [this, &hasAction]
+    auto ExploitAttackOpportunity = [this]
     {
+        if(hasActed)
+            return;
+
         auto range = SpellFactory::BuildSacredFlame().Range;
 
         auto mostVulnerableEnemy = FindCombatant(
@@ -491,35 +509,64 @@ void ArtificialController::DetermineClericBehavior()
         if(mostVulnerableEnemy)
         {
             *actionQueue.Allocate() = {mostVulnerableEnemy, SpellTypes::SACRED_FLAME};
+            hasActed = true;
         }
         else if(closeVulnerableEnemy)
         {
             *actionQueue.Allocate() = {closeVulnerableEnemy, SpellTypes::SACRED_FLAME};
+            hasActed = true;
         }
-
-        hasAction = true;
     };
 
-    if(hasAction == false)
+    auto EscortAlly = [this]
     {
-        FindSacredFlameTarget();
-    }
+        auto escortableAlly = FindCombatant(
+            {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ALLY, {NarrowingCriteria::IS_CLASS, CharacterClasses::FIGHTER}}, 
+            SinglingCriteria::IS_CLOSEST);
 
-    auto escortableAlly = FindCombatant(
-        {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ALLY, {NarrowingCriteria::IS_CLASS, CharacterClasses::FIGHTER}}, 
-        SinglingCriteria::IS_CLOSEST);
+        if(escortableAlly)
+        {
+            ApproachTile(escortableAlly.Combatant->GetTile(), 1);
+        }
+    };
 
-    if(escortableAlly)
+    auto FindAttackOpportunity = [this]
     {
-        ApproachTile(escortableAlly.Combatant->GetTile(), 1);
-    }
+        if(hasActed)
+            return;
 
-    if(hasAction == false)
-    {
-        FindSacredFlameTarget();
-    }
+        auto closestEnemy = FindCombatant(
+            {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ENEMY}, 
+            SinglingCriteria::IS_CLOSEST);
 
-    if(hasAction == false)
+        if(closestEnemy)
+        {
+            auto range = SpellFactory::BuildSacredFlame().Range;
+
+            auto hasReached = ApproachTile(closestEnemy.Combatant->GetTile(), range);
+
+            if(hasReached)
+            {
+                *actionQueue.Allocate() = {closestEnemy, SpellTypes::SACRED_FLAME};
+                hasActed = true;
+            }
+        }
+    };
+
+    if(CoverImmediateNeeds())
+        return;
+
+    FindHealingOpportunity();
+
+    ExploitAttackOpportunity();
+
+    EscortAlly();
+
+    ExploitAttackOpportunity();
+
+    FindAttackOpportunity();
+
+    if(hasActed == false)
     {
         *actionQueue.Allocate() = {CharacterActions::DODGE};
     }
@@ -572,14 +619,27 @@ void ArtificialController::PerformAction()
 
     currentActionIndex++;
 
-    if(currentActionIndex == actionQueue.GetSize())
+    if(currentActionIndex == actionQueue.GetSize() && !isPlanningAhead)
     {
         TaskManager::Add()->Initialize(battleController, &BattleController::EndTurn, 0.7f);
     }
-    else
+    else if(!isPlanningAhead)
     {
         TaskManager::Add()->Initialize(this, &ArtificialController::PerformAction, 0.1f);
     }
+    else
+    {
+        TaskManager::Add()->Initialize(this, &ArtificialController::RepeatActionCycle, 0.1f);
+    }
+}
+
+void ArtificialController::RepeatActionCycle()
+{
+    isPlanningAhead = false;
+
+    DetermineActionCourse();
+
+    PerformAction();
 }
 
 void ArtificialController::UpdateCharacter()
@@ -590,7 +650,7 @@ void ArtificialController::UpdateCharacter()
 
     currentActionIndex = 0;
 
-    DetermineActionCourse();
+    hasActed = false;
 
-    PerformAction();
+    RepeatActionCycle();
 }
