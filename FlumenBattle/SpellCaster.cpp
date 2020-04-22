@@ -53,6 +53,7 @@ void SpellCaster::RollDamage(Combatant &combatant, const Spell & spell)
 void SpellCaster::RollHealing(Combatant &combatant, const Spell & spell)
 {
     Integer damage = combatant.character->GetSpellCastingAbility().Modifier + utility::GetRandom(1, spell.HitDice);
+    std::cout<<"HEAL "<<damage<<"    SPELL MODIFIER "<<combatant.character->GetSpellCastingAbility().Modifier<<"\n";
     combatant.GetTarget()->HealDamage(damage);
 
     spellResult.Damage = damage;
@@ -115,12 +116,17 @@ CharacterActionData SpellCaster::ApplySacredFlame(Combatant &combatant, const Sp
     RollDamage(combatant, spell);
 }
 
-CharacterActionData SpellCaster::ApplyCureWounds(Combatant &combatant, const Spell & spell)
+CharacterActionData SpellCaster::ApplyCureWounds(Combatant &combatant, const Spell &spell)
 {
     RollHealing(combatant, spell);
 }
 
-CharacterActionData SpellCaster::ApplyEffect(Combatant &combatant, const Spell & spell)
+CharacterActionData SpellCaster::ApplyHealingWord(Combatant &combatant, const Spell &spell)
+{
+    RollHealing(combatant, spell);
+}
+
+CharacterActionData SpellCaster::ApplyEffect(Combatant &combatant, const Spell &spell)
 {
     spellResult.Reset();
 
@@ -137,6 +143,9 @@ CharacterActionData SpellCaster::ApplyEffect(Combatant &combatant, const Spell &
             break;
         case SpellTypes::CURE_WOUNDS:
             ApplyCureWounds(combatant, spell);
+            break;
+        case SpellTypes::HEALING_WORD:
+            ApplyHealingWord(combatant, spell);
             break;
         default:
             return CharacterActionData();    

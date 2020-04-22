@@ -77,4 +77,9 @@ public:
     {
         return {SpellTypes::CURE_WOUNDS, 1, 8, 1, 1, "Cure Wounds", false, false, false};
     }
+
+    static Spell BuildHealingWord()
+    {
+        return {SpellTypes::HEALING_WORD, 1, 4, 1, 12, "Healing Word", false, false, true};
+    }
 };

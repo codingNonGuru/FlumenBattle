@@ -120,6 +120,7 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
 
         character->AddSpell(SpellFactory::BuildCureWounds());
         character->AddSpell(SpellFactory::BuildSacredFlame());
+        character->AddSpell(SpellFactory::BuildHealingWord());
 
         character->AddProficiency(ProficiencyFactory::BuildPerceptionProficiency(ProficiencyLevels::APPRENTICE));
 

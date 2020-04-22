@@ -24,6 +24,8 @@ class SpellCaster
 
     static CharacterActionData ApplyCureWounds(Combatant &, const Spell &);
 
+    static CharacterActionData ApplyHealingWord(Combatant &, const Spell &);
+
 public:
     static CharacterActionData ApplyEffect(Combatant &, const Spell &);
 };

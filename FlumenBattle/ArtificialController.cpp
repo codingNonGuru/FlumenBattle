@@ -258,9 +258,12 @@ bool ArtificialController::ApproachTile(BattleTile *destination, Integer range)
         return false;
     }
 
-    bool hasReached = false; 
-
     auto startTile = GetVirtualTile();
+
+    if(startTile->GetDistanceTo(*destination) <= range)
+        return true;
+
+    bool hasReached = false; 
 
     while(true)
     {
