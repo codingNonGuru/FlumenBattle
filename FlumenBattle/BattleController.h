@@ -65,6 +65,8 @@ public:
 
     Delegate OnSubactionSelected;
 
+    Delegate OnBattleEnded;
+
     void SelectCombatant(Combatant *);
 
     void TargetCombatant(Combatant *);

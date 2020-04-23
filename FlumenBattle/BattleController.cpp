@@ -129,6 +129,35 @@ void BattleController::EndTurn()
 {
     targetedCombatant = nullptr;
 
+    for(auto group : {battleScene->GetPlayerGroup(), battleScene->GetComputerGroup()})
+    {
+        bool isDead = true;
+
+        auto &combatants = group->GetCombatants();
+        for(auto combatant = combatants.GetStart(); combatant != combatants.GetEnd(); ++combatant)
+        {
+            if(combatant->IsAlive())
+            {
+                isDead = false;
+                break;
+            }
+        }
+
+        if(isDead)
+        {
+            if(isPlayerInputEnabled)
+            {
+                auto humanController = HumanController::Get();
+                humanController->DisablePlayerInput();
+
+                isPlayerInputEnabled = false;
+            }
+
+            OnBattleEnded.Invoke();
+            return;
+        }
+    }
+
     battleScene->EndTurn();
 
     SelectCombatant(battleScene->GetActingCharacter());

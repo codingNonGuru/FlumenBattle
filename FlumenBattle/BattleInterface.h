@@ -8,6 +8,7 @@ class CharacterInfo;
 class BattleInfoPanel;
 class CharacterDetailPanel;
 class ActionInfoPanel;
+class BattleEndMessage;
 
 class BattleInterface 
 {
@@ -18,6 +19,8 @@ class BattleInterface
     CharacterDetailPanel *characterDetailPanel;
 
     ActionInfoPanel *actionInfoPanel;
+
+    BattleEndMessage *battleEndMessage;
 
     Array <CharacterInfo*> characterInfos;
 
