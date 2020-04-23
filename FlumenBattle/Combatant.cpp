@@ -345,7 +345,14 @@ CharacterActionData Combatant::Strike()
 
     bool isCriticalHit = attackRoll == 20;
 
-    if(character->GetActionRange() == 1 || character->selectedWeapon->IsThrown)
+    if(character->selectedWeapon->HasFinesse)
+    {
+        auto strengthModifier = character->abilities.GetModifier(AbilityTypes::STRENGTH);
+        auto dexterityModifier = character->abilities.GetModifier(AbilityTypes::DEXTERITY);
+
+        character->abilities.SetAttackAbility(strengthModifier > dexterityModifier ? AbilityTypes::STRENGTH : AbilityTypes::DEXTERITY);
+    }
+    else if(character->GetActionRange() == 1 || character->selectedWeapon->IsThrown)
     {
         character->abilities.SetAttackAbility(AbilityTypes::STRENGTH);
     }
@@ -366,6 +373,11 @@ CharacterActionData Combatant::Strike()
     if(hasHit)
     {
         damage = RollAttackDamage(isCriticalHit) + attackAbility->Modifier;
+        
+        if(damage < 0)
+        {
+            damage = 0;
+        }
 
         target->SufferDamage(damage);
     }
