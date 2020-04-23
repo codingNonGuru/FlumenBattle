@@ -13,6 +13,7 @@
 #include "FlumenBattle/Group.h"
 #include "FlumenBattle/BattleTile.h"
 #include "FlumenBattle/CombatGroup.h"
+#include "FlumenBattle/WorldState.h"
 
 BattleController * BattleController::instance = nullptr;
 
@@ -29,11 +30,17 @@ void BattleController::Initialize()
 
 void BattleController::HandleSceneEnabled()
 {
+    targetedCombatant = nullptr;
+
+    targetedTile = nullptr;
+
     SelectCombatant(battleScene->GetActingCharacter());
 
     isPlayerInputEnabled = false;
 
     DetermineCharacterController();
+
+    battleScene->OnEnabled.Remove(this, &BattleController::HandleSceneEnabled);
 }
 
 void BattleController::DetermineCharacterController()
@@ -205,9 +212,20 @@ void BattleController::TargetCombatant(Combatant *target)
     }
 }
 
-Character * BattleController::GetSelectedCharacter() const {return selectedCombatant->character;}
+Character * BattleController::GetSelectedCharacter() const 
+{
+    return selectedCombatant->character;
+}
 
-Character * BattleController:: GetTargetedCharacter() const {return targetedCombatant->character;}
+Character * BattleController::GetTargetedCharacter() const 
+{
+    return targetedCombatant->character;
+}
+
+void BattleController::ExitBattle()
+{
+    WorldState::Get()->Enter();
+}
 
 BattleController * BattleController::Get()
 {

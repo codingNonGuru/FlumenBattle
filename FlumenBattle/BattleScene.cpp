@@ -33,6 +33,8 @@ BattleScene::BattleScene()
 
     playerGroup = new CombatGroup();
     computerGroup = new CombatGroup();
+
+    turnOrder.Initialize(256);
 }
 
 void BattleScene::Initialize()
@@ -59,8 +61,7 @@ void BattleScene::HandleEnable()
 
 void BattleScene::DetermineTurnOrder()
 {
-    turnOrder.Initialize(256);
-
+    turnOrder.Reset();
     for(auto group : {playerGroup, computerGroup})
     {    
         for(auto combatant = group->combatants.GetStart(); combatant != group->combatants.GetEnd(); ++combatant)
@@ -137,7 +138,14 @@ void BattleScene::Update()
 void BattleScene::Render()
 {
     BattleTileModel::Get()->Render();
-    //battleTileModel->Render();
+}
+
+void BattleScene::HandleDisable()
+{
+    for(auto tile = battleMap->tiles.GetStart(); tile != battleMap->tiles.GetEnd(); ++tile)
+    {
+        tile->Combatant = nullptr;
+    }
 }
 
 bool BattleScene::IsCharactersTurn(Combatant *character) const
@@ -149,10 +157,3 @@ Camera * BattleScene::GetCamera() const
 {
     return camera;
 }
-
-/*BattleScene* BattleScene::Get()
-{
-    static BattleScene scene;
-    
-    return &scene;
-}*/

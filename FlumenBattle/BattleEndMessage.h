@@ -12,5 +12,5 @@ class BattleEndMessage : public Element
 
     void HandleEnable() override;
 
-    void HandleDisable() override;
+    void HandleConfirm();
 };

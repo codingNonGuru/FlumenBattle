@@ -54,6 +54,8 @@ class BattleScene : public Scene, public Singleton<BattleScene>
 
     void HandleEnable() override;
 
+    void HandleDisable() override;
+
     void Render() override;
 
     void Update() override;

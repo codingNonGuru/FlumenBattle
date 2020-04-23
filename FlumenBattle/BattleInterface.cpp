@@ -32,7 +32,6 @@ BattleInterface::BattleInterface()
 
     auto spriteShader = ShaderManager::GetShaderMap().Get("Sprite");
 
-
     for(Index i = 0; i < characterInfos.GetCapacity(); ++i)
     {
         auto sprite = new Sprite(nullptr, spriteShader);
@@ -90,5 +89,22 @@ void BattleInterface::Initialize()
     actionInfoPanel->Enable();
 
     characterDetailPanel->Enable();
+}
+
+void BattleInterface::Disable()
+{
+    for(auto iterator = characterInfos.GetStart(); iterator != characterInfos.GetEnd(); ++iterator)
+    {
+        auto info = *iterator;
+        info->Disable();
+    }
+
+    battleInfoPanel->Disable();
+
+    actionInfoPanel->Disable();
+
+    characterDetailPanel->Disable();
+
+    battleEndMessage->Disable();
 }
 

@@ -2,7 +2,10 @@
 #include "FlumenBattle/WorldScene.h"
 #include "FlumenBattle/Group.h"
 
-WorldState::WorldState() {}
+WorldState::WorldState() 
+{
+    Initialize();
+}
 
 void WorldState::Initialize()
 {
@@ -12,8 +15,6 @@ void WorldState::Initialize()
 
 void WorldState::HandleEnter()
 {
-    Initialize();
-
     scene->Enable();
 }
 

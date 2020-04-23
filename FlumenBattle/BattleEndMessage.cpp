@@ -1,5 +1,6 @@
 #include "FlumenEngine/Interface/Text.hpp"
 #include "FlumenEngine/Core/Transform.hpp"
+#include "FlumenEngine/Core/InputHandler.hpp"
 
 #include "FlumenBattle/BattleEndMessage.h"
 #include "FlumenBattle/BattleController.h"
@@ -15,14 +16,16 @@ void BattleEndMessage::HandleConfigure()
     mainLabel->Setup("Bye");
 
     BattleController::Get()->OnBattleEnded.Add(this, &BattleEndMessage::Enable);
-}
+}    
 
 void BattleEndMessage::HandleEnable() 
 {
-
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_J, this, &BattleEndMessage::HandleConfirm);
 }
 
-void BattleEndMessage::HandleDisable() 
+void BattleEndMessage::HandleConfirm()
 {
+    BattleController::Get()->ExitBattle();
 
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_J, this, &BattleEndMessage::HandleConfirm);
 }

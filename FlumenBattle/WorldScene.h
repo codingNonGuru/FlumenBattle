@@ -15,11 +15,13 @@ class WorldScene : Scene
 
     void Initialize() override;
 
+    void HandleEnable() override;
+
     void Update() override;
 
     void Render() override;
 
-    void HandleStateExit();
+    void HandleEnterBattle();
 
 public:
     static WorldScene * Get() 

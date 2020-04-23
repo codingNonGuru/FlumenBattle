@@ -34,5 +34,7 @@ void BattleState::HandleEnter()
 
 void BattleState::HandleExit() 
 {
+    interface->Disable();
 
+    scene->Disable();
 }

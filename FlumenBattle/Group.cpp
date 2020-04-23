@@ -15,8 +15,9 @@ Array <CharacterClasses> classMakeup; /*= {
 
 Group::Group() {}
 
-void Group::Initialize(Integer size, Color color, RaceTypes raceType)
+void Group::Initialize(Word name, Integer size, Color color, RaceTypes raceType)
 {
+    this->name = name;
     this->color = color;
 
     characters.Initialize(16);
@@ -57,5 +58,18 @@ void Group::Initialize(Integer size, Color color, RaceTypes raceType)
     }
 }
 
+bool Group::IsAlive()
+{
+    for(auto character = characters.GetStart(); character != characters.GetEnd(); ++character)
+    {
+        if(character->IsAlive())
+        {
+            std::cout<<"is alive\n";
+            return true;
+        }
+    }
 
+    std::cout<<"is dead\n";
+    return false;
+}
 

@@ -24,6 +24,8 @@ class Group
 
     friend class CombatGroup;
 
+    Word name;
+
     Battle *battle;
 
     Color color;
@@ -32,10 +34,14 @@ class Group
 
     Group();
 
-    void Initialize(Integer, Color, RaceTypes);
+    void Initialize(Word, Integer, Color, RaceTypes);
 
 public:
+    bool IsAlive();
+
     const Color& GetColor() const {return color;} 
+
+    Word GetName() const {return name;}
 
     Array <Character> & GetCharacters() {return characters;}
 };

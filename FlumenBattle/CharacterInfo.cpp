@@ -60,7 +60,6 @@ void CharacterInfo::HandleConfigure()
 	hitpointLabel->Configure(Size(150, 150), DrawOrder(2), new Transform(Position2(20.0f, 0.0f)), nullptr);
 
 	hitpointLabel->SetParent(this);
-    hitpointLabel->Enable();
 
     deathSavingLabel = new Text(fontVerySmall, textColor);
     Interface::AddElement("DeathSavingLabel", deathSavingLabel);
@@ -80,6 +79,14 @@ void CharacterInfo::HandleEnable()
     textLabel->Setup(className.GetFirstCharacter());
 
     textLabel->SetColor(combatant->GetGroup()->GetGroup()->GetColor());
+
+    SetOpacity(1.0f);
+
+    textLabel->SetOpacity(1.0f);
+
+    hitpointLabel->Enable();
+
+    deathSavingLabel->Disable();
 }
 
 void CharacterInfo::HandleTargeting()

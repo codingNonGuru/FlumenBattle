@@ -22,10 +22,6 @@ class BattleController
 
     BattleScene *battleScene;
 
-    Group *playerControlledGroup;
-
-    Group *computerControlledGroup;
-
     BattleTile *targetedTile;
 
     Combatant *selectedCombatant;
@@ -84,6 +80,8 @@ public:
     Character * GetTargetedCharacter() const;
 
     const CharacterActionData & GetLastAction() const {return lastActionData;}
+
+    void ExitBattle();
 
     static BattleController * Get();
 };
