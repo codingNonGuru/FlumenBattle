@@ -13,6 +13,7 @@
 #include "FlumenEngine/Render/Camera.hpp"
 #include "FlumenEngine/Render/Mesh.hpp"
 #include "FlumenEngine/Render/MeshManager.hpp"
+#include "FlumenEngine/Interface/TextManager.hpp"
 
 #include "RenderBuilder.hpp"
 #include "FlumenBattle/Types.hpp"
@@ -35,7 +36,15 @@ void RenderBuilder::Initialize()
 	//TextureManager::AddTexture(screenTexture, "Screen");
 }
 
+void HandleEngineInitialized()
+{
+	auto glyphShader = ShaderManager::GetShaderMap().Get("Glyph");
+    TextManager::Initialize(glyphShader);
+}
+
 RenderBuilder::RenderBuilder()
 {
 	RenderManager::OnInitialize()->Add(&RenderBuilder::Initialize);
+
+	Engine::OnInitializeEnded.Add(&HandleEngineInitialized);
 }

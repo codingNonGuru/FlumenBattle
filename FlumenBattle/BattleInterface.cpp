@@ -23,9 +23,6 @@ CharacterInfo* characterInfo = nullptr;
 
 BattleInterface::BattleInterface()
 {
-    auto glyphShader = ShaderManager::GetShaderMap().Get("Glyph");
-    TextManager::Initialize(glyphShader);
-
     battleScene = BattleScene::Get();
 
     characterInfos.Initialize(32);
@@ -49,25 +46,25 @@ BattleInterface::BattleInterface()
 
     battleInfoPanel = new BattleInfoPanel();
     Interface::AddElement("BattleInfoPanel", battleInfoPanel);
-    battleInfoPanel->Configure(Size(620, 140), DrawOrder(3), new Transform(Position2(-640.0f, 460.0f)), sprite, Opacity(1.0f));
+    battleInfoPanel->Configure(Size(620, 140), DrawOrder(3), new Transform(Position2(-640.0f, 460.0f)), sprite, Opacity(0.7f));
 
     sprite = new Sprite(nullptr, spriteShader);
 
     actionInfoPanel = new ActionInfoPanel();
     Interface::AddElement("ActionInfoPanel", actionInfoPanel);
-    actionInfoPanel->Configure(Size(1900, 100), DrawOrder(3), new Transform(Position2(0.0f, -480.0f)), sprite, Opacity(1.0f));
+    actionInfoPanel->Configure(Size(1900, 100), DrawOrder(3), new Transform(Position2(0.0f, -480.0f)), sprite, Opacity(0.7f));
 
     sprite = new Sprite(nullptr, spriteShader);
 
     characterDetailPanel = new CharacterDetailPanel();
     Interface::AddElement("CharacterDetailPanel", characterDetailPanel);
-    characterDetailPanel->Configure(Size(540, 220), DrawOrder(3), new Transform(Position2(680.0f, 420.0f)), sprite, Opacity(1.0f));
+    characterDetailPanel->Configure(Size(540, 220), DrawOrder(3), new Transform(Position2(680.0f, 420.0f)), sprite, Opacity(0.7f));
 
     sprite = new Sprite(nullptr, spriteShader);
 
     battleEndMessage = new BattleEndMessage();
     Interface::AddElement("BattleEndMessage", battleEndMessage);
-    battleEndMessage->Configure(Size(300, 180), DrawOrder(3), new Transform(Position2(0.0f, 0.0f)), sprite, Opacity(0.5f));
+    battleEndMessage->Configure(Size(300, 180), DrawOrder(3), new Transform(Position2(0.0f, 0.0f)), sprite, Opacity(0.7f));
 }
 
 void BattleInterface::Initialize()

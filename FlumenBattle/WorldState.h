@@ -3,10 +3,13 @@
 #include "FlumenEngine/Core/State.hpp"
 
 class WorldScene;
+class WorldInterface;
 
 class WorldState : public State
 {
     WorldScene *scene;
+
+    WorldInterface *interface;
 
     WorldState();
 
