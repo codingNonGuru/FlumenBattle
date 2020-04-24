@@ -4,6 +4,8 @@
 
 #include "FlumenBattle/BattleEndMessage.h"
 #include "FlumenBattle/BattleController.h"
+#include "FlumenBattle/BattleScene.h"
+#include "FlumenBattle/CombatGroup.h"
 
 void BattleEndMessage::HandleConfigure() 
 {
@@ -13,13 +15,22 @@ void BattleEndMessage::HandleConfigure()
     mainLabel->Enable();
     mainLabel->SetParent(this);
 
-    mainLabel->Setup("Bye");
+    //mainLabel->Setup("Bye");
 
     BattleController::Get()->OnBattleEnded.Add(this, &BattleEndMessage::Enable);
 }    
 
 void BattleEndMessage::HandleEnable() 
 {
+    if(BattleScene::Get()->GetPlayerGroup()->IsAlive())
+    {
+        mainLabel->Setup("You won. Press [J] to return to the campaign.");
+    }
+    else
+    {
+        mainLabel->Setup("You are dead. Game over. Press [J] to exit.");
+    }
+
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_J, this, &BattleEndMessage::HandleConfirm);
 }
 

@@ -27,3 +27,8 @@ void CombatGroup::Initialize(Group *_group, BattleTile *_tile)
         combatant->Initialize(this, character, combatantTile);
     }
 }
+
+bool CombatGroup::IsAlive() const
+{
+    return group->IsAlive();
+}

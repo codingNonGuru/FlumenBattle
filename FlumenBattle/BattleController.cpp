@@ -1,3 +1,4 @@
+#include "FlumenEngine/Core/Engine.hpp"
 #include "FlumenEngine/Core/TaskManager.hpp"
 #include "FlumenEngine/Core/Task.hpp"
 #include "FlumenEngine/Core/InputHandler.hpp"
@@ -224,7 +225,14 @@ Character * BattleController::GetTargetedCharacter() const
 
 void BattleController::ExitBattle()
 {
-    WorldState::Get()->Enter();
+    if(battleScene->GetPlayerGroup()->IsAlive())
+    {
+        WorldState::Get()->Enter();
+    }
+    else
+    {
+        Engine::ShutDown();
+    }
 }
 
 BattleController * BattleController::Get()

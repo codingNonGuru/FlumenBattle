@@ -64,12 +64,10 @@ bool Group::IsAlive()
     {
         if(character->IsAlive())
         {
-            std::cout<<"is alive\n";
             return true;
         }
     }
 
-    std::cout<<"is dead\n";
     return false;
 }
 

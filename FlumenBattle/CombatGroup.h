@@ -24,4 +24,6 @@ public:
     Group *GetGroup() const {return group;}
 
     const Array <Combatant> &GetCombatants() const {return combatants;}
+
+    bool IsAlive() const;
 };

@@ -17,8 +17,6 @@ class WorldScene : Scene
 
     void HandleEnable() override;
 
-    void Update() override;
-
     void Render() override;
 
     void HandleEnterBattle();
