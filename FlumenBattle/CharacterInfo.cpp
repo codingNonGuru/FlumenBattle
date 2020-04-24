@@ -1,7 +1,6 @@
 #include "FlumenCore/Delegate/Delegate.hpp"
 
 #include "FlumenEngine/Interface/Text.hpp"
-#include "FlumenEngine/Interface/FontManager.hpp"
 #include "FlumenEngine/Core/Transform.hpp"
 #include "FlumenEngine/Render/RenderManager.hpp"
 #include "FlumenEngine/Render/Camera.hpp"
@@ -18,10 +17,6 @@
 void CharacterInfo::HandleConfigure() 
 {
     battleController = BattleController::Get();
-
-    /*auto fontSmall = FontManager::GetFont("DominicanSmall");
-    auto fontMedium = FontManager::GetFont("DominicanMedium");
-    auto fontVerySmall = FontManager::GetFont("DominicanVerySmall");*/
 
     auto textColor = Color::BLACK;
 

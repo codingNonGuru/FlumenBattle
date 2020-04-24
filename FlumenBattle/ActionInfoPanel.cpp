@@ -1,16 +1,8 @@
 #include "FlumenCore/Delegate/Delegate.hpp"
 
 #include "FlumenEngine/Interface/Text.hpp"
-#include "FlumenEngine/Interface/TextManager.hpp"
-#include "FlumenEngine/Interface/Font.hpp"
-#include "FlumenEngine/Interface/FontManager.hpp"
-#include "FlumenEngine/Interface/Interface.hpp"
-#include "FlumenEngine/Core/Transform.hpp"
 #include "FlumenEngine/Render/RenderManager.hpp"
 #include "FlumenEngine/Render/Camera.hpp"
-#include "FlumenEngine/Interface/Sprite.hpp"
-#include "FlumenEngine/Render/ShaderManager.hpp"
-#include "FlumenEngine/Render/Shader.hpp"
 #include "FlumenEngine/Interface/LayoutGroup.h"
 
 #include "FlumenBattle/Character.h"
@@ -44,31 +36,22 @@ void ActionInfoPanel::HandleConfigure()
     battleController->OnActionSelected.Add(this, &ActionInfoPanel::HandleSubactionSelected);
     battleController->OnSubactionSelected.Add(this, &ActionInfoPanel::HandleSubactionSelected);
 
-    auto fontSmall = FontManager::GetFont("DominicanSmall");
-
     actionLabels.Initialize(8);
     for(Index i = 0; i < actionLabels.GetCapacity(); ++i)
     {
         auto label = new Text({"JSLAncient", "Small"}, DEFAULT_COLOR);
-        //Interface::AddElement("ActionLabel", label);
-
-        label->Configure(Size(300, 100), DrawOrder(4), Position2(0.0f, 0.0f), nullptr);
+        label->Configure(Size(300, 100), DrawOrder(4), Position2(0.0f, 0.0f));
 
         label->SetParent(this);
 
         *actionLabels.Allocate() = label;
     }
 
-    auto spriteShader = ShaderManager::GetShaderMap().Get("Sprite");
     subactionLabels.Initialize(8);
     for(Index i = 0; i < subactionLabels.GetCapacity(); ++i)
     {
-        auto sprite = new Sprite(nullptr, spriteShader);
-
         auto label = new Text({"JSLAncient", "Small"}, DEFAULT_COLOR);
-        //Interface::AddElement("SubactionLabel", label);
-
-        label->Configure(Size(300, 100), DrawOrder(4), Position2(0.0f, 0.0f), sprite);
+        label->Configure(Size(300, 100), DrawOrder(4), Position2(0.0f, 0.0f));
 
         label->SetParent(this);
 

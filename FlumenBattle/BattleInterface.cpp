@@ -1,11 +1,4 @@
 #include "FlumenEngine/Core/SceneManager.hpp"
-#include "FlumenEngine/Interface/Element.hpp"
-#include "FlumenEngine/Interface/Interface.hpp"
-#include "FlumenEngine/Core/Transform.hpp"
-#include "FlumenEngine/Render/ShaderManager.hpp"
-#include "FlumenEngine/Render/Shader.hpp"
-#include "FlumenEngine/Interface/Sprite.hpp"
-#include "FlumenEngine/Interface/TextManager.hpp"
 
 #include "FlumenBattle/BattleInterface.h"
 #include "FlumenBattle/CharacterInfo.h"
@@ -19,22 +12,23 @@
 #include "FlumenBattle/CharacterDetailPanel.h"
 #include "FlumenBattle/BattleEndMessage.h"
 
+#define MAXIMUM_INFO_COUNT 32
+
+#define ELEMENT_OPACITY 0.85f
+
 CharacterInfo* characterInfo = nullptr;
 
 BattleInterface::BattleInterface()
 {
     battleScene = BattleScene::Get();
 
-    characterInfos.Initialize(32);
+    characterInfos.Initialize(MAXIMUM_INFO_COUNT);
 
-    auto spriteShader = ShaderManager::GetShaderMap().Get("Sprite");
+    auto sprite = SpriteDescriptor("Sprite");
 
     for(Index i = 0; i < characterInfos.GetCapacity(); ++i)
     {
-        auto sprite = new Sprite(nullptr, spriteShader);
-
         characterInfo = new CharacterInfo();
-        //Interface::AddElement("CharacterInfo", characterInfo);
         characterInfo->Configure(Size(60, 90), DrawOrder(1), Position2(0.0f, 0.0f), sprite, Opacity(1.0f));
 
         characterInfo->SetInteractivity(true);
@@ -42,29 +36,17 @@ BattleInterface::BattleInterface()
         *characterInfos.Allocate() = characterInfo;
     }
 
-    auto sprite = new Sprite(nullptr, spriteShader);
-
     battleInfoPanel = new BattleInfoPanel();
-    //Interface::AddElement("BattleInfoPanel", battleInfoPanel);
-    battleInfoPanel->Configure(Size(620, 140), DrawOrder(3), Position2(-640.0f, 460.0f), sprite, Opacity(0.7f));
-
-    sprite = new Sprite(nullptr, spriteShader);
+    battleInfoPanel->Configure(Size(620, 140), DrawOrder(3), Position2(-640.0f, 460.0f), sprite, Opacity(ELEMENT_OPACITY));
 
     actionInfoPanel = new ActionInfoPanel();
-    //Interface::AddElement("ActionInfoPanel", actionInfoPanel);
-    actionInfoPanel->Configure(Size(1900, 100), DrawOrder(3), Position2(0.0f, -480.0f), sprite, Opacity(0.7f));
-
-    sprite = new Sprite(nullptr, spriteShader);
+    actionInfoPanel->Configure(Size(1900, 100), DrawOrder(3), Position2(0.0f, -480.0f), sprite, Opacity(ELEMENT_OPACITY));
 
     characterDetailPanel = new CharacterDetailPanel();
-    //Interface::AddElement("CharacterDetailPanel", characterDetailPanel);
-    characterDetailPanel->Configure(Size(540, 220), DrawOrder(3), Position2(680.0f, 420.0f), sprite, Opacity(0.7f));
-
-    sprite = new Sprite(nullptr, spriteShader);
+    characterDetailPanel->Configure(Size(540, 220), DrawOrder(3), Position2(680.0f, 420.0f), sprite, Opacity(ELEMENT_OPACITY));
 
     battleEndMessage = new BattleEndMessage();
-    //Interface::AddElement("BattleEndMessage", battleEndMessage);
-    battleEndMessage->Configure(Size(300, 180), DrawOrder(3), Position2(0.0f, 0.0f), sprite, Opacity(0.7f));
+    battleEndMessage->Configure(Size(300, 180), DrawOrder(3), Position2(0.0f, 0.0f), sprite, Opacity(ELEMENT_OPACITY));
 }
 
 void BattleInterface::Initialize()

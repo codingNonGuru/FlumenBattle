@@ -1,5 +1,4 @@
 #include "FlumenEngine/Interface/Text.hpp"
-#include "FlumenEngine/Core/Transform.hpp"
 
 #include "FlumenBattle/CharacterDetailPanel.h"
 #include "FlumenBattle/BattleController.h"
