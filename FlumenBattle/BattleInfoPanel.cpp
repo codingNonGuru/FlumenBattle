@@ -28,10 +28,9 @@ void BattleInfoPanel::HandleConfigure()
 
     auto textColor = (Color::RED * 0.3f) + (Color::BLACK * 0.7f);
 
-	actionLabel = new Text(fontSmall, textColor);
-    Interface::AddElement("CharacterLabel", actionLabel);
+	actionLabel = new Text({"JSLAncient", "Small"}, textColor);
+	actionLabel->Configure(Size(600, 140), DrawOrder(4), Position2(0.0f, 0.0f));
 
-	actionLabel->Configure(Size(600, 140), DrawOrder(4), new Transform(Position2(0.0f, 0.0f)), nullptr);
     actionLabel->SetAlignment(Text::Alignments::LEFT);
 
 	actionLabel->Enable();

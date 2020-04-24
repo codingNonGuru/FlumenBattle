@@ -13,7 +13,7 @@ class CharacterAbilityLabel : public Text
 
     Word abilityPrefix;
 
-    CharacterAbilityLabel(Font *font, Color color, AbilityTypes type, Word prefix) : Text(font, color), abilityType(type), abilityPrefix(prefix) {}
+    CharacterAbilityLabel(FontDescriptor font, Color color, AbilityTypes type, Word prefix) : Text(font, color), abilityType(type), abilityPrefix(prefix) {}
 
     void HandleUpdate() override;
 };

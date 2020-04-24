@@ -1,8 +1,4 @@
 #include "FlumenEngine/Interface/Text.hpp"
-#include "FlumenEngine/Interface/TextManager.hpp"
-#include "FlumenEngine/Interface/Font.hpp"
-#include "FlumenEngine/Interface/FontManager.hpp"
-#include "FlumenEngine/Interface/Interface.hpp"
 #include "FlumenEngine/Core/Transform.hpp"
 
 #include "FlumenBattle/CharacterDetailPanel.h"
@@ -22,9 +18,6 @@ void CharacterDetailPanel::HandleConfigure()
 {
     battleController = BattleController::Get();
 
-    auto fontMedium = FontManager::GetFont("JSLAncientMedium");
-    auto fontLarge = FontManager::GetFont("JSLAncientLarge");
-
     auto textColor = (Color::RED * 0.3f) + (Color::BLACK * 0.7f);
 
     AbilityLabelData labelData[] = {
@@ -37,10 +30,8 @@ void CharacterDetailPanel::HandleConfigure()
     {
         auto data = labelData[i];
 
-        auto label = new CharacterAbilityLabel(fontMedium, textColor, data.Type, data.Prefix);
-        Interface::AddElement("AbilityLabel", label);
-
-        label->Configure(Size(150, 150), drawOrder_ + 1, new Transform(position), nullptr);
+        auto label = new CharacterAbilityLabel({"JSLAncient", "Medium"}, textColor, data.Type, data.Prefix);
+        label->Configure(Size(150, 150), drawOrder_ + 1, position);
 
         label->Enable();
         label->SetParent(this);
@@ -53,10 +44,8 @@ void CharacterDetailPanel::HandleConfigure()
         }
     }
 
-    headerLabel = new Text(fontLarge, textColor);
-    Interface::AddElement("HeaderLabel", headerLabel);
-
-    headerLabel->Configure(Size(150, 150), drawOrder_ + 1, new Transform(Position2(0.0f, -80.0f)), nullptr);
+    headerLabel = new Text({"JSLAncient", "Large"}, textColor);
+    headerLabel->Configure(Size(150, 150), drawOrder_ + 1, Position2(0.0f, -80.0f));
 
     headerLabel->Enable();
     headerLabel->SetParent(this);

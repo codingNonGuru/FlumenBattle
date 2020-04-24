@@ -49,10 +49,10 @@ void ActionInfoPanel::HandleConfigure()
     actionLabels.Initialize(8);
     for(Index i = 0; i < actionLabels.GetCapacity(); ++i)
     {
-        auto label = new Text(fontSmall, DEFAULT_COLOR);
-        Interface::AddElement("ActionLabel", label);
+        auto label = new Text({"JSLAncient", "Small"}, DEFAULT_COLOR);
+        //Interface::AddElement("ActionLabel", label);
 
-        label->Configure(Size(300, 100), DrawOrder(4), new Transform(Position2(0.0f, 0.0f)), nullptr);
+        label->Configure(Size(300, 100), DrawOrder(4), Position2(0.0f, 0.0f), nullptr);
 
         label->SetParent(this);
 
@@ -65,10 +65,10 @@ void ActionInfoPanel::HandleConfigure()
     {
         auto sprite = new Sprite(nullptr, spriteShader);
 
-        auto label = new Text(fontSmall, DEFAULT_COLOR);
-        Interface::AddElement("SubactionLabel", label);
+        auto label = new Text({"JSLAncient", "Small"}, DEFAULT_COLOR);
+        //Interface::AddElement("SubactionLabel", label);
 
-        label->Configure(Size(300, 100), DrawOrder(4), new Transform(Position2(0.0f, 0.0f)), sprite);
+        label->Configure(Size(300, 100), DrawOrder(4), Position2(0.0f, 0.0f), sprite);
 
         label->SetParent(this);
 

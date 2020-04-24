@@ -5,8 +5,8 @@
 
 void WorldDecisionMenu::HandleConfigure() 
 {
-    mainLabel = new Text({"JSLAncient", "Large"}, "MainLabel", Color::RED * 0.5f);
-    mainLabel->Configure(Size(150, 150), drawOrder_ + 1, new Transform(Position2(0.0f, 0.0f)), nullptr);
+    mainLabel = new Text({"JSLAncient", "Large"}, Color::RED * 0.5f);
+    mainLabel->Configure(Size(150, 150), drawOrder_ + 1, Position2(0.0f, 0.0f));
 
     mainLabel->Enable();
     mainLabel->SetParent(this);

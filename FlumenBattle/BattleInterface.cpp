@@ -34,8 +34,8 @@ BattleInterface::BattleInterface()
         auto sprite = new Sprite(nullptr, spriteShader);
 
         characterInfo = new CharacterInfo();
-        Interface::AddElement("CharacterInfo", characterInfo);
-        characterInfo->Configure(Size(60, 90), DrawOrder(1), new Transform(Position2(0.0f, 0.0f)), sprite, Opacity(1.0f));
+        //Interface::AddElement("CharacterInfo", characterInfo);
+        characterInfo->Configure(Size(60, 90), DrawOrder(1), Position2(0.0f, 0.0f), sprite, Opacity(1.0f));
 
         characterInfo->SetInteractivity(true);
 
@@ -45,26 +45,26 @@ BattleInterface::BattleInterface()
     auto sprite = new Sprite(nullptr, spriteShader);
 
     battleInfoPanel = new BattleInfoPanel();
-    Interface::AddElement("BattleInfoPanel", battleInfoPanel);
-    battleInfoPanel->Configure(Size(620, 140), DrawOrder(3), new Transform(Position2(-640.0f, 460.0f)), sprite, Opacity(0.7f));
+    //Interface::AddElement("BattleInfoPanel", battleInfoPanel);
+    battleInfoPanel->Configure(Size(620, 140), DrawOrder(3), Position2(-640.0f, 460.0f), sprite, Opacity(0.7f));
 
     sprite = new Sprite(nullptr, spriteShader);
 
     actionInfoPanel = new ActionInfoPanel();
-    Interface::AddElement("ActionInfoPanel", actionInfoPanel);
-    actionInfoPanel->Configure(Size(1900, 100), DrawOrder(3), new Transform(Position2(0.0f, -480.0f)), sprite, Opacity(0.7f));
+    //Interface::AddElement("ActionInfoPanel", actionInfoPanel);
+    actionInfoPanel->Configure(Size(1900, 100), DrawOrder(3), Position2(0.0f, -480.0f), sprite, Opacity(0.7f));
 
     sprite = new Sprite(nullptr, spriteShader);
 
     characterDetailPanel = new CharacterDetailPanel();
-    Interface::AddElement("CharacterDetailPanel", characterDetailPanel);
-    characterDetailPanel->Configure(Size(540, 220), DrawOrder(3), new Transform(Position2(680.0f, 420.0f)), sprite, Opacity(0.7f));
+    //Interface::AddElement("CharacterDetailPanel", characterDetailPanel);
+    characterDetailPanel->Configure(Size(540, 220), DrawOrder(3), Position2(680.0f, 420.0f), sprite, Opacity(0.7f));
 
     sprite = new Sprite(nullptr, spriteShader);
 
     battleEndMessage = new BattleEndMessage();
-    Interface::AddElement("BattleEndMessage", battleEndMessage);
-    battleEndMessage->Configure(Size(300, 180), DrawOrder(3), new Transform(Position2(0.0f, 0.0f)), sprite, Opacity(0.7f));
+    //Interface::AddElement("BattleEndMessage", battleEndMessage);
+    battleEndMessage->Configure(Size(300, 180), DrawOrder(3), Position2(0.0f, 0.0f), sprite, Opacity(0.7f));
 }
 
 void BattleInterface::Initialize()

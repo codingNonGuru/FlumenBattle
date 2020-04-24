@@ -1,10 +1,7 @@
 #include "FlumenCore/Delegate/Delegate.hpp"
 
 #include "FlumenEngine/Interface/Text.hpp"
-#include "FlumenEngine/Interface/TextManager.hpp"
-#include "FlumenEngine/Interface/Font.hpp"
 #include "FlumenEngine/Interface/FontManager.hpp"
-#include "FlumenEngine/Interface/Interface.hpp"
 #include "FlumenEngine/Core/Transform.hpp"
 #include "FlumenEngine/Render/RenderManager.hpp"
 #include "FlumenEngine/Render/Camera.hpp"
@@ -22,49 +19,39 @@ void CharacterInfo::HandleConfigure()
 {
     battleController = BattleController::Get();
 
-    auto fontSmall = FontManager::GetFont("DominicanSmall");
+    /*auto fontSmall = FontManager::GetFont("DominicanSmall");
     auto fontMedium = FontManager::GetFont("DominicanMedium");
-    auto fontVerySmall = FontManager::GetFont("DominicanVerySmall");
+    auto fontVerySmall = FontManager::GetFont("DominicanVerySmall");*/
 
     auto textColor = Color::BLACK;
 
-	textLabel = new Text(fontMedium, textColor);
-    Interface::AddElement("CharacterLabel", textLabel);
-
-	textLabel->Configure(Size(150, 150), DrawOrder(2), new Transform(Position2(-5.0f, 0.0f)), nullptr);
+	textLabel = new Text({"JSLAncient", "Medium"}, textColor);
+	textLabel->Configure(Size(150, 150), DrawOrder(2), Position2(-5.0f, 0.0f));
 
 	textLabel->Enable();
 	textLabel->SetParent(this);
 
-    selectLabel = new Text(fontSmall, textColor);
-    Interface::AddElement("SelectLabel", selectLabel);
-
-	selectLabel->Configure(Size(150, 150), DrawOrder(2), new Transform(Position2(0.0f, 30.0f)), nullptr);
+    selectLabel = new Text({"JSLAncient", "Small"}, textColor);
+	selectLabel->Configure(Size(150, 150), DrawOrder(2), Position2(0.0f, 30.0f));
 
 	selectLabel->SetParent(this);
 
     selectLabel->Setup("S");
 
-    targetedLabel = new Text(fontSmall, textColor);
-    Interface::AddElement("TargetedLabel", targetedLabel);
-
-	targetedLabel->Configure(Size(150, 150), DrawOrder(2), new Transform(Position2(0.0f, -30.0f)), nullptr);
+    targetedLabel = new Text({"JSLAncient", "Small"}, textColor);
+	targetedLabel->Configure(Size(150, 150), DrawOrder(2), Position2(0.0f, -30.0f));
 
 	targetedLabel->SetParent(this);
 
     targetedLabel->Setup("x");
 
-    hitpointLabel = new Text(fontSmall, textColor);
-    Interface::AddElement("HitpointLabel", hitpointLabel);
-
-	hitpointLabel->Configure(Size(150, 150), DrawOrder(2), new Transform(Position2(20.0f, 0.0f)), nullptr);
+    hitpointLabel = new Text({"JSLAncient", "Small"}, textColor);
+	hitpointLabel->Configure(Size(150, 150), DrawOrder(2), Position2(20.0f, 0.0f));
 
 	hitpointLabel->SetParent(this);
 
-    deathSavingLabel = new Text(fontVerySmall, textColor);
-    Interface::AddElement("DeathSavingLabel", deathSavingLabel);
-
-	deathSavingLabel->Configure(Size(150, 150), DrawOrder(2), new Transform(Position2(0.0f, 30.0f)), nullptr);
+    deathSavingLabel = new Text({"JSLAncient", "VerySmall"}, textColor);
+	deathSavingLabel->Configure(Size(150, 150), DrawOrder(2), Position2(0.0f, 30.0f));
 
 	deathSavingLabel->SetParent(this);
 
