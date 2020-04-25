@@ -109,9 +109,15 @@ public:
 
     Float GetHealth() const {return (Float)currentHitPoints / (Float)maximumHitPoints;}
 
+    Integer GetCurrentHitPoints() const {return currentHitPoints;}
+
+    Integer GetMaximumHitPoints() const {return maximumHitPoints;}
+
     Word GetName();
 
     const Race * GetRace() const {return race;}
+
+    const CharacterClass * GetClass() const {return type;}
 
     Group * GetGroup() const {return group;}
 
