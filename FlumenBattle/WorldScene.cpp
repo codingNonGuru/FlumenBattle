@@ -21,6 +21,8 @@ void WorldScene::Initialize()
     GroupFactory::Create(groups, {RaceTypes::HUMAN});
     GroupFactory::Create(groups, {RaceTypes::GNOME});
     GroupFactory::Create(groups, {RaceTypes::HALFLING});
+
+    playerGroup = groups.GetStart();
 }
 
 void WorldScene::HandleEnable() 
@@ -30,9 +32,8 @@ void WorldScene::HandleEnable()
 
 void WorldScene::HandleEnterBattle()
 {
-    static auto index = 0;
+    static auto index = 1;
 
-    auto playerGroup = groups.Get(index++);
     auto computerGroup = groups.Get(index++);
 
     battle = new Battle(playerGroup, computerGroup);

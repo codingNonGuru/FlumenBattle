@@ -11,6 +11,8 @@ class WorldScene : Scene
 
     Battle *battle;
 
+    Group *playerGroup;
+
     Array <Group> groups;
 
     void Initialize() override;
@@ -30,4 +32,6 @@ public:
     }
 
     Battle * GetBattle() const {return battle;}
+
+    Group * GetPlayerGroup() const {return playerGroup;}
 };

@@ -44,8 +44,16 @@ void BattleScene::Initialize()
     auto centerTile = battleMap->GetCenterTile();
     Integer3 offset = {-4, 12, -8};
 
-    playerGroup->Initialize(battle->GetFirst(), centerTile->GetNeighbor(offset));
-    computerGroup->Initialize(battle->GetSecond(), centerTile->GetNeighbor(-offset));
+    auto GetComputerGroup = [this, &battle]
+    {
+        if(WorldScene::Get()->GetPlayerGroup() == battle->GetFirst())
+            return battle->GetSecond();
+        else
+            return battle->GetFirst();
+    };  
+
+    playerGroup->Initialize(WorldScene::Get()->GetPlayerGroup(), centerTile->GetNeighbor(offset));
+    computerGroup->Initialize(GetComputerGroup(), centerTile->GetNeighbor(-offset));
 
     camera = RenderManager::GetCamera(Cameras::BATTLE);
 
