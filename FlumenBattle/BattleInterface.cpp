@@ -1,4 +1,5 @@
 #include "FlumenEngine/Core/SceneManager.hpp"
+#include "FlumenEngine/Interface/ElementFactory.h"
 
 #include "FlumenBattle/BattleInterface.h"
 #include "FlumenBattle/CharacterInfo.h"
@@ -16,41 +17,49 @@
 
 #define ELEMENT_OPACITY 0.85f
 
-CharacterInfo* characterInfo = nullptr;
-
 BattleInterface::BattleInterface()
 {
     battleScene = BattleScene::Get();
 
     characterInfos.Initialize(MAXIMUM_INFO_COUNT);
 
+    canvas = ElementFactory::BuildCanvas();
+
     auto sprite = SpriteDescriptor("Sprite");
 
     for(Index i = 0; i < characterInfos.GetCapacity(); ++i)
     {
-        characterInfo = new CharacterInfo();
-        characterInfo->Configure(Size(60, 90), DrawOrder(1), Position2(0.0f, 0.0f), sprite, Opacity(1.0f));
-
-        characterInfo->SetInteractivity(true);
+        auto characterInfo = ElementFactory::BuildElement<CharacterInfo>(
+            {Size(60, 90), DrawOrder(1), {Position2(0.0f, 0.0f), canvas}, sprite, Opacity(1.0f)}
+        );
 
         *characterInfos.Allocate() = characterInfo;
     }
 
-    battleInfoPanel = new BattleInfoPanel();
-    battleInfoPanel->Configure(Size(620, 140), DrawOrder(3), Position2(-640.0f, 460.0f), sprite, Opacity(ELEMENT_OPACITY));
+    battleInfoPanel = ElementFactory::BuildElement<BattleInfoPanel>(
+        {Size(620, 140), DrawOrder(3), {Position2(-640.0f, 460.0f), canvas}, sprite, Opacity(ELEMENT_OPACITY)}
+    );
+    battleInfoPanel->Enable();
 
-    actionInfoPanel = new ActionInfoPanel();
-    actionInfoPanel->Configure(Size(1900, 100), DrawOrder(3), Position2(0.0f, -480.0f), sprite, Opacity(ELEMENT_OPACITY));
+    actionInfoPanel = ElementFactory::BuildElement<ActionInfoPanel>(
+        {Size(1900, 100), DrawOrder(3), {Position2(0.0f, -480.0f), canvas}, sprite, Opacity(ELEMENT_OPACITY)}
+    );
+    actionInfoPanel->Enable();
 
-    characterDetailPanel = new CharacterDetailPanel();
-    characterDetailPanel->Configure(Size(540, 220), DrawOrder(3), Position2(680.0f, 420.0f), sprite, Opacity(ELEMENT_OPACITY));
+    characterDetailPanel = ElementFactory::BuildElement<CharacterDetailPanel>(
+        {Size(540, 220), DrawOrder(3), {Position2(680.0f, 420.0f), canvas}, sprite, Opacity(ELEMENT_OPACITY)}
+    );
+    characterDetailPanel->Enable();
 
-    battleEndMessage = new BattleEndMessage();
-    battleEndMessage->Configure(Size(300, 180), DrawOrder(3), Position2(0.0f, 0.0f), sprite, Opacity(ELEMENT_OPACITY));
+    battleEndMessage = ElementFactory::BuildElement<BattleEndMessage>(
+        {Size(300, 180), DrawOrder(3), {Position2(0.0f, 0.0f), canvas}, sprite, Opacity(ELEMENT_OPACITY)}
+    );
 }
 
 void BattleInterface::Initialize()
 {
+    canvas->Enable();
+
     auto characterInfo = characterInfos.GetStart();
     auto groups = {battleScene->GetPlayerGroup(), battleScene->GetComputerGroup()};
     for(auto group : groups)
@@ -62,12 +71,6 @@ void BattleInterface::Initialize()
             (*characterInfo)->Enable();
         }
     }
-
-    battleInfoPanel->Enable();
-
-    actionInfoPanel->Enable();
-
-    characterDetailPanel->Enable();
 }
 
 void BattleInterface::Disable()
@@ -78,11 +81,7 @@ void BattleInterface::Disable()
         info->Disable();
     }
 
-    battleInfoPanel->Disable();
-
-    actionInfoPanel->Disable();
-
-    characterDetailPanel->Disable();
+    canvas->Enable();
 
     battleEndMessage->Disable();
 }

@@ -1,10 +1,7 @@
 #include "FlumenCore/Delegate/Delegate.hpp"
 
 #include "FlumenEngine/Interface/Text.hpp"
-#include "FlumenEngine/Interface/TextManager.hpp"
-#include "FlumenEngine/Interface/Font.hpp"
-#include "FlumenEngine/Interface/FontManager.hpp"
-#include "FlumenEngine/Interface/Interface.hpp"
+#include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Core/Transform.hpp"
 #include "FlumenEngine/Core/SceneManager.hpp"
 #include "FlumenEngine/Render/RenderManager.hpp"
@@ -24,19 +21,15 @@ void BattleInfoPanel::HandleConfigure()
     battleController = BattleController::Get();
     battleController->OnCharacterActed.Add(this, &BattleInfoPanel::HandleCharacterAction);
 
-    auto fontSmall = FontManager::GetFont("DominicanSmall");
-
     auto textColor = (Color::RED * 0.3f) + (Color::BLACK * 0.7f);
-
-	actionLabel = new Text({"JSLAncient", "Small"}, textColor);
-	actionLabel->Configure(Size(600, 140), DrawOrder(4), Position2(0.0f, 0.0f));
+    
+    actionLabel = ElementFactory::BuildText(
+        {Size(600, 140), DrawOrder(4), {Position2(0.0f, 0.0f), this}},
+        {{"JSLAncient", "Small"}, textColor, "No action"}
+    );
 
     actionLabel->SetAlignment(Text::Alignments::LEFT);
-
 	actionLabel->Enable();
-	actionLabel->SetParent(this);
-
-    actionLabel->Setup("No action");
 }
 
 void BattleInfoPanel::HandleCharacterAction()

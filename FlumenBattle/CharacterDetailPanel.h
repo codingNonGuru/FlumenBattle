@@ -9,13 +9,22 @@ class CharacterAbilityLabel : public Text
 {
     friend class CharacterDetailPanel;
 
-    AbilityTypes abilityType;
+    friend class ElementFactory;
 
-    Word abilityPrefix;
+    struct AbilityData
+    {
+        AbilityTypes Type;
 
-    CharacterAbilityLabel(FontDescriptor font, Color color, AbilityTypes type, Word prefix) : Text(font, color), abilityType(type), abilityPrefix(prefix) {}
+        Word Prefix;
+    };
+
+    AbilityData abilityData;
 
     void HandleUpdate() override;
+
+    void SetAbilityData(AbilityData _abilityData) {abilityData = _abilityData;}
+
+    CharacterAbilityLabel(FontDescriptor font, Color color) : Text(font, color) {}
 };
 
 class CharacterDetailPanel : public Element

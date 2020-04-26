@@ -4,6 +4,7 @@
 
 class BattleScene;
 class Character;
+class Element;
 class CharacterInfo;
 class BattleInfoPanel;
 class CharacterDetailPanel;
@@ -13,6 +14,8 @@ class BattleEndMessage;
 class BattleInterface 
 {
     BattleScene* battleScene;
+
+    Element *canvas;
 
     BattleInfoPanel *battleInfoPanel;
 

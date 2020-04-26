@@ -1,13 +1,16 @@
 #pragma once
 
 #include "FlumenEngine/Interface/Element.hpp"
+#include "FlumenEngine/Core/Singleton.h"
 
 class Text;
 
 class Character;
 
-class WorldInfoPanel : public Element
+class WorldInfoPanel : public Element, public Singleton<WorldInfoPanel>
 {
+    friend class CharacterItem;
+
     class CharacterItem : public Element
     {
         Character *character;
@@ -21,7 +24,7 @@ class WorldInfoPanel : public Element
         void HandleUpdate() override;    
 
     public:
-        void * operator new(size_t size, Array <CharacterItem> &);
+        void * operator new(size_t size);
 
         void SetCharacter(Character *_character) {character = _character;}
     };
@@ -32,5 +35,5 @@ class WorldInfoPanel : public Element
 
     void HandleEnable() override;
 
-    //Array <CharacterItem> & GetItemAllocator() {return items;}
+    Array <CharacterItem> & GetItemAllocator() {return items;}
 };

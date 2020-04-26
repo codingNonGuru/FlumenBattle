@@ -1,6 +1,7 @@
 #include "FlumenCore/Delegate/Delegate.hpp"
 
 #include "FlumenEngine/Interface/Text.hpp"
+#include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Core/Transform.hpp"
 #include "FlumenEngine/Render/RenderManager.hpp"
 #include "FlumenEngine/Render/Camera.hpp"
@@ -20,35 +21,33 @@ void CharacterInfo::HandleConfigure()
 
     auto textColor = Color::BLACK;
 
-	textLabel = new Text({"JSLAncient", "Medium"}, textColor);
-	textLabel->Configure(Size(150, 150), DrawOrder(2), Position2(-5.0f, 0.0f));
-
+    textLabel = ElementFactory::BuildText(
+        {Size(150, 150), DrawOrder(2), {Position2(-5.0f, 0.0f), this}},
+        {{"JSLAncient", "Medium"}, textColor}
+    );
 	textLabel->Enable();
-	textLabel->SetParent(this);
 
-    selectLabel = new Text({"JSLAncient", "Small"}, textColor);
-	selectLabel->Configure(Size(150, 150), DrawOrder(2), Position2(0.0f, 30.0f));
+    selectLabel = ElementFactory::BuildText(
+        {Size(150, 150), DrawOrder(2), {Position2(0.0f, 30.0f), this}},
+        {{"JSLAncient", "Small"}, textColor, "S"}
+    );
 
-	selectLabel->SetParent(this);
+    targetedLabel = ElementFactory::BuildText(
+        {Size(150, 150), DrawOrder(2), {Position2(0.0f, -30.0f), this}},
+        {{"JSLAncient", "Small"}, textColor, "x"}
+    );
 
-    selectLabel->Setup("S");
+    hitpointLabel = ElementFactory::BuildText(
+        {Size(150, 150), DrawOrder(2), {Position2(20.0f, 0.0f), this}},
+        {{"JSLAncient", "Small"}, textColor}
+    );
 
-    targetedLabel = new Text({"JSLAncient", "Small"}, textColor);
-	targetedLabel->Configure(Size(150, 150), DrawOrder(2), Position2(0.0f, -30.0f));
+    deathSavingLabel = ElementFactory::BuildText(
+        {Size(150, 150), DrawOrder(2), {Position2(0.0f, 30.0f), this}},
+        {{"JSLAncient", "VerySmall"}, textColor}
+    );
 
-	targetedLabel->SetParent(this);
-
-    targetedLabel->Setup("x");
-
-    hitpointLabel = new Text({"JSLAncient", "Small"}, textColor);
-	hitpointLabel->Configure(Size(150, 150), DrawOrder(2), Position2(20.0f, 0.0f));
-
-	hitpointLabel->SetParent(this);
-
-    deathSavingLabel = new Text({"JSLAncient", "VerySmall"}, textColor);
-	deathSavingLabel->Configure(Size(150, 150), DrawOrder(2), Position2(0.0f, 30.0f));
-
-	deathSavingLabel->SetParent(this);
+    SetInteractivity(true);
 
     GetLeftClickEvents().Add(this, &CharacterInfo::HandleTargeting);
 }

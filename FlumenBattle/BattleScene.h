@@ -3,10 +3,9 @@
 #include "FlumenCore/Delegate/Delegate.hpp"
 
 #include "FlumenEngine/Core/Scene.hpp"
+#include "FlumenEngine/Core/Singleton.h"
 
 #include "FlumenBattle/CharacterActionData.h"
-
-#include "Singleton.h"
 
 class BattleInterface;
 class CharacterInfo;

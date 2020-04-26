@@ -1,4 +1,5 @@
 #include "FlumenEngine/Interface/Text.hpp"
+#include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Core/InputHandler.hpp"
 
 #include "FlumenBattle/BattleEndMessage.h"
@@ -8,11 +9,11 @@
 
 void BattleEndMessage::HandleConfigure() 
 {
-    mainLabel = new Text({"JSLAncient", "Large"}, Color::RED * 0.5f);
-    mainLabel->Configure(Size(150, 150), drawOrder_ + 1, Position2(0.0f, 0.0f));
-
+    mainLabel = ElementFactory::BuildText(
+        {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, 0.0f), this}},
+        {{"JSLAncient", "Large"}, Color::RED * 0.5f}
+    );
     mainLabel->Enable();
-    mainLabel->SetParent(this);
 
     BattleController::Get()->OnBattleEnded.Add(this, &BattleEndMessage::Enable);
 }    

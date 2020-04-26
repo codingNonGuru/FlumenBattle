@@ -1,4 +1,5 @@
 #include "FlumenEngine/Interface/Text.hpp"
+#include "FlumenEngine/Interface/ElementFactory.h"
 
 #include "FlumenBattle/WorldInfoPanel.h"
 #include "FlumenBattle/WorldScene.h"
@@ -6,24 +7,26 @@
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/CharacterClass.h"
 
-void * WorldInfoPanel::CharacterItem::operator new(size_t size, Array <CharacterItem> &items)
+void * WorldInfoPanel::CharacterItem::operator new(size_t size)
 {
-    auto item = items.Add();
+    auto &allocator = WorldInfoPanel::Get()->GetItemAllocator();
+    auto item = allocator.Add();
+
     return item;
 }
 
 void WorldInfoPanel::CharacterItem::HandleConfigure()
 {
-    classLabel = new Text({"JSLAncient", "Large"}, Color::RED * 0.75f);
-    classLabel->Configure(Size(100, 100), drawOrder_ + 1, Position2(0.0f, -15.0f));
-
-    classLabel->SetParent(this);
+    classLabel = ElementFactory::BuildText(
+        {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, -15.0f), this}},
+        {{"JSLAncient", "Large"}, Color::RED * 0.75f}
+    );
     classLabel->Enable();
 
-    healthLabel = new Text({"JSLAncient", "Medium"}, Color::RED * 0.5f);
-    healthLabel->Configure(Size(100, 100), drawOrder_ + 1, Position2(0.0f, 25.0f));
-
-    healthLabel->SetParent(this);
+    healthLabel = ElementFactory::BuildText(
+        {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, 25.0f), this}}, 
+        {{"JSLAncient", "Medium"}, Color::RED * 0.5f}
+    );
     healthLabel->Enable();
 }
 
@@ -38,7 +41,7 @@ void WorldInfoPanel::CharacterItem::HandleUpdate()
 
 void WorldInfoPanel::HandleConfigure() 
 {
-    auto position = Position2(0.0f, 10.0f);
+    auto position = Position2(0.0f, 0.0f);
 
     auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     auto &characters = playerGroup->GetCharacters();
@@ -47,10 +50,15 @@ void WorldInfoPanel::HandleConfigure()
 
     for(Index i = 0; i < items.GetCapacity(); ++i, position += Direction2(80.0f, 0.0f))
     {
-        auto item = new(items) CharacterItem();
-        item->Configure(Size(70, 100), drawOrder_ + 1, position, {"Sprite"}, opacity_);
+        ElementData itemData = {
+            Size(70, 100), 
+            drawOrder_ + 1, 
+            {position, ElementAnchors::MIDDLE_LEFT, ElementPivots::LOWER_CENTER, this}, 
+            {"Sprite"}, 
+            opacity_
+            };
 
-        item->SetParent(this);
+        auto item = ElementFactory::BuildElement<CharacterItem>(itemData);
     }
 }
 

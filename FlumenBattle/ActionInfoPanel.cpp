@@ -4,6 +4,7 @@
 #include "FlumenEngine/Render/RenderManager.hpp"
 #include "FlumenEngine/Render/Camera.hpp"
 #include "FlumenEngine/Interface/LayoutGroup.h"
+#include "FlumenEngine/Interface/ElementFactory.h"
 
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/BattleController.h"
@@ -39,10 +40,14 @@ void ActionInfoPanel::HandleConfigure()
     actionLabels.Initialize(8);
     for(Index i = 0; i < actionLabels.GetCapacity(); ++i)
     {
-        auto label = new Text({"JSLAncient", "Small"}, DEFAULT_COLOR);
-        label->Configure(Size(300, 100), DrawOrder(4), Position2(0.0f, 0.0f));
+        auto label = ElementFactory::BuildText(
+            {Size(300, 100), DrawOrder(4), {Position2(0.0f, 0.0f), this}},
+            {{"JSLAncient", "Small"}, DEFAULT_COLOR}
+        );
+        //auto label = new Text();
+        //label->Configure();
 
-        label->SetParent(this);
+        //label->SetParent(this);
 
         *actionLabels.Allocate() = label;
     }
@@ -50,10 +55,10 @@ void ActionInfoPanel::HandleConfigure()
     subactionLabels.Initialize(8);
     for(Index i = 0; i < subactionLabels.GetCapacity(); ++i)
     {
-        auto label = new Text({"JSLAncient", "Small"}, DEFAULT_COLOR);
-        label->Configure(Size(300, 100), DrawOrder(4), Position2(0.0f, 0.0f));
-
-        label->SetParent(this);
+        auto label = ElementFactory::BuildText(
+            {Size(300, 100), DrawOrder(4), {Position2(0.0f, 0.0f), this}},
+            {{"JSLAncient", "Small"}, DEFAULT_COLOR}
+        );
 
         *subactionLabels.Allocate() = label;
     }
