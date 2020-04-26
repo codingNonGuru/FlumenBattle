@@ -21,7 +21,7 @@ Character::Character()
 
 void Character::Initialize()
 {
-    currentHitPoints = maximumHitPoints;
+    currentHitPoints = maximumHitPoints / 2;
 
     selectedAction = actions.GetStart();
     selectedWeapon = weapons.GetStart();
@@ -187,4 +187,13 @@ Index Character::GetSelectedSubactionIndex() const
 Character::Action* Character::GetSelectedAction() const
 {
     return selectedAction;
+}
+
+void Character::Rest()
+{
+    currentHitPoints += level * abilities.GetModifier(AbilityTypes::CONSTITUTION);
+    if(currentHitPoints > maximumHitPoints)
+    {
+        currentHitPoints = maximumHitPoints;
+    }
 }

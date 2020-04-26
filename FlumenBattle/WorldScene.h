@@ -9,6 +9,8 @@ class WorldScene : Scene
 {
     friend class WorldState;
 
+    friend class WorldController;
+
     Battle *battle;
 
     Group *playerGroup;
@@ -17,11 +19,11 @@ class WorldScene : Scene
 
     void Initialize() override;
 
-    void HandleEnable() override;
-
     void Render() override;
 
-    void HandleEnterBattle();
+    void StartBattle();
+
+    void Rest();
 
 public:
     static WorldScene * Get() 

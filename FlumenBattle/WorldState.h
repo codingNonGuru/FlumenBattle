@@ -4,12 +4,15 @@
 
 class WorldScene;
 class WorldInterface;
+class WorldController;
 
 class WorldState : public State
 {
     WorldScene *scene;
 
     WorldInterface *interface;
+
+    WorldController *controller;
 
     WorldState();
 

@@ -166,4 +166,6 @@ public:
     Weapon* GetSelectedWeapon() const {return selectedWeapon;}
 
     Spell* GetSelectedSpell() const {return selectedSpell;}
+
+    void Rest();
 };

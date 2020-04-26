@@ -71,3 +71,10 @@ bool Group::IsAlive()
     return false;
 }
 
+void Group::Rest()
+{
+    for(auto character = characters.GetStart(); character != characters.GetEnd(); ++character)
+    {
+        character->Rest();
+    }
+}

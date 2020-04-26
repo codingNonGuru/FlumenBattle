@@ -6,7 +6,9 @@ class Text;
 
 class WorldDecisionMenu : public Element
 {
-    Text *mainLabel;
+    Text *searchLabel;
+
+    Text *restLabel;
 
     void HandleConfigure() override;
 };

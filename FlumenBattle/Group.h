@@ -44,4 +44,6 @@ public:
     Word GetName() const {return name;}
 
     Array <Character> & GetCharacters() {return characters;}
+
+    void Rest();
 };

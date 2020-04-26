@@ -41,7 +41,7 @@ void WorldInfoPanel::CharacterItem::HandleUpdate()
 
 void WorldInfoPanel::HandleConfigure() 
 {
-    auto position = Position2(0.0f, 0.0f);
+    auto position = Position2(10.0f, 10.0f);
 
     auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     auto &characters = playerGroup->GetCharacters();
@@ -50,15 +50,9 @@ void WorldInfoPanel::HandleConfigure()
 
     for(Index i = 0; i < items.GetCapacity(); ++i, position += Direction2(80.0f, 0.0f))
     {
-        ElementData itemData = {
-            Size(70, 100), 
-            drawOrder_ + 1, 
-            {position, ElementAnchors::MIDDLE_LEFT, ElementPivots::LOWER_CENTER, this}, 
-            {"Sprite"}, 
-            opacity_
-            };
-
-        auto item = ElementFactory::BuildElement<CharacterItem>(itemData);
+        auto item = ElementFactory::BuildElement<CharacterItem>(
+            {Size(70, 100), drawOrder_ + 1, {position, ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}, {"Sprite"}, opacity_}
+        );
     }
 }
 

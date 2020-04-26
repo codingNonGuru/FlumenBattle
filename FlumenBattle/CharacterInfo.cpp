@@ -23,7 +23,7 @@ void CharacterInfo::HandleConfigure()
 
     textLabel = ElementFactory::BuildText(
         {Size(150, 150), DrawOrder(2), {Position2(-5.0f, 0.0f), this}},
-        {{"JSLAncient", "Medium"}, textColor}
+        {{"JSLAncient", "Large"}, textColor}
     );
 	textLabel->Enable();
 

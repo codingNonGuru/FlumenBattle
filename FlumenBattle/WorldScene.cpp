@@ -25,22 +25,18 @@ void WorldScene::Initialize()
     playerGroup = groups.GetStart();
 }
 
-void WorldScene::HandleEnable() 
-{
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_G, this, &WorldScene::HandleEnterBattle);
-}
-
-void WorldScene::HandleEnterBattle()
+void WorldScene::StartBattle()
 {
     static auto index = 1;
 
     auto computerGroup = groups.Get(index++);
 
     battle = new Battle(playerGroup, computerGroup);
+}
 
-    BattleState::Get()->Enter();
-
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_G, this, &WorldScene::HandleEnterBattle);
+void WorldScene::Rest()
+{
+    playerGroup->Rest();
 }
 
 void WorldScene::Render()

@@ -42,12 +42,8 @@ void ActionInfoPanel::HandleConfigure()
     {
         auto label = ElementFactory::BuildText(
             {Size(300, 100), DrawOrder(4), {Position2(0.0f, 0.0f), this}},
-            {{"JSLAncient", "Small"}, DEFAULT_COLOR}
+            {{"JSLAncient", "Medium"}, DEFAULT_COLOR}
         );
-        //auto label = new Text();
-        //label->Configure();
-
-        //label->SetParent(this);
 
         *actionLabels.Allocate() = label;
     }
@@ -57,7 +53,7 @@ void ActionInfoPanel::HandleConfigure()
     {
         auto label = ElementFactory::BuildText(
             {Size(300, 100), DrawOrder(4), {Position2(0.0f, 0.0f), this}},
-            {{"JSLAncient", "Small"}, DEFAULT_COLOR}
+            {{"JSLAncient", "Medium"}, DEFAULT_COLOR}
         );
 
         *subactionLabels.Allocate() = label;
