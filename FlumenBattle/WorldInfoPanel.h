@@ -29,11 +29,15 @@ class WorldInfoPanel : public Element, public Singleton<WorldInfoPanel>
         void SetCharacter(Character *_character) {character = _character;}
     };
 
+    Text *timeLabel;
+
     Array <CharacterItem> items;
 
     void HandleConfigure() override;
 
     void HandleEnable() override;
+
+    void HandleUpdate() override;
 
     Array <CharacterItem> & GetItemAllocator() {return items;}
 };

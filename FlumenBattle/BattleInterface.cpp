@@ -81,7 +81,7 @@ void BattleInterface::Disable()
         info->Disable();
     }
 
-    canvas->Enable();
+    canvas->Disable();
 
     battleEndMessage->Disable();
 }

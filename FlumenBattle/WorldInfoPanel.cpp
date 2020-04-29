@@ -54,6 +54,12 @@ void WorldInfoPanel::HandleConfigure()
             {Size(70, 100), drawOrder_ + 1, {position, ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}, {"Sprite"}, opacity_}
         );
     }
+
+    timeLabel = ElementFactory::BuildText(
+        {Size(200, 80), drawOrder_ + 1, {Position2(-50.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}}, 
+        {{"JSLAncient", "Medium"}, Color::RED * 0.5f}
+    );
+    timeLabel->Enable();
 }
 
 void WorldInfoPanel::HandleEnable()
@@ -72,4 +78,18 @@ void WorldInfoPanel::HandleEnable()
         item->SetCharacter(character);
         item->Enable();
     }
+}
+
+#define HOURS_PER_YEAR (24 * 365)
+
+void WorldInfoPanel::HandleUpdate()
+{
+    auto hourCount = WorldScene::Get()->GetHourCount();
+    auto yearCount = hourCount / HOURS_PER_YEAR;
+    hourCount -= yearCount * HOURS_PER_YEAR;
+    auto dayCount = hourCount / 24;
+    hourCount -= dayCount * 24;
+
+    auto string = Word() << "Year " << yearCount << ", day " << dayCount << ", hour " << hourCount;
+    timeLabel->Setup(string);   
 }

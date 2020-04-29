@@ -95,10 +95,10 @@ void Combatant::StartTurn()
 {
     speedPenalty = 0;
 
-    for(auto condition = conditions.GetStart(); condition != conditions.GetEnd(); ++condition)
+    conditions.Do([](auto &condition) -> bool
     {
-        condition->Apply();
-    }
+        condition.Apply();
+    });
 
     movement = GetCurrentSpeed();
 
@@ -461,15 +461,15 @@ void Combatant::AddCondition(Condition newCondition)
 {
     bool hasFound = false;
 
-    for(auto condition = conditions.GetStart(); condition != conditions.GetEnd(); ++condition)
+    conditions.Do([&](auto &condition) -> bool 
     {
-        if(condition->GetType() == newCondition.GetType() && condition->IsActive())
+        if(condition.GetType() == newCondition.GetType() && condition.IsActive())
         {
-            *condition = newCondition;
+            condition = newCondition;
             hasFound = true;
-            break;
+            BREAK
         }
-    }
+    });
     
     if(!hasFound)
     {
@@ -516,15 +516,17 @@ Integer Combatant::RollAttackDamage(bool isCritical) const
 
 bool Combatant::IsDodging()
 {
-    for(auto condition = conditions.GetStart(); condition != conditions.GetEnd(); ++condition)
+    bool isDodging = false;
+    conditions.Do([&](auto &condition)
     {
-        if(condition->type == ConditionTypes::EVASION && condition->IsActive())
+        if(condition.type == ConditionTypes::EVASION && condition.IsActive())
         {
-            return true;
+            isDodging = true;
+            BREAK
         }
-    }
+    });
 
-    return false;
+    return isDodging;
 }
 
 CombatGroup * Combatant::GetGroup() const

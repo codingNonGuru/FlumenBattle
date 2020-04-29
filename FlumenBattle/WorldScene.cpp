@@ -22,6 +22,8 @@ void WorldScene::Initialize()
     GroupFactory::Create(groups, {RaceTypes::GNOME});
     GroupFactory::Create(groups, {RaceTypes::HALFLING});
 
+    hourCount = 561372;
+
     playerGroup = groups.GetStart();
 }
 
@@ -32,10 +34,14 @@ void WorldScene::StartBattle()
     auto computerGroup = groups.Get(index++);
 
     battle = new Battle(playerGroup, computerGroup);
+
+    hourCount += 1;
 }
 
 void WorldScene::Rest()
 {
+    hourCount += 1;
+
     playerGroup->Rest();
 }
 

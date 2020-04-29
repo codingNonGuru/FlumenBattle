@@ -11,6 +11,8 @@ class WorldScene : Scene
 
     friend class WorldController;
 
+    Integer hourCount;
+
     Battle *battle;
 
     Group *playerGroup;
@@ -36,4 +38,6 @@ public:
     Battle * GetBattle() const {return battle;}
 
     Group * GetPlayerGroup() const {return playerGroup;}
+
+    Integer GetHourCount() const {return hourCount;}
 };
