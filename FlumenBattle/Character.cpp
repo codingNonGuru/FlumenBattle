@@ -8,7 +8,7 @@
 #include "FlumenBattle/SpellCaster.h"
 #include "FlumenBattle/BattleTile.h"
 #include "FlumenBattle/BattleController.h"
-#include "FlumenBattle/Group.h"
+#include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/Combatant.h"
 #include "FlumenBattle/CharacterClass.h"
 
@@ -189,9 +189,22 @@ Character::Action* Character::GetSelectedAction() const
     return selectedAction;
 }
 
-void Character::Rest()
+void Character::TakeShortRest()
 {
-    currentHitPoints += level * abilities.GetModifier(AbilityTypes::CONSTITUTION);
+    currentHitPoints += level;
+    if(currentHitPoints > maximumHitPoints)
+    {
+        currentHitPoints = maximumHitPoints;
+    }
+}
+
+void Character::TakeLongRest()
+{
+    for(Integer i = 0; i < level; ++i)
+    {
+        currentHitPoints += utility::GetRandom(1, type->HitDice);
+    }
+
     if(currentHitPoints > maximumHitPoints)
     {
         currentHitPoints = maximumHitPoints;

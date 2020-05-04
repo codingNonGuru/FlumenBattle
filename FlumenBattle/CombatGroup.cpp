@@ -1,5 +1,5 @@
 #include "FlumenBattle/CombatGroup.h"
-#include "FlumenBattle/Group.h"
+#include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/Combatant.h"
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/BattleTile.h"
@@ -9,7 +9,7 @@ CombatGroup::CombatGroup() : group(nullptr)
     combatants.Initialize(16);
 }
 
-void CombatGroup::Initialize(Group *_group, BattleTile *_tile)
+void CombatGroup::Initialize(world::group::Group *_group, BattleTile *_tile)
 {
     group = _group;
     tile = _tile;

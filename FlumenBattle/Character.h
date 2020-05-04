@@ -10,7 +10,6 @@
 
 class CharacterFactory;
 class CharacterInfo;
-class Group;
 class BattleTile;
 struct Weapon;
 struct Spell;
@@ -18,6 +17,10 @@ struct SpellSlot;
 class Condition;
 class Combatant;
 class CharacterClass;
+namespace world::group
+{
+    class Group;
+}
 
 class Character
 {
@@ -58,7 +61,7 @@ private:
 
     friend class Combatant;
 
-    Group *group;
+    world::group::Group *group;
 
     const CharacterClass *type;
 
@@ -119,7 +122,7 @@ public:
 
     const CharacterClass * GetClass() const {return type;}
 
-    Group * GetGroup() const {return group;}
+    world::group::Group * GetGroup() const {return group;}
 
     const Ability & GetAbility(AbilityTypes type) const {return *abilities.GetAbility(type);}
 
@@ -167,5 +170,7 @@ public:
 
     Spell* GetSelectedSpell() const {return selectedSpell;}
 
-    void Rest();
+    void TakeShortRest();
+
+    void TakeLongRest();
 };

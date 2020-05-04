@@ -10,7 +10,7 @@
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/Combatant.h"
 #include "FlumenBattle/BattleController.h"
-#include "FlumenBattle/Group.h"
+#include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/BattleInfoPanel.h"
 #include "FlumenBattle/Spell.h"
 

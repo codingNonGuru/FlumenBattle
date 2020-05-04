@@ -2,7 +2,10 @@
 
 #include "FlumenCore/Conventions.hpp"
 
-class Group;
+namespace world::group
+{
+    class Group;
+}
 class Combatant;
 struct BattleTile;
 
@@ -10,7 +13,7 @@ class CombatGroup
 {
     friend class BattleScene;
 
-    Group *group;
+    world::group::Group *group;
 
     Array <Combatant> combatants;
 
@@ -19,9 +22,9 @@ class CombatGroup
 public:
     CombatGroup();
 
-    void Initialize(class Group *, BattleTile *);
+    void Initialize(class world::group::Group *, BattleTile *);
 
-    Group *GetGroup() const {return group;}
+    world::group::Group *GetGroup() const {return group;}
 
     const Array <Combatant> &GetCombatants() const {return combatants;}
 

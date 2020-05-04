@@ -3,14 +3,17 @@
 #include "FlumenBattle/Types.hpp"
 
 class Character;
-class Group;
 struct Race;
 struct CharacterClass;
+namespace world::group
+{
+    class Group;
+}
 
 class CharacterFactory
 {
     static Integer GetRandomAbilityScore();
 
 public:
-    static Character* Create(const Race *, const CharacterClass *, Group &); 
+    static Character* Create(const Race *, const CharacterClass *, world::group::Group &); 
 };

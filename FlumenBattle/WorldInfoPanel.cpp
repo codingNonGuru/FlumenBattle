@@ -2,8 +2,8 @@
 #include "FlumenEngine/Interface/ElementFactory.h"
 
 #include "FlumenBattle/WorldInfoPanel.h"
-#include "FlumenBattle/WorldScene.h"
-#include "FlumenBattle/Group.h"
+#include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/CharacterClass.h"
 
@@ -43,7 +43,7 @@ void WorldInfoPanel::HandleConfigure()
 {
     auto position = Position2(10.0f, 10.0f);
 
-    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
     auto &characters = playerGroup->GetCharacters();
 
     items.Initialize(16);
@@ -64,7 +64,7 @@ void WorldInfoPanel::HandleConfigure()
 
 void WorldInfoPanel::HandleEnable()
 {
-    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
     auto &characters = playerGroup->GetCharacters();
 
     for(auto item = items.GetStart(); item != items.GetEnd(); ++item)
@@ -84,7 +84,7 @@ void WorldInfoPanel::HandleEnable()
 
 void WorldInfoPanel::HandleUpdate()
 {
-    auto hourCount = WorldScene::Get()->GetHourCount();
+    auto hourCount = world::WorldScene::Get()->GetHourCount();
     auto yearCount = hourCount / HOURS_PER_YEAR;
     hourCount -= yearCount * HOURS_PER_YEAR;
     auto dayCount = hourCount / 24;

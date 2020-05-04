@@ -4,17 +4,15 @@
 
 class WorldController : public Singleton<WorldController>
 {
-    void EnableInput();
-
-    void DisableInput();
-
-    void HandleSPressed();  
-
-    void HandleRPressed();  
+    void HandleActionPerformed();
 
     void StartBattle();
 
-    void Rest();
+    void HandleSpacePressed();
+
+    void HandleSpeedUpTime();
+
+    void HandleSlowDownTime();
 
 public:
     void Enable();

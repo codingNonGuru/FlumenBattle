@@ -8,15 +8,15 @@
 
 #include "FlumenBattle/BattleScene.h"
 #include "FlumenBattle/BattleInterface.h"
-#include "FlumenBattle/GroupFactory.h"
-#include "FlumenBattle/Group.h"
+#include "FlumenBattle/World/Group/GroupFactory.h"
+#include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/CharacterInfo.h"
 #include "FlumenBattle/Combatant.h"
 #include "FlumenBattle/BattleTileModel.h"
 #include "FlumenBattle/BattleMap.h"
 #include "FlumenBattle/BattleTile.h"
 #include "FlumenBattle/CombatGroup.h"
-#include "FlumenBattle/WorldScene.h"
+#include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/Battle.h"
 
 static Camera* camera = nullptr;
@@ -39,20 +39,20 @@ BattleScene::BattleScene()
 
 void BattleScene::Initialize()
 {
-    auto battle = WorldScene::Get()->GetBattle();
+    auto battle = world::WorldScene::Get()->GetBattle();
 
     auto centerTile = battleMap->GetCenterTile();
     Integer3 offset = {-4, 12, -8};
 
     auto GetComputerGroup = [this, &battle]
     {
-        if(WorldScene::Get()->GetPlayerGroup() == battle->GetFirst())
+        if(world::WorldScene::Get()->GetPlayerGroup() == battle->GetFirst())
             return battle->GetSecond();
         else
             return battle->GetFirst();
     };  
 
-    playerGroup->Initialize(WorldScene::Get()->GetPlayerGroup(), centerTile->GetNeighbor(offset));
+    playerGroup->Initialize(world::WorldScene::Get()->GetPlayerGroup(), centerTile->GetNeighbor(offset));
     computerGroup->Initialize(GetComputerGroup(), centerTile->GetNeighbor(-offset));
 
     camera = RenderManager::GetCamera(Cameras::BATTLE);

@@ -11,10 +11,10 @@
 #include "FlumenBattle/BattleScene.h"
 #include "FlumenBattle/Combatant.h"
 #include "FlumenBattle/Character.h"
-#include "FlumenBattle/Group.h"
+#include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/BattleTile.h"
 #include "FlumenBattle/CombatGroup.h"
-#include "FlumenBattle/WorldState.h"
+#include "FlumenBattle/World/WorldState.h"
 
 BattleController * BattleController::instance = nullptr;
 
@@ -227,7 +227,7 @@ void BattleController::ExitBattle()
 {
     if(battleScene->GetPlayerGroup()->IsAlive())
     {
-        WorldState::Get()->Enter();
+        world::WorldState::Get()->Enter();
     }
     else
     {

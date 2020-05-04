@@ -1,7 +1,7 @@
 #include "FlumenCore/Utility/Utility.hpp"
 
 #include "FlumenBattle/CharacterFactory.h"
-#include "FlumenBattle/Group.h"
+#include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/BattleScene.h"
 #include "FlumenBattle/BattleTile.h"
@@ -13,9 +13,9 @@
 
 Integer abilityScores[ABILITY_COUNT];
 
-Character* CharacterFactory::Create(const Race *race, const CharacterClass *type, Group& group)
+Character* CharacterFactory::Create(const Race *race, const CharacterClass *type, world::group::Group& group)
 {
-    auto character = group.characters.Allocate();
+    auto character = group.GetCharacters().Allocate();
 
     character->group = &group;
 

@@ -2,60 +2,57 @@
 #include "FlumenEngine/Core/TaskManager.hpp"
 
 #include "FlumenBattle/WorldController.h"
-#include "FlumenBattle/WorldScene.h"
+#include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/BattleState.h"
-#include "FlumenBattle/Group.h"
+#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupAction.h"
+#include "FlumenBattle/World/Group/HumanController.h"
 
 void WorldController::Enable()
 {
-    EnableInput();
+    auto controller = world::group::HumanController::Get();
+    controller->EnableInput();
+    //controller->OnActionPerformed->Add(this, &WorldController::HandleActionPerformed);
+
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, this, &WorldController::HandleSpacePressed);
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_COMMA, this, &WorldController::HandleSpeedUpTime);
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_PERIOD, this, &WorldController::HandleSlowDownTime);
 }
 
-void WorldController::EnableInput()
+void WorldController::HandleActionPerformed()
 {
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_S, this, &WorldController::HandleSPressed);
-
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_R, this, &WorldController::HandleRPressed);
-}
-
-void WorldController::DisableInput()
-{
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_S, this, &WorldController::HandleSPressed);
-
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_R, this, &WorldController::HandleRPressed);
-}
-
-void WorldController::HandleSPressed()
-{
-    TaskManager::Add()->Initialize(this, &WorldController::StartBattle, 1.0f);
-
-    DisableInput();
-}
-
-void WorldController::HandleRPressed()
-{
-    TaskManager::Add()->Initialize(this, &WorldController::Rest, 1.0f);
-
-    DisableInput();
+    
 }
 
 void WorldController::StartBattle()
 {
-    WorldScene::Get()->StartBattle();
+    //world::WorldScene::Get()->StartBattle();
 
-    BattleState::Get()->Enter();
+    //BattleState::Get()->Enter();
 }
 
-void WorldController::Rest()
+void WorldController::HandleSpacePressed()
 {
-    WorldScene::Get()->Rest();
+    world::WorldScene::Get()->ToggleTime();
+}
 
-    EnableInput();
+void WorldController::HandleSpeedUpTime()
+{
+    world::WorldScene::Get()->SpeedUpTime();
+}
+
+void WorldController::HandleSlowDownTime()
+{
+    world::WorldScene::Get()->SlowDownTime();
 }
 
 void WorldController::Disable()
 {
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_S, this, &WorldController::HandleSPressed);
+    auto controller = world::group::HumanController::Get();
+    controller->DisableInput();
+    //controller->OnActionPerformed->Remove(this, &WorldController::HandleActionPerformed);
 
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_R, this, &WorldController::HandleRPressed);
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, this, &WorldController::HandleSpacePressed);
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_COMMA, this, &WorldController::HandleSpeedUpTime);
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_PERIOD, this, &WorldController::HandleSlowDownTime);
 }

@@ -12,7 +12,7 @@
 #include "FlumenBattle/CombatGroup.h"
 #include "FlumenBattle/BattleController.h"
 #include "FlumenBattle/HumanController.h"
-#include "FlumenBattle/Group.h"
+#include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/CharacterClass.h"
 
 void CharacterInfo::HandleConfigure() 

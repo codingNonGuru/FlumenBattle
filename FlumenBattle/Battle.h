@@ -2,22 +2,31 @@
 
 #include "FlumenCore/Conventions.hpp"
 
-class Group;
-
-class Battle
+namespace world 
 {
-    Group *first;
+    namespace group
+    {
+        class Group;
+    }
+}
 
-    Group *second;
+namespace world
+{
+    class Battle
+    {
+        group::Group *first;
 
-public:
-    Battle() {}
+        group::Group *second;
 
-    Battle(Group *, Group *);
+    public:
+        Battle() {}
 
-    void Update();
+        Battle(group::Group *, group::Group *);
 
-    Group * GetFirst() const {return first;}
+        void Update();
 
-    Group * GetSecond() const {return second;}
-};
+        group::Group * GetFirst() const {return first;}
+
+        group::Group * GetSecond() const {return second;}
+    };
+}
