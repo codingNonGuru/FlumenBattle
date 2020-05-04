@@ -56,10 +56,16 @@ void WorldInfoPanel::HandleConfigure()
     }
 
     timeLabel = ElementFactory::BuildText(
-        {Size(200, 80), drawOrder_ + 1, {Position2(-50.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}}, 
+        {Size(200, 80), drawOrder_ + 1, {Position2(-50.0f, -20.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}}, 
         {{"JSLAncient", "Medium"}, Color::RED * 0.5f}
     );
     timeLabel->Enable();
+
+    speedLabel = ElementFactory::BuildText(
+        {Size(200, 80), drawOrder_ + 1, {Position2(-50.0f, 20.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}}, 
+        {{"JSLAncient", "Large"}, Color::RED * 0.65f}
+    );
+    speedLabel->Enable();
 }
 
 void WorldInfoPanel::HandleEnable()
@@ -80,16 +86,23 @@ void WorldInfoPanel::HandleEnable()
     }
 }
 
-#define HOURS_PER_YEAR (24 * 365)
-
 void WorldInfoPanel::HandleUpdate()
 {
-    auto hourCount = world::WorldScene::Get()->GetHourCount();
-    auto yearCount = hourCount / HOURS_PER_YEAR;
-    hourCount -= yearCount * HOURS_PER_YEAR;
-    auto dayCount = hourCount / 24;
-    hourCount -= dayCount * 24;
+    auto time = world::WorldScene::Get()->GetTime();
 
-    auto string = Word() << "Year " << yearCount << ", day " << dayCount << ", hour " << hourCount;
+    auto string = Word() << "Year " << time.YearCount << ", day " << time.DayCount << ", hour " << time.HourCount;
     timeLabel->Setup(string);   
+
+    string = [] () -> Word
+    {
+        if(world::WorldScene::Get()->IsTimeFlowing() == false)
+        {
+            return Word() << "ii";
+        }
+        else
+        {
+            return Word() << Word(">") * world::WorldScene::Get()->GetTimeSpeed();
+        }
+    } ();
+    speedLabel->Setup(string);
 }

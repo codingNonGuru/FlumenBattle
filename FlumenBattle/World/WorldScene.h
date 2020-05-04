@@ -12,6 +12,37 @@ namespace world
         class Group;
     }
 
+    struct WorldTime
+    {
+        int HourCount;
+
+        int DayCount;
+
+        int YearCount;
+
+        WorldTime() {}
+
+        WorldTime(int yearCount, int dayCount, int hourCount) : YearCount(yearCount), DayCount(dayCount), HourCount(hourCount) {}
+
+        WorldTime& operator++()
+        {
+            HourCount++;
+            if(HourCount >= 24)
+            {
+                HourCount = 0;
+
+                DayCount++;
+                if(DayCount >= 365)
+                {
+                    DayCount = 0;
+                    YearCount++;
+                }
+            }
+
+            return *this;
+        }
+    };
+
     class WorldScene : Scene
     {
         friend class WorldState;
@@ -20,11 +51,9 @@ namespace world
 
         bool isTimeFlowing;
 
-        float timeFlowRate;
-
         int timeSpeed;
 
-        Integer hourCount;
+        WorldTime time;
 
         Battle *battle;
 
@@ -66,6 +95,10 @@ namespace world
 
         group::Group * GetPlayerGroup() const {return playerGroup;}
 
-        Integer GetHourCount() const {return hourCount;}
+        const WorldTime & GetTime() const {return time;}
+
+        bool IsTimeFlowing() const {return isTimeFlowing;}
+
+        int GetTimeSpeed() const {return timeSpeed;}
     };
 }

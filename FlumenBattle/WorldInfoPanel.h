@@ -31,6 +31,8 @@ class WorldInfoPanel : public Element, public Singleton<WorldInfoPanel>
 
     Text *timeLabel;
 
+    Text *speedLabel;
+
     Array <CharacterItem> items;
 
     void HandleConfigure() override;

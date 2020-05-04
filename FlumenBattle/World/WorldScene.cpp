@@ -33,21 +33,22 @@ namespace world
         group::GroupFactory::Create(groups, {GroupTypes::COMPUTER, RaceTypes::GNOME});
         group::GroupFactory::Create(groups, {GroupTypes::COMPUTER, RaceTypes::HALFLING});
 
-        hourCount = 561372;
-        //timeFlowRate = 0.05f;
+        //hourCount = 561372;
+        time = WorldTime(230, 63, 14);
+        timeSpeed = 1;
 
         playerGroup = groups.GetStart();
     }
 
     void WorldScene::SpeedUpTime()
     {
-        timeSpeed++;
+        timeSpeed--;
         utility::Clamp(timeSpeed, 1, 5);
     }
 
     void WorldScene::SlowDownTime()
     {
-        timeSpeed--;
+        timeSpeed++;
         utility::Clamp(timeSpeed, 1, 5);
     }
 
@@ -60,20 +61,20 @@ namespace world
         {
             switch(timeSpeed)
             {
-                case 1:
+                case 5:
                     return 0.05f;
-                case 2:
+                case 4:
                     return 0.1f;
                 case 3:
                     return 0.2f;
-                case 4:
+                case 2:
                     return 0.5f;
-                case 5:
+                case 1:
                     return 1.0f;
             }
         } ())
 
-        hourCount++;
+        time++;
 
         for(auto group = groups.GetStart(); group != groups.GetEnd(); ++group)
         {
@@ -94,7 +95,7 @@ namespace world
 
         battle = new Battle(playerGroup, computerGroup);
 
-        hourCount += 1;
+        time++;
     }
 
     void WorldScene::Render()
