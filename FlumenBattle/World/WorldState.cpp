@@ -1,7 +1,7 @@
 #include "FlumenBattle/World/WorldState.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/WorldInterface.h"
-#include "FlumenBattle/WorldController.h"
+#include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/World/Group/Group.h"
 
 namespace world

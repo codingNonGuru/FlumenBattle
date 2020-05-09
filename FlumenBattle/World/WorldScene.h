@@ -2,7 +2,7 @@
 
 #include "FlumenEngine/Core/Scene.hpp"
 
-class WorldController;
+class Delegate;
 
 namespace world
 {
@@ -47,7 +47,7 @@ namespace world
     {
         friend class WorldState;
 
-        friend class ::WorldController;
+        friend class WorldController;
 
         bool isTimeFlowing;
 
@@ -55,11 +55,15 @@ namespace world
 
         WorldTime time;
 
-        Battle *battle;
+        //Battle *playerBattle;
+
+        Pool <Battle> battles;
 
         group::Group *playerGroup;
 
         Array <group::Group> groups;
+
+        WorldScene();
 
         void Initialize() override;
 
@@ -70,8 +74,6 @@ namespace world
         void HandleEnable() override;
 
         void HandleDisable() override;
-
-        void StartBattle();
 
         void StartTime() {isTimeFlowing = true;}
 
@@ -84,6 +86,8 @@ namespace world
         void SlowDownTime();
 
     public:
+        Delegate *OnUpdateStarted;
+
         static WorldScene * Get() 
         {
             static WorldScene scene;
@@ -91,14 +95,20 @@ namespace world
             return &scene;
         }
 
-        Battle * GetBattle() const {return battle;}
+        //Battle * GetPlayerBattle() const {return playerBattle;}
 
         group::Group * GetPlayerGroup() const {return playerGroup;}
+
+        Pool <Battle> & GetBattles() {return battles;}
+
+        Array <group::Group> & GetGroups() {return groups;}
 
         const WorldTime & GetTime() const {return time;}
 
         bool IsTimeFlowing() const {return isTimeFlowing;}
 
         int GetTimeSpeed() const {return timeSpeed;}
+
+        void StartBattle(group::Group *, group::Group *);
     };
 }

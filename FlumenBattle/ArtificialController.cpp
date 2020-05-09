@@ -677,7 +677,7 @@ void ArtificialController::PerformAction()
 {
     if(actionQueue.IsEmpty())
     {
-        TaskManager::Add()->Initialize(battleController, &BattleController::EndTurn, 0.7f);
+        TaskManager::Add({0.7f, {battleController, &BattleController::EndTurn}});
         return;
     }
 
@@ -711,15 +711,15 @@ void ArtificialController::PerformAction()
 
     if(currentActionIndex == actionQueue.GetSize() && !isPlanningAhead)
     {
-        TaskManager::Add()->Initialize(battleController, &BattleController::EndTurn, 0.7f);
+        TaskManager::Add({0.7f, {battleController, &BattleController::EndTurn}});
     }
     else if(!isPlanningAhead)
     {
-        TaskManager::Add()->Initialize(this, &ArtificialController::PerformAction, 0.1f);
+        TaskManager::Add({0.1f, {this, &ArtificialController::PerformAction}});
     }
     else
     {
-        TaskManager::Add()->Initialize(this, &ArtificialController::RepeatActionCycle, 0.1f);
+        TaskManager::Add({0.1f, {this, &ArtificialController::RepeatActionCycle}});
     }
 }
 

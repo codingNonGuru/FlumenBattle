@@ -14,6 +14,8 @@ namespace world
 {
     class Battle
     {
+        bool isActive;
+
         group::Group *first;
 
         group::Group *second;
@@ -28,5 +30,9 @@ namespace world
         group::Group * GetFirst() const {return first;}
 
         group::Group * GetSecond() const {return second;}
+
+        bool IsActive() const {return isActive;}
+
+        void Finish() {isActive = false;}
     };
 }

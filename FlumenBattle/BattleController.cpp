@@ -65,7 +65,7 @@ void BattleController::DetermineCharacterController()
 
         isPlayerInputEnabled = false;
         
-        TaskManager::Add()->Initialize(&ArtificialController::Get(), &ArtificialController::UpdateCharacter, 0.7f);
+        TaskManager::Add({0.7f, {&ArtificialController::Get(), &ArtificialController::UpdateCharacter}});
     }
 }
 

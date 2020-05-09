@@ -17,6 +17,7 @@
 #include "FlumenBattle/BattleTile.h"
 #include "FlumenBattle/CombatGroup.h"
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/Battle.h"
 
 static Camera* camera = nullptr;
@@ -39,13 +40,13 @@ BattleScene::BattleScene()
 
 void BattleScene::Initialize()
 {
-    auto battle = world::WorldScene::Get()->GetBattle();
-
     auto centerTile = battleMap->GetCenterTile();
     Integer3 offset = {-4, 12, -8};
 
-    auto GetComputerGroup = [this, &battle]
+    auto GetComputerGroup = [this]
     {
+        //auto battle = world::WorldScene::Get()->GetPlayerBattle();
+        auto battle = world::WorldController::Get()->GetPlayerBattle();
         if(world::WorldScene::Get()->GetPlayerGroup() == battle->GetFirst())
             return battle->GetSecond();
         else
@@ -154,6 +155,9 @@ void BattleScene::HandleDisable()
     {
         tile->Combatant = nullptr;
     }
+
+    auto battle = world::WorldController::Get()->GetPlayerBattle();
+    battle->Finish();
 }
 
 bool BattleScene::IsCharactersTurn(Combatant *character) const

@@ -3,11 +3,11 @@
 #include "FlumenEngine/Core/State.hpp"
 
 class WorldInterface;
-class WorldController;
 
 namespace world
 {
     class WorldScene;
+    class WorldController;
     
     class WorldState : public State
     {

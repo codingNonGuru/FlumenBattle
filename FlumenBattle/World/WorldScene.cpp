@@ -11,6 +11,8 @@
 
 #define MAXIMUM_GROUP_COUNT 64
 
+#define MAXIMUM_BATTLE_COUNT 32
+
 #define AWAIT(length) \
     static float timer = 0.0f;\
     timer += Time::GetDelta();\
@@ -21,8 +23,15 @@
 
 namespace world
 {
+    WorldScene::WorldScene()
+    {
+        OnUpdateStarted = new Delegate();
+    }
+
     void WorldScene::Initialize()
     {
+        battles.Initialize(MAXIMUM_BATTLE_COUNT);
+
         groups.Initialize(MAXIMUM_GROUP_COUNT);
 
         group::GroupFactory::Create(groups, {GroupTypes::PLAYER, RaceTypes::HUMAN});
@@ -33,11 +42,13 @@ namespace world
         group::GroupFactory::Create(groups, {GroupTypes::COMPUTER, RaceTypes::GNOME});
         group::GroupFactory::Create(groups, {GroupTypes::COMPUTER, RaceTypes::HALFLING});
 
-        //hourCount = 561372;
         time = WorldTime(230, 63, 14);
         timeSpeed = 1;
+        isTimeFlowing = false;
 
         playerGroup = groups.GetStart();
+
+        //battle = nullptr;
     }
 
     void WorldScene::SpeedUpTime()
@@ -54,6 +65,8 @@ namespace world
 
     void WorldScene::Update() 
     {
+        OnUpdateStarted->Invoke();
+
         if(isTimeFlowing == false)
             return;
 
@@ -61,41 +74,31 @@ namespace world
         {
             switch(timeSpeed)
             {
-                case 5:
-                    return 0.05f;
-                case 4:
-                    return 0.1f;
-                case 3:
-                    return 0.2f;
-                case 2:
-                    return 0.5f;
-                case 1:
-                    return 1.0f;
+                case 5: return 0.05f;
+                case 4: return 0.1f;
+                case 3: return 0.2f;
+                case 2: return 0.5f;
+                case 1: return 1.0f;
             }
         } ())
 
         time++;
 
-        for(auto group = groups.GetStart(); group != groups.GetEnd(); ++group)
+        for(auto &group : groups)
         {
-            group->DetermineAction();
+            group.DetermineAction();
         }
 
-        for(auto group = groups.GetStart(); group != groups.GetEnd(); ++group)
+        for(auto &group : groups)
         {
-            group->PerformAction();
+            group.PerformAction();
         }
     }
 
-    void WorldScene::StartBattle()
+    void WorldScene::StartBattle(group::Group *first, group::Group *second)
     {
-        static auto index = 1;
-
-        auto computerGroup = groups.Get(index++);
-
-        battle = new Battle(playerGroup, computerGroup);
-
-        time++;
+        *battles.Add() = Battle(first, second);
+        //battle = new Battle(first, second);
     }
 
     void WorldScene::Render()
