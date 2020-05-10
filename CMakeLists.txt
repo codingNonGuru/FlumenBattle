@@ -24,3 +24,8 @@ project (Battle)
 add_executable(Battle ${SOURCE_FILES})
 
 target_link_libraries(Battle GL GLEW pthread SDL2 SDL2_ttf SDL2_image Engine Core)
+
+add_subdirectory(/home/andrei/Documents/Code/Libraries/FlumenEngine 
+	/home/andrei/Documents/Code/Libraries/FlumenEngine)
+add_subdirectory(/home/andrei/Documents/Code/Libraries/FlumenCore
+	/home/andrei/Documents/Code/Libraries/FlumenCore)

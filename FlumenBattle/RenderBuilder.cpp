@@ -44,7 +44,7 @@ void HandleEngineInitialized()
 
 RenderBuilder::RenderBuilder()
 {
-	RenderManager::OnInitialize()->Add(&RenderBuilder::Initialize);
+	*RenderManager::OnInitialize() += &RenderBuilder::Initialize;
 
-	Engine::OnInitializeEnded.Add(&HandleEngineInitialized);
+	Engine::OnInitializeEnded += &HandleEngineInitialized;
 }

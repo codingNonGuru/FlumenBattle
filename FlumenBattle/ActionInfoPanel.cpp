@@ -1,4 +1,4 @@
-#include "FlumenCore/Delegate/Delegate.hpp"
+#include "FlumenCore/Observer.h"
 
 #include "FlumenEngine/Interface/Text.hpp"
 #include "FlumenEngine/Render/RenderManager.hpp"
@@ -32,10 +32,10 @@ void ActionInfoPanel::HandleConfigure()
 
     battleController = BattleController::Get();
 
-    battleController->OnCharacterSelected.Add(this, &ActionInfoPanel::HandleCharacterSelected);
-    battleController->OnActionSelected.Add(this, &ActionInfoPanel::HandleActionSelected);
-    battleController->OnActionSelected.Add(this, &ActionInfoPanel::HandleSubactionSelected);
-    battleController->OnSubactionSelected.Add(this, &ActionInfoPanel::HandleSubactionSelected);
+    battleController->OnCharacterSelected += {this, &ActionInfoPanel::HandleCharacterSelected};
+    battleController->OnActionSelected += {this, &ActionInfoPanel::HandleActionSelected};
+    battleController->OnActionSelected += {this, &ActionInfoPanel::HandleSubactionSelected};
+    battleController->OnSubactionSelected += {this, &ActionInfoPanel::HandleSubactionSelected};
 
     actionLabels.Initialize(8);
     for(Index i = 0; i < actionLabels.GetCapacity(); ++i)

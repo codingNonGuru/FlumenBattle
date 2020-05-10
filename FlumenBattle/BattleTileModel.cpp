@@ -1,3 +1,5 @@
+#include "FlumenCore/Observer.h"
+
 #include "FlumenEngine/Render/ShaderManager.hpp"
 #include "FlumenEngine/Render/Shader.hpp"
 #include "FlumenEngine/Render/Camera.hpp"
@@ -43,7 +45,7 @@ BattleTileModel::BattleTileModel()
 
     battleController = BattleController::Get();
 
-    battleController->OnCharacterSelected.Add(this, &BattleTileModel::HandleCharacterSelected);
+    battleController->OnCharacterSelected += {this, &BattleTileModel::HandleCharacterSelected};
 
     humanController = HumanController::Get();
 

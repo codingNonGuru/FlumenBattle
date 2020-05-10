@@ -1,4 +1,4 @@
-#include "FlumenCore/Delegate/Delegate.hpp"
+#include "FlumenCore/Observer.h"
 
 #include "FlumenEngine/Interface/Text.hpp"
 #include "FlumenEngine/Interface/ElementFactory.h"
@@ -19,7 +19,7 @@ static BattleController * battleController = nullptr;
 void BattleInfoPanel::HandleConfigure() 
 {
     battleController = BattleController::Get();
-    battleController->OnCharacterActed.Add(this, &BattleInfoPanel::HandleCharacterAction);
+    battleController->OnCharacterActed += {this, &BattleInfoPanel::HandleCharacterAction};
 
     auto textColor = (Color::RED * 0.3f) + (Color::BLACK * 0.7f);
     

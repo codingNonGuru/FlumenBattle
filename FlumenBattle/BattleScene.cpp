@@ -93,9 +93,12 @@ void BattleScene::EndTurn()
     {
         turn++;
 
-        if(turn == turnOrder.GetEnd())
+        bool hasRoundEnded = turn == turnOrder.GetEnd();
+        if(hasRoundEnded)
         {
             turn = turnOrder.GetStart();
+
+            OnRoundEnded.Invoke();
         }
 
         if(turn->Combatant->IsAlive())

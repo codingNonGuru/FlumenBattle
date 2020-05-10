@@ -66,6 +66,8 @@ public:
 
     Delegate OnEnabled;
 
+    Delegate OnRoundEnded;
+
     BattleScene();
 
     BattleMap* GetBattleMap() {return battleMap;}

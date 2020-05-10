@@ -13,14 +13,14 @@ namespace world
 {
     void WorldController::Enable()
     {
-        WorldScene::Get()->OnUpdateStarted->Add(this, &WorldController::HandleSceneUpdate);
+        *WorldScene::Get()->OnUpdateStarted += {this, &WorldController::HandleSceneUpdate};
 
         auto controller = group::HumanController::Get();
         controller->EnableInput();
 
-        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, this, &WorldController::HandleSpacePressed);
-        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_COMMA, this, &WorldController::HandleSpeedUpTime);
-        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_PERIOD, this, &WorldController::HandleSlowDownTime);
+        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, {this, &WorldController::HandleSpacePressed});
+        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_COMMA, {this, &WorldController::HandleSpeedUpTime});
+        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_PERIOD, {this, &WorldController::HandleSlowDownTime});
 
         playerBattle = nullptr;
     }
@@ -44,6 +44,12 @@ namespace world
         if(playerBattle == nullptr)
             return;
 
+        StartBattle();
+    }
+
+    void WorldController::StartBattle()
+    {
+        auto scene = WorldScene::Get();
         scene->StopTime();
 
         Disable();
@@ -51,13 +57,6 @@ namespace world
         TaskManager::Add({1.0f, []{
             BattleState::Get()->Enter();
         }});
-    }
-
-    void WorldController::StartBattle()
-    {
-        //world::WorldScene::Get()->StartBattle();
-
-        //BattleState::Get()->Enter();
     }
 
     void WorldController::HandleSpacePressed()
@@ -77,14 +76,13 @@ namespace world
 
     void WorldController::Disable()
     {
-        WorldScene::Get()->OnUpdateStarted->Remove(this, &WorldController::HandleSceneUpdate);
+        *WorldScene::Get()->OnUpdateStarted -= {this, &WorldController::HandleSceneUpdate};
 
         auto controller = group::HumanController::Get();
         controller->DisableInput();
-        //controller->OnActionPerformed->Remove(this, &WorldController::HandleActionPerformed);
 
-        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, this, &WorldController::HandleSpacePressed);
-        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_COMMA, this, &WorldController::HandleSpeedUpTime);
-        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_PERIOD, this, &WorldController::HandleSlowDownTime);
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, {this, &WorldController::HandleSpacePressed});
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_COMMA, {this, &WorldController::HandleSpeedUpTime});
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_PERIOD, {this, &WorldController::HandleSlowDownTime});
     }
 }

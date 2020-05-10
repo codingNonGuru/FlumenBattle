@@ -5,6 +5,8 @@
 
 #define ABILITY_COUNT 6
 
+#define BATTLE_ROUNDS_PER_MINUTE 10
+
 enum class Scenes
 {
 	BATTLE

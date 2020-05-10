@@ -1,3 +1,5 @@
+#include "FlumenCore/Observer.h"
+
 #include "FlumenEngine/Core/Engine.hpp"
 #include "FlumenEngine/Core/TaskManager.hpp"
 #include "FlumenEngine/Core/Task.hpp"
@@ -26,7 +28,7 @@ void BattleController::Initialize()
 
     HumanController::Get()->Initialize();
 
-    battleScene->OnEnabled.Add(this, &BattleController::HandleSceneEnabled);
+    battleScene->OnEnabled += {this, &BattleController::HandleSceneEnabled};
 }
 
 void BattleController::HandleSceneEnabled()
@@ -41,7 +43,7 @@ void BattleController::HandleSceneEnabled()
 
     DetermineCharacterController();
 
-    battleScene->OnEnabled.Remove(this, &BattleController::HandleSceneEnabled);
+    battleScene->OnEnabled -= {this, &BattleController::HandleSceneEnabled};
 }
 
 void BattleController::DetermineCharacterController()

@@ -36,30 +36,30 @@ void HumanController::Initialize()
 
 void HumanController::EnablePlayerInput()
 {
-    InputHandler::OnInputUpdate.Add(this, &HumanController::CheckTileSelection);
-    InputHandler::OnLeftMouseClick.Add(this, &HumanController::CheckCharacterMovement);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, this, &HumanController::HandleSpacePressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_1, this, &HumanController::HandleOnePressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_2, this, &HumanController::HandleTwoPressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_3, this, &HumanController::HandleThreePressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_4, this, &HumanController::HandleFourPressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_M, this, &HumanController::HandleMPressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_T, this, &HumanController::HandleTPressed);
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_A, this, &HumanController::HandleAPressed);
+    InputHandler::OnInputUpdate += {this, &HumanController::CheckTileSelection};
+    InputHandler::OnLeftMouseClick += {this, &HumanController::CheckCharacterMovement};
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, {this, &HumanController::HandleSpacePressed});
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_1, {this, &HumanController::HandleOnePressed});
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_2, {this, &HumanController::HandleTwoPressed});
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_3, {this, &HumanController::HandleThreePressed});
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_4, {this, &HumanController::HandleFourPressed});
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_M, {this, &HumanController::HandleMPressed});
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_T, {this, &HumanController::HandleTPressed});
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_A, {this, &HumanController::HandleAPressed});
 }
 
 void HumanController::DisablePlayerInput()
 {
-    InputHandler::OnInputUpdate.Remove(this, &HumanController::CheckTileSelection);
-    InputHandler::OnLeftMouseClick.Remove(this, &HumanController::CheckCharacterMovement);
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, this, &HumanController::HandleSpacePressed);
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_1, this, &HumanController::HandleOnePressed);
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_2, this, &HumanController::HandleTwoPressed);
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_3, this, &HumanController::HandleThreePressed);
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_4, this, &HumanController::HandleFourPressed);
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_M, this, &HumanController::HandleMPressed);
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_T, this, &HumanController::HandleTPressed);
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_A, this, &HumanController::HandleAPressed);
+    InputHandler::OnInputUpdate -= {this, &HumanController::CheckTileSelection};
+    InputHandler::OnLeftMouseClick -= {this, &HumanController::CheckCharacterMovement};
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, {this, &HumanController::HandleSpacePressed});
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_1, {this, &HumanController::HandleOnePressed});
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_2, {this, &HumanController::HandleTwoPressed});
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_3, {this, &HumanController::HandleThreePressed});
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_4, {this, &HumanController::HandleFourPressed});
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_M, {this, &HumanController::HandleMPressed});
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_T, {this, &HumanController::HandleTPressed});
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_A, {this, &HumanController::HandleAPressed});
 }
 
 void HumanController::CheckCharacterMovement()

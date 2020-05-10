@@ -1,4 +1,4 @@
-#include "FlumenCore/Delegate/Delegate.hpp"
+#include "FlumenCore/Observer.h"
 
 #include "FlumenEngine/Interface/Text.hpp"
 #include "FlumenEngine/Interface/ElementFactory.h"
@@ -49,7 +49,7 @@ void CharacterInfo::HandleConfigure()
 
     SetInteractivity(true);
 
-    GetLeftClickEvents().Add(this, &CharacterInfo::HandleTargeting);
+    GetLeftClickEvents() += {this, &CharacterInfo::HandleTargeting};
 }
 
 void CharacterInfo::HandleEnable() 

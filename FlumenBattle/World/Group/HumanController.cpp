@@ -39,16 +39,16 @@ void HumanController::PerformAction(Group &group) const
 
 void HumanController::EnableInput()
 {
-    InputHandler::RegisterEvent(searchInputKey, this, &HumanController::HandleSearch);
+    InputHandler::RegisterEvent(searchInputKey, {this, &HumanController::HandleSearch});
 
-    InputHandler::RegisterEvent(takeShortRestInputKey, this, &HumanController::HandleTakeShortRest);
+    InputHandler::RegisterEvent(takeShortRestInputKey, {this, &HumanController::HandleTakeShortRest});
 }
 
 void HumanController::DisableInput()
 {
-    InputHandler::UnregisterEvent(searchInputKey, this, &HumanController::HandleSearch);
+    InputHandler::UnregisterEvent(searchInputKey, {this, &HumanController::HandleSearch});
 
-    InputHandler::UnregisterEvent(takeShortRestInputKey, this, &HumanController::HandleTakeShortRest);
+    InputHandler::UnregisterEvent(takeShortRestInputKey, {this, &HumanController::HandleTakeShortRest});
 }
 
 void HumanController::HandleSearch()

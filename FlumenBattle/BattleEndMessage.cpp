@@ -15,7 +15,7 @@ void BattleEndMessage::HandleConfigure()
     );
     mainLabel->Enable();
 
-    BattleController::Get()->OnBattleEnded.Add(this, &BattleEndMessage::Enable);
+    BattleController::Get()->OnBattleEnded += {this, &BattleEndMessage::Enable};
 }    
 
 void BattleEndMessage::HandleEnable() 
@@ -29,12 +29,12 @@ void BattleEndMessage::HandleEnable()
         mainLabel->Setup("You are dead. Game over. Press [J] to exit.");
     }
 
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_J, this, &BattleEndMessage::HandleConfirm);
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_J, {this, &BattleEndMessage::HandleConfirm});
 }
 
 void BattleEndMessage::HandleConfirm()
 {
     BattleController::Get()->ExitBattle();
 
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_J, this, &BattleEndMessage::HandleConfirm);
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_J, {this, &BattleEndMessage::HandleConfirm});
 }

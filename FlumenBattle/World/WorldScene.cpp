@@ -8,6 +8,7 @@
 #include "FlumenBattle/World/Group/GroupFactory.h"
 #include "FlumenBattle/Battle.h"
 #include "FlumenBattle/BattleState.h"
+#include "FlumenBattle/BattleScene.h"
 
 #define MAXIMUM_GROUP_COUNT 64
 
@@ -43,46 +44,42 @@ namespace world
         group::GroupFactory::Create(groups, {GroupTypes::COMPUTER, RaceTypes::HALFLING});
 
         time = WorldTime(230, 63, 14);
-        timeSpeed = 1;
-        isTimeFlowing = false;
 
         playerGroup = groups.GetStart();
 
-        //battle = nullptr;
+        BattleScene::Get()->OnRoundEnded += {this, &WorldScene::HandleBattleRoundEnded};
     }
 
     void WorldScene::SpeedUpTime()
     {
-        timeSpeed--;
-        utility::Clamp(timeSpeed, 1, 5);
+        time.SlowDown();
     }
 
     void WorldScene::SlowDownTime()
     {
-        timeSpeed++;
-        utility::Clamp(timeSpeed, 1, 5);
+        time.SpeedUp();
     }
 
     void WorldScene::Update() 
     {
         OnUpdateStarted->Invoke();
 
-        if(isTimeFlowing == false)
+        if(!time)
             return;
 
-        AWAIT([this]() -> float 
-        {
-            switch(timeSpeed)
-            {
-                case 5: return 0.05f;
-                case 4: return 0.1f;
-                case 3: return 0.2f;
-                case 2: return 0.5f;
-                case 1: return 1.0f;
-            }
-        } ())
+        AWAIT(time.GetStep())
 
+        Refresh();
+    }
+
+    void WorldScene::Refresh()
+    {
         time++;
+
+        for(auto &battle : battles)
+        {
+            battle.Update();
+        }
 
         for(auto &group : groups)
         {
@@ -98,7 +95,6 @@ namespace world
     void WorldScene::StartBattle(group::Group *first, group::Group *second)
     {
         *battles.Add() = Battle(first, second);
-        //battle = new Battle(first, second);
     }
 
     void WorldScene::Render()
@@ -108,11 +104,24 @@ namespace world
 
     void WorldScene::HandleEnable() 
     {
-        isTimeFlowing = false;
+        time = false;
     }
 
     void WorldScene::HandleDisable() 
     {
-        isTimeFlowing = false;
+        time = false;
+    }
+
+    void WorldScene::HandleBattleRoundEnded()
+    {
+        static int roundCount = 0;
+            
+        roundCount++;
+        if(roundCount == BATTLE_ROUNDS_PER_MINUTE)
+        {
+            roundCount = 0;
+
+            Refresh();
+        }
     }
 }

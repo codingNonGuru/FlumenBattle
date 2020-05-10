@@ -2,6 +2,8 @@
 
 #include "FlumenEngine/Core/Scene.hpp"
 
+#include "FlumenBattle/World/WorldTime.h"
+
 class Delegate;
 
 namespace world
@@ -12,50 +14,13 @@ namespace world
         class Group;
     }
 
-    struct WorldTime
-    {
-        int HourCount;
-
-        int DayCount;
-
-        int YearCount;
-
-        WorldTime() {}
-
-        WorldTime(int yearCount, int dayCount, int hourCount) : YearCount(yearCount), DayCount(dayCount), HourCount(hourCount) {}
-
-        WorldTime& operator++()
-        {
-            HourCount++;
-            if(HourCount >= 24)
-            {
-                HourCount = 0;
-
-                DayCount++;
-                if(DayCount >= 365)
-                {
-                    DayCount = 0;
-                    YearCount++;
-                }
-            }
-
-            return *this;
-        }
-    };
-
     class WorldScene : Scene
     {
         friend class WorldState;
 
         friend class WorldController;
 
-        bool isTimeFlowing;
-
-        int timeSpeed;
-
         WorldTime time;
-
-        //Battle *playerBattle;
 
         Pool <Battle> battles;
 
@@ -75,15 +40,19 @@ namespace world
 
         void HandleDisable() override;
 
-        void StartTime() {isTimeFlowing = true;}
+        void Refresh();
 
-        void StopTime() {isTimeFlowing = false;}
+        void StartTime() {time = true;}
 
-        void ToggleTime() {isTimeFlowing = isTimeFlowing ? false : true;}
+        void StopTime() {time = false;}
+
+        void ToggleTime() {time = time ? false : true;}
 
         void SpeedUpTime();
 
         void SlowDownTime();
+
+        void HandleBattleRoundEnded();
 
     public:
         Delegate *OnUpdateStarted;
@@ -95,8 +64,6 @@ namespace world
             return &scene;
         }
 
-        //Battle * GetPlayerBattle() const {return playerBattle;}
-
         group::Group * GetPlayerGroup() const {return playerGroup;}
 
         Pool <Battle> & GetBattles() {return battles;}
@@ -105,9 +72,9 @@ namespace world
 
         const WorldTime & GetTime() const {return time;}
 
-        bool IsTimeFlowing() const {return isTimeFlowing;}
+        bool IsTimeFlowing() const {return time;}
 
-        int GetTimeSpeed() const {return timeSpeed;}
+        int GetTimeSpeed() const {return time;}
 
         void StartBattle(group::Group *, group::Group *);
     };
