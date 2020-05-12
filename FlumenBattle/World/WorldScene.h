@@ -20,6 +20,8 @@ namespace world
 
         friend class WorldController;
 
+        friend class GroupAllocator;
+
         WorldTime time;
 
         Pool <Battle> battles;

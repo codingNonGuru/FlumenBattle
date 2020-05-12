@@ -4,6 +4,7 @@
 #include "FlumenEngine/Core/InputHandler.hpp"
 
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/GroupAllocator.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/GroupFactory.h"
 #include "FlumenBattle/Battle.h"
@@ -100,6 +101,8 @@ namespace world
 
         auto refreshGroups = [this] 
         {
+            GroupAllocator::Get()->PerformCleanup();
+
             for(auto &group : groups)
             {
                 group.DetermineAction();
