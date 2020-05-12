@@ -14,7 +14,7 @@ namespace world
 {
     class Battle
     {
-        bool isActive;
+        bool isOngoing;
 
         group::Group *first;
 
@@ -31,8 +31,8 @@ namespace world
 
         group::Group * GetSecond() const {return second;}
 
-        bool IsActive() const {return isActive;}
+        bool IsOngoing() const {return isOngoing;}
 
-        void Finish() {isActive = false;}
+        void Finish();
     };
 }

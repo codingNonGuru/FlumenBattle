@@ -6,6 +6,6 @@ namespace world
 
     enum class GroupActions
     {
-        TAKE_SHORT_REST, TAKE_LONG_REST, SEARCH, NONE
+        TAKE_SHORT_REST, TAKE_LONG_REST, SEARCH, FIGHT, NONE
     };
 }

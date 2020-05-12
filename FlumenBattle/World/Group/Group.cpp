@@ -123,4 +123,18 @@ namespace world::group
 
         actionProgress = 0;
     }
+
+    void Group::EnterBattle(Battle *_battle)
+    {
+        battle = _battle;
+
+        SelectAction(world::GroupActions::FIGHT);
+    }
+
+    void Group::ExitBattle()
+    {
+        battle = nullptr;
+
+        CancelAction();
+    }
 }

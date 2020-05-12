@@ -34,7 +34,7 @@ namespace world
             if(battle.GetFirst() != scene->GetPlayerGroup() && battle.GetSecond() != scene->GetPlayerGroup())
                 continue;
 
-            if(!battle.IsActive())
+            if(!battle.IsOngoing())
                 continue;
 
             playerBattle = &battle;

@@ -17,6 +17,8 @@ namespace world::group
 
         const GroupAction * BuildSearch();
 
+        const GroupAction * BuildFight();
+
     public:
         const GroupAction * BuildAction(GroupActions);
     };
@@ -30,6 +32,8 @@ namespace world::group
         static void TakeLongRest(Group &group);
 
         static void Search(Group &group);
+
+        static void Fight(Group &group);
     };
 
     class GroupActionValidator
@@ -41,5 +45,7 @@ namespace world::group
         static bool CanTakeLongRest(Group &group);
 
         static bool CanSearch(Group &group);
+
+        static bool CanFight(Group &group);
     };
 }

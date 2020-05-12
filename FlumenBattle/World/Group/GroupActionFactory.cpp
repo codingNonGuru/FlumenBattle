@@ -16,6 +16,8 @@ namespace world::group
                 return BuildTakeLongRest();
             case GroupActions::SEARCH:
                 return BuildSearch();
+            case GroupActions::FIGHT:
+                return BuildFight();
         }
     }
 
@@ -34,6 +36,12 @@ namespace world::group
     const GroupAction * GroupActionFactory::BuildSearch()
     {
         static GroupAction action = {GroupActions::SEARCH, 3, &GroupActionValidator::CanSearch, &GroupActionPerformer::Search};
+        return &action;
+    }
+
+    const GroupAction * GroupActionFactory::BuildFight()
+    {
+        static GroupAction action = {GroupActions::FIGHT, 0, &GroupActionValidator::CanFight, &GroupActionPerformer::Fight};
         return &action;
     }
 
@@ -76,9 +84,14 @@ namespace world::group
         if(other == &group)
             return;
 
-        WorldScene::Get()->StartBattle(&group, other);
+        if(other->GetAction() && other->GetAction()->Type == GroupActions::FIGHT)
+            return;
 
-        group.CancelAction();
+        WorldScene::Get()->StartBattle(&group, other);
+    }
+
+    void GroupActionPerformer::Fight(Group& group)
+    {
     }
 
     bool GroupActionValidator::CanTakeShortRest(Group &group)
@@ -92,6 +105,11 @@ namespace world::group
     }
 
     bool GroupActionValidator::CanSearch(Group &group)
+    {
+        return true;
+    }
+
+    bool GroupActionValidator::CanFight(Group &group)
     {
         return true;
     }

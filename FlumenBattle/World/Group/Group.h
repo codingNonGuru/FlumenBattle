@@ -6,12 +6,13 @@
 #include "FlumenBattle/World/Types.h"
 
 class Character;
-class Battle;
+
 enum class RaceTypes;
 class Character;
 class CombatGroup;
 namespace world
 {
+    class Battle;
     class WorldScene;
 }
 
@@ -64,6 +65,10 @@ namespace world::group
 
         Word GetName() const {return name;}
 
+        Battle * GetBattle() const {return battle;}
+
+        const GroupAction * GetAction() const {return action;}
+
         Array <Character> & GetCharacters() {return characters;}
 
         void DetermineAction();
@@ -75,5 +80,9 @@ namespace world::group
         void SelectAction(world::GroupActions);
 
         void CancelAction();
+
+        void EnterBattle(Battle *);
+
+        void ExitBattle();
     };
 }

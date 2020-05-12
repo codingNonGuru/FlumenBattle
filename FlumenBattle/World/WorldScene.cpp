@@ -76,20 +76,44 @@ namespace world
     {
         time++;
 
-        for(auto &battle : battles)
+        auto refreshBattles = [this] 
         {
-            battle.Update();
-        }
+            static auto finishedBattles = Array <Battle *> (MAXIMUM_BATTLE_COUNT);
 
-        for(auto &group : groups)
-        {
-            group.DetermineAction();
-        }
+            for(auto &battle : battles)
+            {
+                battle.Update();
 
-        for(auto &group : groups)
+                if(!battle.IsOngoing())
+                {
+                    *finishedBattles.Allocate() = &battle;
+                }
+            }
+
+            for(auto &battle : finishedBattles)
+            {
+                battles.Remove(battle);
+            }
+
+            finishedBattles.Reset();
+        };
+
+        refreshBattles();
+
+        auto refreshGroups = [this] 
         {
-            group.PerformAction();
-        }
+            for(auto &group : groups)
+            {
+                group.DetermineAction();
+            }
+
+            for(auto &group : groups)
+            {
+                group.PerformAction();
+            }
+        };
+
+        refreshGroups();
     }
 
     void WorldScene::StartBattle(group::Group *first, group::Group *second)

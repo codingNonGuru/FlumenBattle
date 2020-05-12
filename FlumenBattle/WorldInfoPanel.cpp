@@ -43,9 +43,6 @@ void WorldInfoPanel::HandleConfigure()
 {
     auto position = Position2(10.0f, 10.0f);
 
-    auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
-    auto &characters = playerGroup->GetCharacters();
-
     items.Initialize(16);
 
     for(Index i = 0; i < items.GetCapacity(); ++i, position += Direction2(80.0f, 0.0f))
@@ -71,6 +68,9 @@ void WorldInfoPanel::HandleConfigure()
 void WorldInfoPanel::HandleEnable()
 {
     auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
+    if(!playerGroup)
+        return;
+
     auto &characters = playerGroup->GetCharacters();
 
     for(auto item = items.GetStart(); item != items.GetEnd(); ++item)
