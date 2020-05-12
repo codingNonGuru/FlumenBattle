@@ -134,6 +134,8 @@ public:
 
     Integer GetMagicProficiencyBonus() {return proficiencies.GetMagicBonus(*this);}
 
+    Integer GetPerceptionProficiencyBonus() {return proficiencies.GetPerceptionBonus(*this);}
+
     Integer GetReflexSaveBonus();
 
     Integer GetFortitudeSaveBonus();

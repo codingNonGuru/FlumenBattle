@@ -1,3 +1,5 @@
+#include "FlumenCore/Utility/Utility.hpp"
+
 #include "FlumenBattle/World/Group/GroupActionFactory.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/Group.h"
@@ -85,6 +87,26 @@ namespace world::group
             return;
 
         if(other->GetAction() && other->GetAction()->Type == GroupActions::FIGHT)
+            return;
+
+        auto perceptionBonus = -50;
+        for(auto &character : group.characters)
+        {
+            auto bonus = character.GetPerceptionProficiencyBonus();
+            if(bonus > perceptionBonus)
+                perceptionBonus = bonus;
+        }
+
+        auto stealthBonus = 50;
+        for(auto &character : group.characters)
+        {
+            auto bonus = character.GetAbility(AbilityTypes::DEXTERITY).Modifier;
+            if(bonus < stealthBonus)
+                stealthBonus = bonus;
+        }
+
+        auto perceptionCheck = utility::GetRandom(1, 20) + perceptionBonus - stealthBonus;
+        if(perceptionCheck <= 20)
             return;
 
         WorldScene::Get()->StartBattle(&group, other);
