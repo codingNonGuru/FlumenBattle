@@ -26,9 +26,9 @@ namespace world::group
         return color;
     }
 
-    Group* GroupFactory::Create(Array <Group> &groups, GroupBuildData buildData)
+    Group* GroupFactory::Create(Pool <Group> &groups, GroupBuildData buildData)
     {
-        auto group = groups.Allocate();
+        auto group = groups.Add();
 
         auto type = GroupTypeFactory::BuildGroupType(buildData.Type);
 

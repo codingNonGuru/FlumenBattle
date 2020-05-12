@@ -26,7 +26,7 @@ namespace world::group
 
     class Group
     {
-        friend class container::Array <Group>;
+        friend class container::Pool <Group>;
 
         friend class GroupFactory;
 

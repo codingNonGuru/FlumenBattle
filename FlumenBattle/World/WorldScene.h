@@ -26,7 +26,7 @@ namespace world
 
         group::Group *playerGroup;
 
-        Array <group::Group> groups;
+        Pool <group::Group> groups;
 
         WorldScene();
 
@@ -68,7 +68,7 @@ namespace world
 
         Pool <Battle> & GetBattles() {return battles;}
 
-        Array <group::Group> & GetGroups() {return groups;}
+        Pool <group::Group> & GetGroups() {return groups;}
 
         const WorldTime & GetTime() const {return time;}
 

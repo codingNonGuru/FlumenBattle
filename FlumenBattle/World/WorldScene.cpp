@@ -35,7 +35,7 @@ namespace world
 
         groups.Initialize(MAXIMUM_GROUP_COUNT);
 
-        group::GroupFactory::Create(groups, {GroupTypes::PLAYER, RaceTypes::HUMAN});
+        playerGroup = group::GroupFactory::Create(groups, {GroupTypes::PLAYER, RaceTypes::HUMAN});
         group::GroupFactory::Create(groups, {GroupTypes::COMPUTER, RaceTypes::ORC});
         group::GroupFactory::Create(groups, {GroupTypes::COMPUTER, RaceTypes::GOBLIN});
         group::GroupFactory::Create(groups, {GroupTypes::COMPUTER, RaceTypes::ELF});
@@ -44,8 +44,6 @@ namespace world
         group::GroupFactory::Create(groups, {GroupTypes::COMPUTER, RaceTypes::HALFLING});
 
         time = WorldTime(230, 63, 14);
-
-        playerGroup = groups.GetStart();
 
         BattleScene::Get()->OnRoundEnded += {this, &WorldScene::HandleBattleRoundEnded};
     }
