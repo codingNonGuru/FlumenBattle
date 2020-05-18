@@ -21,6 +21,10 @@ namespace world::group
 {
     class Group;
 }
+namespace world
+{
+    class CharacterAllocator;
+}
 
 class Character
 {
@@ -37,7 +41,7 @@ public:
     };
 
 private:
-    friend class container::Array<Character>;
+    friend class container::Pool <Character>;
 
     friend class CharacterFactory;
 
@@ -61,6 +65,8 @@ private:
 
     friend class Combatant;
 
+    friend class world::CharacterAllocator;
+
     world::group::Group *group;
 
     const CharacterClass *type;
@@ -83,15 +89,15 @@ private:
 
     Action *selectedAction;
 
-    Array <Weapon> weapons;
+    Pool <Weapon> weapons;
 
     Weapon *selectedWeapon; //Combatant 
 
-    Array <Spell> spells;
+    Pool <Spell> spells;
 
     Spell *selectedSpell; //Combatant
 
-    Array <SpellSlot> spellSlots;
+    Pool <SpellSlot> spellSlots;
 
     Combatant *combatant;
 
@@ -144,9 +150,9 @@ public:
 
     Array <Action> & GetActions() {return actions;}
 
-    const Array <Weapon> & GetWeapons() {return weapons;}
+    const Pool <Weapon> & GetWeapons() {return weapons;}
 
-    const Array <Spell> & GetSpells() {return spells;}
+    const Pool <Spell> & GetSpells() {return spells;}
 
     bool SelectAction(Index);
 

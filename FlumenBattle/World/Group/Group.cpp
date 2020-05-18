@@ -34,8 +34,6 @@ namespace world::group
         action = nullptr;
         battle = nullptr;
 
-        characters.Initialize(16);
-
         for(int i = 0; i < size; ++i)
         {
             switch(raceType)

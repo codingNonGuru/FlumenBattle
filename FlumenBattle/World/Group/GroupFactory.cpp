@@ -5,6 +5,7 @@
 #include "FlumenBattle/World/Group/GroupFactory.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/GroupType.h"
+#include "FlumenBattle/World/GroupAllocator.h"
 
 Array <Color> colors = {Color::RED, Color::GREEN, Color::CYAN, Color::RED * 0.5f, Color::GREEN * 0.5f, Color::GREEN, Color::BLUE};
 
@@ -26,9 +27,9 @@ namespace world::group
         return color;
     }
 
-    Group* GroupFactory::Create(Pool <Group> &groups, GroupBuildData buildData)
+    Group* GroupFactory::Create(GroupBuildData buildData)
     {
-        auto group = groups.Add();
+        auto group = GroupAllocator::Get()->Allocate();
 
         auto type = GroupTypeFactory::BuildGroupType(buildData.Type);
 

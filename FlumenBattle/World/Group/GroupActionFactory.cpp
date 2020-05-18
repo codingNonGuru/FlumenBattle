@@ -53,9 +53,9 @@ namespace world::group
             return;
         
         auto &characters = group.GetCharacters();
-        for(auto character = characters.GetStart(); character != characters.GetEnd(); ++character)
+        for(auto &character : characters)
         {
-            character->TakeShortRest();
+            character.TakeShortRest();
         }
 
         group.CancelAction();
@@ -67,9 +67,9 @@ namespace world::group
             return;
 
         auto &characters = group.GetCharacters();
-        for(auto character = characters.GetStart(); character != characters.GetEnd(); ++character)
+        for(auto &character : group.characters)
         {
-            character->TakeLongRest();
+            character.TakeLongRest();
         }
 
         group.CancelAction();

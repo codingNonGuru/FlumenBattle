@@ -17,14 +17,14 @@ void CombatGroup::Initialize(world::group::Group *_group, BattleTile *_tile)
     combatants.Reset();
 
     auto &characters = group->GetCharacters();
-    for(auto character = characters.GetStart(); character != characters.GetEnd(); ++character)
+    for(auto &character : characters)
     {
         auto combatant = combatants.Allocate();
 
         auto combatantTile = tile->GetEmptyTileInRange(5);
         combatantTile->Combatant = combatant;
 
-        combatant->Initialize(this, character, combatantTile);
+        combatant->Initialize(this, &character, combatantTile);
     }
 }
 

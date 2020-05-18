@@ -14,9 +14,9 @@
 
 Character::Character()
 {
-    weapons.Initialize(4);
-    spells.Initialize(8);
-    spellSlots.Initialize(8);
+    //weapons.Initialize(4);
+    //spells.Initialize(8);
+    //spellSlots.Initialize(8);
 }
 
 void Character::Initialize()
@@ -24,10 +24,10 @@ void Character::Initialize()
     currentHitPoints = maximumHitPoints / 2;
 
     selectedAction = actions.GetStart();
-    selectedWeapon = weapons.GetStart();
-    selectedSpell = spells.GetStart();
+    selectedWeapon = nullptr;//weapons.GetStart();
+    selectedSpell = nullptr;//spells.GetStart();
 
-    *spellSlots.Allocate() = {2};
+    *spellSlots.Add() = {2};
 }
 
 bool Character::IsAlive() const
@@ -37,14 +37,14 @@ bool Character::IsAlive() const
 
 void Character::AddWeapon(Weapon weapon)
 {
-    *weapons.Allocate() = weapon;
-    selectedWeapon = weapons.GetEnd() - 1;
+    selectedWeapon = weapons.Add(); 
+    *selectedWeapon = weapon;
 }
 
 void Character::AddSpell(Spell spell)
 {
-    *spells.Allocate() = spell;
-    selectedSpell = spells.GetEnd() - 1;
+    selectedSpell = spells.Add();// = spell;
+    *selectedSpell = spell;
 }
 
 void Character::AddProficiency(Proficiency proficiency)
@@ -176,9 +176,9 @@ Index Character::GetSelectedSubactionIndex() const
     switch(selectedAction->Type)
     {
         case CharacterActions::ATTACK:
-            return selectedWeapon - weapons.GetStart();
+            return weapons.GetIndex(selectedWeapon);//  selectedWeapon - weapons.GetStart();
         case CharacterActions::CAST_SPELL:
-            return selectedSpell - spells.GetStart();
+            return spells.GetIndex(selectedSpell);// - spells.GetStart();
         default:
             return 0;
     }

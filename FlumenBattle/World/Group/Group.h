@@ -52,7 +52,7 @@ namespace world::group
 
         Color color;
 
-        Array <Character> characters;
+        Pool <Character> characters;
 
         Group();
 
@@ -69,7 +69,7 @@ namespace world::group
 
         const GroupAction * GetAction() const {return action;}
 
-        Array <Character> & GetCharacters() {return characters;}
+        Pool <Character> & GetCharacters() {return characters;}
 
         void DetermineAction();
 

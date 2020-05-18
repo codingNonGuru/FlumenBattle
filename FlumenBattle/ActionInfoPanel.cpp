@@ -165,7 +165,7 @@ void ActionInfoPanel::RefreshWeapons()
 {
     auto character = battleController->GetSelectedCharacter();
 
-    const auto & weapons = character->GetWeapons();
+    const auto &weapons = character->GetWeapons();
 
     auto weaponIterator = weapons.GetStart();
     Index labelIndex = 0;

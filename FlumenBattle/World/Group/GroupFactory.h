@@ -22,6 +22,6 @@ namespace world::group
     class GroupFactory
     {
     public:
-        static Group* Create(Pool <Group> &, GroupBuildData); 
+        static Group* Create(GroupBuildData); 
     };
 }

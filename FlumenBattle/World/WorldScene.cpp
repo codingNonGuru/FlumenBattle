@@ -11,8 +11,6 @@
 #include "FlumenBattle/BattleState.h"
 #include "FlumenBattle/BattleScene.h"
 
-#define MAXIMUM_GROUP_COUNT 64
-
 #define MAXIMUM_BATTLE_COUNT 32
 
 #define AWAIT(length) \
@@ -32,17 +30,17 @@ namespace world
 
     void WorldScene::Initialize()
     {
+        groups = &GroupAllocator::Get()->groups;
+
         battles.Initialize(MAXIMUM_BATTLE_COUNT);
 
-        groups.Initialize(MAXIMUM_GROUP_COUNT);
-
-        playerGroup = group::GroupFactory::Create(groups, {GroupTypes::PLAYER, RaceTypes::HUMAN});
-        group::GroupFactory::Create(groups, {GroupTypes::COMPUTER, RaceTypes::ORC});
-        group::GroupFactory::Create(groups, {GroupTypes::COMPUTER, RaceTypes::GOBLIN});
-        group::GroupFactory::Create(groups, {GroupTypes::COMPUTER, RaceTypes::ELF});
-        group::GroupFactory::Create(groups, {GroupTypes::COMPUTER, RaceTypes::HUMAN});
-        group::GroupFactory::Create(groups, {GroupTypes::COMPUTER, RaceTypes::GNOME});
-        group::GroupFactory::Create(groups, {GroupTypes::COMPUTER, RaceTypes::HALFLING});
+        playerGroup = group::GroupFactory::Create({GroupTypes::PLAYER, RaceTypes::HUMAN});
+        group::GroupFactory::Create({GroupTypes::COMPUTER, RaceTypes::ORC});
+        group::GroupFactory::Create({GroupTypes::COMPUTER, RaceTypes::GOBLIN});
+        group::GroupFactory::Create({GroupTypes::COMPUTER, RaceTypes::ELF});
+        group::GroupFactory::Create({GroupTypes::COMPUTER, RaceTypes::HUMAN});
+        group::GroupFactory::Create({GroupTypes::COMPUTER, RaceTypes::GNOME});
+        group::GroupFactory::Create({GroupTypes::COMPUTER, RaceTypes::HALFLING});
 
         time = WorldTime(230, 63, 14);
 
@@ -103,12 +101,12 @@ namespace world
         {
             GroupAllocator::Get()->PerformCleanup();
 
-            for(auto &group : groups)
+            for(auto &group : *groups)
             {
                 group.DetermineAction();
             }
 
-            for(auto &group : groups)
+            for(auto &group : *groups)
             {
                 group.PerformAction();
             }

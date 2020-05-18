@@ -79,9 +79,9 @@ void WorldInfoPanel::HandleEnable()
     }
 
     auto item = items.GetStart();
-    for(auto character = characters.GetStart(); character != characters.GetEnd(); ++character, ++item)
+    for(auto &character : characters)
     {
-        item->SetCharacter(character);
+        item->SetCharacter(&character);
         item->Enable();
     }
 }
