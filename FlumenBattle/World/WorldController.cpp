@@ -1,5 +1,6 @@
 #include "FlumenEngine/Core/InputHandler.hpp"
 #include "FlumenEngine/Core/TaskManager.hpp"
+#include "FlumenEngine/Sound/SoundManager.h"
 
 #include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/World/WorldScene.h"
@@ -62,6 +63,8 @@ namespace world
     void WorldController::HandleSpacePressed()
     {
         WorldScene::Get()->ToggleTime();
+
+        engine::SoundManager::Get()->PlaySound("Click");
     }
 
     void WorldController::HandleSpeedUpTime()

@@ -101,8 +101,6 @@ private:
 
     Combatant *combatant;
 
-    Character();
-
     void Initialize();
 
     Integer GetActionRange() const;
@@ -114,6 +112,8 @@ private:
     void AddProficiency(Proficiency);
 
 public:
+    Character();
+
     bool IsAlive() const;
 
     Float GetHealth() const {return (Float)currentHitPoints / (Float)maximumHitPoints;}

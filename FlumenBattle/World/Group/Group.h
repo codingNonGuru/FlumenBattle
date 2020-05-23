@@ -54,11 +54,11 @@ namespace world::group
 
         Pool <Character> characters;
 
-        Group();
-
         void Initialize(Word, const GroupType *, Integer, Color, RaceTypes);
 
     public:
+        Group();
+        
         bool IsAlive();
 
         const Color& GetColor() const {return color;} 
