@@ -24,22 +24,14 @@ namespace world::group
 namespace world
 {
     class CharacterAllocator;
+    namespace character
+    {
+        struct CharacterAction;
+    }
 }
 
 class Character
 {
-public:
-    struct Action
-    {
-        CharacterActions Type;
-
-        Action() : Type() {}
-
-        Action(CharacterActions type) : Type(type) {}
-
-        bool operator== (const Action &other) {return this->Type == other.Type;}
-    };
-
 private:
     friend class container::Pool <Character>;
 
@@ -85,9 +77,9 @@ private:
 
     Integer defaultSpeed; //Combatant
 
-    Array <Action> actions;
+    Array <world::character::CharacterAction> actions;
 
-    Action *selectedAction;
+    world::character::CharacterAction *selectedAction;
 
     Pool <Weapon> weapons;
 
@@ -148,7 +140,7 @@ public:
 
     Integer GetWillSaveBonus();
 
-    Array <Action> & GetActions() {return actions;}
+    Array <world::character::CharacterAction> & GetActions() {return actions;}
 
     const Pool <Weapon> & GetWeapons() {return weapons;}
 
@@ -172,7 +164,7 @@ public:
 
     Index GetSelectedSubactionIndex() const;
 
-    Action* GetSelectedAction() const;
+    world::character::CharacterAction* GetSelectedAction() const;
 
     Weapon* GetSelectedWeapon() const {return selectedWeapon;}
 

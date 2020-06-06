@@ -13,6 +13,7 @@
 #include "FlumenBattle/ActionInfoPanel.h"
 #include "FlumenBattle/Weapon.h"
 #include "FlumenBattle/Spell.h"
+#include "FlumenBattle/World/Character/CharacterAction.h"
 
 static BattleController * battleController = nullptr;
 

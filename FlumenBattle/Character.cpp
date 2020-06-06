@@ -11,6 +11,7 @@
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/Combatant.h"
 #include "FlumenBattle/CharacterClass.h"
+#include "FlumenBattle/World/Character/CharacterAction.h"
 
 Character::Character()
 {
@@ -184,7 +185,7 @@ Index Character::GetSelectedSubactionIndex() const
     }
 }
 
-Character::Action* Character::GetSelectedAction() const
+world::character::CharacterAction* Character::GetSelectedAction() const
 {
     return selectedAction;
 }

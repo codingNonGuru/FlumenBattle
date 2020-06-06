@@ -1,6 +1,7 @@
 #pragma once
 
 #include "FlumenCore/Container/PoolAllocator.h"
+#include "FlumenCore/Container/ArrayAllocator.h"
 
 #include "FlumenEngine/Core/Singleton.h"
 
@@ -16,6 +17,11 @@ namespace world
         class Group;
     }
 
+    namespace character
+    {
+        struct CharacterAction;
+    }
+
     class CharacterAllocator : public Singleton<CharacterAllocator>
     {
         container::PoolAllocator <Weapon> weaponAllocator;
@@ -23,6 +29,8 @@ namespace world
         container::PoolAllocator <Spell> spellAllocator;
 
         container::PoolAllocator <SpellSlot> spellSlotAllocator;
+
+        container::ArrayAllocator <character::CharacterAction> actionAllocator;
 
     public:
         CharacterAllocator();

@@ -11,6 +11,7 @@
 #include "FlumenBattle/ProficiencyFactory.h"
 #include "FlumenBattle/RaceFactory.h"
 #include "FlumenBattle/ClassFactory.h"
+#include "FlumenBattle/World/Character/CharacterAction.h"
 
 Integer abilityScores[ABILITY_COUNT];
 
@@ -53,7 +54,6 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
 
         character->abilities.SetAttackAbility(AbilityTypes::STRENGTH);
 
-        character->actions.Initialize(3);
         *character->actions.Allocate() = {CharacterActions::ATTACK};
         *character->actions.Allocate() = {CharacterActions::DODGE};
         *character->actions.Allocate() = {CharacterActions::DASH};
@@ -81,7 +81,6 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
 
         character->abilities.SetAttackAbility(AbilityTypes::DEXTERITY);
 
-        character->actions.Initialize(3);
         *character->actions.Allocate() = {CharacterActions::ATTACK};
         *character->actions.Allocate() = {CharacterActions::DODGE};
         *character->actions.Allocate() = {CharacterActions::DASH};
@@ -110,7 +109,6 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
         character->abilities.SetAttackAbility(AbilityTypes::STRENGTH);
         character->abilities.SetSpellCastingAbility(AbilityTypes::WISDOM);
 
-        character->actions.Initialize(5);
         *character->actions.Allocate() = {CharacterActions::ATTACK};
         *character->actions.Allocate() = {CharacterActions::CAST_SPELL};
         *character->actions.Allocate() = {CharacterActions::DODGE};
@@ -145,7 +143,6 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
         character->abilities.SetAttackAbility(AbilityTypes::STRENGTH);
         character->abilities.SetSpellCastingAbility(AbilityTypes::INTELLIGENCE);
 
-        character->actions.Initialize(4);
         *character->actions.Allocate() = {CharacterActions::ATTACK};
         *character->actions.Allocate() = {CharacterActions::CAST_SPELL};
         *character->actions.Allocate() = {CharacterActions::DODGE};

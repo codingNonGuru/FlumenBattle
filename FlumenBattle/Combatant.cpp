@@ -10,6 +10,7 @@
 #include "FlumenBattle/Weapon.h"
 #include "FlumenBattle/CombatGroup.h"
 #include "FlumenBattle/CharacterClass.h"
+#include "FlumenBattle/World/Character/CharacterAction.h"
 
 Combatant::Combatant()
 {

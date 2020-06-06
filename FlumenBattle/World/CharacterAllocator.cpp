@@ -3,6 +3,7 @@
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/Spell.h"
 #include "FlumenBattle/Weapon.h"
+#include "FlumenBattle/World/Character/CharacterAction.h"
 
 namespace world
 {
@@ -13,6 +14,8 @@ namespace world
         spellAllocator = container::PoolAllocator <Spell> (16 * 64, 8);
 
         spellSlotAllocator = container::PoolAllocator <SpellSlot> (16 * 64, 8);
+
+        actionAllocator = container::ArrayAllocator <character::CharacterAction> (16 * 64, 8);
     }
 
     Character * CharacterAllocator::Allocate(group::Group &group)
@@ -22,6 +25,7 @@ namespace world
         character->weapons.Initialize(weaponAllocator);
         character->spells.Initialize(spellAllocator);
         character->spellSlots.Initialize(spellSlotAllocator);
+        character->actions.Initialize(actionAllocator);
         return character;
     }
 }
