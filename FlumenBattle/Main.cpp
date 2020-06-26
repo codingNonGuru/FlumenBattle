@@ -2,13 +2,13 @@
 
 #include "FlumenEngine/Core/Engine.hpp"
 
-#include "FlumenBattle/World/WorldState.h"
+#include "FlumenBattle/PreGame/PreGameState.h"
 
 int main()
 {
 	Engine::OnGameLoopStarted += []
 	{ 
-		world::WorldState::Get()->Enter(); 
+		pregame::PreGameState::Get()->Enter();
 	};
 
 	auto screenSize = Size(1920, 1080);
