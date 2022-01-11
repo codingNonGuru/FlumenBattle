@@ -6,6 +6,8 @@ class Text;
 
 class WorldDecisionMenu : public Element
 {
+    Text *travelLabel;
+    
     Text *searchLabel;
 
     Text *restLabel;

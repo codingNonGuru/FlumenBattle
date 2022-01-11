@@ -20,6 +20,8 @@ namespace world::group
                 return BuildSearch();
             case GroupActions::FIGHT:
                 return BuildFight();
+            case GroupActions::TRAVEL:
+                return BuildTravel();
         }
     }
 
@@ -44,6 +46,12 @@ namespace world::group
     const GroupAction * GroupActionFactory::BuildFight()
     {
         static GroupAction action = {GroupActions::FIGHT, 0, &GroupActionValidator::CanFight, &GroupActionPerformer::Fight};
+        return &action;
+    }
+
+    const GroupAction * GroupActionFactory::BuildTravel()
+    {
+        static GroupAction action = {GroupActions::TRAVEL, 12, &GroupActionValidator::CanTravel, &GroupActionPerformer::Travel};
         return &action;
     }
 
@@ -77,7 +85,7 @@ namespace world::group
 
     void GroupActionPerformer::Search(Group& group)
     {
-        if(group.actionProgress < group.action->Duration)
+        //if(group.actionProgress < group.action->Duration)
             return;
 
         auto &groups = WorldScene::Get()->GetGroups();
@@ -114,6 +122,20 @@ namespace world::group
 
     void GroupActionPerformer::Fight(Group& group)
     {
+        
+    }
+
+    void GroupActionPerformer::Travel(Group& group)
+    {
+        auto duration = group.action->Duration;
+
+        if(group.actionProgress < duration)
+            return;
+
+        group.tile = group.destination;
+        group.destination = nullptr;
+
+        group.CancelAction();
     }
 
     bool GroupActionValidator::CanTakeShortRest(Group &group)
@@ -132,6 +154,11 @@ namespace world::group
     }
 
     bool GroupActionValidator::CanFight(Group &group)
+    {
+        return true;
+    }
+
+    bool GroupActionValidator::CanTravel(Group &group)
     {
         return true;
     }

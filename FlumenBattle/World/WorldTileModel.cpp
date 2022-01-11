@@ -12,8 +12,7 @@
 
 #include "FlumenBattle/World/WorldTileModel.h"
 #include "FlumenBattle/World/WorldScene.h"
-#include "FlumenBattle/BattleController.h"
-#include "FlumenBattle/HumanController.h"
+#include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/World/WorldMap.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/Types.hpp"
@@ -27,15 +26,13 @@ const Float CAMERA_SHIFT_DURATION = 0.5f;
 
 static Camera* camera = nullptr;
 
-static BattleController * battleController = nullptr;
-
-static HumanController * humanController = nullptr;
-
 static Float shadeTimer = 0.0f;
 
 static Sprite *groupSprite = nullptr;
 
 using namespace world;
+
+static WorldController * worldController = nullptr;
 
 WorldTileModel::WorldTileModel()
 {
@@ -50,11 +47,7 @@ WorldTileModel::WorldTileModel()
 
     worldScene = WorldScene::Get();
 
-    //battleController = BattleController::Get();
-
-    //battleController->OnCharacterSelected += {this, &WorldTileModel::HandleCharacterSelected};
-
-    //humanController = HumanController::Get();
+    worldController = WorldController::Get();
 
     CreateCamera();
 }
@@ -133,22 +126,19 @@ void WorldTileModel::Render()
         }
     }*/
 
-    /*if(humanController->IsMoveInitiated())
+    auto hoveredTile = worldController->GetHoveredTile();
+    if(hoveredTile != nullptr)
     {
-        auto hoveredTile = humanController->GetHoveredTile();
-        if(hoveredTile != nullptr)
-        {
-            shader->SetConstant(hoveredTile->Position, "hexPosition");
+        shader->SetConstant(hoveredTile->Position, "hexPosition");
 
-            shader->SetConstant(WORLD_TILE_SIZE * 0.65f, "hexSize");
+        shader->SetConstant(WORLD_TILE_SIZE * 0.65f, "hexSize");
 
-            shader->SetConstant(Color::BLACK, "color");
+        shader->SetConstant(Color::BLACK, "color");
 
-            shader->SetConstant(0.1f, "opacity");
+        shader->SetConstant(0.1f, "opacity");
 
-            glDrawArrays(GL_TRIANGLES, 0, 18);
-        }
-    }*/
+        glDrawArrays(GL_TRIANGLES, 0, 18);
+    }
 
 	shader->Unbind();
 

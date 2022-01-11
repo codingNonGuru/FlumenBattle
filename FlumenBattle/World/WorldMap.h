@@ -10,7 +10,7 @@ namespace world
     {
         friend class WorldScene;
 
-        friend class HumanController;
+        friend class WorldController;
 
         friend class WorldTileModel;
 

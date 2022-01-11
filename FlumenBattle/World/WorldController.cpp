@@ -5,9 +5,13 @@
 #include "FlumenEngine/Sound/SoundManager.h"
 #include "FlumenEngine/Render/Camera.hpp"
 #include "FlumenEngine/Render/RenderManager.hpp"
+#include "FlumenEngine/Render/MeshManager.hpp"
+#include "FlumenEngine/Utility/PickHandler.h"
 
 #include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/WorldMap.h"
+#include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/Battle.h"
 #include "FlumenBattle/BattleState.h"
 #include "FlumenBattle/World/Group/Group.h"
@@ -38,56 +42,34 @@ namespace world
         InputHandler::RegisterContinualEvent(SDL_Scancode::SDL_SCANCODE_RIGHT, {this, &WorldController::HandlePanRight});
         InputHandler::RegisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LEFT, {this, &WorldController::HandlePanLeft});
 
+        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_T, {this, &WorldController::HandleTravelPressed});
+
         playerBattle = nullptr;
 
         camera = RenderManager::GetCamera(Cameras::WORLD);
     }
 
-    void WorldController::HandlePanUp()
+    void WorldController::CheckTileSelection()
     {
-        auto panSpeed = CAMERA_PAN_SPEED * Time::GetDelta();
-        camera->Translate(Direction3(0.0f, -panSpeed, 0.0f));
-    }
+        auto mesh = MeshManager::GetMesh("Hex"); 
 
-    void WorldController::HandlePanDown()
-    {
-        auto panSpeed = CAMERA_PAN_SPEED * Time::GetDelta();
-        camera->Translate(Direction3(0.0f, panSpeed, 0.0f));
-    }
+        auto map = WorldScene::Get()->GetWorldMap();
+        for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile) 
+        {
+            bool isMouseOverTile = PickHandler::CheckCollision(camera, mesh, Position3(tile->Position, 0.0f), 33.0f); 
+            if(isMouseOverTile)
+            {
+                hoveredTile = tile;
+                return;
+            }
+        }
 
-    void WorldController::HandlePanLeft() 
-    {
-        auto panSpeed = CAMERA_PAN_SPEED * Time::GetDelta();
-        camera->Translate(Direction3(-panSpeed, 0.0f, 0.0f));
-    }
-
-    void WorldController::HandlePanRight() 
-    {
-        auto panSpeed = CAMERA_PAN_SPEED * Time::GetDelta();
-        camera->Translate(Direction3(panSpeed, 0.0f, 0.0f));
+        hoveredTile = nullptr;
     }
 
     void WorldController::HandleSceneUpdate()
     {
-        /*auto panSpeed = CAMERA_PAN_SPEED * Time::GetDelta();
-
-        if(InputHandler::IsPressed(SDL_SCANCODE_UP))
-        {
-            camera->Translate(Direction3(0.0f, -panSpeed, 0.0f));
-        }
-        else if(InputHandler::IsPressed(SDL_SCANCODE_DOWN))
-        {
-            camera->Translate(Direction3(0.0f, panSpeed, 0.0f));
-        }
-
-        if(InputHandler::IsPressed(SDL_SCANCODE_LEFT))
-        {
-            camera->Translate(Direction3(-panSpeed, 0.0f, 0.0f));
-        }
-        else if(InputHandler::IsPressed(SDL_SCANCODE_RIGHT))
-        {
-            camera->Translate(Direction3(panSpeed, 0.0f, 0.0f));
-        }*/
+        CheckTileSelection();
 
         auto zoomSpeed = CAMERA_ZOOM_SPEED * Time::GetDelta();
 
@@ -132,6 +114,40 @@ namespace world
         }});
     }
 
+    void WorldController::HandlePanUp()
+    {
+        auto panSpeed = CAMERA_PAN_SPEED * Time::GetDelta();
+        camera->Translate(Direction3(0.0f, -panSpeed, 0.0f));
+    }
+
+    void WorldController::HandlePanDown()
+    {
+        auto panSpeed = CAMERA_PAN_SPEED * Time::GetDelta();
+        camera->Translate(Direction3(0.0f, panSpeed, 0.0f));
+    }
+
+    void WorldController::HandlePanLeft() 
+    {
+        auto panSpeed = CAMERA_PAN_SPEED * Time::GetDelta();
+        camera->Translate(Direction3(-panSpeed, 0.0f, 0.0f));
+    }
+
+    void WorldController::HandlePanRight() 
+    {
+        auto panSpeed = CAMERA_PAN_SPEED * Time::GetDelta();
+        camera->Translate(Direction3(panSpeed, 0.0f, 0.0f));
+    }
+
+    void WorldController::HandleTravelPressed()
+    {
+        if(hoveredTile == nullptr)
+            return;
+
+        auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+        playerGroup->SetDestination(hoveredTile);
+        playerGroup->SelectAction(GroupActions::TRAVEL);
+    }
+
     void WorldController::HandleSpacePressed()
     {
         WorldScene::Get()->ToggleTime();
@@ -164,5 +180,7 @@ namespace world
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_DOWN, {this, &WorldController::HandlePanDown});
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_RIGHT, {this, &WorldController::HandlePanRight});
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LEFT, {this, &WorldController::HandlePanLeft});
+
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_T, {this, &WorldController::HandleTravelPressed});
     }
 }

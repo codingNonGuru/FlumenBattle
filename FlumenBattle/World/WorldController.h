@@ -5,12 +5,17 @@
 namespace world
 {
     class Battle;
+    class WorldTile;
 
     class WorldController : public Singleton<WorldController>
     {
         Battle *playerBattle;
 
+        WorldTile *hoveredTile;
+
         void HandleSceneUpdate();
+
+        void CheckTileSelection();
 
         void StartBattle();
 
@@ -28,10 +33,14 @@ namespace world
 
         void HandlePanRight();
 
+        void HandleTravelPressed();
+
     public:
         void Enable();
 
         void Disable();
+
+        WorldTile * GetHoveredTile() const {return hoveredTile;}
 
         Battle * GetPlayerBattle() const {return playerBattle;}
     };

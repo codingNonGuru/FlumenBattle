@@ -53,6 +53,8 @@ namespace world::group
 
         WorldTile *tile;
 
+        WorldTile *destination;
+
         Color color;
 
         Pool <Character> characters;
@@ -89,5 +91,7 @@ namespace world::group
         void EnterBattle(Battle *);
 
         void ExitBattle();
+
+        void SetDestination(WorldTile *destination) {this->destination = destination;}
     };
 }
