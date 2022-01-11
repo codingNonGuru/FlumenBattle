@@ -41,6 +41,8 @@ namespace world
         battles.Initialize(MAXIMUM_BATTLE_COUNT);
 
         playerGroup = group::GroupFactory::Create({GroupTypes::PLAYER, RaceTypes::HUMAN});
+        playerGroup->tile = worldMap->GetCenterTile();
+
         group::GroupFactory::Create({GroupTypes::COMPUTER, RaceTypes::ORC});
         group::GroupFactory::Create({GroupTypes::COMPUTER, RaceTypes::GOBLIN});
         group::GroupFactory::Create({GroupTypes::COMPUTER, RaceTypes::ELF});

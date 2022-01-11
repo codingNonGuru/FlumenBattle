@@ -7,6 +7,7 @@
 #include "FlumenEngine/Render/RenderManager.hpp"
 #include "FlumenEngine/Render/MeshManager.hpp"
 #include "FlumenEngine/Render/Mesh.hpp"
+#include "FlumenEngine/Interface/Sprite.hpp"
 #include "FlumenEngine/Core/Engine.hpp"
 
 #include "FlumenBattle/World/WorldTileModel.h"
@@ -14,6 +15,7 @@
 #include "FlumenBattle/BattleController.h"
 #include "FlumenBattle/HumanController.h"
 #include "FlumenBattle/World/WorldMap.h"
+#include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/Combatant.h"
@@ -31,6 +33,8 @@ static HumanController * humanController = nullptr;
 
 static Float shadeTimer = 0.0f;
 
+static Sprite *groupSprite = nullptr;
+
 using namespace world;
 
 WorldTileModel::WorldTileModel()
@@ -39,6 +43,10 @@ WorldTileModel::WorldTileModel()
 	*hexMesh = Mesh::GenerateHex();
 
     shader = ShaderManager::GetShader("Hex");
+
+    groupShader = ShaderManager::GetShader("Sprite");
+
+    groupSprite = new Sprite(nullptr, groupShader);
 
     worldScene = WorldScene::Get();
 
@@ -143,4 +151,7 @@ void WorldTileModel::Render()
     }*/
 
 	shader->Unbind();
+
+    auto tile = worldScene->GetPlayerGroup()->GetTile();
+    groupSprite->Draw(camera, {tile->Position + Position2(0, -10), Scale2(30, 50), Opacity(1.0f), DrawOrder(-1)});
 }

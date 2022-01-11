@@ -16,6 +16,8 @@ namespace world
 
         Shader *shader;
 
+        Shader *groupShader;
+
         WorldScene *worldScene;
 
         WorldTileModel();

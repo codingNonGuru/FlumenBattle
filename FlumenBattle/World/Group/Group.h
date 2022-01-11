@@ -14,6 +14,7 @@ namespace world
 {
     class Battle;
     class WorldScene;
+    class WorldTile;
 }
 
 namespace world::group
@@ -50,6 +51,8 @@ namespace world::group
 
         Battle *battle;
 
+        WorldTile *tile;
+
         Color color;
 
         Pool <Character> characters;
@@ -66,6 +69,8 @@ namespace world::group
         Word GetName() const {return name;}
 
         Battle * GetBattle() const {return battle;}
+
+        WorldTile * GetTile() const {return tile;}
 
         const GroupAction * GetAction() const {return action;}
 

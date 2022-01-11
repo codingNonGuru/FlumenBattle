@@ -20,6 +20,14 @@ namespace world
 
         void HandleSlowDownTime();
 
+        void HandlePanUp();
+
+        void HandlePanDown();
+
+        void HandlePanLeft();
+
+        void HandlePanRight();
+
     public:
         void Enable();
 

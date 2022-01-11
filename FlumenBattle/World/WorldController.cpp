@@ -1,6 +1,10 @@
+#include "FlumenCore/Time.hpp"
+
 #include "FlumenEngine/Core/InputHandler.hpp"
 #include "FlumenEngine/Core/TaskManager.hpp"
 #include "FlumenEngine/Sound/SoundManager.h"
+#include "FlumenEngine/Render/Camera.hpp"
+#include "FlumenEngine/Render/RenderManager.hpp"
 
 #include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/World/WorldScene.h"
@@ -9,6 +13,12 @@
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/HumanController.h"
+
+static const Float CAMERA_PAN_SPEED = 1500.0f;
+
+static const Float CAMERA_ZOOM_SPEED = 10.0f;
+
+static Camera *camera = nullptr;
 
 namespace world
 {
@@ -23,11 +33,73 @@ namespace world
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_COMMA, {this, &WorldController::HandleSpeedUpTime});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_PERIOD, {this, &WorldController::HandleSlowDownTime});
 
+        InputHandler::RegisterContinualEvent(SDL_Scancode::SDL_SCANCODE_UP, {this, &WorldController::HandlePanUp});
+        InputHandler::RegisterContinualEvent(SDL_Scancode::SDL_SCANCODE_DOWN, {this, &WorldController::HandlePanDown});
+        InputHandler::RegisterContinualEvent(SDL_Scancode::SDL_SCANCODE_RIGHT, {this, &WorldController::HandlePanRight});
+        InputHandler::RegisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LEFT, {this, &WorldController::HandlePanLeft});
+
         playerBattle = nullptr;
+
+        camera = RenderManager::GetCamera(Cameras::WORLD);
+    }
+
+    void WorldController::HandlePanUp()
+    {
+        auto panSpeed = CAMERA_PAN_SPEED * Time::GetDelta();
+        camera->Translate(Direction3(0.0f, -panSpeed, 0.0f));
+    }
+
+    void WorldController::HandlePanDown()
+    {
+        auto panSpeed = CAMERA_PAN_SPEED * Time::GetDelta();
+        camera->Translate(Direction3(0.0f, panSpeed, 0.0f));
+    }
+
+    void WorldController::HandlePanLeft() 
+    {
+        auto panSpeed = CAMERA_PAN_SPEED * Time::GetDelta();
+        camera->Translate(Direction3(-panSpeed, 0.0f, 0.0f));
+    }
+
+    void WorldController::HandlePanRight() 
+    {
+        auto panSpeed = CAMERA_PAN_SPEED * Time::GetDelta();
+        camera->Translate(Direction3(panSpeed, 0.0f, 0.0f));
     }
 
     void WorldController::HandleSceneUpdate()
     {
+        /*auto panSpeed = CAMERA_PAN_SPEED * Time::GetDelta();
+
+        if(InputHandler::IsPressed(SDL_SCANCODE_UP))
+        {
+            camera->Translate(Direction3(0.0f, -panSpeed, 0.0f));
+        }
+        else if(InputHandler::IsPressed(SDL_SCANCODE_DOWN))
+        {
+            camera->Translate(Direction3(0.0f, panSpeed, 0.0f));
+        }
+
+        if(InputHandler::IsPressed(SDL_SCANCODE_LEFT))
+        {
+            camera->Translate(Direction3(-panSpeed, 0.0f, 0.0f));
+        }
+        else if(InputHandler::IsPressed(SDL_SCANCODE_RIGHT))
+        {
+            camera->Translate(Direction3(panSpeed, 0.0f, 0.0f));
+        }*/
+
+        auto zoomSpeed = CAMERA_ZOOM_SPEED * Time::GetDelta();
+
+        if(InputHandler::GetMouse().ScrollUp_)
+        {
+            camera->Zoom(1.0f - zoomSpeed);
+        }
+        else if(InputHandler::GetMouse().ScrollDown_)
+        {
+            camera->Zoom(1.0f + zoomSpeed);
+        }
+
         auto scene = WorldScene::Get();
 
         for(auto &battle : scene->GetBattles())
@@ -87,5 +159,10 @@ namespace world
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, {this, &WorldController::HandleSpacePressed});
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_COMMA, {this, &WorldController::HandleSpeedUpTime});
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_PERIOD, {this, &WorldController::HandleSlowDownTime});
+
+        InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_UP, {this, &WorldController::HandlePanUp});
+        InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_DOWN, {this, &WorldController::HandlePanDown});
+        InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_RIGHT, {this, &WorldController::HandlePanRight});
+        InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LEFT, {this, &WorldController::HandlePanLeft});
     }
 }
