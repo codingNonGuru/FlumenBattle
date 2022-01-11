@@ -124,6 +124,9 @@ bool Combatant::CanTarget() const
     if(!character->IsAlive())
         return false;
 
+    if(character->selectedAction == nullptr)
+        return false;
+
     if(character->selectedAction->Type == CharacterActions::ATTACK && remainingActionCount == 0)
         return false;
 

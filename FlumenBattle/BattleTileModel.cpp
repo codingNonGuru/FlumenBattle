@@ -1,4 +1,5 @@
 #include "FlumenCore/Observer.h"
+#include "FlumenCore/Time.hpp"
 
 #include "FlumenEngine/Render/ShaderManager.hpp"
 #include "FlumenEngine/Render/Shader.hpp"
@@ -18,7 +19,7 @@
 #include "FlumenBattle/Combatant.h"
 #include "FlumenBattle/BattleTile.h"
 
-#define BATTLE_TILE_SIZE 34.0f
+#define BATTLE_TILE_SIZE 34.6666f
 
 const Float4 DEFAULT_TILE_COLOR = Float4(0.9f, 0.7f, 0.6f, 1.0f);
 
@@ -33,6 +34,8 @@ Camera* camera = nullptr;
 static BattleController * battleController = nullptr;
 
 static HumanController * humanController = nullptr;
+
+static Float shadeTimer = 0.0f;
 
 BattleTileModel::BattleTileModel()
 {
@@ -94,7 +97,7 @@ void BattleTileModel::Render()
 
         shader->SetConstant(BATTLE_TILE_SIZE, "hexSize");
 
-        shader->SetConstant(DEFAULT_TILE_COLOR, "color");
+        shader->SetConstant(tile->Shade, "color");
 
         glDrawArrays(GL_TRIANGLES, 0, 18);
     }
@@ -104,6 +107,11 @@ void BattleTileModel::Render()
 
     if(combatant != nullptr)
     {
+        shadeTimer += Time::GetDelta();
+        auto timeFactor = 1.0f + sin(shadeTimer * 6.0f);
+        timeFactor = 0.05f + timeFactor * 0.05f;
+        shader->SetConstant(timeFactor, "opacity");
+
         const auto &nearbyTiles = map->GetNearbyTiles(combatant->GetTile(), combatant->GetMovement());
         for(auto tileIterator = nearbyTiles.GetStart(); tileIterator != nearbyTiles.GetEnd(); ++tileIterator)
         {
@@ -113,9 +121,9 @@ void BattleTileModel::Render()
 
             shader->SetConstant(tile->Position, "hexPosition");
 
-            shader->SetConstant(BATTLE_TILE_SIZE * 0.8f, "hexSize");
+            shader->SetConstant(BATTLE_TILE_SIZE * 0.65f, "hexSize");
 
-            shader->SetConstant(NEARBY_TILE_COLOR, "color");
+            shader->SetConstant(Color::BLACK, "color");
 
             glDrawArrays(GL_TRIANGLES, 0, 18);
         }
@@ -128,9 +136,11 @@ void BattleTileModel::Render()
         {
             shader->SetConstant(hoveredTile->Position, "hexPosition");
 
-            shader->SetConstant(BATTLE_TILE_SIZE * 0.8f, "hexSize");
+            shader->SetConstant(BATTLE_TILE_SIZE * 0.65f, "hexSize");
 
-            shader->SetConstant(HOVERED_TILE_COLOR, "color");
+            shader->SetConstant(Color::BLACK, "color");
+
+            shader->SetConstant(0.1f, "opacity");
 
             glDrawArrays(GL_TRIANGLES, 0, 18);
         }

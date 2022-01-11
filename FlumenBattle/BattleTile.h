@@ -19,16 +19,18 @@ public:
 
     Integer3 HexCoordinates;
 
+    Float4 Shade;
+
     class Combatant *Combatant;
 
     BattleTile() {}
 
-    BattleTile(Position2 position, Integer2 squareCoordinates) : Position(position), SquareCoordinates(squareCoordinates), Combatant(nullptr)
+    BattleTile(Position2 position, Integer2 squareCoordinates);/* : Position(position), SquareCoordinates(squareCoordinates), Combatant(nullptr)
     {
         HexCoordinates.x = squareCoordinates.x - squareCoordinates.y / 2;
         HexCoordinates.z = squareCoordinates.y;
         HexCoordinates.y = -HexCoordinates.x - HexCoordinates.z;
-    }
+    }*/
 
     Integer GetDistanceTo(const BattleTile& other) 
     {

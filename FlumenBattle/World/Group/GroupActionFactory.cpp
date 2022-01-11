@@ -106,8 +106,8 @@ namespace world::group
         }
 
         auto perceptionCheck = utility::GetRandom(1, 20) + perceptionBonus - stealthBonus;
-        if(perceptionCheck <= 20)
-            return;
+        //if(perceptionCheck <= 20)
+            //return;
 
         WorldScene::Get()->StartBattle(&group, other);
     }

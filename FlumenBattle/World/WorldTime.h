@@ -19,7 +19,7 @@ namespace world
         WorldTime() {}
 
         WorldTime(int yearCount, int dayCount, int hourCount) : 
-            YearCount(yearCount), DayCount(dayCount), HourCount(hourCount), IsFlowing(false), FlowSpeed(1) {}
+            YearCount(yearCount), DayCount(dayCount), HourCount(hourCount), IsFlowing(false), FlowSpeed(5) {}
 
         void SpeedUp() 
         {
