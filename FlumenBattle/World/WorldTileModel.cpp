@@ -21,12 +21,6 @@
 
 #define WORLD_TILE_SIZE 34.6666f
 
-const Float4 DEFAULT_TILE_COLOR = Float4(0.9f, 0.7f, 0.6f, 1.0f);
-
-const Float4 NEARBY_TILE_COLOR = DEFAULT_TILE_COLOR * 0.8f;
-
-const Float4 HOVERED_TILE_COLOR = DEFAULT_TILE_COLOR * 0.6f;
-
 const Float CAMERA_SHIFT_DURATION = 0.5f;
 
 static Camera* camera = nullptr;
@@ -59,7 +53,7 @@ WorldTileModel::WorldTileModel()
 
 void WorldTileModel::Initialize()
 {   
-    auto backgroundColor = Color(0.1f, 0.1f, 0.7f, 1.0f);
+    auto backgroundColor = Color(0.0f, 0.0f, 0.0f, 1.0f);
 	RenderManager::SetBackgroundColor(backgroundColor);
 }
 

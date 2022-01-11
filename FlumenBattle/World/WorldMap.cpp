@@ -33,6 +33,11 @@ WorldMap::WorldMap(Length size)
             tile->Map = this;
         }
     }
+
+    for(auto tile = tiles.GetStart(); tile != tiles.GetEnd(); ++tile)
+    {
+        tile->Initialize();
+    }
 }
 
 const Array<WorldTile*> & WorldMap::GetNearbyTiles(WorldTile* tile, Integer range)

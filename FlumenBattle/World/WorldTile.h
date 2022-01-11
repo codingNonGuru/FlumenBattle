@@ -35,6 +35,8 @@ namespace world
             HexCoordinates.y = -HexCoordinates.x - HexCoordinates.z;
         }*/
 
+        void Initialize();
+
         Integer GetDistanceTo(const WorldTile& other) 
         {
             auto direction = this->HexCoordinates - other.HexCoordinates;

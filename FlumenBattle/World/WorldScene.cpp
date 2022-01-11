@@ -15,7 +15,7 @@
 
 #define MAXIMUM_BATTLE_COUNT 32
 
-#define WORLD_MAP_SIZE 20
+#define WORLD_MAP_SIZE 31
 
 #define AWAIT(length) \
     static float timer = 0.0f;\
