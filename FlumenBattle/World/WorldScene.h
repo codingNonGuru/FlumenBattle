@@ -8,6 +8,7 @@ class Delegate;
 
 namespace world
 {
+    class WorldMap;
     class Battle;
     namespace group
     {
@@ -20,9 +21,13 @@ namespace world
 
         friend class WorldController;
 
+        friend class WorldTileModel;
+
         friend class GroupAllocator;
 
         WorldTime time;
+
+        WorldMap *worldMap;
 
         Pool <Battle> battles;
 
@@ -67,6 +72,8 @@ namespace world
         }
 
         group::Group * GetPlayerGroup() const {return playerGroup;}
+
+        WorldMap * GetWorldMap() const {return worldMap;}
 
         Pool <Battle> & GetBattles() {return battles;}
 

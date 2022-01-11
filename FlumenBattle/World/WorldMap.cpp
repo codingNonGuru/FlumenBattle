@@ -1,11 +1,13 @@
 #include "FlumenCore/Utility/Utility.hpp"
 
-#include "FlumenBattle/BattleMap.h"
-#include "FlumenBattle/BattleTile.h"
+#include "FlumenBattle/World/WorldMap.h"
+#include "FlumenBattle/World/WorldTile.h"
 
-static Array <BattleTile*> nearbyTiles;
+using namespace world;
 
-BattleMap::BattleMap(Length size) 
+static Array <WorldTile*> nearbyTiles;
+
+WorldMap::WorldMap(Length size) 
 {
     nearbyTiles.Initialize(size * size);
 
@@ -33,7 +35,7 @@ BattleMap::BattleMap(Length size)
     }
 }
 
-const Array<BattleTile*> & BattleMap::GetNearbyTiles(BattleTile* tile, Integer range)
+const Array<WorldTile*> & WorldMap::GetNearbyTiles(WorldTile* tile, Integer range)
 {
     nearbyTiles.Reset();
 
@@ -58,12 +60,12 @@ const Array<BattleTile*> & BattleMap::GetNearbyTiles(BattleTile* tile, Integer r
     return nearbyTiles;
 }
 
-BattleTile* BattleMap::GetTile(Integer3 position)
+WorldTile* WorldMap::GetTile(Integer3 position)
 {
     return tiles.Get(position.x + position.z / 2, position.z);
 }
 
-BattleTile* BattleMap::GetRandomTile()
+WorldTile* WorldMap::GetRandomTile()
 {
     auto i = utility::GetRandom(0, tiles.GetWidth() - 1);
     auto j = utility::GetRandom(0, tiles.GetHeight() - 1);
@@ -71,33 +73,34 @@ BattleTile* BattleMap::GetRandomTile()
     return tiles.Get(i, j);
 }
 
-BattleTile* BattleMap::GetEmptyRandomTile()
+WorldTile* WorldMap::GetEmptyRandomTile()
 {
-    while(true)
+    /*while(true)
     {
         auto tile = GetRandomTile();
         if(tile->Combatant == nullptr)
         {
             return tile;
         }
-    }
+    }*/
+    return nullptr;
 }
 
-BattleTile* BattleMap::GetEmptyTileAroundTile(BattleTile * tile, Integer range)
+WorldTile* WorldMap::GetEmptyTileAroundTile(WorldTile * tile, Integer range)
 {
     auto& nearbyTiles = tile->GetNearbyTiles(range);
     while(true)
     {
         auto index = utility::GetRandom(0, nearbyTiles.GetSize() - 1);
         auto otherTile = *nearbyTiles.Get(index);
-        if(otherTile->Combatant == nullptr)
-        {
+        //if(otherTile->Combatant == nullptr)
+        //{
             return otherTile;
-        }
+        //}
     }
 }
 
-BattleTile* BattleMap::GetCenterTile()
+WorldTile* WorldMap::GetCenterTile()
 {
     return tiles.Get(tiles.GetWidth() / 2, tiles.GetHeight() / 2);
 }

@@ -9,17 +9,17 @@
 #include "FlumenEngine/Render/Mesh.hpp"
 #include "FlumenEngine/Core/Engine.hpp"
 
-#include "FlumenBattle/BattleTileModel.h"
-#include "FlumenBattle/BattleScene.h"
+#include "FlumenBattle/World/WorldTileModel.h"
+#include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/BattleController.h"
 #include "FlumenBattle/HumanController.h"
-#include "FlumenBattle/BattleMap.h"
+#include "FlumenBattle/World/WorldMap.h"
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/Combatant.h"
-#include "FlumenBattle/BattleTile.h"
+#include "FlumenBattle/World/WorldTile.h"
 
-#define BATTLE_TILE_SIZE 34.6666f
+#define WORLD_TILE_SIZE 34.6666f
 
 const Float4 DEFAULT_TILE_COLOR = Float4(0.9f, 0.7f, 0.6f, 1.0f);
 
@@ -37,72 +37,74 @@ static HumanController * humanController = nullptr;
 
 static Float shadeTimer = 0.0f;
 
-BattleTileModel::BattleTileModel()
+using namespace world;
+
+WorldTileModel::WorldTileModel()
 {
     auto hexMesh = MeshManager::GetMeshes().Add("Hex"); 
 	*hexMesh = Mesh::GenerateHex();
 
     shader = ShaderManager::GetShader("Hex");
 
-    battleScene = BattleScene::Get();
+    worldScene = WorldScene::Get();
 
-    battleController = BattleController::Get();
+    //battleController = BattleController::Get();
 
-    battleController->OnCharacterSelected += {this, &BattleTileModel::HandleCharacterSelected};
+    //battleController->OnCharacterSelected += {this, &WorldTileModel::HandleCharacterSelected};
 
-    humanController = HumanController::Get();
+    //humanController = HumanController::Get();
 
     CreateCamera();
 }
 
-void BattleTileModel::Initialize()
+void WorldTileModel::Initialize()
 {   
     auto backgroundColor = Color(0.1f, 0.1f, 0.7f, 1.0f);
 	RenderManager::SetBackgroundColor(backgroundColor);
 }
 
-void BattleTileModel::CreateCamera()
+void WorldTileModel::CreateCamera()
 {
     auto screen = Engine::GetScreen();
 	camera = new Camera(screen);
-	RenderManager::AddCamera(Cameras::BATTLE, camera);
+	RenderManager::AddCamera(Cameras::WORLD, camera);
 
-    auto centerTile = battleScene->GetBattleMap()->GetCenterTile();
+    auto centerTile = worldScene->GetWorldMap()->GetCenterTile();
     camera->SetTarget(Position3(centerTile->Position, 0.0f));
     camera->Zoom(2.0f);
 }
 
-void BattleTileModel::HandleCharacterSelected()
+void WorldTileModel::HandleCharacterSelected()
 {
-    auto combatant = battleController->GetSelectedCombatant();
-    camera->SetTarget(Position3(combatant->GetPosition(), 0.0f), CAMERA_SHIFT_DURATION);
+    //auto combatant = battleController->GetSelectedCombatant();
+    //camera->SetTarget(Position3(combatant->GetPosition(), 0.0f), CAMERA_SHIFT_DURATION);
 }
 
-void BattleTileModel::Render() 
+void WorldTileModel::Render() 
 {
 	shader->Bind();
 
 	shader->SetConstant(camera->GetMatrix(), "viewMatrix");
 
-	shader->SetConstant(BATTLE_TILE_SIZE, "hexSize");
+	shader->SetConstant(WORLD_TILE_SIZE, "hexSize");
 
 	shader->SetConstant(1.0f, "opacity");
 
 	shader->SetConstant(0.0f, "depth");
 
-    auto battleMap = battleScene->battleMap;
-    for(auto tile = battleMap->tiles.GetStart(); tile != battleMap->tiles.GetEnd(); ++tile)
+    auto map = worldScene->GetWorldMap();
+    for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
     {
         shader->SetConstant(tile->Position, "hexPosition");
 
-        shader->SetConstant(BATTLE_TILE_SIZE, "hexSize");
+        shader->SetConstant(WORLD_TILE_SIZE, "hexSize");
 
         shader->SetConstant(tile->Shade, "color");
 
         glDrawArrays(GL_TRIANGLES, 0, 18);
     }
 
-    auto map = battleScene->GetBattleMap();
+    /*auto map = worldScene->GetWorldMap();
     auto combatant = battleController->GetSelectedCombatant();
 
     if(combatant != nullptr)
@@ -127,16 +129,16 @@ void BattleTileModel::Render()
 
             glDrawArrays(GL_TRIANGLES, 0, 18);
         }
-    }
+    }*/
 
-    if(humanController->IsMoveInitiated())
+    /*if(humanController->IsMoveInitiated())
     {
         auto hoveredTile = humanController->GetHoveredTile();
         if(hoveredTile != nullptr)
         {
             shader->SetConstant(hoveredTile->Position, "hexPosition");
 
-            shader->SetConstant(BATTLE_TILE_SIZE * 0.65f, "hexSize");
+            shader->SetConstant(WORLD_TILE_SIZE * 0.65f, "hexSize");
 
             shader->SetConstant(Color::BLACK, "color");
 
@@ -144,7 +146,7 @@ void BattleTileModel::Render()
 
             glDrawArrays(GL_TRIANGLES, 0, 18);
         }
-    }
+    }*/
 
 	shader->Unbind();
 }

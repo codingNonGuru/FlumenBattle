@@ -1,5 +1,6 @@
 #include "FlumenBattle/World/WorldState.h"
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/WorldTileModel.h"
 #include "FlumenBattle/WorldInterface.h"
 #include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/World/Group/Group.h"
@@ -19,6 +20,8 @@ namespace world
         interface = WorldInterface::Get();
 
         controller = WorldController::Get();
+
+        tileModel = WorldTileModel::Get();
     }
 
     void WorldState::HandleEnter()
@@ -28,6 +31,8 @@ namespace world
         interface->Enable();
 
         controller->Enable();
+
+        tileModel->Initialize();
     }
 
     void WorldState::HandleExit() 

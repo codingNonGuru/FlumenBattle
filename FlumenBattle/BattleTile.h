@@ -4,10 +4,16 @@
 
 class Combatant;
 class BattleMap;
+namespace world
+{
+    class WorldMap;
+}
 
 struct BattleTile
 {
     friend class BattleMap;
+
+    friend class world::WorldMap;
 
 private:
     BattleMap* Map;

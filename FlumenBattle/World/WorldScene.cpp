@@ -4,6 +4,8 @@
 #include "FlumenEngine/Core/InputHandler.hpp"
 
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/WorldMap.h"
+#include "FlumenBattle/World/WorldTileModel.h"
 #include "FlumenBattle/World/GroupAllocator.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/GroupFactory.h"
@@ -12,6 +14,8 @@
 #include "FlumenBattle/BattleScene.h"
 
 #define MAXIMUM_BATTLE_COUNT 32
+
+#define WORLD_MAP_SIZE 20
 
 #define AWAIT(length) \
     static float timer = 0.0f;\
@@ -30,6 +34,8 @@ namespace world
 
     void WorldScene::Initialize()
     {
+        worldMap = new WorldMap(WORLD_MAP_SIZE);
+
         groups = &GroupAllocator::Get()->groups;
 
         battles.Initialize(MAXIMUM_BATTLE_COUNT);
@@ -122,7 +128,7 @@ namespace world
 
     void WorldScene::Render()
     {
-
+        WorldTileModel::Get()->Render();
     }
 
     void WorldScene::HandleEnable() 

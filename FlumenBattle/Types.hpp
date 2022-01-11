@@ -28,6 +28,7 @@ class Cameras
 {
 public:
 	static Word const BATTLE;
+	static Word const WORLD;
 };
 
 typedef float Weight;

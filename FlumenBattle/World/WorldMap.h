@@ -1,0 +1,38 @@
+#pragma once
+
+#include "FlumenCore/Conventions.hpp"
+
+namespace world
+{
+    struct WorldTile;
+
+    class WorldMap
+    {
+        friend class WorldScene;
+
+        friend class HumanController;
+
+        friend class WorldTileModel;
+
+        Grid <WorldTile> tiles;
+
+        WorldMap() {}
+
+        WorldMap(Length size);
+
+        WorldTile* GetRandomTile();
+
+    public:
+        static constexpr Float TILE_DISTANCING = 60.0f; 
+
+        WorldTile* GetTile(Integer3);
+
+        WorldTile* GetEmptyRandomTile();
+
+        WorldTile* GetCenterTile();
+
+        WorldTile* GetEmptyTileAroundTile(WorldTile *, Integer);
+
+        const Array<WorldTile*> & GetNearbyTiles(WorldTile*, Integer);
+    };
+}

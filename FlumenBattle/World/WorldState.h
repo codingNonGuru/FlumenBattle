@@ -8,6 +8,7 @@ namespace world
 {
     class WorldScene;
     class WorldController;
+    class WorldTileModel;
     
     class WorldState : public State
     {
@@ -16,6 +17,8 @@ namespace world
         WorldInterface *interface;
 
         WorldController *controller;
+
+        WorldTileModel *tileModel;
 
         WorldState();
 
