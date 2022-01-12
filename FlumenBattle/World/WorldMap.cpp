@@ -78,12 +78,12 @@ WorldTile* WorldMap::GetRandomTile()
     return tiles.Get(i, j);
 }
 
-WorldTile* WorldMap::GetEmptyRandomTile()
+WorldTile* WorldMap::GetEmptyRandomTile(bool isLand = true)
 {
     while(true)
     {
         auto tile = GetRandomTile();
-        if(tile->group == nullptr)
+        if(tile->group == nullptr && tile->Type == WorldTiles::LAND)
         {
             return tile;
         }

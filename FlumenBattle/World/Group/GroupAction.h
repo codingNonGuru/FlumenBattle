@@ -7,6 +7,7 @@
 #include "FlumenEngine/Core/Singleton.h"
 
 #include "FlumenBattle/World/Types.h"
+#include "FlumenBattle/World/Group/GroupActionData.h"
 
 namespace world::group
 {
@@ -16,11 +17,11 @@ namespace world::group
     {
         friend class GroupActionFactory;
 
-        bool (*onCheck) (Group &);
+        bool (*onCheck) (Group &, const GroupActionData &);
 
         void (*onPerform) (Group &);
 
-        GroupAction(GroupActions _type, Integer _duration, bool (*_onCheck) (Group &), void (*_onPerform) (Group &)) : 
+        GroupAction(GroupActions _type, Integer _duration, bool (*_onCheck) (Group &, const GroupActionData &), void (*_onPerform) (Group &)) : 
             Type(_type), Duration(_duration), onCheck(_onCheck), onPerform(_onPerform) {}
 
     public:
@@ -28,10 +29,7 @@ namespace world::group
 
         Integer Duration;
 
-        bool CanPerform(Group &group) const
-        {
-            return onCheck(group);
-        }
+        bool CanPerform(Group &group, const GroupActionData &data = GroupActionData());
 
         void Perform(Group &group) const
         {

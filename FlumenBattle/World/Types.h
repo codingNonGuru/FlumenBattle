@@ -8,4 +8,9 @@ namespace world
     {
         TAKE_SHORT_REST, TAKE_LONG_REST, SEARCH, FIGHT, TRAVEL, NONE
     };
+
+    enum class WorldTiles
+    {
+        LAND, SEA
+    };
 }

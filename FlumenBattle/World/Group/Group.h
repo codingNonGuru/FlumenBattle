@@ -4,6 +4,7 @@
 
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/World/Types.h"
+#include "FlumenBattle/World/Group/GroupActionData.h"
 
 class Character;
 
@@ -24,6 +25,7 @@ namespace world::group
     class GroupController;
     class GroupFactory;
     class GroupActionPerformer;
+    class GroupActionValidator;
 
     class Group
     {
@@ -38,6 +40,8 @@ namespace world::group
         friend class CombatGroup;
 
         friend class GroupActionPerformer;
+
+        friend class GroupActionValidator;
 
         Word name;
 
@@ -82,7 +86,7 @@ namespace world::group
 
         void PerformAction();
 
-        bool ValidateAction(world::GroupActions);
+        bool ValidateAction(world::GroupActions, const GroupActionData &);
 
         void SelectAction(world::GroupActions);
 

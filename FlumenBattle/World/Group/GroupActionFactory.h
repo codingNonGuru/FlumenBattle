@@ -3,6 +3,7 @@
 #include "FlumenEngine/Core/Singleton.h"
 
 #include "FlumenBattle/World/Types.h"
+#include "FlumenBattle/World/Group/GroupActionData.h"
 
 namespace world::group
 {
@@ -44,14 +45,14 @@ namespace world::group
     {
         friend class GroupActionFactory;
 
-        static bool CanTakeShortRest(Group &group);
+        static bool CanTakeShortRest(Group &, const GroupActionData &);
 
-        static bool CanTakeLongRest(Group &group);
+        static bool CanTakeLongRest(Group &, const GroupActionData &);
 
-        static bool CanSearch(Group &group);
+        static bool CanSearch(Group &, const GroupActionData &);
 
-        static bool CanFight(Group &group);
+        static bool CanFight(Group &, const GroupActionData &);
 
-        static bool CanTravel(Group &group);
+        static bool CanTravel(Group &, const GroupActionData &);
     };
 }

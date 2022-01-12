@@ -144,8 +144,11 @@ namespace world
             return;
 
         auto playerGroup = WorldScene::Get()->GetPlayerGroup();
-        playerGroup->SetDestination(hoveredTile);
-        playerGroup->SelectAction(GroupActions::TRAVEL);
+        if(playerGroup->ValidateAction(GroupActions::TRAVEL, {hoveredTile}))
+        {
+            playerGroup->SetDestination(hoveredTile);
+            playerGroup->SelectAction(GroupActions::TRAVEL);
+        }
     }
 
     void WorldController::HandleSpacePressed()

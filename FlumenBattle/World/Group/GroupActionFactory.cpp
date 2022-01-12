@@ -4,6 +4,7 @@
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/Character.h"
 
 namespace world::group
@@ -138,28 +139,37 @@ namespace world::group
         group.CancelAction();
     }
 
-    bool GroupActionValidator::CanTakeShortRest(Group &group)
+    bool GroupActionValidator::CanTakeShortRest(Group &group, const GroupActionData &)
     {
         return true;
     }
 
-    bool GroupActionValidator::CanTakeLongRest(Group &group)
+    bool GroupActionValidator::CanTakeLongRest(Group &group, const GroupActionData &)
     {
         return true;
     }
 
-    bool GroupActionValidator::CanSearch(Group &group)
+    bool GroupActionValidator::CanSearch(Group &group, const GroupActionData &)
     {
         return true;
     }
 
-    bool GroupActionValidator::CanFight(Group &group)
+    bool GroupActionValidator::CanFight(Group &group, const GroupActionData &)
     {
         return true;
     }
 
-    bool GroupActionValidator::CanTravel(Group &group)
+    bool GroupActionValidator::CanTravel(Group &group, const GroupActionData &data)
     {
+        if(data.TravelDestination == nullptr)
+            return false;
+
+        if(data.TravelDestination->Type == WorldTiles::SEA || data.TravelDestination->GetGroup() != nullptr)
+            return false;
+
+        if(data.TravelDestination->GetDistanceTo(*group.tile) != 1)
+            return false;
+            
         return true;
     }
 }

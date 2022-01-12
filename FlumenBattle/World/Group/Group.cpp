@@ -90,11 +90,11 @@ namespace world::group
         controller->DetermineAction(*this);
     }
 
-    bool Group::ValidateAction(world::GroupActions actionType)
+    bool Group::ValidateAction(world::GroupActions actionType, const GroupActionData &actionData)
     {
         auto possibleAction = GroupActionFactory::Get()->BuildAction(actionType);
 
-        return possibleAction->CanPerform(*this);
+        return possibleAction->CanPerform(*this, actionData);
     }   
 
     void Group::SelectAction(world::GroupActions actionType)

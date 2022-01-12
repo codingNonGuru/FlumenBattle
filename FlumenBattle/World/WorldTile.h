@@ -2,6 +2,8 @@
 
 #include "FlumenCore/Conventions.hpp"
 
+#include "FlumenBattle/World/Types.h"
+
 namespace world
 {
     class WorldMap;
@@ -33,14 +35,11 @@ namespace world
 
         Float4 Shade;
 
+        WorldTiles Type;
+
         WorldTile() {}
 
-        WorldTile(Position2 position, Integer2 squareCoordinates);/* : Position(position), SquareCoordinates(squareCoordinates), Combatant(nullptr)
-        {
-            HexCoordinates.x = squareCoordinates.x - squareCoordinates.y / 2;
-            HexCoordinates.z = squareCoordinates.y;
-            HexCoordinates.y = -HexCoordinates.x - HexCoordinates.z;
-        }*/
+        WorldTile(Position2 position, Integer2 squareCoordinates);
 
         void Initialize();
 

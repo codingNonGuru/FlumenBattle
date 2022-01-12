@@ -25,6 +25,11 @@ void WorldTile::Initialize()
     if(map->GetCenterTile()->GetDistanceTo(*this) > 12)
     {
         color = seaColor;
+        Type = WorldTiles::SEA;
+    }
+    else
+    {
+        Type = WorldTiles::LAND;
     }
 
     color = Color::AddSaturation(color, utility::GetRandom(-0.07f, 0.07f));
