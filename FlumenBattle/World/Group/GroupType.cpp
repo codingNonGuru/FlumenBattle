@@ -6,13 +6,13 @@ namespace world::group
 {
     const GroupType * GroupTypeFactory::BuildPlayerGroupType()
     {
-        static GroupType type = {GroupTypes::PLAYER, HumanController::Get(), 1};
+        static GroupType type = {GroupTypes::PLAYER, HumanController::Get(), 5};
         return &type;
     }
 
     const GroupType * GroupTypeFactory::BuildComputerGroupType()
     {
-        static GroupType type = {GroupTypes::COMPUTER, ComputerController::Get(), 1};
+        static GroupType type = {GroupTypes::COMPUTER, ComputerController::Get(), 5};
         return &type;
     }
 

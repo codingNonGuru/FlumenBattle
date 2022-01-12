@@ -2,10 +2,13 @@
 
 #include "FlumenCore/Conventions.hpp"
 
-class Combatant;
 namespace world
 {
     class WorldMap;
+    namespace group
+    {
+        class Group;
+    }
 }
 
 namespace world
@@ -14,8 +17,12 @@ namespace world
     {
         friend class world::WorldMap;
 
+        friend class world::group::Group;
+
     private:
-        WorldMap* Map;
+        WorldMap *map;
+
+        group::Group *group;
 
     public:
         Position2 Position;
@@ -48,5 +55,7 @@ namespace world
         WorldTile * GetEmptyTileInRange(Integer);
 
         WorldTile * GetNeighbor(Integer3);
+
+        group::Group * GetGroup() {return group;}
     };
 }

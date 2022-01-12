@@ -132,7 +132,7 @@ namespace world::group
         if(group.actionProgress < duration)
             return;
 
-        group.tile = group.destination;
+        group.SetTile(group.destination);
         group.destination = nullptr;
 
         group.CancelAction();

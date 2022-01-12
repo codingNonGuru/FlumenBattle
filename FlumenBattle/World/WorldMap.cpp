@@ -30,7 +30,7 @@ WorldMap::WorldMap(Length size)
 
             auto tile = tiles.Get(i, j);
             *tile = {Position2(x, y) * TILE_DISTANCING, Integer2(i, j)};
-            tile->Map = this;
+            tile->map = this;
         }
     }
 
@@ -80,14 +80,14 @@ WorldTile* WorldMap::GetRandomTile()
 
 WorldTile* WorldMap::GetEmptyRandomTile()
 {
-    /*while(true)
+    while(true)
     {
         auto tile = GetRandomTile();
-        if(tile->Combatant == nullptr)
+        if(tile->group == nullptr)
         {
             return tile;
         }
-    }*/
+    }
     return nullptr;
 }
 

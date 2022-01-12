@@ -5,7 +5,7 @@
 
 using namespace world;
 
-WorldTile::WorldTile(Position2 position, Integer2 squareCoordinates) : Position(position), SquareCoordinates(squareCoordinates)
+WorldTile::WorldTile(Position2 position, Integer2 squareCoordinates) : Position(position), SquareCoordinates(squareCoordinates), group(nullptr)
 {
     HexCoordinates.x = squareCoordinates.x - squareCoordinates.y / 2;
     HexCoordinates.z = squareCoordinates.y;
@@ -22,7 +22,7 @@ void WorldTile::Initialize()
         dirtColor : 
         utility::GetRandom(1, 100) < 50 ? grassColor : dirtColor * 0.5f + grassColor * 0.5f;
 
-    if(Map->GetCenterTile()->GetDistanceTo(*this) > 12)
+    if(map->GetCenterTile()->GetDistanceTo(*this) > 12)
     {
         color = seaColor;
     }
@@ -35,16 +35,16 @@ void WorldTile::Initialize()
 
 const Array <WorldTile*> & WorldTile::GetNearbyTiles(Integer range)
 {
-    return Map->GetNearbyTiles(this, range);
+    return map->GetNearbyTiles(this, range);
 }
 
 WorldTile* WorldTile::GetEmptyTileInRange(Integer range)
 {
-    return Map->GetEmptyTileAroundTile(this, range);
+    return map->GetEmptyTileAroundTile(this, range);
 }
 
 WorldTile * WorldTile::GetNeighbor(Integer3 direction)
 {
     auto coordinates = HexCoordinates + direction;
-    return Map->GetTile(coordinates);
+    return map->GetTile(coordinates);
 }

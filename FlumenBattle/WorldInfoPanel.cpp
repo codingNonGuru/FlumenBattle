@@ -83,6 +83,7 @@ void WorldInfoPanel::HandleEnable()
     {
         item->SetCharacter(&character);
         item->Enable();
+        item++;
     }
 }
 

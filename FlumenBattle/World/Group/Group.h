@@ -93,5 +93,7 @@ namespace world::group
         void ExitBattle();
 
         void SetDestination(WorldTile *destination) {this->destination = destination;}
+
+        void SetTile(WorldTile *tile);
     };
 }

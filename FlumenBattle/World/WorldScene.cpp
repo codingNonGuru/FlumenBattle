@@ -41,14 +41,14 @@ namespace world
         battles.Initialize(MAXIMUM_BATTLE_COUNT);
 
         playerGroup = group::GroupFactory::Create({GroupTypes::PLAYER, RaceTypes::HUMAN});
-        playerGroup->tile = worldMap->GetCenterTile();
+        playerGroup->SetTile(worldMap->GetCenterTile());
 
-        group::GroupFactory::Create({GroupTypes::COMPUTER, RaceTypes::ORC});
-        group::GroupFactory::Create({GroupTypes::COMPUTER, RaceTypes::GOBLIN});
-        group::GroupFactory::Create({GroupTypes::COMPUTER, RaceTypes::ELF});
-        group::GroupFactory::Create({GroupTypes::COMPUTER, RaceTypes::HUMAN});
-        group::GroupFactory::Create({GroupTypes::COMPUTER, RaceTypes::GNOME});
-        group::GroupFactory::Create({GroupTypes::COMPUTER, RaceTypes::HALFLING});
+        group::GroupFactory::Create({GroupTypes::COMPUTER, RaceTypes::ORC})->SetTile(worldMap->GetEmptyRandomTile());
+        group::GroupFactory::Create({GroupTypes::COMPUTER, RaceTypes::GOBLIN})->SetTile(worldMap->GetEmptyRandomTile());
+        group::GroupFactory::Create({GroupTypes::COMPUTER, RaceTypes::ELF})->SetTile(worldMap->GetEmptyRandomTile());
+        group::GroupFactory::Create({GroupTypes::COMPUTER, RaceTypes::HUMAN})->SetTile(worldMap->GetEmptyRandomTile());
+        group::GroupFactory::Create({GroupTypes::COMPUTER, RaceTypes::GNOME})->SetTile(worldMap->GetEmptyRandomTile());
+        group::GroupFactory::Create({GroupTypes::COMPUTER, RaceTypes::HALFLING})->SetTile(worldMap->GetEmptyRandomTile());
 
         time = WorldTime(230, 63, 14);
 

@@ -2,6 +2,7 @@
 
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/GroupType.h"
+#include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/CharacterFactory.h"
 #include "FlumenBattle/RaceFactory.h"
@@ -33,6 +34,7 @@ namespace world::group
 
         action = nullptr;
         battle = nullptr;
+        tile = nullptr;
 
         for(int i = 0; i < size; ++i)
         {
@@ -134,5 +136,17 @@ namespace world::group
         battle = nullptr;
 
         CancelAction();
+    }
+
+    void Group::SetTile(WorldTile *tile)
+    {
+        if(this->tile != nullptr)
+        {
+            this->tile->group = nullptr;
+        }
+
+        this->tile = tile;
+
+        this->tile->group = this;
     }
 }

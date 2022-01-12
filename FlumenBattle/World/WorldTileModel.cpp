@@ -142,6 +142,19 @@ void WorldTileModel::Render()
 
 	shader->Unbind();
 
-    auto tile = worldScene->GetPlayerGroup()->GetTile();
-    groupSprite->Draw(camera, {tile->Position + Position2(0, -10), Scale2(30, 50), Opacity(1.0f), DrawOrder(-1)});
+    for(auto group : *worldScene->groups)
+    {
+        groupSprite->Draw(
+            camera, 
+            {group.GetTile()->Position + Position2(0, -10), Scale2(30, 50), Opacity(1.0f), DrawOrder(-1)}
+            );
+    }
+
+    /*for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
+    {
+        if(tile->GetGroup() == nullptr)
+            continue;
+
+        groupSprite->Draw(camera, {tile->Position + Position2(0, -10), Scale2(30, 50), Opacity(1.0f), DrawOrder(-1)});
+    }*/
 }
