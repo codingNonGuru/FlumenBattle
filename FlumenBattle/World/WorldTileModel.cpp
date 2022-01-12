@@ -9,6 +9,7 @@
 #include "FlumenEngine/Render/Mesh.hpp"
 #include "FlumenEngine/Interface/Sprite.hpp"
 #include "FlumenEngine/Core/Engine.hpp"
+#include "FlumenEngine/Render/TextureManager.hpp"
 
 #include "FlumenBattle/World/WorldTileModel.h"
 #include "FlumenBattle/World/WorldScene.h"
@@ -19,6 +20,7 @@
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/Combatant.h"
 #include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Group/GroupAction.h"
 
 #define WORLD_TILE_SIZE 34.6666f
 
@@ -29,6 +31,10 @@ static Camera* camera = nullptr;
 static Float shadeTimer = 0.0f;
 
 static Sprite *groupSprite = nullptr;
+
+static Sprite *bootSprite = nullptr;
+
+static Sprite *dotSprite = nullptr;
 
 using namespace world;
 
@@ -44,6 +50,10 @@ WorldTileModel::WorldTileModel()
     groupShader = ShaderManager::GetShader("Sprite");
 
     groupSprite = new Sprite(nullptr, groupShader);
+
+    bootSprite = new Sprite(TextureManager::GetTexture("TravelBoot"), groupShader); 
+
+    dotSprite = new Sprite(TextureManager::GetTexture("Dot"), groupShader); 
 
     worldScene = WorldScene::Get();
 
@@ -127,27 +137,38 @@ void WorldTileModel::Render()
     }*/
 
     auto hoveredTile = worldController->GetHoveredTile();
-    if(hoveredTile != nullptr)
+    if(hoveredTile != nullptr && worldScene->GetPlayerGroup()->ValidateAction(GroupActions::TRAVEL, {hoveredTile}))
     {
-        shader->SetConstant(hoveredTile->Position, "hexPosition");
-
-        shader->SetConstant(WORLD_TILE_SIZE * 0.65f, "hexSize");
-
-        shader->SetConstant(Color::BLACK, "color");
-
-        shader->SetConstant(0.1f, "opacity");
-
-        glDrawArrays(GL_TRIANGLES, 0, 18);
+        bootSprite->Draw(camera, {hoveredTile->Position, Scale2(0.3f, 0.3f), Opacity(1.0f), DrawOrder(-2)});
     }
 
 	shader->Unbind();
 
     for(auto group : *worldScene->groups)
     {
+        auto position = group.GetTile()->Position;
+        if(group.GetAction() != nullptr && group.GetAction()->Type == GroupActions::TRAVEL)
+        {
+            auto progress = group.GetActionProgress();
+            position = position * (1.0f - progress) + group.GetDestination()->Position * progress;
+        }
+        position += Position2(0, -15);
+
         groupSprite->Draw(
             camera, 
-            {group.GetTile()->Position + Position2(0, -10), Scale2(30, 50), Opacity(1.0f), DrawOrder(-1)}
+            {position, Scale2(18, 30), Opacity(1.0f), DrawOrder(-1)}
             );
+    }
+
+    auto destination = worldScene->GetPlayerGroup()->GetDestination();
+    if(destination)
+    {
+        float factor = 0.0f;
+        for(int i = 0; i <= 10; i++, factor += 0.1f)
+        {
+            auto position = destination->Position * factor + worldScene->GetPlayerGroup()->GetTile()->Position * (1.0f - factor);
+            dotSprite->Draw(camera, {position, Scale2(0.15f, 0.15f), Opacity(1.0f), DrawOrder(-2)});
+        }
     }
 
     /*for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)

@@ -2,7 +2,7 @@
 
 #include "FlumenBattle/CharacterClass.h"
 
-class ClassFactory
+class ClassFactory //Possible classes: Fighter, Wizard, Ranger, Cleric, Bard, Barbarian, Alchemist, Champion, Rogue, Monk, Druid, Sorcerer
 {
 public:
     static const CharacterClass & BuildClass(CharacterClasses _class)

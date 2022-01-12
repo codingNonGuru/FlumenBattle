@@ -96,8 +96,12 @@ namespace world::group
 
         void ExitBattle();
 
+        WorldTile *GetDestination() const {return destination;}
+
         void SetDestination(WorldTile *destination) {this->destination = destination;}
 
         void SetTile(WorldTile *tile);
+
+        float GetActionProgress() const;
     };
 }

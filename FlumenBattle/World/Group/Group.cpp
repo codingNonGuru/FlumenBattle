@@ -35,6 +35,7 @@ namespace world::group
         action = nullptr;
         battle = nullptr;
         tile = nullptr;
+        destination = nullptr;
 
         for(int i = 0; i < size; ++i)
         {
@@ -148,5 +149,10 @@ namespace world::group
         this->tile = tile;
 
         this->tile->group = this;
+    }
+
+    float Group::GetActionProgress() const
+    {
+        return (float)actionProgress / (float)action->Duration;
     }
 }
