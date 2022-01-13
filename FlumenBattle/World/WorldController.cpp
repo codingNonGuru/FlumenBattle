@@ -28,6 +28,8 @@ namespace world
 {
     void WorldController::Enable()
     {
+        playerBattle = nullptr;
+
         *WorldScene::Get()->OnUpdateStarted += {this, &WorldController::HandleSceneUpdate};
 
         auto controller = group::HumanController::Get();
@@ -43,8 +45,6 @@ namespace world
         InputHandler::RegisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LEFT, {this, &WorldController::HandlePanLeft});
 
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_T, {this, &WorldController::HandleTravelPressed});
-
-        playerBattle = nullptr;
 
         camera = RenderManager::GetCamera(Cameras::WORLD);
     }
@@ -84,8 +84,10 @@ namespace world
 
         auto scene = WorldScene::Get();
 
+        std::cout<<"battle count "<<scene->GetBattles().GetSize()<<"\n";
         for(auto &battle : scene->GetBattles())
         {
+            std::cout<<"aloha\n";
             if(battle.GetFirst() != scene->GetPlayerGroup() && battle.GetSecond() != scene->GetPlayerGroup())
                 continue;
 
@@ -104,6 +106,7 @@ namespace world
 
     void WorldController::StartBattle()
     {
+        std::cout<<"start battle\n";
         auto scene = WorldScene::Get();
         scene->StopTime();
 

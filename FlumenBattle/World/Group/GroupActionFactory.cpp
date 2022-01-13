@@ -28,19 +28,19 @@ namespace world::group
 
     const GroupAction * GroupActionFactory::BuildTakeShortRest()
     {
-        static GroupAction action = {GroupActions::TAKE_SHORT_REST, 1, &GroupActionValidator::CanTakeShortRest, &GroupActionPerformer::TakeShortRest};
+        static GroupAction action = {GroupActions::TAKE_SHORT_REST, 18, &GroupActionValidator::CanTakeShortRest, &GroupActionPerformer::TakeShortRest};
         return &action;
     }
 
     const GroupAction * GroupActionFactory::BuildTakeLongRest()
     {
-        static GroupAction action = {GroupActions::TAKE_LONG_REST, 8, &GroupActionValidator::CanTakeLongRest, &GroupActionPerformer::TakeLongRest};
+        static GroupAction action = {GroupActions::TAKE_LONG_REST, 48, &GroupActionValidator::CanTakeLongRest, &GroupActionPerformer::TakeLongRest};
         return &action;
     }
 
     const GroupAction * GroupActionFactory::BuildSearch()
     {
-        static GroupAction action = {GroupActions::SEARCH, 3, &GroupActionValidator::CanSearch, &GroupActionPerformer::Search};
+        static GroupAction action = {GroupActions::SEARCH, 18, &GroupActionValidator::CanSearch, &GroupActionPerformer::Search};
         return &action;
     }
 
@@ -52,7 +52,7 @@ namespace world::group
 
     const GroupAction * GroupActionFactory::BuildTravel()
     {
-        static GroupAction action = {GroupActions::TRAVEL, 12, &GroupActionValidator::CanTravel, &GroupActionPerformer::Travel};
+        static GroupAction action = {GroupActions::TRAVEL, 72, &GroupActionValidator::CanTravel, &GroupActionPerformer::Travel};
         return &action;
     }
 

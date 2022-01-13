@@ -6,6 +6,8 @@ namespace world
 {
     struct WorldTime
     {
+        int MinuteCount;
+
         int HourCount;
 
         int DayCount;
@@ -19,7 +21,7 @@ namespace world
         WorldTime() {}
 
         WorldTime(int yearCount, int dayCount, int hourCount) : 
-            YearCount(yearCount), DayCount(dayCount), HourCount(hourCount), IsFlowing(false), FlowSpeed(1) {}
+            YearCount(yearCount), DayCount(dayCount), HourCount(hourCount), MinuteCount(0), IsFlowing(false), FlowSpeed(1) {}
 
         void SpeedUp() 
         {
@@ -47,16 +49,22 @@ namespace world
 
         WorldTime& operator++()
         {
-            HourCount++;
-            if(HourCount >= 24)
+            MinuteCount += 10;
+            if(MinuteCount >= 60)
             {
-                HourCount = 0;
+                MinuteCount = 0;
 
-                DayCount++;
-                if(DayCount >= 365)
+                HourCount++;
+                if(HourCount >= 24)
                 {
-                    DayCount = 0;
-                    YearCount++;
+                    HourCount = 0;
+
+                    DayCount++;
+                    if(DayCount >= 365)
+                    {
+                        DayCount = 0;
+                        YearCount++;
+                    }
                 }
             }
 
