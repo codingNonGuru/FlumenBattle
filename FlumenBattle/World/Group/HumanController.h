@@ -18,6 +18,8 @@ namespace world::group
 
         void HandleTakeShortRest();
 
+        void HandleTravel();
+
     public:
         Delegate *OnActionPerformed;
 

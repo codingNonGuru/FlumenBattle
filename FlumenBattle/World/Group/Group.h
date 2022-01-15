@@ -86,9 +86,9 @@ namespace world::group
 
         void PerformAction();
 
-        bool ValidateAction(world::GroupActions, const GroupActionData &);
+        bool ValidateAction(world::GroupActions, const GroupActionData & = GroupActionData());
 
-        void SelectAction(world::GroupActions);
+        void SelectAction(world::GroupActions, const GroupActionData & = GroupActionData());
 
         void CancelAction();
 
@@ -103,5 +103,7 @@ namespace world::group
         void SetTile(WorldTile *tile);
 
         float GetActionProgress() const;
+
+        int GetRemainingActionDuration() const;
     };
 }

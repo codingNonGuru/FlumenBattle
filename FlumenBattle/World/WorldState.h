@@ -2,13 +2,12 @@
 
 #include "FlumenEngine/Core/State.hpp"
 
-class WorldInterface;
-
 namespace world
 {
     class WorldScene;
     class WorldController;
     class WorldTileModel;
+    class WorldInterface;
     
     class WorldState : public State
     {

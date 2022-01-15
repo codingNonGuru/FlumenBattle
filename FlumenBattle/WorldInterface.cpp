@@ -4,6 +4,8 @@
 #include "FlumenBattle/WorldDecisionMenu.h"
 #include "FlumenBattle/WorldInfoPanel.h"
 
+using namespace world;
+
 WorldInterface::WorldInterface()
 {
     canvas = ElementFactory::BuildCanvas();

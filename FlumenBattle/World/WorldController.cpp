@@ -44,8 +44,6 @@ namespace world
         InputHandler::RegisterContinualEvent(SDL_Scancode::SDL_SCANCODE_RIGHT, {this, &WorldController::HandlePanRight});
         InputHandler::RegisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LEFT, {this, &WorldController::HandlePanLeft});
 
-        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_T, {this, &WorldController::HandleTravelPressed});
-
         camera = RenderManager::GetCamera(Cameras::WORLD);
     }
 
@@ -141,19 +139,6 @@ namespace world
         camera->Translate(Direction3(panSpeed, 0.0f, 0.0f));
     }
 
-    void WorldController::HandleTravelPressed()
-    {
-        if(hoveredTile == nullptr)
-            return;
-
-        auto playerGroup = WorldScene::Get()->GetPlayerGroup();
-        if(playerGroup->ValidateAction(GroupActions::TRAVEL, {hoveredTile}))
-        {
-            playerGroup->SetDestination(hoveredTile);
-            playerGroup->SelectAction(GroupActions::TRAVEL);
-        }
-    }
-
     void WorldController::HandleSpacePressed()
     {
         WorldScene::Get()->ToggleTime();
@@ -186,7 +171,5 @@ namespace world
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_DOWN, {this, &WorldController::HandlePanDown});
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_RIGHT, {this, &WorldController::HandlePanRight});
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LEFT, {this, &WorldController::HandlePanLeft});
-
-        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_T, {this, &WorldController::HandleTravelPressed});
     }
 }

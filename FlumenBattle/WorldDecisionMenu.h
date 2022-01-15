@@ -4,13 +4,20 @@
 
 class Text;
 
-class WorldDecisionMenu : public Element
+namespace world
 {
-    Text *travelLabel;
-    
-    Text *searchLabel;
+    class WorldDecisionMenu : public Element
+    {
+        Text *travelLabel;
+        
+        Text *searchLabel;
 
-    Text *restLabel;
+        Text *restLabel;
 
-    void HandleConfigure() override;
-};
+        Text *statusLabel;
+
+        void HandleConfigure() override;
+
+        void HandleUpdate() override;
+    };
+}

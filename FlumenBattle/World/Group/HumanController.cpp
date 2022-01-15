@@ -2,9 +2,11 @@
 
 #include "FlumenBattle/World/Group/HumanController.h"
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/GroupActionFactory.h"
 #include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupActionData.h"
 
 using namespace world::group;
 
@@ -12,27 +14,18 @@ static const SDL_Scancode searchInputKey = SDL_Scancode::SDL_SCANCODE_S;
 
 static const SDL_Scancode takeShortRestInputKey = SDL_Scancode::SDL_SCANCODE_R;
 
-static world::GroupActions selectedAction = world::GroupActions::NONE;
+static const SDL_Scancode travelInputKey = SDL_Scancode::SDL_SCANCODE_T;
 
 HumanController::HumanController()
 {
     OnActionPerformed = new Delegate();
 }
 
-void HumanController::DetermineAction(Group &group) const
-{
-    if(selectedAction != world::GroupActions::NONE)
-    {
-        group.SelectAction(selectedAction);
-
-        selectedAction = world::GroupActions::NONE;
-    }
-}
+void HumanController::DetermineAction(Group &group) const {}
 
 void HumanController::PerformAction(Group &group) const
 {
     group.PerformAction();
-    //group.SelectAction(selectedAction);
 
     OnActionPerformed->Invoke();
 }
@@ -42,6 +35,8 @@ void HumanController::EnableInput()
     InputHandler::RegisterEvent(searchInputKey, {this, &HumanController::HandleSearch});
 
     InputHandler::RegisterEvent(takeShortRestInputKey, {this, &HumanController::HandleTakeShortRest});
+
+    InputHandler::RegisterEvent(travelInputKey, {this, &HumanController::HandleTravel});
 }
 
 void HumanController::DisableInput()
@@ -49,45 +44,37 @@ void HumanController::DisableInput()
     InputHandler::UnregisterEvent(searchInputKey, {this, &HumanController::HandleSearch});
 
     InputHandler::UnregisterEvent(takeShortRestInputKey, {this, &HumanController::HandleTakeShortRest});
+
+    InputHandler::UnregisterEvent(travelInputKey, {this, &HumanController::HandleTravel});
 }
 
 void HumanController::HandleSearch()
 {
     auto playerGroup = WorldScene::Get()->GetPlayerGroup();
-
-    auto searchAction = GroupActionFactory::Get()->BuildAction(world::GroupActions::SEARCH);
-
-    auto canDo = searchAction->CanPerform(*playerGroup);
-    if(canDo == false)
-        return;
-
-    selectedAction = world::GroupActions::SEARCH;
-
-    //WorldScene::Get()->GetPlayerGroup()->SelectAction(GroupActions::SEARCH);
-
-    //TaskManager::Add()->Initialize(this, &HumanController::StartBattle, 1.0f);
-
-    //DisableInput();
+    if(playerGroup->ValidateAction(GroupActions::SEARCH))
+    {
+        playerGroup->SelectAction(world::GroupActions::SEARCH);
+    }
 }
 
 void HumanController::HandleTakeShortRest()
 {
     auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    if(playerGroup->ValidateAction(GroupActions::TAKE_SHORT_REST))
+    {
+        playerGroup->SelectAction(world::GroupActions::TAKE_SHORT_REST);
+    }
+}
 
-    auto restAction = GroupActionFactory::Get()->BuildAction(world::GroupActions::TAKE_SHORT_REST);
-
-    auto canDo = restAction->CanPerform(*playerGroup);
-    if(canDo == false)
+void HumanController::HandleTravel()
+{
+    auto tile = WorldController::Get()->GetHoveredTile();
+    if(tile == nullptr)
         return;
 
-    selectedAction = world::GroupActions::TAKE_SHORT_REST;
-    //auto canDo = GroupActionFactory::Get()->BuildAction(GroupActions::TAKE_SHORT_REST);
-    //if(canDo == false)
-        //return;
-
-    //WorldScene::Get()->GetPlayerGroup()->SelectAction(GroupActions::TAKE_SHORT_REST);
-
-    //TaskManager::Add()->Initialize(this, &HumanController::Rest, 1.0f);
-
-    //DisableInput();
+    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    if(playerGroup->ValidateAction(GroupActions::TRAVEL, {tile}))
+    {
+        playerGroup->SelectAction(world::GroupActions::TRAVEL, {tile});
+    }
 }

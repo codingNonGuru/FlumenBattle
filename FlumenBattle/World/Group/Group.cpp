@@ -98,12 +98,14 @@ namespace world::group
         return possibleAction->CanPerform(*this, actionData);
     }   
 
-    void Group::SelectAction(world::GroupActions actionType)
+    void Group::SelectAction(world::GroupActions actionType, const GroupActionData &actionData)
     {
-        if(action && actionType == action->Type)
+        if(action && action->Type == actionType)
             return;
 
         action = GroupActionFactory::Get()->BuildAction(actionType);
+
+        action->Initiate(*this, actionData);
 
         actionProgress = 0;
     }
@@ -120,7 +122,7 @@ namespace world::group
 
     void Group::CancelAction()
     {
-        action = nullptr;//GroupActionFactory::Get()->BuildAction(actionType);
+        action = nullptr;
 
         actionProgress = 0;
     }
@@ -154,5 +156,10 @@ namespace world::group
     float Group::GetActionProgress() const
     {
         return (float)actionProgress / (float)action->Duration;
+    }
+
+    int Group::GetRemainingActionDuration() const
+    {
+        return action->Duration - actionProgress;
     }
 }

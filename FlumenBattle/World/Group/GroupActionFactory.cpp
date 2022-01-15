@@ -52,8 +52,13 @@ namespace world::group
 
     const GroupAction * GroupActionFactory::BuildTravel()
     {
-        static GroupAction action = {GroupActions::TRAVEL, 72, &GroupActionValidator::CanTravel, &GroupActionPerformer::Travel};
+        static GroupAction action = {GroupActions::TRAVEL, 72, &GroupActionValidator::CanTravel, &GroupActionPerformer::Travel, &GroupActionPerformer::InitiateTravel};
         return &action;
+    }
+
+    void GroupActionPerformer::InitiateTravel(Group &group, const GroupActionData &actionData)
+    {
+        group.destination = actionData.TravelDestination;
     }
 
     void GroupActionPerformer::TakeShortRest(Group& group)
@@ -86,9 +91,6 @@ namespace world::group
 
     void GroupActionPerformer::Search(Group& group)
     {
-        //if(group.actionProgress < group.action->Duration)
-            return;
-
         auto &groups = WorldScene::Get()->GetGroups();
         auto other = groups.GetRandom();
 
@@ -115,10 +117,15 @@ namespace world::group
         }
 
         auto perceptionCheck = utility::GetRandom(1, 20) + perceptionBonus - stealthBonus;
-        //if(perceptionCheck <= 20)
-            //return;
+        if(perceptionCheck <= 20)
+            return;
 
-        WorldScene::Get()->StartBattle(&group, other);
+        if(group.actionProgress < group.action->Duration)
+            return;
+
+        group.CancelAction();
+
+        //WorldScene::Get()->StartBattle(&group, other);
     }
 
     void GroupActionPerformer::Fight(Group& group)

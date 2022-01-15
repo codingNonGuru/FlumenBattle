@@ -30,6 +30,8 @@ namespace world::group
     {
         friend class GroupActionFactory;
 
+        static void InitiateTravel(Group &, const GroupActionData &);
+
         static void TakeShortRest(Group &group);
 
         static void TakeLongRest(Group &group);
