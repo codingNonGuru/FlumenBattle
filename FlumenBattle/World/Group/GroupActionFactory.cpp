@@ -52,18 +52,71 @@ namespace world::group
 
     const GroupAction * GroupActionFactory::BuildTravel()
     {
-        static GroupAction action = {GroupActions::TRAVEL, 72, &GroupActionValidator::CanTravel, &GroupActionPerformer::Travel, &GroupActionPerformer::InitiateTravel};
+        static GroupAction action = {
+            GroupActions::TRAVEL, 
+            60, 
+            &GroupActionValidator::CanTravel, 
+            &GroupActionPerformer::Travel, 
+            &GroupActionPerformer::InitiateTravel, 
+            &GroupActionPerformer::GetTravelDuration
+            };
         return &action;
     }
 
     void GroupActionPerformer::InitiateTravel(Group &group, const GroupActionData &actionData)
     {
         group.destination = actionData.TravelDestination;
+
+        auto difficultyClass = 15;
+
+        int modifier = -100;
+        for(auto &character : group.characters)
+        {
+            if(character.GetSkillProficiency(SkillTypes::SURVIVAL) > modifier)
+                modifier = character.GetSkillProficiency(SkillTypes::SURVIVAL);
+        }
+
+        auto roll = utility::GetRandom(1, 20);
+        if(roll == 1 || roll + modifier <= difficultyClass - 10)
+        {
+            group.actionSuccess = SuccessTypes::CRITICAL_FAILURE;
+        }
+        else if(roll == 20 || roll + modifier > difficultyClass + 10)
+        {
+            group.actionSuccess = SuccessTypes::CRITICAL_SUCCESS;
+        }
+        else if(roll + modifier <= difficultyClass)
+        {
+            group.actionSuccess = SuccessTypes::FAILURE;
+        }
+        else if(roll + modifier > difficultyClass)
+        {
+            group.actionSuccess = SuccessTypes::SUCCESS;
+        }
+    }
+
+    int GroupActionPerformer::GetTravelDuration(const Group &group)
+    {
+        int durationBonus = 0;
+        switch(group.actionSuccess)
+        {
+            case SuccessTypes::CRITICAL_SUCCESS:
+                durationBonus = 4;
+                break;
+            case SuccessTypes::SUCCESS:
+                durationBonus = 2;
+                break;
+            case SuccessTypes::CRITICAL_FAILURE:
+                durationBonus = -2;
+                break;
+        }
+
+        return group.action->BaseDuration - durationBonus * 6;
     }
 
     void GroupActionPerformer::TakeShortRest(Group& group)
     {
-        if(group.actionProgress != group.action->Duration)
+        if(group.actionProgress != group.action->BaseDuration)
             return;
         
         auto &characters = group.GetCharacters();
@@ -77,7 +130,7 @@ namespace world::group
 
     void GroupActionPerformer::TakeLongRest(Group& group)
     {
-        if(group.actionProgress != group.action->Duration)
+        if(group.actionProgress != group.action->BaseDuration)
             return;
 
         auto &characters = group.GetCharacters();
@@ -120,7 +173,7 @@ namespace world::group
         if(perceptionCheck <= 20)
             return;
 
-        if(group.actionProgress < group.action->Duration)
+        if(group.actionProgress < group.action->BaseDuration)
             return;
 
         group.CancelAction();
@@ -135,9 +188,7 @@ namespace world::group
 
     void GroupActionPerformer::Travel(Group& group)
     {
-        auto duration = group.action->Duration;
-
-        if(group.actionProgress < duration)
+        if(group.actionProgress < group.action->GetDuration(group))
             return;
 
         group.SetTile(group.destination);

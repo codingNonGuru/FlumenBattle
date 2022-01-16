@@ -140,6 +140,8 @@ public:
 
     Integer GetWillSaveBonus();
 
+    Integer GetSkillProficiency(SkillTypes skill) {return proficiencies.GetSkillBonus(*this, skill);}
+
     Array <world::character::CharacterAction> & GetActions() {return actions;}
 
     const Pool <Weapon> & GetWeapons() {return weapons;}

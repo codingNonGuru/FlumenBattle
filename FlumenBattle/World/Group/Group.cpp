@@ -155,11 +155,11 @@ namespace world::group
 
     float Group::GetActionProgress() const
     {
-        return (float)actionProgress / (float)action->Duration;
+        return (float)actionProgress / (float)action->GetDuration(*this);
     }
 
     int Group::GetRemainingActionDuration() const
     {
-        return action->Duration - actionProgress;
+        return action->GetDuration(*this) - actionProgress;
     }
 }

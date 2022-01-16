@@ -97,6 +97,8 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
         character->AddProficiency(ProficiencyFactory::BuildSimpleWeaponsProficiency(ProficiencyLevels::TRAINED));
         character->AddProficiency(ProficiencyFactory::BuildMartialWeaponsProficiency(ProficiencyLevels::APPRENTICE));
         character->AddProficiency(ProficiencyFactory::BuildUnarmedCombatProficiency(ProficiencyLevels::APPRENTICE));
+
+        character->AddProficiency(ProficiencyFactory::BuildSurvivalSkillProficiency(ProficiencyLevels::TRAINED));
         break;
     case CharacterClasses::CLERIC:
         character->abilities.SetScore(AbilityTypes::WISDOM, abilityScores[0]);

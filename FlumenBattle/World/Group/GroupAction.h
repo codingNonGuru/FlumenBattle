@@ -21,20 +21,23 @@ namespace world::group
 
         void (*onInitiate) (Group &, const GroupActionData &);
 
+        int (*onGetDuration) (const Group &);
+
         void (*onPerform) (Group &);
 
         GroupAction(
-            GroupActions _type, 
-            Integer _duration, 
+            GroupActions type, 
+            Integer duration, 
             bool (*_onCheck) (Group &, const GroupActionData &), 
             void (*_onPerform) (Group &),
-            void (*_onInitiate) (Group &, const GroupActionData &) = nullptr) : 
-            Type(_type), Duration(_duration), onCheck(_onCheck), onInitiate(_onInitiate), onPerform(_onPerform) {}
+            void (*_onInitiate) (Group &, const GroupActionData &) = nullptr,
+            int (*_onGetDuration) (const Group &) = nullptr) : 
+            Type(type), BaseDuration(duration), onCheck(_onCheck), onInitiate(_onInitiate), onGetDuration(_onGetDuration), onPerform(_onPerform) {}
 
     public:
         GroupActions Type;
 
-        Integer Duration;
+        Integer BaseDuration;
 
         bool CanPerform(Group &group, const GroupActionData &data = GroupActionData());
 
@@ -43,6 +46,14 @@ namespace world::group
             if(onInitiate)
             {
                 onInitiate(group, data);
+            }
+        }
+
+        int GetDuration(const Group &group) const
+        {
+            if(onGetDuration)
+            {
+                return onGetDuration(group);
             }
         }
 

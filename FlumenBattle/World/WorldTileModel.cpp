@@ -144,7 +144,7 @@ void WorldTileModel::Render()
 
 	shader->Unbind();
 
-    for(auto group : *worldScene->groups)
+    for(auto &group : *worldScene->groups)
     {
         auto position = group.GetTile()->Position;
         if(group.GetAction() != nullptr && group.GetAction()->Type == GroupActions::TRAVEL)

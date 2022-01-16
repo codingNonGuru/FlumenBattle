@@ -27,6 +27,14 @@ namespace world::group
     class GroupActionPerformer;
     class GroupActionValidator;
 
+    enum SuccessTypes
+    {
+        CRITICAL_SUCCESS,
+        SUCCESS,
+        FAILURE,
+        CRITICAL_FAILURE
+    };
+
     class Group
     {
         friend class container::Pool <Group>;
@@ -52,6 +60,8 @@ namespace world::group
         const GroupAction *action;
 
         Integer actionProgress;
+
+        SuccessTypes actionSuccess;
 
         Battle *battle;
 

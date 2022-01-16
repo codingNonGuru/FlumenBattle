@@ -67,6 +67,23 @@ Integer ProficiencyHandler::GetMagicBonus(const Character & character)
     return modifier;
 }
 
+Integer ProficiencyHandler::GetSkillBonus(const Character &character, SkillTypes skillType)
+{
+    Integer modifier = 0;
+
+    for(auto iterator = skills.GetFirst(); iterator != skills.GetLast(); ++iterator)
+    {
+        if(iterator->Type->Identifier == skillType)
+        {
+            modifier += GetLevelModifier(*iterator);
+            modifier += character.GetAbility(iterator->Type->AssociatedAbility).Modifier;
+            break;
+        }
+    }
+
+    return modifier;
+}
+
 void ProficiencyHandler::AddProficiency(Proficiency proficiency)
 {
     switch(proficiency.Type->Class)

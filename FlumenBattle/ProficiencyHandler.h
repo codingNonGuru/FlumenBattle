@@ -33,5 +33,7 @@ public:
 
     Integer GetMagicBonus(const Character &);
 
+    Integer GetSkillBonus(const Character &, SkillTypes);
+
     void AddProficiency(Proficiency proficiency);
 };

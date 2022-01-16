@@ -32,6 +32,8 @@ namespace world::group
 
         static void InitiateTravel(Group &, const GroupActionData &);
 
+        static int GetTravelDuration(const Group &);
+
         static void TakeShortRest(Group &group);
 
         static void TakeLongRest(Group &group);

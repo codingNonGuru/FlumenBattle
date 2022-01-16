@@ -78,4 +78,10 @@ public:
         static ProficiencyType type = {ProficiencyClasses::MAGIC, "Primal magic", MagicTraditions::PRIMAL_MAGIC};
         return {level, &type};
     }
+
+    static Proficiency BuildSurvivalSkillProficiency(ProficiencyLevels level)
+    {
+        static ProficiencyType type = {ProficiencyClasses::SKILL, "Survival", SkillTypes::SURVIVAL, AbilityTypes::WISDOM};
+        return {level, &type};
+    }
 };

@@ -34,9 +34,13 @@ union ProficiencyIdentifier
 
     ProficiencyIdentifier (MagicTraditions magicTradition) {MagicTradition = magicTradition;}
 
+    ProficiencyIdentifier (SkillTypes skillType) {SkillType = skillType;}
+
     bool operator== (WeaponClasses weaponClass) const {return WeaponClass == weaponClass;}
 
     bool operator== (SavingThrows savingThrow) const {return SavingThrow == savingThrow;}
+
+    bool operator== (SkillTypes skillType) const {return SkillType == skillType;}
 };
 
 struct ProficiencyType
@@ -46,6 +50,17 @@ struct ProficiencyType
     Word Name;
 
     ProficiencyIdentifier Identifier;
+
+    AbilityTypes AssociatedAbility;
+
+    ProficiencyType(ProficiencyClasses proficiencyClass, Word name, ProficiencyIdentifier identifier, AbilityTypes ability) :
+        Class(proficiencyClass), Name(name), Identifier(identifier), AssociatedAbility(ability) {}
+
+    ProficiencyType(ProficiencyClasses proficiencyClass, Word name, ProficiencyIdentifier identifier) :
+        Class(proficiencyClass), Name(name), Identifier(identifier) {}
+
+    ProficiencyType(ProficiencyClasses proficiencyClass, Word name) :
+        Class(proficiencyClass), Name(name) {}
 };
 
 struct Proficiency
