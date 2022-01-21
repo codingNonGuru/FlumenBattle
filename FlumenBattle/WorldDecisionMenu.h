@@ -16,8 +16,12 @@ namespace world
 
         Text *statusLabel;
 
+        Array <Text *> rollLabels;
+
         void HandleConfigure() override;
 
         void HandleUpdate() override;
+
+        void HandleActionSelected();
     };
 }

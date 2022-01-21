@@ -30,7 +30,7 @@ namespace world::group
     {
         friend class GroupActionFactory;
 
-        static void InitiateTravel(Group &, const GroupActionData &);
+        static GroupActionResult InitiateTravel(Group &, const GroupActionData &);
 
         static int GetTravelDuration(const Group &);
 

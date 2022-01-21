@@ -63,7 +63,7 @@ namespace world::group
         return &action;
     }
 
-    void GroupActionPerformer::InitiateTravel(Group &group, const GroupActionData &actionData)
+    GroupActionResult GroupActionPerformer::InitiateTravel(Group &group, const GroupActionData &actionData)
     {
         group.destination = actionData.TravelDestination;
 
@@ -93,6 +93,8 @@ namespace world::group
         {
             group.actionSuccess = SuccessTypes::SUCCESS;
         }
+
+        return {roll, modifier, SkillTypes::SURVIVAL};
     }
 
     int GroupActionPerformer::GetTravelDuration(const Group &group)

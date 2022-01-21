@@ -16,6 +16,7 @@ namespace world
     class Battle;
     class WorldScene;
     class WorldTile;
+    class WorldDecisionMenu;
 }
 
 namespace world::group
@@ -50,6 +51,8 @@ namespace world::group
         friend class GroupActionPerformer;
 
         friend class GroupActionValidator;
+
+        friend class world::WorldDecisionMenu;
 
         Word name;
 
@@ -90,6 +93,8 @@ namespace world::group
 
         const GroupAction * GetAction() const {return action;}
 
+        SuccessTypes GetActionSuccess() const {return actionSuccess;}
+
         Pool <Character> & GetCharacters() {return characters;}
 
         void DetermineAction();
@@ -98,7 +103,7 @@ namespace world::group
 
         bool ValidateAction(world::GroupActions, const GroupActionData & = GroupActionData());
 
-        void SelectAction(world::GroupActions, const GroupActionData & = GroupActionData());
+        GroupActionResult SelectAction(world::GroupActions, const GroupActionData & = GroupActionData());
 
         void CancelAction();
 

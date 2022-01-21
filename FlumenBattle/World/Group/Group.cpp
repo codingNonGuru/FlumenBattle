@@ -98,16 +98,16 @@ namespace world::group
         return possibleAction->CanPerform(*this, actionData);
     }   
 
-    void Group::SelectAction(world::GroupActions actionType, const GroupActionData &actionData)
+    GroupActionResult Group::SelectAction(world::GroupActions actionType, const GroupActionData &actionData)
     {
         if(action && action->Type == actionType)
             return;
 
         action = GroupActionFactory::Get()->BuildAction(actionType);
 
-        action->Initiate(*this, actionData);
-
         actionProgress = 0;
+
+        return action->Initiate(*this, actionData);
     }
 
     void Group::PerformAction()

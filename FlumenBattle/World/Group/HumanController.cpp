@@ -16,8 +16,12 @@ static const SDL_Scancode takeShortRestInputKey = SDL_Scancode::SDL_SCANCODE_R;
 
 static const SDL_Scancode travelInputKey = SDL_Scancode::SDL_SCANCODE_T;
 
+GroupActionResult selectedActionResult;
+
 HumanController::HumanController()
 {
+    OnActionSelected = new Delegate();
+
     OnActionPerformed = new Delegate();
 }
 
@@ -48,6 +52,11 @@ void HumanController::DisableInput()
     InputHandler::UnregisterEvent(travelInputKey, {this, &HumanController::HandleTravel});
 }
 
+const GroupActionResult & HumanController::GetSelectedActionResult()
+{
+    return selectedActionResult;
+}
+
 void HumanController::HandleSearch()
 {
     auto playerGroup = WorldScene::Get()->GetPlayerGroup();
@@ -75,6 +84,8 @@ void HumanController::HandleTravel()
     auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     if(playerGroup->ValidateAction(GroupActions::TRAVEL, {tile}))
     {
-        playerGroup->SelectAction(world::GroupActions::TRAVEL, {tile});
+        selectedActionResult = playerGroup->SelectAction(world::GroupActions::TRAVEL, {tile});
+
+        OnActionSelected->Invoke();
     }
 }

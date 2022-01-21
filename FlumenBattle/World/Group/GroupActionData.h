@@ -1,5 +1,7 @@
 #pragma once
 
+#include "FlumenBattle/Types.hpp"
+
 namespace world
 {
     class WorldTile;
@@ -14,5 +16,14 @@ namespace world::group
         //GroupActionData() {}
 
         //GroupActionData(WorldTile *travelDestination) : TravelDestination(travelDestination) {}
+    };
+
+    struct GroupActionResult
+    {
+        int Roll;
+
+        int Modifier;
+
+        SkillTypes Skill;
     };
 }

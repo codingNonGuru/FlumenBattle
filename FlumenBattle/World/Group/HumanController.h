@@ -8,6 +8,8 @@ class Delegate;
 
 namespace world::group
 {
+    struct GroupActionResult;
+
     class HumanController : public GroupController, public Singleton <HumanController>
     {
         void DetermineAction(Group &) const override;
@@ -21,6 +23,8 @@ namespace world::group
         void HandleTravel();
 
     public:
+        Delegate *OnActionSelected;
+
         Delegate *OnActionPerformed;
 
         HumanController();
@@ -28,5 +32,7 @@ namespace world::group
         void EnableInput();
 
         void DisableInput();
+
+        const GroupActionResult & GetSelectedActionResult();
     };  
 };
