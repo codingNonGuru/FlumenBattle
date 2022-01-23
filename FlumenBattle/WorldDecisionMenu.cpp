@@ -6,6 +6,8 @@
 
 #include "FlumenBattle/WorldDecisionMenu.h"
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/WorldBiome.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/HumanController.h"
@@ -76,7 +78,17 @@ void WorldDecisionMenu::HandleUpdate()
         switch(group->GetAction()->Type)
         {
             case GroupActions::TRAVEL:
-                text << "Travelling to " << (int)group->GetDestination();
+                text << "Travelling to " << [&] {
+                    switch(group->GetDestination()->Biome->Type)
+                    {
+                        case WorldBiomes::DESERT:
+                            return "Desert";
+                        case WorldBiomes::STEPPE:
+                            return "Steppe";
+                        case WorldBiomes::WOODS:
+                            return "Woods";
+                    }
+                } ();
                 break;
             case GroupActions::TAKE_LONG_REST:
                 text << "Taking a long rest";

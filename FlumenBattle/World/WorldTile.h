@@ -7,6 +7,7 @@
 namespace world
 {
     class WorldMap;
+    struct WorldBiome;
     namespace group
     {
         class Group;
@@ -37,6 +38,8 @@ namespace world
 
         WorldTiles Type;
 
+        const WorldBiome *Biome;
+
         WorldTile() {}
 
         WorldTile(Position2 position, Integer2 squareCoordinates);
@@ -47,6 +50,12 @@ namespace world
         {
             auto direction = this->HexCoordinates - other.HexCoordinates;
             return (abs(direction.x) + abs(direction.y) + abs(direction.z)) / 2;
+        }
+
+        Float GetPhysicalDistanceTo(const WorldTile& other)
+        {
+            auto direction = this->Position - other.Position;
+            return glm::length(direction);
         }
 
         const Array <WorldTile*> & GetNearbyTiles(Integer);

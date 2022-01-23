@@ -5,6 +5,7 @@
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/WorldBiome.h"
 #include "FlumenBattle/Character.h"
 
 namespace world::group
@@ -68,6 +69,9 @@ namespace world::group
         group.destination = actionData.TravelDestination;
 
         auto difficultyClass = 15;
+
+        difficultyClass += group.tile->Biome->TravelPenalty;
+        difficultyClass += group.destination->Biome->TravelPenalty;
 
         int modifier = -100;
         for(auto &character : group.characters)

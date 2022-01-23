@@ -13,4 +13,19 @@ namespace world
     {
         LAND, SEA
     };
+
+    enum class WorldBiomes
+    {
+        STEPPE, DESERT, WOODS
+    };
+
+    enum class WorldClimates
+    {
+        ARCTIC, TEMPERATE, TROPICAL
+    };
+
+    enum class WorldReliefs
+    {
+        PLAINS, HILLS, MOUNTAINS
+    };
 }
