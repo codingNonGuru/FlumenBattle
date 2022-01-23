@@ -81,24 +81,24 @@ namespace world::group
         }
 
         auto roll = utility::GetRandom(1, 20);
-        if(roll == 1 || roll + modifier <= difficultyClass - 10)
+        if(roll == 1 || roll + modifier < difficultyClass - 10)
         {
             group.actionSuccess = SuccessTypes::CRITICAL_FAILURE;
         }
-        else if(roll == 20 || roll + modifier > difficultyClass + 10)
+        else if(roll == 20 || roll + modifier >= difficultyClass + 10)
         {
             group.actionSuccess = SuccessTypes::CRITICAL_SUCCESS;
         }
-        else if(roll + modifier <= difficultyClass)
+        else if(roll + modifier < difficultyClass)
         {
             group.actionSuccess = SuccessTypes::FAILURE;
         }
-        else if(roll + modifier > difficultyClass)
+        else if(roll + modifier >= difficultyClass)
         {
             group.actionSuccess = SuccessTypes::SUCCESS;
         }
 
-        return {roll, modifier, SkillTypes::SURVIVAL};
+        return {roll, modifier, difficultyClass, SkillTypes::SURVIVAL};
     }
 
     int GroupActionPerformer::GetTravelDuration(const Group &group)

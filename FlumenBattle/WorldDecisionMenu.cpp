@@ -155,7 +155,7 @@ void WorldDecisionMenu::HandleActionSelected()
 
     text << " check of ";
 
-    text << result.Roll + result.Modifier << " (" << result.Roll << "+" << result.Modifier << ")";
+    text << result.Roll + result.Modifier << " (" << result.Roll << "+" << result.Modifier << ") against a DC of " << result.DifficultyClass;
 
     *rollLabelTexts.Get(currentRollLabelIndex++) = text;
 

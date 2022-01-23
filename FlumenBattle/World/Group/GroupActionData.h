@@ -24,6 +24,8 @@ namespace world::group
 
         int Modifier;
 
+        int DifficultyClass;
+
         SkillTypes Skill;
     };
 }

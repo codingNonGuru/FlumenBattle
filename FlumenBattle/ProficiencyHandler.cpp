@@ -1,4 +1,5 @@
 #include "FlumenBattle/ProficiencyHandler.h"
+#include "FlumenBattle/ProficiencyFactory.h"
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/Weapon.h"
 
@@ -76,10 +77,13 @@ Integer ProficiencyHandler::GetSkillBonus(const Character &character, SkillTypes
         if(iterator->Type->Identifier == skillType)
         {
             modifier += GetLevelModifier(*iterator);
-            modifier += character.GetAbility(iterator->Type->AssociatedAbility).Modifier;
             break;
         }
     }
+
+    const auto &skill = ProficiencyFactory::BuildSkillType(skillType);
+
+    modifier += character.GetAbility(skill.AssociatedAbility).Modifier;
 
     return modifier;
 }

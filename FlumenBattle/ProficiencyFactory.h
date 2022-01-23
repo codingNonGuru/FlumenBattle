@@ -6,6 +6,12 @@ class Proficiency;
 
 class ProficiencyFactory
 {
+    static const ProficiencyType & BuildSurvivalSkill()
+    {
+        static const ProficiencyType type = {ProficiencyClasses::SKILL, "Survival", SkillTypes::SURVIVAL, AbilityTypes::WISDOM};
+        return type;
+    }
+
 public:
     static Proficiency BuildPerceptionProficiency(ProficiencyLevels level)
     {
@@ -79,9 +85,26 @@ public:
         return {level, &type};
     }
 
-    static Proficiency BuildSurvivalSkillProficiency(ProficiencyLevels level)
+    static Proficiency BuildSkillProficiency(SkillTypes type, ProficiencyLevels level)
     {
-        static ProficiencyType type = {ProficiencyClasses::SKILL, "Survival", SkillTypes::SURVIVAL, AbilityTypes::WISDOM};
-        return {level, &type};
+        const auto skillType = &BuildSkillType(type);
+        switch(type)
+        {
+            case SkillTypes::SURVIVAL:
+                return {level, skillType};
+            default:
+                return {level, nullptr};
+        }
+    }
+
+    static const ProficiencyType & BuildSkillType(SkillTypes type)
+    {
+        switch(type)
+        {
+            case SkillTypes::SURVIVAL:
+                return BuildSurvivalSkill();
+            default:
+                return {ProficiencyClasses::SKILL, "None", SkillTypes::NONE, AbilityTypes::STRENGTH};
+        }
     }
 };

@@ -16,7 +16,7 @@ namespace world
 
     enum class WorldBiomes
     {
-        STEPPE, DESERT, WOODS
+        STEPPE, DESERT, WOODS, SWAMP
     };
 
     enum class WorldClimates

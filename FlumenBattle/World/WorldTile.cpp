@@ -55,8 +55,8 @@ void WorldTile::Initialize()
         }
     } ();
 
-    color = Color::AddSaturation(color, utility::GetRandom(-0.07f, 0.07f));
-    color = Color::Lighten(color, utility::GetRandom(-0.07f, 0.07f));
+    color = Color::AddSaturation(color, utility::GetRandom(-0.03f, 0.03f));
+    color = Color::Lighten(color, utility::GetRandom(-0.03f, 0.03f));
 
     Shade = color;
 }
