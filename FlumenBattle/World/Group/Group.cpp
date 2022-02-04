@@ -91,14 +91,14 @@ namespace world::group
         controller->DetermineAction(*this);
     }
 
-    bool Group::ValidateAction(world::GroupActions actionType, const GroupActionData &actionData)
+    bool Group::ValidateAction(GroupActions actionType, const GroupActionData &actionData)
     {
         auto possibleAction = GroupActionFactory::Get()->BuildAction(actionType);
 
         return possibleAction->CanPerform(*this, actionData);
     }   
 
-    GroupActionResult Group::SelectAction(world::GroupActions actionType, const GroupActionData &actionData)
+    GroupActionResult Group::SelectAction(GroupActions actionType, const GroupActionData &actionData)
     {
         if(action && action->Type == actionType)
             return;
@@ -107,6 +107,8 @@ namespace world::group
 
         actionProgress = 0;
 
+        actionIntensity = ActionIntensities::NORMAL;
+
         return action->Initiate(*this, actionData);
     }
 
@@ -114,7 +116,7 @@ namespace world::group
     {
         if(action)
         {
-            actionProgress++;
+            actionProgress += GetProgressRate();
 
             action->Perform(*this);
         }
@@ -127,11 +129,49 @@ namespace world::group
         actionProgress = 0;
     }
 
+    void Group::IntensifyAction()
+    {
+        if(action == nullptr)
+            return;
+            
+        if(action->HasVaryingIntensity == false)
+            return;
+
+        switch(actionIntensity)
+        {
+            case ActionIntensities::LEISURELY:
+                actionIntensity = ActionIntensities::NORMAL;
+                break;
+            case ActionIntensities::NORMAL:
+                actionIntensity = ActionIntensities::INTENSE;
+                break;
+        }
+    }
+
+    void Group::SlackenAction()
+    {
+        if(action == nullptr)
+            return;
+
+        if(action->HasVaryingIntensity == false)
+            return;
+            
+        switch(actionIntensity)
+        {
+            case ActionIntensities::NORMAL:
+                actionIntensity = ActionIntensities::LEISURELY;
+                break;
+            case ActionIntensities::INTENSE:
+                actionIntensity = ActionIntensities::NORMAL;
+                break;
+        }
+    }
+
     void Group::EnterBattle(Battle *_battle)
     {
         battle = _battle;
 
-        SelectAction(world::GroupActions::FIGHT);
+        SelectAction(GroupActions::FIGHT);
     }
 
     void Group::ExitBattle()
@@ -161,5 +201,18 @@ namespace world::group
     int Group::GetRemainingActionDuration() const
     {
         return action->GetDuration(*this) - actionProgress;
+    }
+
+    int Group::GetProgressRate() const
+    {
+        switch(actionIntensity)
+        {
+            case ActionIntensities::LEISURELY:
+                return GroupAction::ACTION_PROGRESS_RATE / 2;
+            case ActionIntensities::NORMAL:
+                return GroupAction::ACTION_PROGRESS_RATE;
+            case ActionIntensities::INTENSE:
+                return GroupAction::ACTION_PROGRESS_RATE * 2;
+        }
     }
 }

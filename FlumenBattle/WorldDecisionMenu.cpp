@@ -19,6 +19,7 @@ Array <Phrase> rollLabelTexts = Array <Phrase> (ROLL_LABEL_COUNT);
 Index currentRollLabelIndex = 0;
 
 using namespace world;
+using namespace group;
 
 void WorldDecisionMenu::HandleConfigure() 
 {
@@ -78,7 +79,18 @@ void WorldDecisionMenu::HandleUpdate()
         switch(group->GetAction()->Type)
         {
             case GroupActions::TRAVEL:
-                text << "Travelling to " << [&] {
+                text << "Travelling " << 
+                    [&] {
+                    switch(group->actionIntensity)
+                    {
+                        case ActionIntensities::LEISURELY:
+                            return "leisurely";
+                        case ActionIntensities::NORMAL:
+                            return "normally";
+                        case ActionIntensities::INTENSE:
+                            return "intensely";
+                    }
+                    } () << " to " << [&] {
                     switch(group->GetDestination()->Biome->Type)
                     {
                         case WorldBiomes::DESERT:
@@ -104,9 +116,10 @@ void WorldDecisionMenu::HandleUpdate()
                 break;
         }
 
-        int duration = group->GetRemainingActionDuration() / 6;
+        auto progressRate = group->GetProgressRate();
+        int duration = group->GetRemainingActionDuration() / (6 * progressRate);
         
-        if(group->GetRemainingActionDuration() % 6 > 2)
+        if(group->GetRemainingActionDuration() % (6 * progressRate) > 2)
             duration += 1;
 
         if(duration < 0)

@@ -22,6 +22,10 @@ namespace world::group
 
         void HandleTravel();
 
+        void HandleSlackenAction();
+
+        void HandleIntensifyAction();
+
     public:
         Delegate *OnActionSelected;
 

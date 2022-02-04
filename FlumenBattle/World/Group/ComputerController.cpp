@@ -9,7 +9,7 @@ namespace world::group
         if(group.GetAction())  
             return;
 
-        group.SelectAction(world::GroupActions::SEARCH);
+        group.SelectAction(GroupActions::SEARCH);
     }
 
     void ComputerController::PerformAction(Group &) const 

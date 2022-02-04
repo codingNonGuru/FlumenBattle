@@ -11,7 +11,7 @@ WorldInterface::WorldInterface()
     canvas = ElementFactory::BuildCanvas();
 
     decisionMenu = ElementFactory::BuildElement<WorldDecisionMenu>(
-        {Size(960, 210), DrawOrder(3), {Position2(0.0f, 420.0f), canvas}, {"Sprite"}, Opacity(0.75f)}
+        {Size(1080, 210), DrawOrder(3), {Position2(0.0f, 420.0f), canvas}, {"Sprite"}, Opacity(0.75f)}
     );
     decisionMenu->Enable();
 

@@ -29,25 +29,47 @@ namespace world::group
 
     const GroupAction * GroupActionFactory::BuildTakeShortRest()
     {
-        static GroupAction action = {GroupActions::TAKE_SHORT_REST, 18, &GroupActionValidator::CanTakeShortRest, &GroupActionPerformer::TakeShortRest};
+        static GroupAction action = {
+            GroupActions::TAKE_SHORT_REST, 
+            18 * GroupAction::ACTION_PROGRESS_RATE,
+            false, 
+            &GroupActionValidator::CanTakeShortRest, 
+            &GroupActionPerformer::TakeShortRest};
         return &action;
     }
 
     const GroupAction * GroupActionFactory::BuildTakeLongRest()
     {
-        static GroupAction action = {GroupActions::TAKE_LONG_REST, 48, &GroupActionValidator::CanTakeLongRest, &GroupActionPerformer::TakeLongRest};
+        static GroupAction action = {
+            GroupActions::TAKE_LONG_REST, 
+            48 * GroupAction::ACTION_PROGRESS_RATE,
+            false,
+            &GroupActionValidator::CanTakeLongRest, 
+            &GroupActionPerformer::TakeLongRest};
         return &action;
     }
 
     const GroupAction * GroupActionFactory::BuildSearch()
     {
-        static GroupAction action = {GroupActions::SEARCH, 18, &GroupActionValidator::CanSearch, &GroupActionPerformer::Search};
+        static GroupAction action = {
+            GroupActions::SEARCH, 
+            18 * GroupAction::ACTION_PROGRESS_RATE, 
+            false,
+            &GroupActionValidator::CanSearch, 
+            &GroupActionPerformer::Search
+            };
         return &action;
     }
 
     const GroupAction * GroupActionFactory::BuildFight()
     {
-        static GroupAction action = {GroupActions::FIGHT, 0, &GroupActionValidator::CanFight, &GroupActionPerformer::Fight};
+        static GroupAction action = {
+            GroupActions::FIGHT, 
+            0 * GroupAction::ACTION_PROGRESS_RATE,
+            false,
+            &GroupActionValidator::CanFight, 
+            &GroupActionPerformer::Fight
+            };
         return &action;
     }
 
@@ -55,7 +77,8 @@ namespace world::group
     {
         static GroupAction action = {
             GroupActions::TRAVEL, 
-            60, 
+            60 * GroupAction::ACTION_PROGRESS_RATE,
+            true, 
             &GroupActionValidator::CanTravel, 
             &GroupActionPerformer::Travel, 
             &GroupActionPerformer::InitiateTravel, 
@@ -117,7 +140,7 @@ namespace world::group
                 break;
         }
 
-        return group.action->BaseDuration - durationBonus * 6;
+        return group.action->BaseDuration - durationBonus * 6 * GroupAction::ACTION_PROGRESS_RATE;
     }
 
     void GroupActionPerformer::TakeShortRest(Group& group)

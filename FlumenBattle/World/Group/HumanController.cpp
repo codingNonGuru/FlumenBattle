@@ -16,6 +16,10 @@ static const SDL_Scancode takeShortRestInputKey = SDL_Scancode::SDL_SCANCODE_R;
 
 static const SDL_Scancode travelInputKey = SDL_Scancode::SDL_SCANCODE_T;
 
+static const SDL_Scancode slackenActionKey = SDL_Scancode::SDL_SCANCODE_LEFTBRACKET;
+
+static const SDL_Scancode intensifyActionKey = SDL_Scancode::SDL_SCANCODE_RIGHTBRACKET;
+
 GroupActionResult selectedActionResult;
 
 HumanController::HumanController()
@@ -41,6 +45,10 @@ void HumanController::EnableInput()
     InputHandler::RegisterEvent(takeShortRestInputKey, {this, &HumanController::HandleTakeShortRest});
 
     InputHandler::RegisterEvent(travelInputKey, {this, &HumanController::HandleTravel});
+
+    InputHandler::RegisterEvent(slackenActionKey, {this, &HumanController::HandleSlackenAction});
+
+    InputHandler::RegisterEvent(intensifyActionKey, {this, &HumanController::HandleIntensifyAction});
 }
 
 void HumanController::DisableInput()
@@ -50,6 +58,10 @@ void HumanController::DisableInput()
     InputHandler::UnregisterEvent(takeShortRestInputKey, {this, &HumanController::HandleTakeShortRest});
 
     InputHandler::UnregisterEvent(travelInputKey, {this, &HumanController::HandleTravel});
+
+    InputHandler::UnregisterEvent(slackenActionKey, {this, &HumanController::HandleSlackenAction});
+
+    InputHandler::UnregisterEvent(intensifyActionKey, {this, &HumanController::HandleIntensifyAction});
 }
 
 const GroupActionResult & HumanController::GetSelectedActionResult()
@@ -62,7 +74,7 @@ void HumanController::HandleSearch()
     auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     if(playerGroup->ValidateAction(GroupActions::SEARCH))
     {
-        playerGroup->SelectAction(world::GroupActions::SEARCH);
+        playerGroup->SelectAction(GroupActions::SEARCH);
     }
 }
 
@@ -71,7 +83,7 @@ void HumanController::HandleTakeShortRest()
     auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     if(playerGroup->ValidateAction(GroupActions::TAKE_SHORT_REST))
     {
-        playerGroup->SelectAction(world::GroupActions::TAKE_SHORT_REST);
+        playerGroup->SelectAction(GroupActions::TAKE_SHORT_REST);
     }
 }
 
@@ -84,8 +96,20 @@ void HumanController::HandleTravel()
     auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     if(playerGroup->ValidateAction(GroupActions::TRAVEL, {tile}))
     {
-        selectedActionResult = playerGroup->SelectAction(world::GroupActions::TRAVEL, {tile});
+        selectedActionResult = playerGroup->SelectAction(GroupActions::TRAVEL, {tile});
 
         OnActionSelected->Invoke();
     }
+}
+
+void HumanController::HandleSlackenAction()
+{
+    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    playerGroup->SlackenAction();
+}
+
+void HumanController::HandleIntensifyAction()
+{
+    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    playerGroup->IntensifyAction();
 }

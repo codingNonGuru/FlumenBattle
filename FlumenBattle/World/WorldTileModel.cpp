@@ -137,7 +137,7 @@ void WorldTileModel::Render()
     }*/
 
     auto hoveredTile = worldController->GetHoveredTile();
-    if(hoveredTile != nullptr && worldScene->GetPlayerGroup()->ValidateAction(GroupActions::TRAVEL, {hoveredTile}))
+    if(hoveredTile != nullptr && worldScene->GetPlayerGroup()->ValidateAction(group::GroupActions::TRAVEL, {hoveredTile}))
     {
         bootSprite->Draw(camera, {hoveredTile->Position, Scale2(0.3f, 0.3f), Opacity(1.0f), DrawOrder(-2)});
     }
@@ -147,7 +147,7 @@ void WorldTileModel::Render()
     for(auto &group : *worldScene->groups)
     {
         auto position = group.GetTile()->Position;
-        if(group.GetAction() != nullptr && group.GetAction()->Type == GroupActions::TRAVEL)
+        if(group.GetAction() != nullptr && group.GetAction()->Type == group::GroupActions::TRAVEL)
         {
             auto progress = group.GetActionProgress();
             position = position * (1.0f - progress) + group.GetDestination()->Position * progress;

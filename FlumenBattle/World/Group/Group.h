@@ -28,14 +28,6 @@ namespace world::group
     class GroupActionPerformer;
     class GroupActionValidator;
 
-    enum SuccessTypes
-    {
-        CRITICAL_SUCCESS,
-        SUCCESS,
-        FAILURE,
-        CRITICAL_FAILURE
-    };
-
     class Group
     {
         friend class container::Pool <Group>;
@@ -65,6 +57,8 @@ namespace world::group
         Integer actionProgress;
 
         SuccessTypes actionSuccess;
+
+        ActionIntensities actionIntensity;
 
         Battle *battle;
 
@@ -101,11 +95,15 @@ namespace world::group
 
         void PerformAction();
 
-        bool ValidateAction(world::GroupActions, const GroupActionData & = GroupActionData());
+        bool ValidateAction(GroupActions, const GroupActionData & = GroupActionData());
 
-        GroupActionResult SelectAction(world::GroupActions, const GroupActionData & = GroupActionData());
+        GroupActionResult SelectAction(GroupActions, const GroupActionData & = GroupActionData());
 
         void CancelAction();
+
+        void IntensifyAction();
+
+        void SlackenAction();
 
         void EnterBattle(Battle *);
 
@@ -120,5 +118,7 @@ namespace world::group
         float GetActionProgress() const;
 
         int GetRemainingActionDuration() const;
+
+        int GetProgressRate() const;
     };
 }
