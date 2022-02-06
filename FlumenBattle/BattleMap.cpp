@@ -90,7 +90,7 @@ BattleTile* BattleMap::GetEmptyTileAroundTile(BattleTile * tile, Integer range)
     {
         auto index = utility::GetRandom(0, nearbyTiles.GetSize() - 1);
         auto otherTile = *nearbyTiles.Get(index);
-        if(otherTile->Combatant == nullptr)
+        if(otherTile->Combatant == nullptr && otherTile->IsObstacle == false)
         {
             return otherTile;
         }

@@ -69,6 +69,9 @@ void HumanController::CheckCharacterMovement()
 
     isInitiatingMove = false;
 
+    if(hoveredTile->IsObstacle)
+        return;
+
     battleController->TargetTile(hoveredTile);
 
     battleController->Move();

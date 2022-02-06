@@ -44,11 +44,11 @@ namespace world
         playerGroup->SetTile(worldMap->GetCenterTile());
 
         group::GroupFactory::Create({group::GroupTypes::COMPUTER, RaceTypes::ORC})->SetTile(worldMap->GetEmptyRandomTile());
-        group::GroupFactory::Create({group::GroupTypes::COMPUTER, RaceTypes::GOBLIN})->SetTile(worldMap->GetEmptyRandomTile());
-        group::GroupFactory::Create({group::GroupTypes::COMPUTER, RaceTypes::ELF})->SetTile(worldMap->GetEmptyRandomTile());
-        group::GroupFactory::Create({group::GroupTypes::COMPUTER, RaceTypes::HUMAN})->SetTile(worldMap->GetEmptyRandomTile());
-        group::GroupFactory::Create({group::GroupTypes::COMPUTER, RaceTypes::GNOME})->SetTile(worldMap->GetEmptyRandomTile());
-        group::GroupFactory::Create({group::GroupTypes::COMPUTER, RaceTypes::HALFLING})->SetTile(worldMap->GetEmptyRandomTile());
+        //group::GroupFactory::Create({group::GroupTypes::COMPUTER, RaceTypes::GOBLIN})->SetTile(worldMap->GetEmptyRandomTile());
+        //group::GroupFactory::Create({group::GroupTypes::COMPUTER, RaceTypes::ELF})->SetTile(worldMap->GetEmptyRandomTile());
+        //group::GroupFactory::Create({group::GroupTypes::COMPUTER, RaceTypes::HUMAN})->SetTile(worldMap->GetEmptyRandomTile());
+        //group::GroupFactory::Create({group::GroupTypes::COMPUTER, RaceTypes::GNOME})->SetTile(worldMap->GetEmptyRandomTile());
+        //group::GroupFactory::Create({group::GroupTypes::COMPUTER, RaceTypes::HALFLING})->SetTile(worldMap->GetEmptyRandomTile());
 
         time = WorldTime(230, 63, 14);
 

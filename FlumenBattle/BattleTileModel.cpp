@@ -106,10 +106,11 @@ void BattleTileModel::Render()
         timeFactor = 0.05f + timeFactor * 0.05f;
         shader->SetConstant(timeFactor, "opacity");
 
-        const auto &nearbyTiles = map->GetNearbyTiles(combatant->GetTile(), combatant->GetMovement());
+        //const auto &nearbyTiles = map->GetNearbyTiles(combatant->GetTile(), combatant->GetMovement());
+        const auto &nearbyTiles = combatant->GetTile()->FindPath(combatant->GetMovement());
         for(auto tileIterator = nearbyTiles.GetStart(); tileIterator != nearbyTiles.GetEnd(); ++tileIterator)
         {
-            auto tile = *tileIterator;
+            auto tile = tileIterator->Tile;
             if(tile == nullptr)
                 continue;
 

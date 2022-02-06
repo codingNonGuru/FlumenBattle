@@ -19,6 +19,13 @@ private:
     BattleMap* Map;
 
 public:
+    struct PathData
+    {
+        BattleTile *Tile;
+
+        Integer Distance;
+    };
+
     Position2 Position;
 
     Integer2 SquareCoordinates;
@@ -28,6 +35,8 @@ public:
     Float4 Shade;
 
     class Combatant *Combatant;
+
+    bool IsObstacle;
 
     BattleTile() {}
 
@@ -49,4 +58,6 @@ public:
     BattleTile * GetEmptyTileInRange(Integer);
 
     BattleTile * GetNeighbor(Integer3);
+
+    const Array <PathData> & FindPath(Integer);
 };

@@ -207,7 +207,7 @@ namespace world::group
 
         group.CancelAction();
 
-        //WorldScene::Get()->StartBattle(&group, other);
+        WorldScene::Get()->StartBattle(&group, other);
     }
 
     void GroupActionPerformer::Fight(Group& group)
