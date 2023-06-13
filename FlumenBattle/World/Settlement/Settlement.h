@@ -4,6 +4,8 @@
 
 #include "FlumenEngine/Utility/Color.hpp"
 
+#include "FlumenBattle/World/Technology/Technology.h"
+
 namespace world
 {
     class WorldTile;
@@ -45,44 +47,6 @@ namespace world
         IRRIGATION
     };
 
-    enum class Technologies
-    {
-        MASONRY, //+1 to building saving throws against earthquakes
-        HAND_WASHING, //+1 to saving throws against disease
-        FUR_CAMPS, //+1 food from forests
-        TRAINED_SENTINELS, //+1 to attack rolls against bandits
-        FISHERIES, //+1 food from oceans
-        WAGON_BANDS, //+2 to colonization dice rolls
-        FOOD_RATIONING, //+1 to saving throws against hunger
-        COUNT
-    };
-
-    class TechnologyRoster
-    {
-        static constexpr int TECHNOLOGY_COUNT = (int)Technologies::COUNT;
-
-        bool hasResearched[TECHNOLOGY_COUNT];
-
-        TechnologyRoster()
-        {
-            for(auto &technology : hasResearched)
-            {
-                technology = false;
-            }
-        }
-
-    public:
-        bool HasDiscovered(Technologies technology) const
-        {
-            return hasResearched[(int)technology];
-        }
-
-        void DiscoverTechnology(Technologies technology) 
-        {
-            hasResearched[(int)technology] = true;
-        }
-    };
-
     class Settlement
     {
         friend class Polity;
@@ -115,9 +79,7 @@ namespace world
 
         Integer cultureGrowth;
 
-        Integer science;
-
-        TechnologyRoster technologyRoster;
+        science::TechnologyRoster technologyRoster;
 
         Pool <SettlementTile> tiles;
 

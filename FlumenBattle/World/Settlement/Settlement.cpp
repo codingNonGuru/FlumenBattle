@@ -416,7 +416,7 @@ void Settlement::Update()
 
     if(WorldScene::Get()->GetTime().MinuteCount == 0)
     {    
-        if(utility::GetRandom(1, 100) <= 3)
+        if(utility::GetRandom(1, 100) <= 2)
         {
             if(afflictions.Find(AfflictionTypes::MALARIA) == nullptr)
             {
