@@ -1,6 +1,7 @@
 #include "GroupDynamics.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 
+using namespace world;
 using namespace world::group;
 
 #define ARMOR_CLASS 15
@@ -14,7 +15,7 @@ GroupDynamics::GroupDynamics()
     merchantStrength = 3;
 }
 
-void GroupDynamics::Update(Settlement &settlement)
+void GroupDynamics::Update(settlement::Settlement &settlement)
 {
     if(banditStrength > 0 && patrolStrength > 0)
     {

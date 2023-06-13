@@ -9,11 +9,16 @@ namespace world
     class WorldMap;
     struct WorldBiome;
     struct WorldRelief;
+
     namespace group
     {
         class Group;
     }
-    class Settlement;
+
+    namespace settlement
+    {
+        class Settlement;
+    }
 }
 
 namespace world
@@ -31,9 +36,9 @@ namespace world
 
         group::Group *group;
 
-        Settlement *settlement;
+        settlement::Settlement *settlement;
 
-        Settlement *owner;
+        settlement::Settlement *owner;
 
         Integer fertility;
 
@@ -84,9 +89,9 @@ namespace world
 
         group::Group * GetGroup() {return group;}
 
-        Settlement * GetSettlement() {return settlement;}
+        settlement::Settlement * GetSettlement() {return settlement;}
 
-        Settlement * GetOwner() {return owner;}
+        settlement::Settlement * GetOwner() {return owner;}
 
         Integer GetFertility() const {return fertility;}
 
@@ -94,13 +99,13 @@ namespace world
 
         Float4 GetShade() const;
 
-        void Settle(Settlement *);
+        void Settle(settlement::Settlement *);
 
-        void AssertOwnership(Settlement *);
+        void AssertOwnership(settlement::Settlement *);
 
         bool IsOwned() const {return owner != nullptr;}
 
-        Settlement * GetOwner() const {return owner;}
+        settlement::Settlement * GetOwner() const {return owner;}
 
         bool IsBorderingOwnedTile() const {return isBorderingOwnedTile;}
 

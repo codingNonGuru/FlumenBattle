@@ -6,17 +6,17 @@
 
 using namespace world::science;
 
-void TechnologyApplier::ApplyHandWashing(Settlement &settlement)
+void TechnologyApplier::ApplyHandWashing(settlement::Settlement &settlement)
 {
     settlement.AddModifier({SettlementModifiers::SAVING_THROWS_AGAINST_DISEASE, 1});
 }
 
-void TechnologyApplier::ApplyTrainedSentinels(Settlement &settlement)
+void TechnologyApplier::ApplyTrainedSentinels(settlement::Settlement &settlement)
 {
     settlement.AddModifier({SettlementModifiers::PATROL_ATTACK_ROLLS, 1});
 }
 
-void TechnologyApplier::ApplyMasonry(Settlement &settlement)
+void TechnologyApplier::ApplyMasonry(settlement::Settlement &settlement)
 {
     settlement.AddModifier({SettlementModifiers::BUILDING_SAVING_THROWS_AGAINST_EARTHQUAKES, 1});
 }
@@ -26,7 +26,7 @@ void TechnologyRoster::StartResearching(Technologies technology)
     researchTarget = &TechnologyFactory::Get()->Create(technology);
 }
 
-void TechnologyRoster::Update(Settlement &settlement)
+void TechnologyRoster::Update(settlement::Settlement &settlement)
 {
     if(researchTarget == nullptr)
         return;
@@ -46,7 +46,7 @@ void TechnologyRoster::Update(Settlement &settlement)
     }
 }
 
-void TechnologyRoster::ApplyModifiers(Settlement &settlement)
+void TechnologyRoster::ApplyModifiers(settlement::Settlement &settlement)
 {
     Technologies technology = Technologies(0);
     for(auto discovery : discoveries)

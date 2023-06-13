@@ -4,13 +4,10 @@
 
 #include "FlumenBattle/World/Types.h"
 
-namespace world
-{
-    class Settlement;
-}
-
 namespace world::settlement
 {
+    class Settlement;
+
     struct Modifier
     {
         SettlementModifiers Type;
@@ -30,7 +27,7 @@ namespace world::settlement
 
     class ModifierManager : protected ModifierSet
     {
-        friend class world::Settlement;
+        friend class Settlement;
 
         void Initialize();
 

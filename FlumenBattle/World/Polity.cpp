@@ -4,7 +4,7 @@
 
 using namespace world;
 
-void Polity::Initialize(Settlement *ruler)
+void Polity::Initialize(settlement::Settlement *ruler)
 {
     this->ruler = ruler;
 
@@ -14,7 +14,7 @@ void Polity::Initialize(Settlement *ruler)
     malariaDeathCount = 0;
 }
 
-void Polity::ExtendRealm(Settlement *domain)
+void Polity::ExtendRealm(settlement::Settlement *domain)
 {
     *this->settlements.Add() = domain;
 }

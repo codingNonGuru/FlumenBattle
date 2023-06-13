@@ -2,7 +2,7 @@
 #include "FlumenBattle/World/Settlement/Affliction.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 
-using namespace world;
+using namespace world::settlement;
 
 void SettlementEventGenerator::GenerateEvent(Settlement &settlement, const AfflictionResult &result)
 {

@@ -35,7 +35,7 @@ WorldInterface::WorldInterface()
     settlementLabels.Initialize(64);
     for(int i = 0; i < 64; i++)
     {
-        auto settlementLabel = ElementFactory::BuildElement<SettlementLabel>(
+        auto settlementLabel = ElementFactory::BuildElement<settlement::SettlementLabel>(
             {Size(200, 170), DrawOrder(3), {Position2(0.0f, 0.0f), canvas}, {"Sprite"}, Opacity(0.4f)}
         );
         settlementLabel->Disable();

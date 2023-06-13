@@ -8,8 +8,12 @@
 
 namespace world
 {
-    class SettlementProductionFactory;
     class WorldTile;
+}
+
+namespace world::settlement
+{
+    class SettlementProductionFactory;
     class Settlement;
     struct SettlementTile;
     class SettlementProduction;
@@ -39,13 +43,13 @@ namespace world
     public:
         SettlementTile * improvementTarget;
 
-        WorldTile * colonizationTarget;
+        world::WorldTile * colonizationTarget;
 
         ProductionData() {}
 
         ProductionData(SettlementTile *target) : improvementTarget(target) {}
 
-        ProductionData(WorldTile *target) : colonizationTarget(target) {}
+        ProductionData(world::WorldTile *target) : colonizationTarget(target) {}
     };
 
     class SettlementProduction

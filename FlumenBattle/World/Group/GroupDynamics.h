@@ -2,7 +2,7 @@
 
 #include "FlumenCore/Conventions.hpp"
 
-namespace world
+namespace world::settlement
 {
     class Settlement;
     class SettlementLabel;
@@ -12,9 +12,9 @@ namespace world::group
 {
     class GroupDynamics
     {
-        friend class world::Settlement;
+        friend class world::settlement::Settlement;
 
-        friend class world::SettlementLabel;
+        friend class world::settlement::SettlementLabel;
 
         Integer banditStrength;
 
@@ -22,7 +22,7 @@ namespace world::group
 
         Integer merchantStrength;
 
-        void Update(Settlement &);
+        void Update(settlement::Settlement &);
 
         void StrengthenPatrol();
 

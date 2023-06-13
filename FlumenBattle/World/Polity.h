@@ -4,22 +4,25 @@
 
 namespace world
 {
-    class Settlement;
+    namespace settlement
+    {
+        class Settlement;
+    }
 
     class Polity
     {
-        Pool <Settlement *> settlements;
+        Pool <settlement::Settlement *> settlements;
 
-        Settlement *ruler;
+        settlement::Settlement *ruler;
 
         Integer malariaDeathCount;
 
     public:
-        void Initialize(Settlement *);
+        void Initialize(settlement::Settlement *);
 
-        void ExtendRealm(Settlement *);
+        void ExtendRealm(settlement::Settlement *);
 
-        Settlement *GetRuler() const {return ruler;}
+        settlement::Settlement *GetRuler() const {return ruler;}
 
         Integer GetPopulation() const;
 

@@ -1,7 +1,7 @@
 #include "Affliction.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 
-using namespace world;
+using namespace world::settlement;
 
 const AfflictionType * AfflictionTypeBuilder::BuildMalaria()
 {

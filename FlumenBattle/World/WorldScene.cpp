@@ -48,7 +48,7 @@ namespace world
 
         polities.Initialize(64);
 
-        settlements = &SettlementAllocator::Get()->settlements;
+        settlements = &settlement::SettlementAllocator::Get()->settlements;
 
         auto findSettleLocation = [this]
         {
@@ -197,9 +197,9 @@ namespace world
         *battles.Add() = Battle(first, second);
     }
 
-    Settlement * WorldScene::FoundSettlement(WorldTile *location, Polity *polity)
+    settlement::Settlement * WorldScene::FoundSettlement(WorldTile *location, Polity *polity)
     {
-        auto settlement = SettlementFactory::Create({"Safehaven", location});
+        auto settlement = settlement::SettlementFactory::Create({"Safehaven", location});
         if(polity == nullptr)
         {
             polity = polities.Add();

@@ -7,24 +7,26 @@
 
 namespace world
 {
-    struct Affliction;
-    struct SettlementTile;
-    struct SettlementEvent;
-    class Settlement;
-    class SettlementProduction;
-    class SettlementFactory;
     class WorldTile;
+    class WorldScene;
     namespace group
     {
         class GroupDynamics;
     }
 }
 
-namespace world
+namespace world::settlement
 {
+    struct Affliction;
+    struct SettlementTile;
+    struct SettlementEvent;
+    class Settlement;
+    class SettlementProduction;
+    class SettlementFactory;
+
     class SettlementAllocator : public Singleton<SettlementAllocator>
     {
-        friend class WorldScene;
+        friend class world::WorldScene;
 
         friend class SettlementFactory;
 

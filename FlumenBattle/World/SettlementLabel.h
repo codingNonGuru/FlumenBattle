@@ -4,7 +4,7 @@
 
 class Text;
 
-namespace world
+namespace world::settlement
 {
     class Settlement;
 

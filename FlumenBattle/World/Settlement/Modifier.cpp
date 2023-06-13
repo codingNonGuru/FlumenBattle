@@ -2,7 +2,7 @@
 
 using namespace world::settlement;
 
-#define MODIFIER_COUNT_PER_SETTLEMENT 64
+#define MODIFIER_COUNT_PER_SETTLEMENT 32
 
 void ModifierManager::Initialize()
 {

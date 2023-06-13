@@ -10,19 +10,25 @@
 namespace world
 {
     class WorldTile;
+    class WorldScene;
     class Polity;
-    struct Affliction;
-    struct SettlementEvent;
-    struct SettlementEventGenerator;
-    class SettlementProduction;
+
     namespace group
     {
         class GroupDynamics;
     }
+}
+
+namespace world::settlement
+{
+    struct Affliction;
+    struct SettlementEvent;
+    struct SettlementEventGenerator;
+    class SettlementProduction;
 
     struct SettlementTile
     {
-        WorldTile * Tile;
+        world::WorldTile * Tile;
 
         bool IsWorked;
 
@@ -50,7 +56,9 @@ namespace world
 
     class Settlement
     {
-        friend class Polity;
+        friend class world::Polity;
+
+        friend class world::WorldScene;
 
         friend class AfflictionPerformer;
 
@@ -64,13 +72,11 @@ namespace world
 
         friend class SettlementLabel;
 
-        friend class WorldScene;
-
         Word name;
 
         Color banner;
 
-        WorldTile *location;
+        world::WorldTile *location;
 
         Integer population;
 
@@ -84,7 +90,7 @@ namespace world
 
         Pool <SettlementTile> tiles;
 
-        Polity *polity;
+        world::Polity *polity;
 
         Pool <Affliction> afflictions;
 
@@ -92,7 +98,7 @@ namespace world
 
         SettlementProduction *currentProduction;
 
-        settlement::ModifierManager modifierManager;
+        ModifierManager modifierManager;
         
         bool hasSewage;
 
@@ -102,9 +108,9 @@ namespace world
 
         bool hasLibrary;
 
-        void Initialize(Word, Color, WorldTile *);
+        void Initialize(Word, Color, world::WorldTile *);
 
-        WorldTile * FindColonySpot();
+        world::WorldTile * FindColonySpot();
 
         void WorkNewTile();
 
@@ -121,7 +127,7 @@ namespace world
 
         Color GetRulerBanner() const;
 
-        WorldTile *GetLocation() const;
+        world::WorldTile *GetLocation() const;
 
         Pool <SettlementTile> & GetTiles();
 
@@ -139,13 +145,13 @@ namespace world
 
         Integer GetWorkedTiles() const;
 
-        Polity *GetPolity() const {return polity;}
+        world::Polity *GetPolity() const {return polity;}
 
         int GetModifier(SettlementModifiers) const;
 
-        void SetPolity(Polity *);
+        void SetPolity(world::Polity *);
 
-        void AddModifier(settlement::Modifier);
+        void AddModifier(Modifier);
 
         void StrengthenPatrol();
 

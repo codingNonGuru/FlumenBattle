@@ -11,7 +11,7 @@
 #include "FlumenBattle/World/Settlement/Affliction.h"
 #include "FlumenBattle/World/Group/GroupDynamics.h"
 
-using namespace world;
+using namespace world::settlement;
 
 void SettlementLabel::HandleConfigure() 
 {

@@ -8,8 +8,12 @@ class Element;
 namespace world
 {
     class WorldDecisionMenu;
-    class SettlementLabel;
     class WorldHoverInfo;
+
+    namespace settlement
+    {
+        class SettlementLabel;
+    }
     
     class WorldInterface : public Singleton <WorldInterface>
     {
@@ -23,7 +27,7 @@ namespace world
 
         WorldHoverInfo *hoverInfo;
 
-        Array <SettlementLabel *> settlementLabels;
+        Array <settlement::SettlementLabel *> settlementLabels;
 
         void Update();
 

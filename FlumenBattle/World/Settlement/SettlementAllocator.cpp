@@ -12,38 +12,37 @@
 
 #define MAXIMUM_TILES_PER_SETTLEMENT 19
 
-namespace world
+using namespace world::settlement;
+
+SettlementAllocator::SettlementAllocator()
 {
-    SettlementAllocator::SettlementAllocator()
-    {
-        settlements.Initialize(MAXIMUM_SETTLEMENT_COUNT);
+    settlements.Initialize(MAXIMUM_SETTLEMENT_COUNT);
 
-        groupDynamics.Initialize(MAXIMUM_SETTLEMENT_COUNT);
+    groupDynamics.Initialize(MAXIMUM_SETTLEMENT_COUNT);
 
-        tileAllocator = container::PoolAllocator <SettlementTile> (MAXIMUM_SETTLEMENT_COUNT, MAXIMUM_TILES_PER_SETTLEMENT);
+    tileAllocator = container::PoolAllocator <SettlementTile> (MAXIMUM_SETTLEMENT_COUNT, MAXIMUM_TILES_PER_SETTLEMENT);
 
-        afflictionAllocator = container::PoolAllocator <Affliction> (MAXIMUM_SETTLEMENT_COUNT, 16);
+    afflictionAllocator = container::PoolAllocator <Affliction> (MAXIMUM_SETTLEMENT_COUNT, 16);
 
-        eventAllocator = container::PoolAllocator <SettlementEvent> (MAXIMUM_SETTLEMENT_COUNT, 32);
+    eventAllocator = container::PoolAllocator <SettlementEvent> (MAXIMUM_SETTLEMENT_COUNT, 32);
 
-        productionAllocator = container::Pool <SettlementProduction> (MAXIMUM_SETTLEMENT_COUNT);
-    }
+    productionAllocator = container::Pool <SettlementProduction> (MAXIMUM_SETTLEMENT_COUNT);
+}
 
-    Settlement * SettlementAllocator::Allocate()
-    {
-        auto settlement = settlements.Add();
+Settlement * SettlementAllocator::Allocate()
+{
+    auto settlement = settlements.Add();
 
-        settlement->groupDynamics = groupDynamics.Add();
+    settlement->groupDynamics = groupDynamics.Add();
 
-        auto &tiles = settlement->GetTiles();
-        tiles.Initialize(tileAllocator);
+    auto &tiles = settlement->GetTiles();
+    tiles.Initialize(tileAllocator);
 
-        settlement->afflictions.Initialize(afflictionAllocator);
+    settlement->afflictions.Initialize(afflictionAllocator);
 
-        settlement->events.Initialize(eventAllocator);
+    settlement->events.Initialize(eventAllocator);
 
-        settlement->currentProduction = productionAllocator.Add();
+    settlement->currentProduction = productionAllocator.Add();
 
-        return settlement;
-    }
+    return settlement;
 }

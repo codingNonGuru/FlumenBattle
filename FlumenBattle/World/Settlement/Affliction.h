@@ -6,7 +6,7 @@
 
 #include "FlumenBattle/World/Types.h"
 
-namespace world
+namespace world::settlement
 {
     class Settlement;
     struct Affliction;

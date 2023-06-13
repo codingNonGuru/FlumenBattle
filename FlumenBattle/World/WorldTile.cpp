@@ -95,12 +95,12 @@ bool WorldTile::HasRelief(WorldReliefs relief) const
     return relief == Relief->Type;
 }
 
-void WorldTile::Settle(Settlement *settlement)
+void WorldTile::Settle(settlement::Settlement *settlement)
 {
     this->settlement = settlement;
 }
 
-void WorldTile::AssertOwnership(Settlement *owner)
+void WorldTile::AssertOwnership(settlement::Settlement *owner)
 {
     this->owner = owner;
 

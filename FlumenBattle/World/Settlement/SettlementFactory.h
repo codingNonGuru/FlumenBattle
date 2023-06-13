@@ -7,14 +7,18 @@
 
 namespace world
 {
-    class Settlement;
     class WorldTile;
+}
+
+namespace world::settlement
+{
+    class Settlement;
 
     struct SettlementBuildData
     {
         Word Name;
 
-        WorldTile * Location;
+        world::WorldTile * Location;
 
         //RaceTypes Race;
     };

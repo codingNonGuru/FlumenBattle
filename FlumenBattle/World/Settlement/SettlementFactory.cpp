@@ -4,7 +4,7 @@
 #include "FlumenBattle/World/Settlement/SettlementAllocator.h"
 #include "FlumenBattle/World/WorldTile.h"
 
-using namespace world;
+using namespace world::settlement;
 
 Array <Color> banners = {
     Color::RED, 

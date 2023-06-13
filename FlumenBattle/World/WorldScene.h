@@ -6,12 +6,16 @@
 
 class Delegate;
 
+namespace world::settlement
+{
+    class Settlement;
+}
+
 namespace world
 {
     class WorldMap;
     class WorldTile;
     class Battle;
-    class Settlement;
     class Polity;
     namespace group
     {
@@ -38,7 +42,7 @@ namespace world
 
         Pool <group::Group> *groups;
 
-        Pool <Settlement> *settlements;
+        Pool <settlement::Settlement> *settlements;
 
         Pool <Polity> polities;
 
@@ -82,7 +86,7 @@ namespace world
 
         WorldMap * GetWorldMap() const {return worldMap;}
 
-        Pool <Settlement> & GetSettlements() {return *settlements;}
+        Pool <settlement::Settlement> & GetSettlements() {return *settlements;}
 
         Pool <Battle> & GetBattles() {return battles;}
 
@@ -96,6 +100,6 @@ namespace world
 
         void StartBattle(group::Group *, group::Group *);
 
-        Settlement * FoundSettlement(WorldTile *, Polity *);
+        settlement::Settlement * FoundSettlement(WorldTile *, Polity *);
     };
 }

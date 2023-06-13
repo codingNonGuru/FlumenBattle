@@ -4,7 +4,7 @@
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/WorldScene.h"
 
-using namespace world;
+using namespace world::settlement;
 
 SettlementProduction SettlementProductionFactory::Create(SettlementProductionOptions option, ProductionData data)
 {

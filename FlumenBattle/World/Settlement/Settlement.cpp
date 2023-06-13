@@ -10,9 +10,9 @@
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
 #include "FlumenBattle/World/Group/GroupDynamics.h"
 
-using namespace world;
+using namespace world::settlement;
 
-void Settlement::Initialize(Word name, Color banner, WorldTile *location)
+void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
 {
     this->modifierManager.Initialize();
 
@@ -59,7 +59,7 @@ void Settlement::Initialize(Word name, Color banner, WorldTile *location)
     //afflictions.Initialize(16);
 }
 
-WorldTile * Settlement::FindColonySpot()
+world::WorldTile * Settlement::FindColonySpot()
 {
     auto findColonySpot = [this] (float distance) -> WorldTile*
     {
@@ -70,7 +70,7 @@ WorldTile * Settlement::FindColonySpot()
             if(tile->IsBorderingOwnedTile())
                 continue;
 
-            if(tile->Biome->Type != WorldBiomes::STEPPE)
+            if(tile->Biome->Type != world::WorldBiomes::STEPPE)
                 continue;
 
             return tile;
@@ -113,7 +113,7 @@ void Settlement::WorkNewTile()
             if(tile.IsWorked == true)
                 continue;
 
-            if(tile.Tile->Biome->Type != WorldBiomes::STEPPE)
+            if(tile.Tile->Biome->Type != world::WorldBiomes::STEPPE)
                 continue;
 
             hasFoundSteppe = true;
@@ -129,7 +129,7 @@ void Settlement::WorkNewTile()
                 if(tile.IsWorked == true)
                     continue;
 
-                if(tile.Tile->Biome->Type != WorldBiomes::WOODS && tile.Tile->Biome->Type != WorldBiomes::SWAMP)
+                if(tile.Tile->Biome->Type != world::WorldBiomes::WOODS && tile.Tile->Biome->Type != world::WorldBiomes::SWAMP)
                     continue;
 
                 hasFoundWoods = true;
@@ -144,7 +144,7 @@ void Settlement::WorkNewTile()
                     if(tile.IsWorked == true)
                         continue;
 
-                    if(tile.Tile->Biome->Type != WorldBiomes::DESERT)
+                    if(tile.Tile->Biome->Type != world::WorldBiomes::DESERT)
                         continue;
 
                     tile.IsWorked = true;
@@ -162,7 +162,7 @@ void Settlement::GrowBorders()
 
     auto &tileRing = location->GetTileRing(2);
 
-    auto findNewTile = [this, tileRing] (WorldBiomes biomeType) -> WorldTile *
+    auto findNewTile = [this, tileRing] (world::WorldBiomes biomeType) -> WorldTile *
     {
         for(auto tileIterator = tileRing.GetStart(); tileIterator != tileRing.GetEnd(); ++tileIterator)
         {
@@ -178,16 +178,16 @@ void Settlement::GrowBorders()
         return nullptr;
     };
 
-    auto newTile = findNewTile(WorldBiomes::STEPPE);
+    auto newTile = findNewTile(world::WorldBiomes::STEPPE);
     if(newTile == nullptr)
     {
-        newTile = findNewTile(WorldBiomes::WOODS);
+        newTile = findNewTile(world::WorldBiomes::WOODS);
         if(newTile == nullptr)
         {
-            newTile = findNewTile(WorldBiomes::DESERT);
+            newTile = findNewTile(world::WorldBiomes::DESERT);
             if(newTile == nullptr)
             {
-                newTile = findNewTile(WorldBiomes::MARINE);
+                newTile = findNewTile(world::WorldBiomes::MARINE);
             }
         }
     }
@@ -229,7 +229,7 @@ void Settlement::DecideProduction()
             SettlementTile * improvementTarget = nullptr;
             for(auto &tile : tiles)
             {
-                if(tile.Tile->Biome->Type == WorldBiomes::STEPPE && tile.IsBuilt == false)
+                if(tile.Tile->Biome->Type == world::WorldBiomes::STEPPE && tile.IsBuilt == false)
                 {
                     improvementTarget = &tile;
                 }
@@ -291,7 +291,7 @@ Color Settlement::GetRulerBanner() const
     return polity->GetRuler()->GetBanner();
 }
 
-WorldTile * Settlement::GetLocation() const
+world::WorldTile * Settlement::GetLocation() const
 {
     return this->location;
 }
@@ -315,9 +315,9 @@ Integer Settlement::GetFoodProduction() const
             production++;
         }
 
-        if(hasIrrigation == true && tile.Tile->Biome->Type == WorldBiomes::DESERT)
+        if(tile.Tile->Biome->Type == world::WorldBiomes::DESERT)
         {
-            production++;
+            production += GetModifier(SettlementModifiers::FOOD_PRODUCTION_ON_DESERT_TILES);
         }
     }
 
@@ -395,7 +395,7 @@ int Settlement::GetModifier(SettlementModifiers modifier) const
     return modifierManager.GetAmount(modifier);
 }
 
-void Settlement::SetPolity(Polity *polity)
+void Settlement::SetPolity(world::Polity *polity)
 {
     this->polity = polity;
 }
@@ -412,6 +412,8 @@ void Settlement::AddModifier(settlement::Modifier modifier)
 
 void Settlement::Update()
 {
+    auto worldScene = world::WorldScene::Get();
+
     auto updateModifiers = [this]
     {
         modifierManager.ClearModifiers();
@@ -421,6 +423,11 @@ void Settlement::Update()
         if(hasSewage)
         {
             AddModifier({SettlementModifiers::SAVING_THROWS_AGAINST_DISEASE, 1});
+        }
+
+        if(hasIrrigation)
+        {
+            AddModifier({SettlementModifiers::FOOD_PRODUCTION_ON_DESERT_TILES, 1});
         }
     };
 
@@ -469,7 +476,7 @@ void Settlement::Update()
 
     cultureGrowth++;
 
-    if(cultureGrowth >= 60)
+    if(cultureGrowth >= 70)
     {
         cultureGrowth = 0;
 
@@ -480,7 +487,7 @@ void Settlement::Update()
 
     DecideResearch();
 
-    if(WorldScene::Get()->GetTime().MinuteCount == 0)
+    if(worldScene->GetTime().MinuteCount == 0)
     {    
         if(utility::GetRandom(1, 100) <= 2)
         {
@@ -510,17 +517,16 @@ void Settlement::Update()
         DecideProduction();
     }
 
-    if(WorldScene::Get()->GetTime().MinuteCount == 0)
+    if(worldScene->GetTime().MinuteCount == 0)
     {
         groupDynamics->Update(*this);
     }
 
-
-    if(WorldScene::Get()->GetTime().MinuteCount == 0 && WorldScene::Get()->GetTime().HourCount == 0)
+    if(worldScene->GetTime().MinuteCount == 0 && worldScene->GetTime().HourCount == 0)
     {
-        auto rollEarthquake = [this] 
+        auto rollEarthquake = [this, worldScene] 
         {
-            auto severityBonus = WorldScene::Get()->GetTime().TotalDayCount % 15 == 0 ? 2 : (WorldScene::Get()->GetTime().TotalDayCount % 5 == 0 ? 1 : 0);
+            auto severityBonus = worldScene->GetTime().TotalDayCount % 15 == 0 ? 2 : (worldScene->GetTime().TotalDayCount % 5 == 0 ? 1 : 0);
             auto difficultyClass = 18 + modifierManager.GetAmount(SettlementModifiers::BUILDING_SAVING_THROWS_AGAINST_EARTHQUAKES);
 
             return utility::GetRandom(1, 20) + severityBonus > difficultyClass;

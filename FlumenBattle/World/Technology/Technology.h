@@ -4,7 +4,7 @@
 
 #include "FlumenBattle/Types.hpp"
 
-namespace world
+namespace world::settlement
 {
     class Settlement;
 }
@@ -19,9 +19,9 @@ namespace world::science
 
         int ResearchDuration;
 
-        void (*ApplyEffect) (Settlement &);
+        void (*ApplyEffect) (settlement::Settlement &);
 
-        TechnologyType(Technologies type, int researchDuration, void (*applyEffect)(Settlement &)) : 
+        TechnologyType(Technologies type, int researchDuration, void (*applyEffect)(settlement::Settlement &)) : 
         Type(type), 
         ResearchDuration(researchDuration), 
         ApplyEffect(applyEffect) {}
@@ -66,20 +66,20 @@ namespace world::science
 
         void StartResearching(Technologies);
 
-        void Update(Settlement &);
+        void Update(settlement::Settlement &);
 
-        void ApplyModifiers(Settlement &);
+        void ApplyModifiers(settlement::Settlement &);
     };
 
     class TechnologyApplier
     {
         friend class TechnologyFactory;
 
-        static void ApplyHandWashing(Settlement &);
+        static void ApplyHandWashing(settlement::Settlement &);
 
-        static void ApplyTrainedSentinels(Settlement &);
+        static void ApplyTrainedSentinels(settlement::Settlement &);
 
-        static void ApplyMasonry(Settlement &);
+        static void ApplyMasonry(settlement::Settlement &);
     };
 
     class TechnologyFactory : public Singleton <TechnologyFactory>
