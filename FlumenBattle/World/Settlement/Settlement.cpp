@@ -253,6 +253,37 @@ void Settlement::DecideProduction()
     }
 }
 
+void Settlement::DecideResearch()
+{
+    if(technologyRoster.IsResearchingAnything())
+        return;
+
+    struct Priority
+    {
+        Technologies Technology;
+
+        int Level;
+    };
+
+    static const container::Array <Priority> priorities = {
+        {Technologies::MASONRY, 0}, 
+        {Technologies::HAND_WASHING, 1}, 
+        {Technologies::TRAINED_SENTINELS, 2}};
+
+    for(int i = 0; i < 3; ++i)
+    {
+        for(auto priority = priorities.GetStart(); priority != priorities.GetEnd(); ++priority)
+        {
+            if(priority->Level == i && technologyRoster.HasDiscovered(priority->Technology) == false)
+            {
+                technologyRoster.StartResearching(priority->Technology);
+                
+                return;
+            }
+        }
+    }
+}
+
 Color Settlement::GetRulerBanner() const
 {
     return polity->GetRuler()->GetBanner();
@@ -341,6 +372,11 @@ Integer Settlement::GetIndustrialProduction() const
     return production;
 }
 
+Integer Settlement::GetScienceProduction() const
+{
+    return population >= 10 ? 2 : 1;
+}
+
 Integer Settlement::GetWorkedTiles() const
 {
     auto tileCount = 0;
@@ -414,6 +450,10 @@ void Settlement::Update()
         GrowBorders();
     }
 
+    technologyRoster.Update(*this);
+
+    DecideResearch();
+
     if(WorldScene::Get()->GetTime().MinuteCount == 0)
     {    
         if(utility::GetRandom(1, 100) <= 2)
@@ -427,7 +467,7 @@ void Settlement::Update()
         for(auto &affliction : afflictions)
         {
             auto result = affliction.Type->OnPerform(*this, affliction);
-            SettlementEventGenerator::GenerateEvent(*this, result);//WorldScene::Get()->GetTime().HourCount % 6 == 0
+            SettlementEventGenerator::GenerateEvent(*this, result);
         }
     }
 

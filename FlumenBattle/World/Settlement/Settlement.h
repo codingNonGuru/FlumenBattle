@@ -109,6 +109,8 @@ namespace world
 
         void DecideProduction();
 
+        void DecideResearch();
+
     public:
         Word GetName() const {return name;}
 
@@ -125,6 +127,8 @@ namespace world
         Integer GetFoodProduction() const;
 
         Integer GetIndustrialProduction() const;
+
+        Integer GetScienceProduction() const;
 
         Integer GetPopulation() const {return population;}
 

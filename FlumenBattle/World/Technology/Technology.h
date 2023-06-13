@@ -53,12 +53,18 @@ namespace world::science
             {
                 technology = false;
             }
+
+            researchTarget = nullptr;
         }
-        
+
         bool HasDiscovered(Technologies technology) const
         {
             return discoveries[(int)technology];
         }
+
+        bool IsResearchingAnything() const {return researchTarget != nullptr;}
+
+        void StartResearching(Technologies);
 
         void Update(Settlement &);
 
