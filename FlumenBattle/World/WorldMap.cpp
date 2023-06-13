@@ -33,11 +33,31 @@ WorldMap::WorldMap(Length size)
             tile->map = this;
         }
     }
+}
 
-    for(auto tile = tiles.GetStart(); tile != tiles.GetEnd(); ++tile)
+const Array<WorldTile*> & WorldMap::GetTileRing(WorldTile* tile, Integer range)
+{
+    nearbyTiles.Reset();
+
+    for(Integer x = -range; x <= range; ++x)
     {
-        tile->Initialize();
+        for(Integer y = -range; y <= range; ++y)
+        {
+            for(Integer z = -range; z <= range; ++z)
+            {
+                if(x + y + z == 0 && abs(x) + abs(y) + abs(z) == range * 2)
+                {
+                    auto nearbyTile = GetTile(tile->HexCoordinates + Integer3(x, y, z));
+                    if(nearbyTile != nullptr)
+                    {
+                        *nearbyTiles.Allocate() = nearbyTile;
+                    }
+                }
+            }
+        }
     }
+
+    return nearbyTiles;
 }
 
 const Array<WorldTile*> & WorldMap::GetNearbyTiles(WorldTile* tile, Integer range)

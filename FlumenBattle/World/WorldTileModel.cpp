@@ -21,6 +21,7 @@
 #include "FlumenBattle/Combatant.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
+#include "FlumenBattle/World/Settlement/Settlement.h"
 
 #define WORLD_TILE_SIZE 34.6666f
 
@@ -104,7 +105,23 @@ void WorldTileModel::Render()
 
         shader->SetConstant(WORLD_TILE_SIZE, "hexSize");
 
-        shader->SetConstant(tile->Shade, "color");
+        shader->SetConstant(tile->IsOwned() ? Color(tile->GetShade()) * 0.4f + tile->GetOwner()->GetRulerBanner() * 0.6f : Color(tile->GetShade()), "color");
+        //shader->SetConstant(tile->Shade, "color");
+
+        glDrawArrays(GL_TRIANGLES, 0, 18);
+    }
+
+    auto settlements = worldScene->GetSettlements();
+    for(auto& settlement : settlements)
+    {
+        auto tile = settlement.GetLocation();
+
+        shader->SetConstant(tile->Position, "hexPosition");
+
+        shader->SetConstant(WORLD_TILE_SIZE * 0.5f, "hexSize");
+
+        shader->SetConstant(settlement.GetRulerBanner(), "color");
+        //shader->SetConstant(settlement.GetBanner(), "color");
 
         glDrawArrays(GL_TRIANGLES, 0, 18);
     }
@@ -137,7 +154,8 @@ void WorldTileModel::Render()
     }*/
 
     auto hoveredTile = worldController->GetHoveredTile();
-    if(hoveredTile != nullptr && worldScene->GetPlayerGroup()->ValidateAction(group::GroupActions::TRAVEL, {hoveredTile}))
+    bool canPlayerTravel = worldScene->GetPlayerGroup()->ValidateAction(group::GroupActions::TRAVEL, {hoveredTile});
+    if(hoveredTile != nullptr && canPlayerTravel)
     {
         bootSprite->Draw(camera, {hoveredTile->Position, Scale2(0.3f, 0.3f), Opacity(1.0f), DrawOrder(-2)});
     }

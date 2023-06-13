@@ -8,10 +8,12 @@ namespace world
 {
     class WorldMap;
     struct WorldBiome;
+    struct WorldRelief;
     namespace group
     {
         class Group;
     }
+    class Settlement;
 }
 
 namespace world
@@ -22,10 +24,22 @@ namespace world
 
         friend class world::group::Group;
 
+        friend class WorldGenerator;
+
     private:
         WorldMap *map;
 
         group::Group *group;
+
+        Settlement *settlement;
+
+        Settlement *owner;
+
+        Integer fertility;
+
+        Integer industry;
+
+        bool isBorderingOwnedTile;
 
     public:
         Position2 Position;
@@ -37,6 +51,8 @@ namespace world
         Float4 Shade;
 
         WorldTiles Type;
+
+        const WorldRelief *Relief;
 
         const WorldBiome *Biome;
 
@@ -60,10 +76,36 @@ namespace world
 
         const Array <WorldTile*> & GetNearbyTiles(Integer);
 
+        const Array <WorldTile*> & GetTileRing(Integer);
+
         WorldTile * GetEmptyTileInRange(Integer);
 
         WorldTile * GetNeighbor(Integer3);
 
         group::Group * GetGroup() {return group;}
+
+        Settlement * GetSettlement() {return settlement;}
+
+        Settlement * GetOwner() {return owner;}
+
+        Integer GetFertility() const {return fertility;}
+
+        Integer GetIndustry() const {return industry;}
+
+        Float4 GetShade() const;
+
+        void Settle(Settlement *);
+
+        void AssertOwnership(Settlement *);
+
+        bool IsOwned() const {return owner != nullptr;}
+
+        Settlement * GetOwner() const {return owner;}
+
+        bool IsBorderingOwnedTile() const {return isBorderingOwnedTile;}
+
+        bool HasBiome(WorldBiomes biome) const;
+
+        bool HasRelief(WorldReliefs relief) const;
     };
 }

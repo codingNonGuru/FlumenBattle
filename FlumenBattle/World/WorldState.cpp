@@ -1,3 +1,7 @@
+#include "FlumenCore/Delegate/Event.hpp"
+
+#include "FlumenEngine/Core/Engine.hpp"
+
 #include "FlumenBattle/World/WorldState.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldTileModel.h"
@@ -33,6 +37,8 @@ namespace world
         controller->Enable();
 
         tileModel->Initialize();
+
+        Engine::OnInterfaceUpdateStarted += {interface, &WorldInterface::Update};
     }
 
     void WorldState::HandleExit() 
@@ -42,5 +48,7 @@ namespace world
         interface->Disable();
 
         controller->Disable();
+
+        Engine::OnInterfaceUpdateStarted -= {interface, &WorldInterface::Update};
     }
 }

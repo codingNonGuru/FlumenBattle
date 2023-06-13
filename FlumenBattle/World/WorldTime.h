@@ -12,6 +12,8 @@ namespace world
 
         int DayCount;
 
+        int TotalDayCount;
+
         int YearCount;
 
         bool IsFlowing;
@@ -21,7 +23,7 @@ namespace world
         WorldTime() {}
 
         WorldTime(int yearCount, int dayCount, int hourCount) : 
-            YearCount(yearCount), DayCount(dayCount), HourCount(hourCount), MinuteCount(0), IsFlowing(false), FlowSpeed(1) {}
+            YearCount(yearCount), DayCount(dayCount), TotalDayCount(dayCount), HourCount(hourCount), MinuteCount(0), IsFlowing(false), FlowSpeed(1) {}
 
         void SpeedUp() 
         {
@@ -60,6 +62,7 @@ namespace world
                     HourCount = 0;
 
                     DayCount++;
+                    TotalDayCount++;
                     if(DayCount >= 365)
                     {
                         DayCount = 0;

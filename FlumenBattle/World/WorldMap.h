@@ -14,6 +14,8 @@ namespace world
 
         friend class WorldTileModel;
 
+        friend class WorldGenerator;
+
         Grid <WorldTile> tiles;
 
         WorldMap() {}
@@ -34,5 +36,7 @@ namespace world
         WorldTile* GetEmptyTileAroundTile(WorldTile *, Integer);
 
         const Array<WorldTile*> & GetNearbyTiles(WorldTile*, Integer);
+
+        const Array<WorldTile*> & GetTileRing(WorldTile*, Integer);
     };
 }

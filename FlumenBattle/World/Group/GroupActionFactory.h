@@ -18,6 +18,8 @@ namespace world::group
 
         const GroupAction * BuildSearch();
 
+        const GroupAction * BuildEngage();
+
         const GroupAction * BuildFight();
 
         const GroupAction * BuildTravel();
@@ -40,6 +42,8 @@ namespace world::group
 
         static void Search(Group &group);
 
+        static void Engage(Group &group);
+
         static void Fight(Group &group);
 
         static void Travel(Group &group);
@@ -54,6 +58,8 @@ namespace world::group
         static bool CanTakeLongRest(Group &, const GroupActionData &);
 
         static bool CanSearch(Group &, const GroupActionData &);
+
+        static bool CanEngage(Group &, const GroupActionData &);
 
         static bool CanFight(Group &, const GroupActionData &);
 

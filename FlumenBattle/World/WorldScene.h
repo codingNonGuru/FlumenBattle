@@ -9,7 +9,10 @@ class Delegate;
 namespace world
 {
     class WorldMap;
+    class WorldTile;
     class Battle;
+    class Settlement;
+    class Polity;
     namespace group
     {
         class Group;
@@ -34,6 +37,10 @@ namespace world
         group::Group *playerGroup;
 
         Pool <group::Group> *groups;
+
+        Pool <Settlement> *settlements;
+
+        Pool <Polity> polities;
 
         WorldScene();
 
@@ -75,6 +82,8 @@ namespace world
 
         WorldMap * GetWorldMap() const {return worldMap;}
 
+        Pool <Settlement> & GetSettlements() {return *settlements;}
+
         Pool <Battle> & GetBattles() {return battles;}
 
         Pool <group::Group> & GetGroups() {return *groups;}
@@ -86,5 +95,7 @@ namespace world
         int GetTimeSpeed() const {return time;}
 
         void StartBattle(group::Group *, group::Group *);
+
+        Settlement * FoundSettlement(WorldTile *, Polity *);
     };
 }

@@ -26,6 +26,8 @@ namespace world
                     return BuildWoodsBiome();
                 case WorldBiomes::SWAMP:
                     return BuildSwampBiome();
+                case WorldBiomes::MARINE:
+                    return BuildMarineBiome();
             }
         }
 
@@ -51,6 +53,12 @@ namespace world
         static const WorldBiome * BuildSwampBiome()
         {
             static WorldBiome biome = {WorldBiomes::SWAMP, 1};
+            return &biome;
+        }
+
+        static const WorldBiome * BuildMarineBiome()
+        {
+            static WorldBiome biome = {WorldBiomes::MARINE, 1};
             return &biome;
         }
     };

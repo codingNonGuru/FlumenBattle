@@ -8,7 +8,7 @@ namespace world
 
         enum class GroupActions
         {
-            TAKE_SHORT_REST, TAKE_LONG_REST, SEARCH, FIGHT, TRAVEL, NONE
+            TAKE_SHORT_REST, TAKE_LONG_REST, SEARCH, ENGAGE, FIGHT, TRAVEL, NONE
         };
 
         enum class SuccessTypes
@@ -29,7 +29,7 @@ namespace world
 
     enum class WorldBiomes
     {
-        STEPPE, DESERT, WOODS, SWAMP
+        STEPPE, DESERT, WOODS, SWAMP, MARINE
     };
 
     enum class WorldClimates
@@ -39,6 +39,40 @@ namespace world
 
     enum class WorldReliefs
     {
-        PLAINS, HILLS, MOUNTAINS
+        PLAINS, HILLS, MOUNTAINS, SEA
+    };
+
+    enum class AfflictionTypes
+    {
+        MALARIA,
+        TUBERCULOSIS,
+        HUNGER
+    };
+
+    enum class SettlementProductionOptions
+    {
+        NONE,
+        PATROL,
+        FARM,
+        SETTLERS,
+        MONUMENT,
+        WALLS,
+        GRANARY,
+        SEWAGE,
+        IRRIGATION
+    };
+
+    enum class AfflictionResultTypes
+    {
+        NONE,
+        CURE,
+        REGRESSION,
+        PROGRESSION,
+        DEATH
+    };
+
+    enum class SettlementEventTypes
+    {
+        DEPOPULATION
     };
 }

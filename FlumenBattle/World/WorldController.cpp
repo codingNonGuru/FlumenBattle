@@ -17,6 +17,7 @@
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/HumanController.h"
+#include "FlumenBattle/World/Settlement/Settlement.h"
 
 static const Float CAMERA_PAN_SPEED = 1500.0f;
 
@@ -82,7 +83,9 @@ namespace world
 
         auto scene = WorldScene::Get();
 
-        std::cout<<"battle count "<<scene->GetBattles().GetSize()<<"\n";
+        //std::cout<<"battle count "<<scene->GetBattles().GetSize()<<"\n";
+        //std::cout<<"settlement count "<<scene->GetSettlements().GetSize()<<"\n";
+
         for(auto &battle : scene->GetBattles())
         {
             std::cout<<"aloha\n";

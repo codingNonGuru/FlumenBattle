@@ -20,6 +20,8 @@ namespace world::group
                 return BuildTakeLongRest();
             case GroupActions::SEARCH:
                 return BuildSearch();
+            case GroupActions::ENGAGE:
+                return BuildEngage();
             case GroupActions::FIGHT:
                 return BuildFight();
             case GroupActions::TRAVEL:
@@ -57,6 +59,18 @@ namespace world::group
             false,
             &GroupActionValidator::CanSearch, 
             &GroupActionPerformer::Search
+            };
+        return &action;
+    }
+
+    const GroupAction * GroupActionFactory::BuildEngage()
+    {
+        static GroupAction action = {
+            GroupActions::ENGAGE, 
+            0 * GroupAction::ACTION_PROGRESS_RATE,
+            false,
+            &GroupActionValidator::CanEngage, 
+            &GroupActionPerformer::Engage
             };
         return &action;
     }
@@ -199,7 +213,7 @@ namespace world::group
         }
 
         auto perceptionCheck = utility::GetRandom(1, 20) + perceptionBonus - stealthBonus;
-        if(perceptionCheck <= 20)
+        if(perceptionCheck <= 30)
             return;
 
         if(group.actionProgress < group.action->BaseDuration)
@@ -211,6 +225,11 @@ namespace world::group
     }
 
     void GroupActionPerformer::Fight(Group& group)
+    {
+        
+    }
+
+    void GroupActionPerformer::Engage(Group& group)
     {
         
     }
@@ -242,6 +261,11 @@ namespace world::group
     }
 
     bool GroupActionValidator::CanFight(Group &group, const GroupActionData &)
+    {
+        return true;
+    }
+
+    bool GroupActionValidator::CanEngage(Group &group, const GroupActionData &)
     {
         return true;
     }

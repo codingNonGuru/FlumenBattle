@@ -31,6 +31,8 @@ struct Weapon
 
     bool operator== (const Weapon &other) {return this->Type == other.Type;}
 
+    bool operator== (WeaponTypes type) {return this->Type == type;}
+
     Integer GetAverageDamage() const 
     {
         auto damage = RollCount + RollCount * HitDice;
