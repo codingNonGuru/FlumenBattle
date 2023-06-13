@@ -75,4 +75,11 @@ namespace world
     {
         DEPOPULATION
     };
+
+    enum class SettlementModifiers
+    {
+        BUILDING_SAVING_THROWS_AGAINST_EARTHQUAKES,
+        SAVING_THROWS_AGAINST_DISEASE,
+        PATROL_ATTACK_ROLLS
+    };
 }

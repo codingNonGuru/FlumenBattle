@@ -31,6 +31,8 @@ struct CombatSearchFilter
 
     bool operator== (const CombatSearchFilter &filter) {return Type == filter.Type;}
 
+    bool operator== (NarrowingCriteria criteria) {return Type == criteria;}
+
     CombatSearchFilter() {}
 
     CombatSearchFilter(NarrowingCriteria type) : Type(type) {}

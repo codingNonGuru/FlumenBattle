@@ -42,7 +42,7 @@ AfflictionResult AfflictionPerformer::PerformMalaria(Settlement &settlement, Aff
 {   
     auto result = AfflictionResultTypes::NONE;
 
-    auto sewageBonus = settlement.hasSewage ? 1 : 0;
+    auto sewageBonus = settlement.GetModifier(SettlementModifiers::SAVING_THROWS_AGAINST_DISEASE);
     auto diceRoll = utility::GetRandom(1, 20);
     if(diceRoll + sewageBonus >= affliction.Type->Throw)
     {

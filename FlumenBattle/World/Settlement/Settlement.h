@@ -5,6 +5,7 @@
 #include "FlumenEngine/Utility/Color.hpp"
 
 #include "FlumenBattle/World/Technology/Technology.h"
+#include "FlumenBattle/World/Settlement/Modifier.h"
 
 namespace world
 {
@@ -90,6 +91,8 @@ namespace world
         Pool <SettlementEvent> events;
 
         SettlementProduction *currentProduction;
+
+        settlement::ModifierManager modifierManager;
         
         bool hasSewage;
 
@@ -138,7 +141,11 @@ namespace world
 
         Polity *GetPolity() const {return polity;}
 
+        int GetModifier(SettlementModifiers) const;
+
         void SetPolity(Polity *);
+
+        void AddModifier(settlement::Modifier);
 
         void StrengthenPatrol();
 

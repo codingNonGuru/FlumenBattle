@@ -8,17 +8,17 @@ using namespace world::science;
 
 void TechnologyApplier::ApplyHandWashing(Settlement &settlement)
 {
-
+    settlement.AddModifier({SettlementModifiers::SAVING_THROWS_AGAINST_DISEASE, 1});
 }
 
 void TechnologyApplier::ApplyTrainedSentinels(Settlement &settlement)
 {
-
+    settlement.AddModifier({SettlementModifiers::PATROL_ATTACK_ROLLS, 1});
 }
 
 void TechnologyApplier::ApplyMasonry(Settlement &settlement)
 {
-
+    settlement.AddModifier({SettlementModifiers::BUILDING_SAVING_THROWS_AGAINST_EARTHQUAKES, 1});
 }
 
 void TechnologyRoster::StartResearching(Technologies technology)

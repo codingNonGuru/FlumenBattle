@@ -14,6 +14,8 @@ using namespace world;
 
 void Settlement::Initialize(Word name, Color banner, WorldTile *location)
 {
+    this->modifierManager.Initialize();
+
     this->name = name;
 
     this->banner = banner;
@@ -388,6 +390,11 @@ Integer Settlement::GetWorkedTiles() const
     return tileCount;
 }
 
+int Settlement::GetModifier(SettlementModifiers modifier) const
+{
+    return modifierManager.GetAmount(modifier);
+}
+
 void Settlement::SetPolity(Polity *polity)
 {
     this->polity = polity;
@@ -398,8 +405,27 @@ void Settlement::StrengthenPatrol()
     groupDynamics->StrengthenPatrol();
 }
 
+void Settlement::AddModifier(settlement::Modifier modifier)
+{
+    modifierManager.AddModifier(modifier);
+}
+
 void Settlement::Update()
 {
+    auto updateModifiers = [this]
+    {
+        modifierManager.ClearModifiers();
+
+        technologyRoster.ApplyModifiers(*this);
+
+        if(hasSewage)
+        {
+            AddModifier({SettlementModifiers::SAVING_THROWS_AGAINST_DISEASE, 1});
+        }
+    };
+
+    updateModifiers();
+
     auto foodSecurity = GetFoodSecurity();
 
     switch(foodSecurity)
@@ -495,7 +521,9 @@ void Settlement::Update()
         auto rollEarthquake = [this] 
         {
             auto severityBonus = WorldScene::Get()->GetTime().TotalDayCount % 15 == 0 ? 2 : (WorldScene::Get()->GetTime().TotalDayCount % 5 == 0 ? 1 : 0);
-            return utility::GetRandom(1, 20) + severityBonus > 18;
+            auto difficultyClass = 18 + modifierManager.GetAmount(SettlementModifiers::BUILDING_SAVING_THROWS_AGAINST_EARTHQUAKES);
+
+            return utility::GetRandom(1, 20) + severityBonus > difficultyClass;
         };
 
         for(auto &tile : tiles)
