@@ -19,9 +19,9 @@
 #include "FlumenBattle/World/Group/HumanController.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 
-static const Float CAMERA_PAN_SPEED = 1500.0f;
+static const Float CAMERA_PAN_SPEED = 800.0f;
 
-static const Float CAMERA_ZOOM_SPEED = 10.0f;
+static const Float CAMERA_ZOOM_SPEED = 3.0f;
 
 static Camera *camera = nullptr;
 
@@ -83,9 +83,6 @@ namespace world
 
         auto scene = WorldScene::Get();
 
-        //std::cout<<"battle count "<<scene->GetBattles().GetSize()<<"\n";
-        //std::cout<<"settlement count "<<scene->GetSettlements().GetSize()<<"\n";
-
         for(auto &battle : scene->GetBattles())
         {
             std::cout<<"aloha\n";
@@ -120,25 +117,25 @@ namespace world
 
     void WorldController::HandlePanUp()
     {
-        auto panSpeed = CAMERA_PAN_SPEED * Time::GetDelta();
+        auto panSpeed = (CAMERA_PAN_SPEED * camera->GetZoomFactor()) * Time::GetDelta();        
         camera->Translate(Direction3(0.0f, -panSpeed, 0.0f));
     }
 
     void WorldController::HandlePanDown()
     {
-        auto panSpeed = CAMERA_PAN_SPEED * Time::GetDelta();
+        auto panSpeed = (CAMERA_PAN_SPEED * camera->GetZoomFactor()) * Time::GetDelta();        
         camera->Translate(Direction3(0.0f, panSpeed, 0.0f));
     }
 
     void WorldController::HandlePanLeft() 
     {
-        auto panSpeed = CAMERA_PAN_SPEED * Time::GetDelta();
+        auto panSpeed = (CAMERA_PAN_SPEED * camera->GetZoomFactor()) * Time::GetDelta();        
         camera->Translate(Direction3(-panSpeed, 0.0f, 0.0f));
     }
 
     void WorldController::HandlePanRight() 
     {
-        auto panSpeed = CAMERA_PAN_SPEED * Time::GetDelta();
+        auto panSpeed = (CAMERA_PAN_SPEED * camera->GetZoomFactor()) * Time::GetDelta();        
         camera->Translate(Direction3(panSpeed, 0.0f, 0.0f));
     }
 
