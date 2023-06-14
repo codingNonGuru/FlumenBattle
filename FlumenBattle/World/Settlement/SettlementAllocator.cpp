@@ -5,12 +5,15 @@
 #include "FlumenBattle/World/Settlement/Affliction.h"
 #include "FlumenBattle/World/Settlement/SettlementEvent.h"
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
+#include "FlumenBattle/World/Settlement/Condition.h"
 #include "FlumenBattle/World/Group/GroupDynamics.h"
 #include "FlumenBattle/World/WorldScene.h"
 
 #define MAXIMUM_SETTLEMENT_COUNT 128
 
 #define MAXIMUM_TILES_PER_SETTLEMENT 19
+
+#define MAXIMUM_CONDITIONS_PER_SETTLEMENT 32
 
 using namespace world::settlement;
 
@@ -27,6 +30,10 @@ SettlementAllocator::SettlementAllocator()
     eventAllocator = container::PoolAllocator <SettlementEvent> (MAXIMUM_SETTLEMENT_COUNT, 32);
 
     productionAllocator = container::Pool <SettlementProduction> (MAXIMUM_SETTLEMENT_COUNT);
+
+    conditionManagerAllocator = container::Pool <ConditionManager> (MAXIMUM_SETTLEMENT_COUNT);
+
+    conditionAllocator = container::PoolAllocator <Condition> (MAXIMUM_SETTLEMENT_COUNT, MAXIMUM_CONDITIONS_PER_SETTLEMENT);
 }
 
 Settlement * SettlementAllocator::Allocate()
@@ -43,6 +50,10 @@ Settlement * SettlementAllocator::Allocate()
     settlement->events.Initialize(eventAllocator);
 
     settlement->currentProduction = productionAllocator.Add();
+
+    settlement->conditionManager = conditionManagerAllocator.Add();
+
+    ConditionAllocator::Allocate(conditionAllocator, *settlement->conditionManager);
 
     return settlement;
 }

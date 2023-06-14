@@ -83,6 +83,18 @@ namespace world
         SAVING_THROWS_AGAINST_DISEASE,
         PATROL_ATTACK_ROLLS,
         FOOD_PRODUCTION_ON_DESERT_TILES,
-        SCIENCE_PRODUCTION
+        SCIENCE_PRODUCTION,
+        ALL_DICE_ROLLS,
+        MALARIA_EMERGENCE_DIFFICULTY,
+        SAVING_THROWS_AGAINST_MALARIA
     };
+
+    namespace settlement
+    {
+        enum class Conditions
+        {
+            SICKENED,
+            IMMUNITY_AGAINST_MALARIA
+        };
+    }
 }

@@ -1,5 +1,6 @@
 #include "Affliction.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Settlement/Condition.h"
 
 using namespace world::settlement;
 
@@ -39,16 +40,28 @@ const AfflictionType * AfflictionTypeBuilder::BuildAffliction(AfflictionTypes af
 }
 
 AfflictionResult AfflictionPerformer::PerformMalaria(Settlement &settlement, Affliction &affliction)
-{   
+{
+    auto removeMalaria = [&]
+    {
+        settlement.afflictions.Remove(&affliction);
+
+        auto duration = 24 * utility::GetRandom(1, 4);
+
+        settlement.AddCondition({Conditions::IMMUNITY_AGAINST_MALARIA, 1, duration});
+    };
+
     auto result = AfflictionResultTypes::NONE;
 
-    auto sewageBonus = settlement.GetModifier(SettlementModifiers::SAVING_THROWS_AGAINST_DISEASE);
+    auto rollBonus = settlement.GetModifier(SettlementModifiers::SAVING_THROWS_AGAINST_DISEASE);
+    rollBonus += settlement.GetModifier(SettlementModifiers::SAVING_THROWS_AGAINST_MALARIA);
+    rollBonus += settlement.GetModifier(SettlementModifiers::ALL_DICE_ROLLS);
+
     auto diceRoll = utility::GetRandom(1, 20);
-    if(diceRoll + sewageBonus >= affliction.Type->Throw)
+    if(diceRoll + rollBonus >= affliction.Type->Throw)
     {
         if(diceRoll == 20)
         {
-            settlement.afflictions.Remove(&affliction);
+            removeMalaria();
             return {AfflictionTypes::MALARIA, AfflictionResultTypes::CURE};
         }
         else
@@ -90,7 +103,7 @@ AfflictionResult AfflictionPerformer::PerformMalaria(Settlement &settlement, Aff
     affliction.TimeLapsed++;
     if(affliction.TimeLapsed == affliction.Type->Duration)
     {
-        settlement.afflictions.Remove(&affliction);
+        removeMalaria();
     }
 
     return {AfflictionTypes::MALARIA, result};

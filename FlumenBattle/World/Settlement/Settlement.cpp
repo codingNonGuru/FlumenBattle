@@ -8,6 +8,7 @@
 #include "FlumenBattle/World/Settlement/Affliction.h"
 #include "FlumenBattle/World/Settlement/SettlementEvent.h"
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
+#include "FlumenBattle/World/Settlement/Condition.h"
 #include "FlumenBattle/World/Group/GroupDynamics.h"
 
 using namespace world::settlement;
@@ -378,7 +379,7 @@ Integer Settlement::GetScienceProduction() const
 {
     auto production = population >= 10 ? 2 : 1;
     production += GetModifier(SettlementModifiers::SCIENCE_PRODUCTION);
-    
+
     return production;
 }
 
@@ -408,9 +409,14 @@ void Settlement::StrengthenPatrol()
     groupDynamics->StrengthenPatrol();
 }
 
-void Settlement::AddModifier(settlement::Modifier modifier)
+void Settlement::AddModifier(Modifier modifier)
 {
     modifierManager.AddModifier(modifier);
+}
+
+void Settlement::AddCondition(ConditionData conditionData)
+{
+    conditionManager->AddCondition(conditionData);
 }
 
 void Settlement::Update()
@@ -422,6 +428,8 @@ void Settlement::Update()
         modifierManager.ClearModifiers();
 
         technologyRoster.ApplyModifiers(*this);
+
+        conditionManager->ApplyModifiers(*this);
 
         if(hasSewage)
         {
@@ -496,8 +504,9 @@ void Settlement::Update()
     DecideResearch();
 
     if(worldScene->GetTime().MinuteCount == 0)
-    {    
-        if(utility::GetRandom(1, 100) <= 2)
+    {
+        auto difficultyBonus = GetModifier(SettlementModifiers::MALARIA_EMERGENCE_DIFFICULTY);
+        if(utility::GetRandom(1, 100) > 97 + difficultyBonus)
         {
             if(afflictions.Find(AfflictionTypes::MALARIA) == nullptr)
             {

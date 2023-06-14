@@ -25,6 +25,8 @@ namespace world::settlement
     struct SettlementEvent;
     struct SettlementEventGenerator;
     class SettlementProduction;
+    class ConditionManager;
+    struct ConditionData;
 
     struct SettlementTile
     {
@@ -100,6 +102,8 @@ namespace world::settlement
         SettlementProduction *currentProduction;
 
         ModifierManager modifierManager;
+
+        ConditionManager *conditionManager;
         
         bool hasSewage;
 
@@ -153,6 +157,8 @@ namespace world::settlement
         void SetPolity(world::Polity *);
 
         void AddModifier(Modifier);
+
+        void AddCondition(ConditionData);
 
         void StrengthenPatrol();
 

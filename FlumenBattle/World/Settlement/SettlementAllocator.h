@@ -23,6 +23,8 @@ namespace world::settlement
     class Settlement;
     class SettlementProduction;
     class SettlementFactory;
+    class Condition;
+    class ConditionManager;
 
     class SettlementAllocator : public Singleton<SettlementAllocator>
     {
@@ -41,6 +43,10 @@ namespace world::settlement
         container::PoolAllocator <SettlementEvent> eventAllocator;
 
         container::Pool <SettlementProduction> productionAllocator;
+
+        container::Pool <ConditionManager> conditionManagerAllocator;
+
+        container::PoolAllocator <Condition> conditionAllocator;
 
         void PerformCleanup();
 
