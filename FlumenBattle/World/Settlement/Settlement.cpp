@@ -376,7 +376,10 @@ Integer Settlement::GetIndustrialProduction() const
 
 Integer Settlement::GetScienceProduction() const
 {
-    return population >= 10 ? 2 : 1;
+    auto production = population >= 10 ? 2 : 1;
+    production += GetModifier(SettlementModifiers::SCIENCE_PRODUCTION);
+    
+    return production;
 }
 
 Integer Settlement::GetWorkedTiles() const
@@ -428,6 +431,11 @@ void Settlement::Update()
         if(hasIrrigation)
         {
             AddModifier({SettlementModifiers::FOOD_PRODUCTION_ON_DESERT_TILES, 1});
+        }
+
+        if(hasLibrary)
+        {
+            AddModifier({SettlementModifiers::SCIENCE_PRODUCTION, 1});
         }
     };
 

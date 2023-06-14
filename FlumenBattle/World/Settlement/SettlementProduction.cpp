@@ -39,7 +39,9 @@ const SettlementProductionType * SettlementProductionFactory::BuildProductionTyp
         case SettlementProductionOptions::SEWAGE:
             return BuildSewageProduction();
         case SettlementProductionOptions::IRRIGATION:
-            return BuildSewageProduction();
+            return BuildIrrigationProduction();
+        case SettlementProductionOptions::LIBRARY:
+            return BuildLibraryProduction();
         case SettlementProductionOptions::NONE:
             return BuildNoneProduction();
     }
@@ -75,6 +77,12 @@ const SettlementProductionType * SettlementProductionFactory::BuildIrrigationPro
     return &productionType;
 }
 
+const SettlementProductionType * SettlementProductionFactory::BuildLibraryProduction()
+{
+    static const SettlementProductionType productionType = {SettlementProductionOptions::LIBRARY, 500, &SettlementProductionFinisher::FinishLibrary};
+    return &productionType;
+}
+
 const SettlementProductionType * SettlementProductionFactory::BuildNoneProduction()
 {
     static const SettlementProductionType productionType = {SettlementProductionOptions::NONE, 0, nullptr};
@@ -89,6 +97,11 @@ void SettlementProductionFinisher::FinishPatrol(Settlement &settlement)
 void SettlementProductionFinisher::FinishSewage(Settlement &settlement)
 {
     settlement.hasSewage = true;
+}      
+
+void SettlementProductionFinisher::FinishLibrary(Settlement &settlement)
+{
+    settlement.hasLibrary = true;
 }      
 
 void SettlementProductionFinisher::FinishFarm(Settlement &settlement)

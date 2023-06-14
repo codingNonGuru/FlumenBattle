@@ -51,7 +51,8 @@ namespace world::settlement
         WALLS,
         GRANARY,
         MONUMENT,
-        IRRIGATION
+        IRRIGATION,
+        LIBRARY
     };
 
     class Settlement
