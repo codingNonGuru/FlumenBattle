@@ -7,7 +7,7 @@
 
 using namespace world;
 
-#define CONTINENT_GIRTH 1200.0f
+#define CONTINENT_GIRTH 1300.0f
 
 void WorldGenerator::GenerateWorld(WorldScene &scene)
 {
@@ -15,9 +15,10 @@ void WorldGenerator::GenerateWorld(WorldScene &scene)
 
     auto defineContinents = [&]
     {
+        auto centerTile = map->GetCenterTile();
         for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
         {
-            if(map->GetCenterTile()->GetPhysicalDistanceTo(*tile) > CONTINENT_GIRTH)
+            if(centerTile->GetPhysicalDistanceTo(*tile) > CONTINENT_GIRTH)
             {
                 tile->Type = WorldTiles::SEA;
             }
@@ -30,6 +31,7 @@ void WorldGenerator::GenerateWorld(WorldScene &scene)
 
     auto generateRelief = [&] 
     {
+        auto centerTile = map->GetCenterTile();
         for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
         {
             if(tile->Type == WorldTiles::SEA)
@@ -47,7 +49,27 @@ void WorldGenerator::GenerateWorld(WorldScene &scene)
                         seaCount++;
                 }
 
-                if(seaCount == 0 && utility::GetRandom(1, 100) < 10)
+                
+                auto mountainChance = 13;
+                auto distance = centerTile->GetPhysicalDistanceTo(*tile);
+                if(distance > CONTINENT_GIRTH * 0.9f)
+                {
+                    mountainChance = 0;
+                }
+                else if(distance > CONTINENT_GIRTH * 0.7f)
+                {
+                    mountainChance = 4;
+                }
+                else if(distance > CONTINENT_GIRTH * 0.5f)
+                {
+                    mountainChance = 7;
+                }
+                else if(distance > CONTINENT_GIRTH * 0.4f)
+                {
+                    mountainChance = 10;
+                }
+
+                if(utility::GetRandom(1, 100) <= mountainChance)
                 {
                     tile->Relief = WorldReliefFactory::BuildRelief(WorldReliefs::MOUNTAINS);
                 }
