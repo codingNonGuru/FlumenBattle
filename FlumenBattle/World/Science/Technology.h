@@ -2,11 +2,16 @@
 
 #include "FlumenEngine/Core/Singleton.h"
 
-#include "FlumenBattle/Types.hpp"
+#include "FlumenBattle/World/Science/Types.h"
 
 namespace world::settlement
 {
     class Settlement;
+}
+
+namespace world
+{
+    class Polity;
 }
 
 namespace world::science
@@ -66,7 +71,7 @@ namespace world::science
 
         void StartResearching(Technologies);
 
-        void Update(settlement::Settlement &);
+        void Update(const Polity &);
 
         void ApplyModifiers(settlement::Settlement &);
     };
@@ -86,19 +91,19 @@ namespace world::science
     {
         const TechnologyType &BuildHandWashing()
         {
-            static const TechnologyType tech = {Technologies::HAND_WASHING, 200, &TechnologyApplier::ApplyHandWashing};
+            static const TechnologyType tech = {Technologies::HAND_WASHING, 500, &TechnologyApplier::ApplyHandWashing};
             return tech;
         }
 
         const TechnologyType &BuildTrainedSentinels()
         {
-            static const TechnologyType tech = {Technologies::TRAINED_SENTINELS, 300, &TechnologyApplier::ApplyTrainedSentinels};
+            static const TechnologyType tech = {Technologies::TRAINED_SENTINELS, 700, &TechnologyApplier::ApplyTrainedSentinels};
             return tech;
         }
 
         const TechnologyType &BuildMasonry()
         {
-            static const TechnologyType tech = {Technologies::MASONRY, 400, &TechnologyApplier::ApplyMasonry};
+            static const TechnologyType tech = {Technologies::MASONRY, 600, &TechnologyApplier::ApplyMasonry};
             return tech;
         }
 

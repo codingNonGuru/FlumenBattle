@@ -4,7 +4,6 @@
 
 #include "FlumenEngine/Utility/Color.hpp"
 
-#include "FlumenBattle/World/Technology/Technology.h"
 #include "FlumenBattle/World/Settlement/Modifier.h"
 
 namespace world
@@ -89,8 +88,6 @@ namespace world::settlement
 
         Integer cultureGrowth;
 
-        science::TechnologyRoster technologyRoster;
-
         Pool <SettlementTile> tiles;
 
         world::Polity *polity;
@@ -122,8 +119,6 @@ namespace world::settlement
         void GrowBorders();
 
         void DecideProduction();
-
-        void DecideResearch();
 
     public:
         Word GetName() const {return name;}

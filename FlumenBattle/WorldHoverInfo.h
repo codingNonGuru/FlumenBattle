@@ -14,6 +14,10 @@ namespace world
 
         Text * industryLabel;
 
+        Text * scienceLabel;
+
+        Text * discoveryLabel;
+
         void HandleConfigure() override;
 
         void HandleUpdate() override;

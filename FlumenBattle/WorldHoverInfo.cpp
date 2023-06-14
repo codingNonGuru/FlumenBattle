@@ -33,6 +33,20 @@ void WorldHoverInfo::HandleConfigure()
     );
     industryLabel->SetAlignment(Text::Alignments::LEFT);
     industryLabel->Enable();
+
+    scienceLabel = ElementFactory::BuildText(
+        {Size(size_.x - 10, 150), drawOrder_ + 1, {Position2(0.0f, 105.0f), this}},
+        {{"JSLAncient", "Large"}, color, "Science "}
+    );
+    scienceLabel->SetAlignment(Text::Alignments::LEFT);
+    scienceLabel->Enable();
+
+    discoveryLabel = ElementFactory::BuildText(
+        {Size(size_.x - 10, 150), drawOrder_ + 1, {Position2(0.0f, 140.0f), this}},
+        {{"JSLAncient", "Large"}, color, "Techs "}
+    );
+    discoveryLabel->SetAlignment(Text::Alignments::LEFT);
+    discoveryLabel->Enable();
 }
 
 void WorldHoverInfo::HandleUpdate()
@@ -44,15 +58,39 @@ void WorldHoverInfo::HandleUpdate()
     if(tile->GetSettlement() == nullptr)
         return;
 
+    auto polity = tile->GetSettlement()->GetPolity();
+
     Phrase text = "Pop "; 
-    text << tile->GetSettlement()->GetPolity()->GetPopulation();
+    text << polity->GetPopulation();
     strengthLabel->Setup(text);
 
     text = "Deaths "; 
-    text << tile->GetSettlement()->GetPolity()->GetDeathCount();
+    text << polity->GetDeathCount();
     diseaseLabel->Setup(text);
 
     text = "Industry "; 
-    text << tile->GetSettlement()->GetPolity()->GetIndustrialPower();
+    text << polity->GetIndustrialPower();
     industryLabel->Setup(text);
+
+    text = "Science "; 
+    text << polity->GetScientificPower();
+    scienceLabel->Setup(text);
+
+    text = "Techs:"; 
+    if(polity->HasDiscoveredTechnology(science::Technologies::MASONRY))
+    {
+        text <<" MS";
+    }
+    
+    if(polity->HasDiscoveredTechnology(science::Technologies::HAND_WASHING))
+    {
+        text <<", HW";
+    }
+
+    if(polity->HasDiscoveredTechnology(science::Technologies::TRAINED_SENTINELS))
+    {
+        text <<", TS";
+    }
+
+    discoveryLabel->Setup(text);
 }

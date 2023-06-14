@@ -35,6 +35,8 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
 
     this->hasIrrigation = false;
 
+    this->hasLibrary = false;
+
     auto tile = tiles.Add();
     tile->Tile = location;
     tile->IsWorked = true;
@@ -256,37 +258,6 @@ void Settlement::DecideProduction()
     }
 }
 
-void Settlement::DecideResearch()
-{
-    if(technologyRoster.IsResearchingAnything())
-        return;
-
-    struct Priority
-    {
-        Technologies Technology;
-
-        int Level;
-    };
-
-    static const container::Array <Priority> priorities = {
-        {Technologies::MASONRY, 0}, 
-        {Technologies::HAND_WASHING, 1}, 
-        {Technologies::TRAINED_SENTINELS, 2}};
-
-    for(int i = 0; i < 3; ++i)
-    {
-        for(auto priority = priorities.GetStart(); priority != priorities.GetEnd(); ++priority)
-        {
-            if(priority->Level == i && technologyRoster.HasDiscovered(priority->Technology) == false)
-            {
-                technologyRoster.StartResearching(priority->Technology);
-                
-                return;
-            }
-        }
-    }
-}
-
 Color Settlement::GetRulerBanner() const
 {
     return polity->GetRuler()->GetBanner();
@@ -427,7 +398,7 @@ void Settlement::Update()
     {
         modifierManager.ClearModifiers();
 
-        technologyRoster.ApplyModifiers(*this);
+        polity->ApplyTechnologyModifiers(this);
 
         conditionManager->ApplyModifiers(*this);
 
@@ -498,10 +469,6 @@ void Settlement::Update()
 
         GrowBorders();
     }
-
-    technologyRoster.Update(*this);
-
-    DecideResearch();
 
     if(worldScene->GetTime().MinuteCount == 0)
     {

@@ -40,16 +40,6 @@ void WorldGenerator::GenerateWorld(WorldScene &scene)
             }
             else
             {
-                auto seaCount = 0;
-                auto &nearbyTiles = tile->GetNearbyTiles(2);
-                for(auto nearbyTileIterator = nearbyTiles.GetStart(); nearbyTileIterator != nearbyTiles.GetEnd(); ++nearbyTileIterator)
-                {
-                    auto nearbyTile = *nearbyTileIterator;
-                    if(nearbyTile->Type == WorldTiles::SEA)
-                        seaCount++;
-                }
-
-                
                 auto mountainChance = 13;
                 auto distance = centerTile->GetPhysicalDistanceTo(*tile);
                 if(distance > CONTINENT_GIRTH * 0.9f)

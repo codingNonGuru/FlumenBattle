@@ -3,6 +3,7 @@
 #include "Technology.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/Polity.h"
 
 using namespace world::science;
 
@@ -26,12 +27,12 @@ void TechnologyRoster::StartResearching(Technologies technology)
     researchTarget = &TechnologyFactory::Get()->Create(technology);
 }
 
-void TechnologyRoster::Update(settlement::Settlement &settlement)
+void TechnologyRoster::Update(const Polity &polity)
 {
     if(researchTarget == nullptr)
         return;
 
-    researchProgress += settlement.GetScienceProduction();
+    researchProgress += polity.GetScientificPower();
 
     if(researchProgress >= researchTarget->ResearchDuration)
     {

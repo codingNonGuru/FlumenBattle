@@ -2,11 +2,18 @@
 
 #include "FlumenCore/Conventions.hpp"
 
+#include "FlumenBattle/World/Science/Types.h"
+
 namespace world
 {
     namespace settlement
     {
         class Settlement;
+    }
+
+    namespace science
+    {
+        class TechnologyRoster;
     }
 
     class Polity
@@ -17,10 +24,18 @@ namespace world
 
         Integer malariaDeathCount;
 
+        science::TechnologyRoster *technologyRoster;
+
     public:
         void Initialize(settlement::Settlement *);
 
         void ExtendRealm(settlement::Settlement *);
+
+        void DecideResearch();
+
+        void Update();
+        
+        void ApplyTechnologyModifiers(settlement::Settlement *) const;
 
         settlement::Settlement *GetRuler() const {return ruler;}
 
@@ -28,8 +43,10 @@ namespace world
 
         Integer GetIndustrialPower() const;
 
+        Integer GetScientificPower() const;
+
         Integer GetDeathCount() const {return malariaDeathCount;}
 
-        void Update();
+        bool HasDiscoveredTechnology(science::Technologies) const;
     };
 }
