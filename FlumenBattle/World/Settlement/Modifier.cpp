@@ -19,7 +19,7 @@ void ModifierManager::ClearModifiers()
     modifiers.Reset();
 }
 
-int ModifierManager::GetAmount(SettlementModifiers type)
+int ModifierManager::GetAmount(Modifiers type)
 {
     auto amount = 0;
 

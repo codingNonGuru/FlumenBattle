@@ -23,7 +23,7 @@
 
 #define MAXIMUM_BATTLE_COUNT 32
 
-#define WORLD_MAP_SIZE 55
+#define WORLD_MAP_SIZE 63
 
 #define AWAIT(length) \
     static float timer = 0.0f;\
@@ -74,7 +74,7 @@ namespace world
             }
         };
         
-        for(auto i = 0; i < 5; ++i)
+        for(auto i = 0; i < 6; ++i)
         {
             auto location = findSettleLocation();
             FoundSettlement(location, nullptr);

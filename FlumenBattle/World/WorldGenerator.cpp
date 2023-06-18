@@ -7,7 +7,7 @@
 
 using namespace world;
 
-#define CONTINENT_GIRTH 1300.0f
+#define CONTINENT_GIRTH 1500.0f
 
 void WorldGenerator::GenerateWorld(WorldScene &scene)
 {
@@ -40,23 +40,27 @@ void WorldGenerator::GenerateWorld(WorldScene &scene)
             }
             else
             {
-                auto mountainChance = 13;
+                auto mountainChance = 20;
                 auto distance = centerTile->GetPhysicalDistanceTo(*tile);
-                if(distance > CONTINENT_GIRTH * 0.9f)
+                if(distance > CONTINENT_GIRTH * 0.95f)
                 {
                     mountainChance = 0;
                 }
-                else if(distance > CONTINENT_GIRTH * 0.7f)
+                else if(distance > CONTINENT_GIRTH * 0.9f)
                 {
                     mountainChance = 4;
                 }
+                else if(distance > CONTINENT_GIRTH * 0.85f)
+                {
+                    mountainChance = 8;
+                }
+                else if(distance > CONTINENT_GIRTH * 0.7f)
+                {
+                    mountainChance = 12;
+                }
                 else if(distance > CONTINENT_GIRTH * 0.5f)
                 {
-                    mountainChance = 7;
-                }
-                else if(distance > CONTINENT_GIRTH * 0.4f)
-                {
-                    mountainChance = 10;
+                    mountainChance = 16;
                 }
 
                 if(utility::GetRandom(1, 100) <= mountainChance)
@@ -99,7 +103,10 @@ void WorldGenerator::GenerateWorld(WorldScene &scene)
 
             if(mountainCount >= 2)
             {
-                *flag = true;
+                if(mountainCount >= 4)
+                    *flag = true;
+                else if(utility::GetRandom(1, 100) > 50)
+                    *flag = true;
             }
         }
 
@@ -139,7 +146,7 @@ void WorldGenerator::GenerateWorld(WorldScene &scene)
                     mountainCount++;
             }
 
-            if(mountainCount == 1)
+            if(mountainCount == 1 || mountainCount == 2)
             {
                 *flag = true;
             }
@@ -238,9 +245,13 @@ void WorldGenerator::GenerateWorld(WorldScene &scene)
 
     generateRelief();
 
+    eraseIsolatedMountains();
+
     uniteMountains();
 
-    eraseIsolatedMountains();
+    uniteMountains();
+
+    uniteMountains();
 
     generateBiomes();
 

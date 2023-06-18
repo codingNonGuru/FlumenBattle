@@ -5,6 +5,7 @@
 #include "FlumenEngine/Utility/Color.hpp"
 
 #include "FlumenBattle/World/Settlement/Modifier.h"
+#include "FlumenBattle/World/Settlement/Types.h"
 
 namespace world
 {
@@ -26,6 +27,7 @@ namespace world::settlement
     class SettlementProduction;
     class ConditionManager;
     struct ConditionData;
+    class BuildingManager;
 
     struct SettlementTile
     {
@@ -34,26 +36,6 @@ namespace world::settlement
         bool IsWorked;
 
         bool IsBuilt;
-    };
-
-    enum class FoodSecurity
-    {
-        CORNUCOPIA,
-        ABUNDANT,
-        ENOUGH,
-        BARELY_AVAILABLE,
-        LACKING,
-        SORELY_LACKING
-    };
-
-    enum class SettlementBuildings
-    {
-        SEWAGE,
-        WALLS,
-        GRANARY,
-        MONUMENT,
-        IRRIGATION,
-        LIBRARY
     };
 
     class Settlement
@@ -102,13 +84,7 @@ namespace world::settlement
 
         ConditionManager *conditionManager;
         
-        bool hasSewage;
-
-        bool hasWalls;
-
-        bool hasIrrigation;
-
-        bool hasLibrary;
+        BuildingManager *buildingManager;
 
         void Initialize(Word, Color, world::WorldTile *);
 
@@ -119,6 +95,8 @@ namespace world::settlement
         void GrowBorders();
 
         void DecideProduction();
+
+        void ProcessDisasters();
 
     public:
         Word GetName() const {return name;}
@@ -147,13 +125,15 @@ namespace world::settlement
 
         world::Polity *GetPolity() const {return polity;}
 
-        int GetModifier(SettlementModifiers) const;
+        int GetModifier(Modifiers) const;
 
         void SetPolity(world::Polity *);
 
         void AddModifier(Modifier);
 
         void AddCondition(ConditionData);
+
+        void AddBuilding(BuildingTypes);
 
         void StrengthenPatrol();
 

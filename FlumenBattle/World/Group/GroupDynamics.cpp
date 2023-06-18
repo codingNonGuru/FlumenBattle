@@ -21,7 +21,7 @@ void GroupDynamics::Update(settlement::Settlement &settlement)
     {
         auto banditAttackRoll = utility::GetRandom(1, 20) + banditStrength;
 
-        auto bonus = settlement.GetModifier(SettlementModifiers::PATROL_ATTACK_ROLLS);
+        auto bonus = settlement.GetModifier(settlement::Modifiers::PATROL_ATTACK_ROLLS);
         auto patrolAttackRoll = utility::GetRandom(1, 20) + patrolStrength + bonus;
 
         if(banditAttackRoll >= ARMOR_CLASS)

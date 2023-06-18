@@ -1,4 +1,5 @@
 #include "FlumenCore/Utility/Utility.hpp"
+#include "FlumenCore/Container/Map.hpp"
 
 #include "Settlement.h"
 #include "FlumenBattle/World/WorldTile.h"
@@ -9,6 +10,7 @@
 #include "FlumenBattle/World/Settlement/SettlementEvent.h"
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
 #include "FlumenBattle/World/Settlement/Condition.h"
+#include "FlumenBattle/World/Settlement/Building.h"
 #include "FlumenBattle/World/Group/GroupDynamics.h"
 
 using namespace world::settlement;
@@ -30,12 +32,6 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
     this->cultureGrowth = 0;
 
     *this->currentProduction = SettlementProductionFactory::Get()->Create(SettlementProductionOptions::NONE);
-
-    this->hasSewage = false;
-
-    this->hasIrrigation = false;
-
-    this->hasLibrary = false;
 
     auto tile = tiles.Add();
     tile->Tile = location;
@@ -223,7 +219,7 @@ void Settlement::DecideProduction()
 
     if(currentProduction->Is(SettlementProductionOptions::NONE))
     {
-        if(hasSewage == false)
+        if(buildingManager->HasBuilding(BuildingTypes::SEWAGE) == false)
         {
             *currentProduction = SettlementProductionFactory::Get()->Create(SettlementProductionOptions::SEWAGE);
         }
@@ -246,7 +242,7 @@ void Settlement::DecideProduction()
 
         if(currentProduction->Is(SettlementProductionOptions::NONE))
         {
-            if(hasIrrigation == false)
+            if(buildingManager->HasBuilding(BuildingTypes::IRRIGATION) == false)
             {
                 *currentProduction = SettlementProductionFactory::Get()->Create(SettlementProductionOptions::IRRIGATION);
             }
@@ -256,6 +252,74 @@ void Settlement::DecideProduction()
             }
         }
     }
+}
+
+enum class TimeMarks { DAY_1, DAY_5, DAY_15 };
+
+void Settlement::ProcessDisasters()
+{
+    auto &worldTime = world::WorldScene::Get()->GetTime();
+
+    bool isDailyTick = worldTime.MinuteCount == 0 && worldTime.HourCount == 0;
+    if(isDailyTick == false)
+    {
+        return;
+    }
+
+    auto rollEarthquake = [this, worldTime] ()
+    {
+        TimeMarks mark = TimeMarks::DAY_1;
+
+        if(worldTime.TotalDayCount % 5 == 0)
+        {
+            mark = TimeMarks::DAY_5;
+        }
+
+        if(worldTime.TotalDayCount % 15 == 0)
+        {
+            mark = TimeMarks::DAY_15;
+        }
+
+        typedef int Severity;
+
+        const container::StaticMap <Severity, TimeMarks> severityScale = 
+        {
+            {Severity(0), TimeMarks::DAY_1},
+            {Severity(1), TimeMarks::DAY_5},
+            {Severity(2), TimeMarks::DAY_15}
+        };
+
+        auto severityBonus = *severityScale.Get(mark);
+
+        //auto severityBonus = worldTime.TotalDayCount % 15 == 0 ? 2 : (worldTime.TotalDayCount % 5 == 0 ? 1 : 0);
+        auto difficultyClass = 18 + modifierManager.GetAmount(Modifiers::BUILDING_SAVING_THROWS_AGAINST_EARTHQUAKES);
+
+        return utility::GetRandom(1, 20) + severityBonus > difficultyClass;
+    };
+
+    for(auto &tile : tiles)
+    {
+        if(tile.IsBuilt == false)
+            continue;
+
+        if(rollEarthquake())
+        {
+            tile.IsBuilt = false;
+        }
+    }
+
+    /*buildingManager->Iterate(*this, [&rollEarthquake] (Settlement &, Building &)
+    {
+        if(rollEarthquake())
+        {
+
+        }
+    });*/
+
+    /*if(rollEarthquake())
+    {
+        buildingManager->RemoveBuilding(BuildingTypes::SEWAGE);
+    }*/   
 }
 
 Color Settlement::GetRulerBanner() const
@@ -289,7 +353,7 @@ Integer Settlement::GetFoodProduction() const
 
         if(tile.Tile->Biome->Type == world::WorldBiomes::DESERT)
         {
-            production += GetModifier(SettlementModifiers::FOOD_PRODUCTION_ON_DESERT_TILES);
+            production += GetModifier(Modifiers::FOOD_PRODUCTION_ON_DESERT_TILES);
         }
     }
 
@@ -349,7 +413,7 @@ Integer Settlement::GetIndustrialProduction() const
 Integer Settlement::GetScienceProduction() const
 {
     auto production = population >= 10 ? 2 : 1;
-    production += GetModifier(SettlementModifiers::SCIENCE_PRODUCTION);
+    production += GetModifier(Modifiers::SCIENCE_PRODUCTION);
 
     return production;
 }
@@ -365,7 +429,7 @@ Integer Settlement::GetWorkedTiles() const
     return tileCount;
 }
 
-int Settlement::GetModifier(SettlementModifiers modifier) const
+int Settlement::GetModifier(Modifiers modifier) const
 {
     return modifierManager.GetAmount(modifier);
 }
@@ -390,9 +454,14 @@ void Settlement::AddCondition(ConditionData conditionData)
     conditionManager->AddCondition(conditionData);
 }
 
+void Settlement::AddBuilding(BuildingTypes type)
+{
+    buildingManager->AddBuilding(type);
+}
+
 void Settlement::Update()
 {
-    auto worldScene = world::WorldScene::Get();
+    auto &worldTime = world::WorldScene::Get()->GetTime();
 
     auto updateModifiers = [this]
     {
@@ -402,20 +471,7 @@ void Settlement::Update()
 
         conditionManager->ApplyModifiers(*this);
 
-        if(hasSewage)
-        {
-            AddModifier({SettlementModifiers::SAVING_THROWS_AGAINST_DISEASE, 1});
-        }
-
-        if(hasIrrigation)
-        {
-            AddModifier({SettlementModifiers::FOOD_PRODUCTION_ON_DESERT_TILES, 1});
-        }
-
-        if(hasLibrary)
-        {
-            AddModifier({SettlementModifiers::SCIENCE_PRODUCTION, 1});
-        }
+        buildingManager->ApplyModifiers(*this);
     };
 
     updateModifiers();
@@ -470,9 +526,9 @@ void Settlement::Update()
         GrowBorders();
     }
 
-    if(worldScene->GetTime().MinuteCount == 0)
+    if(worldTime.MinuteCount == 0)
     {
-        auto difficultyBonus = GetModifier(SettlementModifiers::MALARIA_EMERGENCE_DIFFICULTY);
+        auto difficultyBonus = GetModifier(Modifiers::MALARIA_EMERGENCE_DIFFICULTY);
         if(utility::GetRandom(1, 100) > 97 + difficultyBonus)
         {
             if(afflictions.Find(AfflictionTypes::MALARIA) == nullptr)
@@ -501,35 +557,8 @@ void Settlement::Update()
         DecideProduction();
     }
 
-    if(worldScene->GetTime().MinuteCount == 0)
+    if(worldTime.MinuteCount == 0)
     {
         groupDynamics->Update(*this);
-    }
-
-    if(worldScene->GetTime().MinuteCount == 0 && worldScene->GetTime().HourCount == 0)
-    {
-        auto rollEarthquake = [this, worldScene] 
-        {
-            auto severityBonus = worldScene->GetTime().TotalDayCount % 15 == 0 ? 2 : (worldScene->GetTime().TotalDayCount % 5 == 0 ? 1 : 0);
-            auto difficultyClass = 18 + modifierManager.GetAmount(SettlementModifiers::BUILDING_SAVING_THROWS_AGAINST_EARTHQUAKES);
-
-            return utility::GetRandom(1, 20) + severityBonus > difficultyClass;
-        };
-
-        for(auto &tile : tiles)
-        {
-            if(tile.IsBuilt == false)
-                continue;
-
-            if(rollEarthquake())
-            {
-                tile.IsBuilt = false;
-            }
-        }
-
-        if(rollEarthquake())
-        {
-            hasSewage = false;
-        }   
     }
 }

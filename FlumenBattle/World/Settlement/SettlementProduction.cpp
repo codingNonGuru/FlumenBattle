@@ -96,12 +96,12 @@ void SettlementProductionFinisher::FinishPatrol(Settlement &settlement)
 
 void SettlementProductionFinisher::FinishSewage(Settlement &settlement)
 {
-    settlement.hasSewage = true;
+    settlement.AddBuilding(BuildingTypes::SEWAGE);
 }      
 
 void SettlementProductionFinisher::FinishLibrary(Settlement &settlement)
 {
-    settlement.hasLibrary = true;
+    settlement.AddBuilding(BuildingTypes::LIBRARY);
 }      
 
 void SettlementProductionFinisher::FinishFarm(Settlement &settlement)
@@ -146,5 +146,5 @@ void SettlementProductionFinisher::FinishSettlers(Settlement &settlement)
 
 void SettlementProductionFinisher::FinishIrrigation(Settlement &settlement)
 {
-    settlement.hasIrrigation = true;
+    settlement.AddBuilding(BuildingTypes::IRRIGATION);
 }      

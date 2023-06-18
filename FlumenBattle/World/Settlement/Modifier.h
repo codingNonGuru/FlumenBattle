@@ -2,7 +2,7 @@
 
 #include "FlumenCore/Container/Array.hpp"
 
-#include "FlumenBattle/World/Types.h"
+#include "FlumenBattle/World/Settlement/Types.h"
 
 namespace world::settlement
 {
@@ -10,11 +10,11 @@ namespace world::settlement
 
     struct Modifier
     {
-        SettlementModifiers Type;
+        Modifiers Type;
 
         int Amount;
 
-        bool operator==(SettlementModifiers type) {return Type == type;}
+        bool operator==(Modifiers type) {return Type == type;}
     };
 
     class ModifierSet
@@ -35,6 +35,6 @@ namespace world::settlement
 
         void ClearModifiers();
 
-        int GetAmount(SettlementModifiers);
+        int GetAmount(Modifiers);
     };
 }

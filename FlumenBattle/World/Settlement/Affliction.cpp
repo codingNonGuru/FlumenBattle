@@ -52,9 +52,9 @@ AfflictionResult AfflictionPerformer::PerformMalaria(Settlement &settlement, Aff
 
     auto result = AfflictionResultTypes::NONE;
 
-    auto rollBonus = settlement.GetModifier(SettlementModifiers::SAVING_THROWS_AGAINST_DISEASE);
-    rollBonus += settlement.GetModifier(SettlementModifiers::SAVING_THROWS_AGAINST_MALARIA);
-    rollBonus += settlement.GetModifier(SettlementModifiers::ALL_DICE_ROLLS);
+    auto rollBonus = settlement.GetModifier(Modifiers::SAVING_THROWS_AGAINST_DISEASE);
+    rollBonus += settlement.GetModifier(Modifiers::SAVING_THROWS_AGAINST_MALARIA);
+    rollBonus += settlement.GetModifier(Modifiers::ALL_DICE_ROLLS);
 
     auto diceRoll = utility::GetRandom(1, 20);
     if(diceRoll + rollBonus >= affliction.Type->Throw)

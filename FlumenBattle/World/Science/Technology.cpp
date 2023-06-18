@@ -9,17 +9,17 @@ using namespace world::science;
 
 void TechnologyApplier::ApplyHandWashing(settlement::Settlement &settlement)
 {
-    settlement.AddModifier({SettlementModifiers::SAVING_THROWS_AGAINST_DISEASE, 1});
+    settlement.AddModifier({settlement::Modifiers::SAVING_THROWS_AGAINST_DISEASE, 1});
 }
 
 void TechnologyApplier::ApplyTrainedSentinels(settlement::Settlement &settlement)
 {
-    settlement.AddModifier({SettlementModifiers::PATROL_ATTACK_ROLLS, 1});
+    settlement.AddModifier({settlement::Modifiers::PATROL_ATTACK_ROLLS, 1});
 }
 
 void TechnologyApplier::ApplyMasonry(settlement::Settlement &settlement)
 {
-    settlement.AddModifier({SettlementModifiers::BUILDING_SAVING_THROWS_AGAINST_EARTHQUAKES, 1});
+    settlement.AddModifier({settlement::Modifiers::BUILDING_SAVING_THROWS_AGAINST_EARTHQUAKES, 1});
 }
 
 void TechnologyRoster::StartResearching(Technologies technology)

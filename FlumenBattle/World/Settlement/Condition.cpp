@@ -50,13 +50,13 @@ void ConditionManager::Update()
 
 void ConditionFactory::OnApplyMalariaImmunity(Settlement &settlement)
 {
-    settlement.AddModifier({SettlementModifiers::MALARIA_EMERGENCE_DIFFICULTY, 1});
-    settlement.AddModifier({SettlementModifiers::SAVING_THROWS_AGAINST_MALARIA, 1});
+    settlement.AddModifier({Modifiers::MALARIA_EMERGENCE_DIFFICULTY, 1});
+    settlement.AddModifier({Modifiers::SAVING_THROWS_AGAINST_MALARIA, 1});
 }
 
 void ConditionFactory::OnApplySickened(Settlement &settlement)
 {
-    settlement.AddModifier({SettlementModifiers::ALL_DICE_ROLLS, -1});
+    settlement.AddModifier({Modifiers::ALL_DICE_ROLLS, -1});
 }
 
 Condition ConditionFactory::Create(ConditionData conditionData)

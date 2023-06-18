@@ -6,6 +6,7 @@
 #include "FlumenBattle/World/Settlement/SettlementEvent.h"
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
 #include "FlumenBattle/World/Settlement/Condition.h"
+#include "FlumenBattle/World/Settlement/Building.h"
 #include "FlumenBattle/World/Group/GroupDynamics.h"
 #include "FlumenBattle/World/WorldScene.h"
 
@@ -14,6 +15,8 @@
 #define MAXIMUM_TILES_PER_SETTLEMENT 19
 
 #define MAXIMUM_CONDITIONS_PER_SETTLEMENT 32
+
+#define MAXIMUM_BUILDINGS_PER_SETTLEMENT 16
 
 using namespace world::settlement;
 
@@ -34,6 +37,10 @@ SettlementAllocator::SettlementAllocator()
     conditionManagerAllocator = container::Pool <ConditionManager> (MAXIMUM_SETTLEMENT_COUNT);
 
     conditionAllocator = container::PoolAllocator <Condition> (MAXIMUM_SETTLEMENT_COUNT, MAXIMUM_CONDITIONS_PER_SETTLEMENT);
+
+    buildingManagerAllocator = container::Pool <BuildingManager> (MAXIMUM_SETTLEMENT_COUNT);
+
+    buildingAllocator = container::PoolAllocator <Building> (MAXIMUM_SETTLEMENT_COUNT, MAXIMUM_BUILDINGS_PER_SETTLEMENT);
 }
 
 Settlement * SettlementAllocator::Allocate()
@@ -54,6 +61,10 @@ Settlement * SettlementAllocator::Allocate()
     settlement->conditionManager = conditionManagerAllocator.Add();
 
     ConditionAllocator::Allocate(conditionAllocator, *settlement->conditionManager);
+
+    settlement->buildingManager = buildingManagerAllocator.Add();
+
+    BuildingSetAllocator::Allocate(buildingAllocator, *settlement->buildingManager);
 
     return settlement;
 }
