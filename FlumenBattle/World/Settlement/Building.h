@@ -6,6 +6,11 @@
 
 #include "FlumenBattle/World/Settlement/Types.h"
 
+namespace world::disaster
+{
+    class Earthquake;
+}
+
 namespace world::settlement
 {
     class Settlement;
@@ -40,6 +45,8 @@ namespace world::settlement
         void ApplyEffect(Settlement &) const;
 
         bool operator ==(BuildingTypes buildingType) const {return this->type->Type == buildingType;}
+
+        bool IsTall() const {return isTall;}
     };
 
     class BuildingSet
@@ -47,6 +54,8 @@ namespace world::settlement
         friend class BuildingSetAllocator;
 
         friend class BuildingManager;
+
+        friend class BuildingDamager;
 
         container::Pool <Building> buildings; 
 
@@ -61,9 +70,15 @@ namespace world::settlement
     {
         BuildingSet buildingSet;
 
+        Settlement *settlement;
+
         friend class Settlement;
 
         friend class BuildingSetAllocator;
+
+        friend class BuildingDamager;
+
+        void Initialize(Settlement *);
 
         bool HasBuilding(BuildingTypes) const;
 
@@ -84,6 +99,15 @@ namespace world::settlement
         {
             manager.buildingSet.buildings.Initialize(allocator);
         }
+    };
+
+    class BuildingDamager
+    {
+        friend class Settlement;
+
+        static void DamageImprovements(const disaster::Earthquake &earthquake, Settlement &settlement);
+
+        static void DamageBuildings(const disaster::Earthquake &earthquake, BuildingManager &buildingManager);
     };
 
     class BuildingFactory : public Singleton <BuildingFactory>

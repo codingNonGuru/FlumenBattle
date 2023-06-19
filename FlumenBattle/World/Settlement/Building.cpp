@@ -1,5 +1,6 @@
 #include "Building.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Disaster/Earthquake.h"
 
 using namespace world::settlement;
 
@@ -69,6 +70,11 @@ Building BuildingFactory::Create(BuildingTypes type)
     }
 }
 
+void BuildingManager::Initialize(Settlement *settlement)
+{
+    this->settlement = settlement;
+}
+
 bool BuildingManager::HasBuilding(BuildingTypes type) const
 {
     return buildingSet.buildings.Find(type) != nullptr;
@@ -103,4 +109,49 @@ void BuildingManager::ApplyModifiers(Settlement &settlement) const
 void BuildingManager::Update()
 {
 
+}
+
+void BuildingDamager::DamageImprovements(const disaster::Earthquake &earthquake, Settlement &settlement)
+{
+    auto difficultyClass = earthquake.GetDifficultyClass();
+    
+    auto settlementModifier = settlement.GetModifier(settlement::Modifiers::BUILDING_SAVING_THROWS_AGAINST_EARTHQUAKES);
+
+    auto &tiles = settlement.tiles;
+    for(auto &tile : tiles)
+    {
+        if(tile.IsBuilt == false)
+        {
+            continue;
+        }
+
+        auto diceRoll = utility::GetRandom(1, 20) + settlementModifier;
+        if(diceRoll >= difficultyClass)
+        {
+            continue;
+        }
+
+        tile.IsBuilt = false;
+    }
+}
+
+void BuildingDamager::DamageBuildings(const disaster::Earthquake &earthquake, BuildingManager &buildingManager) 
+{
+    auto difficultyClass = earthquake.GetDifficultyClass();
+    
+    auto settlementModifier = buildingManager.settlement->GetModifier(settlement::Modifiers::BUILDING_SAVING_THROWS_AGAINST_EARTHQUAKES);
+
+    auto &buildings = buildingManager.buildingSet.Get();
+    for(auto &building : buildings)
+    {
+        auto heightBonus = building.IsTall() ? 0 : 1;
+
+        auto diceRoll = utility::GetRandom(1, 20) + settlementModifier + heightBonus;
+        if(diceRoll >= difficultyClass)
+        {
+            continue;
+        }
+
+        buildings.Remove(&building);
+    }
 }

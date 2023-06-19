@@ -19,6 +19,8 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
 {
     this->modifierManager.Initialize();
 
+    this->buildingManager->Initialize(this);
+
     this->name = name;
 
     this->banner = banner;
@@ -54,8 +56,6 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
     {
         tile.Tile->AssertOwnership(this);
     }
-
-    //afflictions.Initialize(16);
 }
 
 world::WorldTile * Settlement::FindColonySpot()
@@ -254,74 +254,6 @@ void Settlement::DecideProduction()
     }
 }
 
-enum class TimeMarks { DAY_1, DAY_5, DAY_15 };
-
-void Settlement::ProcessDisasters()
-{
-    auto &worldTime = world::WorldScene::Get()->GetTime();
-
-    bool isDailyTick = worldTime.MinuteCount == 0 && worldTime.HourCount == 0;
-    if(isDailyTick == false)
-    {
-        return;
-    }
-
-    auto rollEarthquake = [this, worldTime] ()
-    {
-        TimeMarks mark = TimeMarks::DAY_1;
-
-        if(worldTime.TotalDayCount % 5 == 0)
-        {
-            mark = TimeMarks::DAY_5;
-        }
-
-        if(worldTime.TotalDayCount % 15 == 0)
-        {
-            mark = TimeMarks::DAY_15;
-        }
-
-        typedef int Severity;
-
-        const container::StaticMap <Severity, TimeMarks> severityScale = 
-        {
-            {Severity(0), TimeMarks::DAY_1},
-            {Severity(1), TimeMarks::DAY_5},
-            {Severity(2), TimeMarks::DAY_15}
-        };
-
-        auto severityBonus = *severityScale.Get(mark);
-
-        //auto severityBonus = worldTime.TotalDayCount % 15 == 0 ? 2 : (worldTime.TotalDayCount % 5 == 0 ? 1 : 0);
-        auto difficultyClass = 18 + modifierManager.GetAmount(Modifiers::BUILDING_SAVING_THROWS_AGAINST_EARTHQUAKES);
-
-        return utility::GetRandom(1, 20) + severityBonus > difficultyClass;
-    };
-
-    for(auto &tile : tiles)
-    {
-        if(tile.IsBuilt == false)
-            continue;
-
-        if(rollEarthquake())
-        {
-            tile.IsBuilt = false;
-        }
-    }
-
-    /*buildingManager->Iterate(*this, [&rollEarthquake] (Settlement &, Building &)
-    {
-        if(rollEarthquake())
-        {
-
-        }
-    });*/
-
-    /*if(rollEarthquake())
-    {
-        buildingManager->RemoveBuilding(BuildingTypes::SEWAGE);
-    }*/   
-}
-
 Color Settlement::GetRulerBanner() const
 {
     return polity->GetRuler()->GetBanner();
@@ -459,6 +391,13 @@ void Settlement::AddBuilding(BuildingTypes type)
     buildingManager->AddBuilding(type);
 }
 
+void Settlement::ProcessEarthquake(const disaster::Earthquake &earthquake)
+{
+    BuildingDamager::DamageBuildings(earthquake, *buildingManager);
+
+    BuildingDamager::DamageImprovements(earthquake, *this);
+}
+
 void Settlement::Update()
 {
     auto &worldTime = world::WorldScene::Get()->GetTime();
@@ -519,7 +458,7 @@ void Settlement::Update()
 
     cultureGrowth++;
 
-    if(cultureGrowth >= 70)
+    if(cultureGrowth >= 100)
     {
         cultureGrowth = 0;
 

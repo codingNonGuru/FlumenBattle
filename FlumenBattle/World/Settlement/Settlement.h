@@ -17,6 +17,11 @@ namespace world
     {
         class GroupDynamics;
     }
+
+    namespace disaster
+    {
+        class Earthquake;
+    }
 }
 
 namespace world::settlement
@@ -55,6 +60,8 @@ namespace world::settlement
         friend class SettlementProductionFinisher;
 
         friend class SettlementLabel;
+
+        friend class BuildingDamager;
 
         Word name;
 
@@ -96,8 +103,6 @@ namespace world::settlement
 
         void DecideProduction();
 
-        void ProcessDisasters();
-
     public:
         Word GetName() const {return name;}
 
@@ -136,6 +141,8 @@ namespace world::settlement
         void AddBuilding(BuildingTypes);
 
         void StrengthenPatrol();
+
+        void ProcessEarthquake(const disaster::Earthquake &);
 
         void Update();
     };

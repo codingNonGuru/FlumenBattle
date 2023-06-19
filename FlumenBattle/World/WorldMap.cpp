@@ -98,6 +98,19 @@ WorldTile* WorldMap::GetRandomTile()
     return tiles.Get(i, j);
 }
 
+WorldTile* WorldMap::GetRandomLandTile()
+{
+    while(true)
+    {
+        auto tile = GetRandomTile();
+        if(tile->Type == WorldTiles::LAND)
+        {
+            return tile;
+        }
+    }
+    return nullptr;
+}
+
 WorldTile* WorldMap::GetEmptyRandomTile(bool isLand = true)
 {
     while(true)

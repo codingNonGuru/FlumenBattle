@@ -10,6 +10,7 @@
 #include "FlumenBattle/World/WorldBiome.h"
 #include "FlumenBattle/World/WorldGenerator.h"
 #include "FlumenBattle/World/WorldTileModel.h"
+#include "FlumenBattle/World/Disaster/Earthquake.h"
 #include "FlumenBattle/World/GroupAllocator.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/GroupFactory.h"
@@ -180,6 +181,15 @@ namespace world
         };
 
         refreshSettlements();
+
+        if(time.IsNewDay == true)
+        {
+            auto earthquakeCount = 10;
+            for(int i = 0; i < earthquakeCount; ++i)
+            {
+                disaster::EarthquakeGenerator::Get()->Generate();
+            }
+        }
 
         auto refreshPolities = [this]
         {

@@ -20,6 +20,12 @@ namespace world
 
         int FlowSpeed;
 
+        bool IsNewHour;
+
+        bool IsNewDay;
+
+        bool IsNewYear;
+
         WorldTime() {}
 
         WorldTime(int yearCount, int dayCount, int hourCount) : 
@@ -51,21 +57,28 @@ namespace world
 
         WorldTime& operator++()
         {
+            IsNewHour = false;
+            IsNewDay = false;
+            IsNewYear = false;
+
             MinuteCount += 10;
             if(MinuteCount >= 60)
             {
                 MinuteCount = 0;
+                IsNewHour = true;
 
                 HourCount++;
                 if(HourCount >= 24)
                 {
                     HourCount = 0;
+                    IsNewDay = true;
 
                     DayCount++;
                     TotalDayCount++;
                     if(DayCount >= 365)
                     {
                         DayCount = 0;
+                        IsNewYear = true;
                         YearCount++;
                     }
                 }

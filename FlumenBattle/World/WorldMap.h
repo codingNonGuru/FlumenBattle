@@ -29,6 +29,8 @@ namespace world
 
         WorldTile* GetTile(Integer3);
 
+        WorldTile* GetRandomLandTile();
+
         WorldTile* GetEmptyRandomTile(bool = true);
 
         WorldTile* GetCenterTile();
