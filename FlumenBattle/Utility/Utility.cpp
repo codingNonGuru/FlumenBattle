@@ -24,20 +24,52 @@ utility::Success utility::RollD20Dice(DifficultyClass difficultyClass, Bonus bon
     auto difference = compoundedRoll - difficultyClass;
     auto isSuccess = difference >= 0;
 
-    if(diceRoll == 1 || difference <= -10)
+    auto success = SuccessTypes();
+
+    if(difference >= 10)
     {
-        return SuccessTypes::CRITICAL_FAILURE;
+        success = SuccessTypes::CRITICAL_SUCCESS;
+
+        if(diceRoll == 1)
+        {
+            success = SuccessTypes::SUCCESS;
+        }
+    }
+    else if(isSuccess == true)
+    {
+        success = SuccessTypes::SUCCESS;
+
+        if(diceRoll == 1)
+        {
+            success = SuccessTypes::FAILURE;
+        }
+        else if(diceRoll == 20)
+        {
+            success = SuccessTypes::CRITICAL_SUCCESS;
+        }
+    }
+    else if(difference > -10)
+    {
+        success = SuccessTypes::FAILURE;
+
+        if(diceRoll == 1)
+        {
+            success = SuccessTypes::CRITICAL_FAILURE;
+        }
+        else if(diceRoll == 20)
+        {
+            success = SuccessTypes::SUCCESS;
+        }
+    }
+    else
+    {
+        success = SuccessTypes::CRITICAL_FAILURE;
+
+        if(diceRoll == 20)
+        {
+            success = SuccessTypes::FAILURE;
+        }
     }
 
-    if(isSuccess == false)
-    {
-        return SuccessTypes::FAILURE;
-    }
-
-    if(diceRoll == 20 || difference >= 10)
-    {
-        return SuccessTypes::CRITICAL_SUCCESS;
-    }
-
-    return SuccessTypes::SUCCESS;
+    return success;
 }
