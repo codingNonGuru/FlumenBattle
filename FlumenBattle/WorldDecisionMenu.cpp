@@ -11,6 +11,7 @@
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/HumanController.h"
+#include "FlumenBattle/Utility/Utility.h"
 
 #define ROLL_LABEL_COUNT 5
 
@@ -143,13 +144,13 @@ void WorldDecisionMenu::HandleActionSelected()
     Phrase text = [group] {
         switch(group->actionSuccess)
         {
-            case group::SuccessTypes::CRITICAL_SUCCESS:
+            case utility::SuccessTypes::CRITICAL_SUCCESS:
                 return "CRITICAL SUCCESS";
-            case group::SuccessTypes::SUCCESS:
+            case utility::SuccessTypes::SUCCESS:
                 return "SUCCESS";
-            case group::SuccessTypes::FAILURE:
+            case utility::SuccessTypes::FAILURE:
                 return "FAILURE";
-            case group::SuccessTypes::CRITICAL_FAILURE:
+            case utility::SuccessTypes::CRITICAL_FAILURE:
                 return "CRITICAL FAILURE";
         }
     } (); 

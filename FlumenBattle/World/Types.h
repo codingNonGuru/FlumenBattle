@@ -11,11 +11,6 @@ namespace world
             TAKE_SHORT_REST, TAKE_LONG_REST, SEARCH, ENGAGE, FIGHT, TRAVEL, NONE
         };
 
-        enum class SuccessTypes
-        {
-            CRITICAL_SUCCESS, SUCCESS, FAILURE, CRITICAL_FAILURE
-        };
-
         enum class ActionIntensities
         {
             LEISURELY, NORMAL, INTENSE

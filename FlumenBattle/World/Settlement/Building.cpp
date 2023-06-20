@@ -1,6 +1,7 @@
 #include "Building.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Disaster/Earthquake.h"
+#include "FlumenBattle/Utility/Utility.h"
 
 using namespace world::settlement;
 
@@ -113,6 +114,8 @@ void BuildingManager::Update()
 
 void BuildingDamager::DamageImprovements(const disaster::Earthquake &earthquake, Settlement &settlement)
 {
+    using namespace utility;
+
     auto difficultyClass = earthquake.GetDifficultyClass();
     
     auto settlementModifier = settlement.GetModifier(settlement::Modifiers::BUILDING_SAVING_THROWS_AGAINST_EARTHQUAKES);
@@ -125,8 +128,8 @@ void BuildingDamager::DamageImprovements(const disaster::Earthquake &earthquake,
             continue;
         }
 
-        auto diceRoll = utility::GetRandom(1, 20) + settlementModifier;
-        if(diceRoll >= difficultyClass)
+        auto success = utility::RollD20Dice(difficultyClass, settlementModifier);
+        if(success.IsAnySuccess())
         {
             continue;
         }
@@ -137,6 +140,8 @@ void BuildingDamager::DamageImprovements(const disaster::Earthquake &earthquake,
 
 void BuildingDamager::DamageBuildings(const disaster::Earthquake &earthquake, BuildingManager &buildingManager) 
 {
+    using namespace utility;
+
     auto difficultyClass = earthquake.GetDifficultyClass();
     
     auto settlementModifier = buildingManager.settlement->GetModifier(settlement::Modifiers::BUILDING_SAVING_THROWS_AGAINST_EARTHQUAKES);
@@ -146,8 +151,8 @@ void BuildingDamager::DamageBuildings(const disaster::Earthquake &earthquake, Bu
     {
         auto heightBonus = building.IsTall() ? 0 : 1;
 
-        auto diceRoll = utility::GetRandom(1, 20) + settlementModifier + heightBonus;
-        if(diceRoll >= difficultyClass)
+        auto success = utility::RollD20Dice(difficultyClass, settlementModifier + heightBonus);
+        if(success.IsAnySuccess())
         {
             continue;
         }

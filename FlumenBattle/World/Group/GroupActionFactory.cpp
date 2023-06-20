@@ -117,25 +117,9 @@ namespace world::group
                 modifier = character.GetSkillProficiency(SkillTypes::SURVIVAL);
         }
 
-        auto roll = utility::GetRandom(1, 20);
-        if(roll == 1 || roll + modifier < difficultyClass - 10)
-        {
-            group.actionSuccess = SuccessTypes::CRITICAL_FAILURE;
-        }
-        else if(roll == 20 || roll + modifier >= difficultyClass + 10)
-        {
-            group.actionSuccess = SuccessTypes::CRITICAL_SUCCESS;
-        }
-        else if(roll + modifier < difficultyClass)
-        {
-            group.actionSuccess = SuccessTypes::FAILURE;
-        }
-        else if(roll + modifier >= difficultyClass)
-        {
-            group.actionSuccess = SuccessTypes::SUCCESS;
-        }
+        group.actionSuccess = utility::RollD20Dice(difficultyClass, modifier);
 
-        return {roll, modifier, difficultyClass, SkillTypes::SURVIVAL};
+        return {group.actionSuccess.GetRollValue(), modifier, difficultyClass, SkillTypes::SURVIVAL};
     }
 
     int GroupActionPerformer::GetTravelDuration(const Group &group)
@@ -143,13 +127,13 @@ namespace world::group
         int durationBonus = 0;
         switch(group.actionSuccess)
         {
-            case SuccessTypes::CRITICAL_SUCCESS:
+            case utility::SuccessTypes::CRITICAL_SUCCESS:
                 durationBonus = 4;
                 break;
-            case SuccessTypes::SUCCESS:
+            case utility::SuccessTypes::SUCCESS:
                 durationBonus = 2;
                 break;
-            case SuccessTypes::CRITICAL_FAILURE:
+            case utility::SuccessTypes::CRITICAL_FAILURE:
                 durationBonus = -2;
                 break;
         }

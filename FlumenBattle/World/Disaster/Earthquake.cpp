@@ -1,10 +1,9 @@
-#include "FlumenCore/Utility/Utility.hpp"
-
 #include "Earthquake.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldMap.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/Utility/Utility.h"
 
 using namespace world::disaster;
 
@@ -29,14 +28,16 @@ void Earthquake::ApplyEffect() const
 
 void EarthquakeGenerator::Generate()
 {
+    using namespace utility;
+
     auto strength = 0;
 
-    auto diceRoll = utility::GetRandom(1, 20);
-    if(diceRoll == 20)
+    auto diceRoll = RollD20Dice(DifficultyClass(15));
+    if(diceRoll.IsCriticalSuccess())
     {
         strength = 2;
     }
-    else if(diceRoll > 15)
+    else if(diceRoll.IsNormalSuccess())
     {
         strength = 1;
     }

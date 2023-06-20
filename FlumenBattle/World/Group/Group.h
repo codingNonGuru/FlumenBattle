@@ -5,6 +5,7 @@
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/World/Types.h"
 #include "FlumenBattle/World/Group/GroupActionData.h"
+#include "FlumenBattle/Utility/Utility.h"
 
 class Character;
 
@@ -56,7 +57,7 @@ namespace world::group
 
         Integer actionProgress;
 
-        SuccessTypes actionSuccess;
+        utility::Success actionSuccess;
 
         ActionIntensities actionIntensity;
 
@@ -87,7 +88,7 @@ namespace world::group
 
         const GroupAction * GetAction() const {return action;}
 
-        SuccessTypes GetActionSuccess() const {return actionSuccess;}
+        utility::Success GetActionSuccess() const {return actionSuccess;}
 
         Pool <Character> & GetCharacters() {return characters;}
 
