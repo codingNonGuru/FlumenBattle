@@ -30,13 +30,17 @@ namespace world
 
         friend class WorldTileModel;
 
+        friend class WorldGenerator;
+
+        friend class WorldAllocator;
+
         friend class GroupAllocator;
 
         WorldTime time;
 
         WorldMap *worldMap;
 
-        Pool <Battle> battles;
+        Pool <Battle> *battles;
 
         group::Group *playerGroup;
 
@@ -88,7 +92,7 @@ namespace world
 
         Pool <settlement::Settlement> & GetSettlements() {return *settlements;}
 
-        Pool <Battle> & GetBattles() {return battles;}
+        Pool <Battle> & GetBattles() {return *battles;}
 
         Pool <group::Group> & GetGroups() {return *groups;}
 

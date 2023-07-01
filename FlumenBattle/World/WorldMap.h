@@ -16,6 +16,8 @@ namespace world
 
         friend class WorldGenerator;
 
+        friend class WorldAllocator;
+
         Grid <WorldTile> tiles;
 
         WorldMap() {}

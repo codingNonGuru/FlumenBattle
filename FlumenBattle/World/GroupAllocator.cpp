@@ -3,19 +3,32 @@
 #include "FlumenBattle/World/GroupAllocator.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/WorldGenerator.h"
 #include "FlumenBattle/Character.h"
-
-#define MAXIMUM_GROUP_COUNT 64
+#include "FlumenBattle/Battle.h"
 
 #define CHARACTERS_PER_GROUP 16
 
 namespace world
 {
-    GroupAllocator::GroupAllocator()
+    void GroupAllocator::PreallocateMaximumMemory()
     {
-        groups.Initialize(MAXIMUM_GROUP_COUNT);
+        auto groupCount = WorldGenerator::Get()->GetMaximumGroupCount(MAXIMUM_WORLD_SIZE);
+        groupMemory = container::Pool <group::Group>::PreallocateMemory(groupCount);
 
-        characterAllocator = container::PoolAllocator <Character> (MAXIMUM_GROUP_COUNT, CHARACTERS_PER_GROUP);
+        characterMemory = container::PoolAllocator <Character>::PreallocateMemory(groupCount, CHARACTERS_PER_GROUP);
+
+        battleMemory = container::Pool <Battle>::PreallocateMemory(groupCount);
+    }
+
+    void GroupAllocator::AllocateWorldMemory(int worldSize)
+    {
+        auto groupCount = WorldGenerator::Get()->GetMaximumGroupCount(worldSize);
+        groups.Initialize(groupCount, groupMemory);
+
+        characterAllocator = container::PoolAllocator <Character> (groupCount, CHARACTERS_PER_GROUP, characterMemory);
+
+        battles = container::Pool <Battle> (groupCount, battleMemory);
     }
 
     group::Group * GroupAllocator::Allocate()

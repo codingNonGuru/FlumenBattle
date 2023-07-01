@@ -6,13 +6,9 @@ class Text;
 
 namespace pregame
 {
-    class MainMenu : public Element
+    class GeneratorPopup : public Element
     {
-        friend class PreGameState;
-
-        Text *newGameLabel;
-
-        Text *quitGameLabel;
+        Text *loadingLabel;
 
         void HandleConfigure() override;
 
@@ -20,8 +16,6 @@ namespace pregame
 
         void HandleDisable() override;
 
-        void HandleNewGamePressed();
-
-        void OnExitPressed();
+        void HandleUpdate() override;
     };
 }

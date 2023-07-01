@@ -28,6 +28,9 @@ add_executable(Battle ${SOURCE_FILES})
 
 target_link_libraries(Battle GL GLEW pthread SDL2 SDL2_ttf SDL2_image SDL2_mixer Engine Core)
 
+target_compile_definitions(Battle PRIVATE MAXIMUM_WORLD_SIZE=101)
+target_compile_definitions(Battle PRIVATE MINIMUM_WORLD_SIZE=31)
+
 add_subdirectory(/home/andrei/Documents/Code/Libraries/FlumenEngine 
 	/home/andrei/Documents/Code/Libraries/FlumenEngine)
 add_subdirectory(/home/andrei/Documents/Code/Libraries/FlumenCore

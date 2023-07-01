@@ -9,6 +9,7 @@
 #include "FlumenBattle/World/Settlement/Building.h"
 #include "FlumenBattle/World/Group/GroupDynamics.h"
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/WorldGenerator.h"
 
 #define MAXIMUM_SETTLEMENT_COUNT 128
 
@@ -18,29 +19,64 @@
 
 #define MAXIMUM_BUILDINGS_PER_SETTLEMENT 16
 
+#define MAXIMUM_AFFLICTIONS_PER_SETTLEMENT 16
+
+#define MAXIMUM_EVENTS_PER_SETTLEMENT 32
+
 using namespace world::settlement;
 
-SettlementAllocator::SettlementAllocator()
+void SettlementAllocator::PreallocateMaximumMemory()
 {
-    settlements.Initialize(MAXIMUM_SETTLEMENT_COUNT);
+    auto worldGenerator = WorldGenerator::Get();
 
-    groupDynamics.Initialize(MAXIMUM_SETTLEMENT_COUNT);
+    auto settlementCount = worldGenerator->GetMaximumSettlementCount(MAXIMUM_WORLD_SIZE);
 
-    tileAllocator = container::PoolAllocator <SettlementTile> (MAXIMUM_SETTLEMENT_COUNT, MAXIMUM_TILES_PER_SETTLEMENT);
+    settlementMemory = container::Pool <Settlement>::PreallocateMemory(settlementCount);
 
-    afflictionAllocator = container::PoolAllocator <Affliction> (MAXIMUM_SETTLEMENT_COUNT, 16);
+    groupDynamicsMemory = container::Pool <group::GroupDynamics>::PreallocateMemory(settlementCount);
 
-    eventAllocator = container::PoolAllocator <SettlementEvent> (MAXIMUM_SETTLEMENT_COUNT, 32);
+    tileMemory = container::PoolAllocator <SettlementTile>::PreallocateMemory(settlementCount, MAXIMUM_TILES_PER_SETTLEMENT);
 
-    productionAllocator = container::Pool <SettlementProduction> (MAXIMUM_SETTLEMENT_COUNT);
+    afflictionMemory = container::PoolAllocator <Affliction>::PreallocateMemory (settlementCount, MAXIMUM_AFFLICTIONS_PER_SETTLEMENT);
 
-    conditionManagerAllocator = container::Pool <ConditionManager> (MAXIMUM_SETTLEMENT_COUNT);
+    eventMemory = container::PoolAllocator <SettlementEvent>::PreallocateMemory (settlementCount, MAXIMUM_EVENTS_PER_SETTLEMENT);
 
-    conditionAllocator = container::PoolAllocator <Condition> (MAXIMUM_SETTLEMENT_COUNT, MAXIMUM_CONDITIONS_PER_SETTLEMENT);
+    productionMemory = container::Pool <SettlementProduction>::PreallocateMemory (settlementCount);
 
-    buildingManagerAllocator = container::Pool <BuildingManager> (MAXIMUM_SETTLEMENT_COUNT);
+    conditionManagerMemory = container::Pool <ConditionManager>::PreallocateMemory (settlementCount);
 
-    buildingAllocator = container::PoolAllocator <Building> (MAXIMUM_SETTLEMENT_COUNT, MAXIMUM_BUILDINGS_PER_SETTLEMENT);
+    conditionMemory = container::PoolAllocator <Condition>::PreallocateMemory (settlementCount, MAXIMUM_CONDITIONS_PER_SETTLEMENT);
+
+    buildingManagerMemory = container::Pool <BuildingManager>::PreallocateMemory (settlementCount);
+
+    buildingMemory = container::PoolAllocator <Building>::PreallocateMemory (settlementCount, MAXIMUM_BUILDINGS_PER_SETTLEMENT);
+}
+
+void SettlementAllocator::AllocateWorldMemory(int worldSize)
+{
+    auto worldGenerator = WorldGenerator::Get();
+
+    auto settlementCount = worldGenerator->GetMaximumSettlementCount(worldSize);
+
+    settlements.Initialize(settlementCount, settlementMemory);
+
+    groupDynamics.Initialize(settlementCount, groupDynamicsMemory);
+
+    tileAllocator = container::PoolAllocator <SettlementTile> (settlementCount, MAXIMUM_TILES_PER_SETTLEMENT, tileMemory);
+
+    afflictionAllocator = container::PoolAllocator <Affliction> (settlementCount, MAXIMUM_AFFLICTIONS_PER_SETTLEMENT, afflictionMemory);
+
+    eventAllocator = container::PoolAllocator <SettlementEvent> (settlementCount, MAXIMUM_EVENTS_PER_SETTLEMENT, eventMemory);
+
+    productionAllocator = container::Pool <SettlementProduction> (settlementCount, productionMemory);
+
+    conditionManagerAllocator = container::Pool <ConditionManager> (settlementCount, conditionManagerMemory);
+
+    conditionAllocator = container::PoolAllocator <Condition> (settlementCount, MAXIMUM_CONDITIONS_PER_SETTLEMENT, conditionMemory);
+
+    buildingManagerAllocator = container::Pool <BuildingManager> (settlementCount, buildingManagerMemory);
+
+    buildingAllocator = container::PoolAllocator <Building> (settlementCount, MAXIMUM_BUILDINGS_PER_SETTLEMENT, buildingMemory);
 }
 
 Settlement * SettlementAllocator::Allocate()

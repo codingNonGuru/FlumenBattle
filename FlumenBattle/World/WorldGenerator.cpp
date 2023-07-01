@@ -4,14 +4,27 @@
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/WorldBiome.h"
 #include "FlumenBattle/World/WorldRelief.h"
+#include "FlumenBattle/World/WorldAllocator.h"
+#include "FlumenBattle/World/Settlement/SettlementAllocator.h"
+#include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/GroupAllocator.h"
+#include "FlumenBattle/World/Group/GroupFactory.h"
+#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/PreGame/Types.h"
 
 using namespace world;
 
-#define CONTINENT_GIRTH 1500.0f
-
-void WorldGenerator::GenerateWorld(WorldScene &scene)
+int WorldGenerator::GenerateWorld(pregame::NewWorldData data)
 {
-    auto map = scene.GetWorldMap();
+    std::cout<<"World has started generating\n";
+
+    auto &scene = *WorldScene::Get();
+
+    scene.worldMap = new WorldMap(data.Size);
+
+    auto map = scene.worldMap;
+
+    const float CONTINENT_GIRTH = float(data.Size) * 23.0f;
 
     auto defineContinents = [&]
     {
@@ -256,4 +269,75 @@ void WorldGenerator::GenerateWorld(WorldScene &scene)
     generateBiomes();
 
     initializeTiles();
+
+    GenerateSociety(data);
+
+    hasFinishedGenerating = true;
+
+    std::cout<<"World has finished generating\n";
+}
+
+void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
+{
+    auto &scene = *WorldScene::Get();
+
+    auto worldMap = scene.worldMap;
+
+    WorldAllocator::Get()->AllocateSociety(data.Size);
+
+    auto settlements = settlement::SettlementAllocator::Get()->GetSettlements();
+    scene.settlements = settlements;
+
+    auto findSettleLocation = [&]
+    {
+        while(true)
+        {
+            auto tile = worldMap->GetEmptyRandomTile();
+
+            bool isSettlementNearby = false;
+            for(auto &settlement : *settlements)
+            {
+                auto distance = tile->GetDistanceTo(*settlement.GetLocation());
+                if(distance < data.Size / 6)
+                {
+                    isSettlementNearby = true;
+                    break;
+                }
+            }
+            if(isSettlementNearby)
+                continue;
+
+            if(tile->HasBiome(WorldBiomes::STEPPE) && tile->GetSettlement() == nullptr)
+                return tile;
+        }
+    };
+    
+    for(auto i = 0; i < data.Size / 10; ++i)
+    {
+        auto location = findSettleLocation();
+        scene.FoundSettlement(location, nullptr);
+    }
+
+    auto groups = GroupAllocator::Get()->GetGroups();
+    scene.groups = groups;
+
+    auto battles = GroupAllocator::Get()->GetBattles();
+    scene.battles = battles;
+
+    group::GroupFactory::Create({group::GroupTypes::COMPUTER, RaceTypes::ORC})->SetTile(worldMap->GetEmptyRandomTile());
+}
+
+int WorldGenerator::GetMaximumPolityCount(int worldSize) const
+{
+    return worldSize;
+}
+
+int WorldGenerator::GetMaximumSettlementCount(int worldSize) const
+{
+    return (worldSize * worldSize) / 15;
+}
+
+int WorldGenerator::GetMaximumGroupCount(int worldSize) const
+{
+    return (worldSize * worldSize) / 15;
 }

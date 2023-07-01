@@ -2,6 +2,7 @@
 
 #include "FlumenBattle/World/WorldMap.h"
 #include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/WorldAllocator.h"
 
 using namespace world;
 
@@ -9,10 +10,7 @@ static Array <WorldTile*> nearbyTiles;
 
 WorldMap::WorldMap(Length size) 
 {
-    nearbyTiles.Initialize(size * size);
-
-    auto height = size;
-    tiles.Initialize(size, height);
+    WorldAllocator::Get()->AllocateMap(*this, nearbyTiles, size);
 
     tiles.Bound();
 

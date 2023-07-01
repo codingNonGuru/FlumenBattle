@@ -22,10 +22,6 @@
 #include "FlumenBattle/BattleState.h"
 #include "FlumenBattle/BattleScene.h"
 
-#define MAXIMUM_BATTLE_COUNT 32
-
-#define WORLD_MAP_SIZE 63
-
 #define AWAIT(length) \
     static float timer = 0.0f;\
     timer += Time::GetDelta();\
@@ -43,57 +39,8 @@ namespace world
 
     void WorldScene::Initialize()
     {
-        worldMap = new WorldMap(WORLD_MAP_SIZE);
-
-        WorldGenerator::Get()->GenerateWorld(*this);
-
-        polities.Initialize(64);
-
-        settlements = &settlement::SettlementAllocator::Get()->settlements;
-
-        auto findSettleLocation = [this]
-        {
-            while(true)
-            {
-                auto tile = worldMap->GetEmptyRandomTile();
-
-                bool isSettlementNearby = false;
-                for(auto &settlement : *settlements)
-                {
-                    auto distance = tile->GetDistanceTo(*settlement.GetLocation());
-                    if(distance < 12)
-                    {
-                        isSettlementNearby = true;
-                        break;
-                    }
-                }
-                if(isSettlementNearby)
-                    continue;
-
-                if(tile->HasBiome(WorldBiomes::STEPPE) && tile->GetSettlement() == nullptr)
-                    return tile;
-            }
-        };
-        
-        for(auto i = 0; i < 6; ++i)
-        {
-            auto location = findSettleLocation();
-            FoundSettlement(location, nullptr);
-        }
-
-        groups = &GroupAllocator::Get()->groups;
-
-        battles.Initialize(MAXIMUM_BATTLE_COUNT);
-
         playerGroup = group::GroupFactory::Create({group::GroupTypes::PLAYER, RaceTypes::HUMAN});
         playerGroup->SetTile(worldMap->GetCenterTile());
-
-        group::GroupFactory::Create({group::GroupTypes::COMPUTER, RaceTypes::ORC})->SetTile(worldMap->GetEmptyRandomTile());
-        //group::GroupFactory::Create({group::GroupTypes::COMPUTER, RaceTypes::GOBLIN})->SetTile(worldMap->GetEmptyRandomTile());
-        //group::GroupFactory::Create({group::GroupTypes::COMPUTER, RaceTypes::ELF})->SetTile(worldMap->GetEmptyRandomTile());
-        //group::GroupFactory::Create({group::GroupTypes::COMPUTER, RaceTypes::HUMAN})->SetTile(worldMap->GetEmptyRandomTile());
-        //group::GroupFactory::Create({group::GroupTypes::COMPUTER, RaceTypes::GNOME})->SetTile(worldMap->GetEmptyRandomTile());
-        //group::GroupFactory::Create({group::GroupTypes::COMPUTER, RaceTypes::HALFLING})->SetTile(worldMap->GetEmptyRandomTile());
 
         time = WorldTime(230, 63, 14);
 
@@ -130,9 +77,9 @@ namespace world
 
         auto refreshBattles = [this] 
         {
-            static auto finishedBattles = Array <Battle *> (MAXIMUM_BATTLE_COUNT);
+            static auto finishedBattles = Array <Battle *> (battles->GetCapacity());
 
-            for(auto &battle : battles)
+            for(auto &battle : *battles)
             {
                 battle.Update();
 
@@ -144,7 +91,7 @@ namespace world
 
             for(auto &battle : finishedBattles)
             {
-                battles.Remove(battle);
+                battles->Remove(battle);
             }
 
             finishedBattles.Reset();
@@ -204,7 +151,7 @@ namespace world
 
     void WorldScene::StartBattle(group::Group *first, group::Group *second)
     {
-        *battles.Add() = Battle(first, second);
+        *battles->Add() = Battle(first, second);
     }
 
     settlement::Settlement * WorldScene::FoundSettlement(WorldTile *location, Polity *polity)

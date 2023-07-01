@@ -1,5 +1,7 @@
 #pragma once
 
+#include "FlumenCore/Delegate/Delegate.hpp"
+
 #include "FlumenEngine/Core/Singleton.h"
 
 namespace pregame
@@ -11,7 +13,5 @@ namespace pregame
         void Enable();
 
         void Disable();
-
-        void HandleStartGamePressed();
     };
 }

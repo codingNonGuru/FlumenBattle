@@ -9,6 +9,7 @@ namespace world
 {
     class WorldTile;
     class WorldScene;
+    class WorldAllocator;
     namespace group
     {
         class GroupDynamics;
@@ -34,6 +35,28 @@ namespace world::settlement
 
         friend class SettlementFactory;
 
+        friend class world::WorldAllocator;
+
+        container::Pool <Settlement>::Memory settlementMemory;
+
+        container::Pool <group::GroupDynamics>::Memory groupDynamicsMemory;
+
+        container::PoolAllocator <SettlementTile>::Memory tileMemory;
+
+        container::PoolAllocator <Affliction>::Memory afflictionMemory;
+
+        container::PoolAllocator <SettlementEvent>::Memory eventMemory;
+
+        container::Pool <SettlementProduction>::Memory productionMemory;
+
+        container::Pool <ConditionManager>::Memory conditionManagerMemory;
+
+        container::PoolAllocator <Condition>::Memory conditionMemory;
+
+        container::Pool <BuildingManager>::Memory buildingManagerMemory;
+
+        container::PoolAllocator <Building>::Memory buildingMemory;
+
         container::Pool <Settlement> settlements;
 
         container::Pool <group::GroupDynamics> groupDynamics;
@@ -58,7 +81,11 @@ namespace world::settlement
 
         Settlement *Allocate();
 
+        void AllocateWorldMemory(int);
+
+        void PreallocateMaximumMemory();
+
     public:
-        SettlementAllocator();
+        container::Pool <Settlement> *GetSettlements() {return &settlements;}
     };
 }

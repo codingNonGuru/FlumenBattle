@@ -6,13 +6,15 @@ class Text;
 
 namespace pregame
 {
-    class MainMenu : public Element
+    class GeneratedWorldMenu : public Element
     {
         friend class PreGameState;
 
-        Text *newGameLabel;
+        Text *startGameLabel;
 
-        Text *quitGameLabel;
+        Text *saveWorldLabel;
+
+        Text *backLabel;
 
         void HandleConfigure() override;
 
@@ -20,8 +22,8 @@ namespace pregame
 
         void HandleDisable() override;
 
-        void HandleNewGamePressed();
+        void OnStartGamePressed();
 
-        void OnExitPressed();
+        void OnBackPressed();
     };
 }
