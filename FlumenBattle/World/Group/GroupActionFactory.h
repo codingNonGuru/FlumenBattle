@@ -36,17 +36,17 @@ namespace world::group
 
         static int GetTravelDuration(const Group &);
 
-        static void TakeShortRest(Group &group);
+        static GroupActionResult TakeShortRest(Group &group);
 
-        static void TakeLongRest(Group &group);
+        static GroupActionResult TakeLongRest(Group &group);
 
-        static void Search(Group &group);
+        static GroupActionResult Search(Group &group);
 
-        static void Engage(Group &group);
+        static GroupActionResult Engage(Group &group);
 
-        static void Fight(Group &group);
+        static GroupActionResult Fight(Group &group);
 
-        static void Travel(Group &group);
+        static GroupActionResult Travel(Group &group);
     };
 
     class GroupActionValidator

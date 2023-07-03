@@ -38,13 +38,13 @@ namespace world
 
         static const WorldRelief * BuildHillsRelief()
         {
-            static WorldRelief relief = {WorldReliefs::HILLS, 1};
+            static WorldRelief relief = {WorldReliefs::HILLS, 2};
             return &relief;
         }
 
         static const WorldRelief * BuildMountainsRelief()
         {
-            static WorldRelief relief = {WorldReliefs::MOUNTAINS, 2};
+            static WorldRelief relief = {WorldReliefs::MOUNTAINS, 4};
             return &relief;
         }
 

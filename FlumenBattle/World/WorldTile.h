@@ -99,6 +99,8 @@ namespace world
 
         Float4 GetShade() const;
 
+        Integer GetTravelPenalty() const;
+
         void Settle(settlement::Settlement *);
 
         void AssertOwnership(settlement::Settlement *);

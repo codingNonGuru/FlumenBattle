@@ -1,10 +1,10 @@
-#include "FlumenBattle/World/Group/ComputerController.h"
+#include "FlumenBattle/World/Group/MachineMind.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 
 namespace world::group
 {
-    void ComputerController::DetermineAction(Group &group) const 
+    void MachineMind::DetermineAction(Group &group) const 
     {
         if(group.GetAction())  
             return;
@@ -12,7 +12,7 @@ namespace world::group
         group.SelectAction(GroupActions::SEARCH);
     }
 
-    void ComputerController::PerformAction(Group &) const 
+    void MachineMind::RegisterActionPerformance(Group &, GroupActionResult) const
     {
 
     }

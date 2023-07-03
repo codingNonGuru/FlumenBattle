@@ -1,6 +1,7 @@
 #pragma once
 
 #include "FlumenBattle/Types.hpp"
+#include "FlumenBattle/Utility/Utility.h"
 
 namespace world
 {
@@ -20,12 +21,15 @@ namespace world::group
 
     struct GroupActionResult
     {
-        int Roll;
+        bool HasRolled;
 
-        int Modifier;
-
-        int DifficultyClass;
+        utility::Success Success;
 
         SkillTypes Skill;
+
+        GroupActionResult(utility::Success success, SkillTypes skill) : 
+        HasRolled(true), Success(success), Skill(skill) {}
+
+        GroupActionResult() : HasRolled(false) {}
     };
 }

@@ -91,7 +91,7 @@ namespace world::group
     {
         static GroupAction action = {
             GroupActions::TRAVEL, 
-            60 * GroupAction::ACTION_PROGRESS_RATE,
+            36 * GroupAction::ACTION_PROGRESS_RATE,
             true, 
             &GroupActionValidator::CanTravel, 
             &GroupActionPerformer::Travel, 
@@ -103,12 +103,18 @@ namespace world::group
 
     GroupActionResult GroupActionPerformer::InitiateTravel(Group &group, const GroupActionData &actionData)
     {
-        group.destination = actionData.TravelDestination;
+        if(group.travelActionData.Destination != actionData.TravelDestination)
+        {
+            group.travelActionData.Progress = 0;
 
-        auto difficultyClass = 15;
+            group.travelActionData.Destination = actionData.TravelDestination;
+            group.travelActionData.Source = group.GetTile();
+        }
+
+        /*auto difficultyClass = 15;
 
         difficultyClass += group.tile->Biome->TravelPenalty;
-        difficultyClass += group.destination->Biome->TravelPenalty;
+        difficultyClass += group.travelActionData.Destination->Biome->TravelPenalty;
 
         int modifier = -100;
         for(auto &character : group.characters)
@@ -119,29 +125,20 @@ namespace world::group
 
         group.actionSuccess = utility::RollD20Dice(difficultyClass, modifier);
 
-        return {group.actionSuccess.GetRollValue(), modifier, difficultyClass, SkillTypes::SURVIVAL};
+        return {group.actionSuccess.GetRollValue(), modifier, difficultyClass, SkillTypes::SURVIVAL};*/
     }
 
     int GroupActionPerformer::GetTravelDuration(const Group &group)
     {
-        int durationBonus = 0;
-        switch(group.actionSuccess)
-        {
-            case utility::SuccessTypes::CRITICAL_SUCCESS:
-                durationBonus = 4;
-                break;
-            case utility::SuccessTypes::SUCCESS:
-                durationBonus = 2;
-                break;
-            case utility::SuccessTypes::CRITICAL_FAILURE:
-                durationBonus = -2;
-                break;
-        }
+        auto durationModifier = 0;
 
-        return group.action->BaseDuration - durationBonus * 6 * GroupAction::ACTION_PROGRESS_RATE;
+        durationModifier += group.tile->GetTravelPenalty();
+        durationModifier += group.travelActionData.Destination->GetTravelPenalty();
+
+        return group.action->BaseDuration + durationModifier * 6 * GroupAction::ACTION_PROGRESS_RATE;
     }
 
-    void GroupActionPerformer::TakeShortRest(Group& group)
+    GroupActionResult GroupActionPerformer::TakeShortRest(Group& group)
     {
         if(group.actionProgress != group.action->BaseDuration)
             return;
@@ -155,7 +152,7 @@ namespace world::group
         group.CancelAction();
     }
 
-    void GroupActionPerformer::TakeLongRest(Group& group)
+    GroupActionResult GroupActionPerformer::TakeLongRest(Group& group)
     {
         if(group.actionProgress != group.action->BaseDuration)
             return;
@@ -169,7 +166,7 @@ namespace world::group
         group.CancelAction();
     }
 
-    void GroupActionPerformer::Search(Group& group)
+    GroupActionResult GroupActionPerformer::Search(Group& group)
     {
         auto &groups = WorldScene::Get()->GetGroups();
         auto other = groups.GetRandom();
@@ -208,23 +205,65 @@ namespace world::group
         WorldScene::Get()->StartBattle(&group, other);
     }
 
-    void GroupActionPerformer::Fight(Group& group)
+    GroupActionResult GroupActionPerformer::Fight(Group& group)
     {
         
     }
 
-    void GroupActionPerformer::Engage(Group& group)
+    GroupActionResult GroupActionPerformer::Engage(Group& group)
     {
         
     }
 
-    void GroupActionPerformer::Travel(Group& group)
+    #define SURVIVAL_DC_WHEN_NOT_LOST 5
+
+    #define SURVIVAL_DC_WHEN_LOST 10
+
+    GroupActionResult GroupActionPerformer::Travel(Group& group)
     {
-        if(group.actionProgress < group.action->GetDuration(group))
+        if(group.travelActionData.IsLost == false)
+        {
+            group.travelActionData.Progress += group.GetProgressRate();
+        }
+
+        group.travelActionData.ProgressSinceCheck += group.GetProgressRate();
+
+        static const int CHECK_INTERVAL = 6 * GroupAction::ACTION_PROGRESS_RATE;
+        if(group.travelActionData.ProgressSinceCheck > CHECK_INTERVAL)
+        {
+            group.travelActionData.ProgressSinceCheck -= CHECK_INTERVAL;
+
+            auto difficultyClass = group.travelActionData.IsLost ? SURVIVAL_DC_WHEN_LOST : SURVIVAL_DC_WHEN_NOT_LOST;
+
+            difficultyClass += group.travelActionData.Source->GetTravelPenalty();
+            difficultyClass += group.travelActionData.Destination->GetTravelPenalty();
+
+            int modifier = -100;
+            for(auto &character : group.characters)
+            {
+                if(character.GetSkillProficiency(SkillTypes::SURVIVAL) > modifier)
+                    modifier = character.GetSkillProficiency(SkillTypes::SURVIVAL);
+            }
+
+            auto success = utility::RollD20Dice(difficultyClass, modifier);
+            if(success.IsAnyFailure() == true)
+            {
+                group.travelActionData.IsLost = true;
+            }
+            else
+            {
+                group.travelActionData.IsLost = false;
+            }
+
+            return {success, SkillTypes::SURVIVAL};
+        }
+
+        if(group.travelActionData.Progress < group.action->GetDuration(group))
             return;
 
-        group.SetTile(group.destination);
-        group.destination = nullptr;
+        group.SetTile(group.travelActionData.Destination);
+        group.travelActionData.Destination = nullptr;
+        group.travelActionData.Source = nullptr;
 
         group.CancelAction();
     }
@@ -256,7 +295,8 @@ namespace world::group
 
     bool GroupActionValidator::CanTravel(Group &group, const GroupActionData &data)
     {
-        if(data.TravelDestination == nullptr)
+        if((group.travelActionData.Destination == nullptr && data.TravelDestination == nullptr) ||
+        (group.travelActionData.Destination != nullptr && data.TravelDestination != group.travelActionData.Destination))
             return false;
 
         if(data.TravelDestination->Type == WorldTiles::SEA || data.TravelDestination->GetGroup() != nullptr)

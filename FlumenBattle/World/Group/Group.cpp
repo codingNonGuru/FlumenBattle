@@ -9,7 +9,7 @@
 #include "FlumenBattle/ClassFactory.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/GroupActionFactory.h"
-#include "FlumenBattle/World/Group/GroupController.h"
+#include "FlumenBattle/World/Group/GroupMind.h"
 
 Array <CharacterClasses> classMakeup; /*= {
     CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, 
@@ -35,7 +35,6 @@ namespace world::group
         action = nullptr;
         battle = nullptr;
         tile = nullptr;
-        destination = nullptr;
 
         for(int i = 0; i < size; ++i)
         {
@@ -107,7 +106,7 @@ namespace world::group
 
         actionProgress = 0;
 
-        actionIntensity = ActionIntensities::NORMAL;
+        travelActionData.Intensity = ActionIntensities::NORMAL;
 
         return action->Initiate(*this, actionData);
     }
@@ -118,7 +117,9 @@ namespace world::group
         {
             actionProgress += GetProgressRate();
 
-            action->Perform(*this);
+            auto result = action->Perform(*this);
+
+            controller->RegisterActionPerformance(*this, result);
         }
     }
 
@@ -137,13 +138,13 @@ namespace world::group
         if(action->HasVaryingIntensity == false)
             return;
 
-        switch(actionIntensity)
+        switch(travelActionData.Intensity)
         {
             case ActionIntensities::LEISURELY:
-                actionIntensity = ActionIntensities::NORMAL;
+                travelActionData.Intensity = ActionIntensities::NORMAL;
                 break;
             case ActionIntensities::NORMAL:
-                actionIntensity = ActionIntensities::INTENSE;
+                travelActionData.Intensity = ActionIntensities::INTENSE;
                 break;
         }
     }
@@ -156,13 +157,13 @@ namespace world::group
         if(action->HasVaryingIntensity == false)
             return;
             
-        switch(actionIntensity)
+        switch(travelActionData.Intensity)
         {
             case ActionIntensities::NORMAL:
-                actionIntensity = ActionIntensities::LEISURELY;
+                travelActionData.Intensity = ActionIntensities::LEISURELY;
                 break;
             case ActionIntensities::INTENSE:
-                actionIntensity = ActionIntensities::NORMAL;
+                travelActionData.Intensity = ActionIntensities::NORMAL;
                 break;
         }
     }
@@ -195,24 +196,43 @@ namespace world::group
 
     float Group::GetActionProgress() const
     {
-        return (float)actionProgress / (float)action->GetDuration(*this);
+        if(action->HasVaryingIntensity == false)
+        {
+            return (float)actionProgress / (float)action->GetDuration(*this);   
+        }
+        else
+        {
+            return (float)travelActionData.Progress / (float)action->GetDuration(*this);   
+        }
     }
 
     int Group::GetRemainingActionDuration() const
     {
-        return action->GetDuration(*this) - actionProgress;
+        if(action->HasVaryingIntensity == false)
+        {
+            return action->GetDuration(*this) - actionProgress;
+        }
+        else
+        {
+            return action->GetDuration(*this) - travelActionData.Progress;
+        }
     }
 
     int Group::GetProgressRate() const
     {
-        switch(actionIntensity)
+        if(action->HasVaryingIntensity == false)
+        {
+            return GroupAction::ACTION_PROGRESS_RATE;
+        }
+
+        switch(travelActionData.Intensity)
         {
             case ActionIntensities::LEISURELY:
                 return GroupAction::ACTION_PROGRESS_RATE / 2;
             case ActionIntensities::NORMAL:
                 return GroupAction::ACTION_PROGRESS_RATE;
             case ActionIntensities::INTENSE:
-                return GroupAction::ACTION_PROGRESS_RATE * 2;
+                return GroupAction::ACTION_PROGRESS_RATE + GroupAction::ACTION_PROGRESS_RATE / 2;
         }
     }
 }

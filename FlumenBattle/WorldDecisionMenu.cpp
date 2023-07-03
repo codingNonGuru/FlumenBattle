@@ -10,7 +10,7 @@
 #include "FlumenBattle/World/WorldBiome.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
-#include "FlumenBattle/World/Group/HumanController.h"
+#include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/Utility/Utility.h"
 
 #define ROLL_LABEL_COUNT 5
@@ -67,7 +67,9 @@ void WorldDecisionMenu::HandleConfigure()
     );
     statusLabel->Enable();
 
-    *group::HumanController::Get()->OnActionSelected += {this, &WorldDecisionMenu::HandleActionSelected};
+    *group::HumanMind::Get()->OnActionSelected += {this, &WorldDecisionMenu::HandleActionSelected};
+
+    *group::HumanMind::Get()->OnActionPerformed += {this, &WorldDecisionMenu::HandleActionSelected};
 }
 
 void WorldDecisionMenu::HandleUpdate() 
@@ -82,7 +84,7 @@ void WorldDecisionMenu::HandleUpdate()
             case GroupActions::TRAVEL:
                 text << "Travelling " << 
                     [&] {
-                    switch(group->actionIntensity)
+                    switch(group->travelActionData.Intensity)
                     {
                         case ActionIntensities::LEISURELY:
                             return "leisurely";
@@ -138,11 +140,11 @@ void WorldDecisionMenu::HandleUpdate()
 
 void WorldDecisionMenu::HandleActionSelected()
 {
-    auto result = group::HumanController::Get()->GetSelectedActionResult();
+    auto result = group::HumanMind::Get()->GetSelectedActionResult();
     auto group = WorldScene::Get()->GetPlayerGroup();
 
-    Phrase text = [group] {
-        switch(group->actionSuccess)
+    Phrase text = [&result] {
+        switch(result.Success)
         {
             case utility::SuccessTypes::CRITICAL_SUCCESS:
                 return "CRITICAL SUCCESS";
@@ -169,7 +171,7 @@ void WorldDecisionMenu::HandleActionSelected()
 
     text << " check of ";
 
-    text << result.Roll + result.Modifier << " (" << result.Roll << "+" << result.Modifier << ") against a DC of " << result.DifficultyClass;
+    text << result.Success.Roll + result.Success.Modifier << " (" << result.Success.Roll << "+" << result.Success.Modifier << ") against a DC of " << result.Success.DC;
 
     *rollLabelTexts.Get(currentRollLabelIndex++) = text;
 

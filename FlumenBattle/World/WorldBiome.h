@@ -46,19 +46,19 @@ namespace world
 
         static const WorldBiome * BuildWoodsBiome()
         {
-            static WorldBiome biome = {WorldBiomes::WOODS, 1};
+            static WorldBiome biome = {WorldBiomes::WOODS, 2};
             return &biome;
         }
 
         static const WorldBiome * BuildSwampBiome()
         {
-            static WorldBiome biome = {WorldBiomes::SWAMP, 1};
+            static WorldBiome biome = {WorldBiomes::SWAMP, 2};
             return &biome;
         }
 
         static const WorldBiome * BuildMarineBiome()
         {
-            static WorldBiome biome = {WorldBiomes::MARINE, 1};
+            static WorldBiome biome = {WorldBiomes::MARINE, 2};
             return &biome;
         }
     };

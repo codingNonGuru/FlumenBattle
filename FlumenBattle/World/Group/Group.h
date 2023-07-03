@@ -24,7 +24,7 @@ namespace world::group
 {
     struct GroupType;
     struct GroupAction;
-    class GroupController;
+    class GroupMind;
     class GroupFactory;
     class GroupActionPerformer;
     class GroupActionValidator;
@@ -51,21 +51,32 @@ namespace world::group
 
         const GroupType *type;
 
-        const GroupController *controller;
+        const GroupMind *controller;
 
         const GroupAction *action;
+
+        struct TravelActionData
+        {
+            WorldTile *Source {nullptr};
+
+            WorldTile *Destination {nullptr};
+
+            Integer Progress {0};
+
+            Integer ProgressSinceCheck {0};
+
+            bool IsLost {false};
+
+            ActionIntensities Intensity {ActionIntensities::NORMAL};
+        } travelActionData;
 
         Integer actionProgress;
 
         utility::Success actionSuccess;
 
-        ActionIntensities actionIntensity;
-
         Battle *battle;
 
         WorldTile *tile;
-
-        WorldTile *destination;
 
         Color color;
 
@@ -110,9 +121,7 @@ namespace world::group
 
         void ExitBattle();
 
-        WorldTile *GetDestination() const {return destination;}
-
-        void SetDestination(WorldTile *destination) {this->destination = destination;}
+        WorldTile *GetDestination() const {return travelActionData.Destination;}
 
         void SetTile(WorldTile *tile);
 

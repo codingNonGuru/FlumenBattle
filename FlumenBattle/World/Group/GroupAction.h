@@ -23,14 +23,14 @@ namespace world::group
 
         int (*onGetDuration) (const Group &);
 
-        void (*onPerform) (Group &);
+        GroupActionResult (*onPerform) (Group &);
 
         GroupAction(
             GroupActions type, 
             Integer duration,
             bool hasVaryingIntensity, 
             bool (*_onCheck) (Group &, const GroupActionData &), 
-            void (*_onPerform) (Group &),
+            GroupActionResult (*_onPerform) (Group &),
             GroupActionResult (*_onInitiate) (Group &, const GroupActionData &) = nullptr,
             int (*_onGetDuration) (const Group &) = nullptr) : 
             Type(type), BaseDuration(duration), HasVaryingIntensity(hasVaryingIntensity), onCheck(_onCheck), onInitiate(_onInitiate), onGetDuration(_onGetDuration), onPerform(_onPerform) {}
@@ -66,9 +66,9 @@ namespace world::group
             }
         }
 
-        void Perform(Group &group) const
+        GroupActionResult Perform(Group &group) const
         {
-            onPerform(group);
+            return onPerform(group);
         }
     };
 }

@@ -2,7 +2,7 @@
 
 #include "FlumenEngine/Core/Singleton.h"
 
-#include "FlumenBattle/World/Group/GroupController.h"
+#include "FlumenBattle/World/Group/GroupMind.h"
 
 class Delegate;
 
@@ -10,11 +10,11 @@ namespace world::group
 {
     struct GroupActionResult;
 
-    class HumanController : public GroupController, public Singleton <HumanController>
+    class HumanMind : public GroupMind, public Singleton <HumanMind>
     {
         void DetermineAction(Group &) const override;
 
-        void PerformAction(Group &) const override;
+        void RegisterActionPerformance(Group &, GroupActionResult) const override;
 
         void HandleSearch();
 
@@ -31,12 +31,14 @@ namespace world::group
 
         Delegate *OnActionPerformed;
 
-        HumanController();
+        HumanMind();
 
         void EnableInput();
 
         void DisableInput();
 
         const GroupActionResult & GetSelectedActionResult();
+
+        const GroupActionResult & GetPerformedActionResult();
     };  
 };

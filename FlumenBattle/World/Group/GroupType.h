@@ -4,13 +4,13 @@
 
 namespace world::group
 {
-    class GroupController;
+    class GroupMind;
 
     struct GroupType
     {
         GroupTypes Type;
 
-        const GroupController *Controller;
+        const GroupMind *Controller;
 
         int Size;
     };

@@ -1,18 +1,18 @@
 #include "FlumenBattle/World/Group/GroupType.h"
-#include "FlumenBattle/World/Group/HumanController.h"
-#include "FlumenBattle/World/Group/ComputerController.h"
+#include "FlumenBattle/World/Group/HumanMind.h"
+#include "FlumenBattle/World/Group/MachineMind.h"
 
 namespace world::group
 {
     const GroupType * GroupTypeFactory::BuildPlayerGroupType()
     {
-        static GroupType type = {GroupTypes::PLAYER, HumanController::Get(), 5};
+        static GroupType type = {GroupTypes::PLAYER, HumanMind::Get(), 5};
         return &type;
     }
 
     const GroupType * GroupTypeFactory::BuildComputerGroupType()
     {
-        static GroupType type = {GroupTypes::COMPUTER, ComputerController::Get(), 5};
+        static GroupType type = {GroupTypes::COMPUTER, MachineMind::Get(), 5};
         return &type;
     }
 

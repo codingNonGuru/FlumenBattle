@@ -16,7 +16,7 @@
 #include "FlumenBattle/BattleState.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
-#include "FlumenBattle/World/Group/HumanController.h"
+#include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 
 static const Float CAMERA_PAN_SPEED = 800.0f;
@@ -33,7 +33,7 @@ namespace world
 
         *WorldScene::Get()->OnUpdateStarted += {this, &WorldController::HandleSceneUpdate};
 
-        auto controller = group::HumanController::Get();
+        auto controller = group::HumanMind::Get();
         controller->EnableInput();
 
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, {this, &WorldController::HandleSpacePressed});
@@ -160,7 +160,7 @@ namespace world
     {
         *WorldScene::Get()->OnUpdateStarted -= {this, &WorldController::HandleSceneUpdate};
 
-        auto controller = group::HumanController::Get();
+        auto controller = group::HumanMind::Get();
         controller->DisableInput();
 
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, {this, &WorldController::HandleSpacePressed});

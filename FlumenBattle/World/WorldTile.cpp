@@ -85,6 +85,11 @@ Float4 WorldTile::GetShade() const
     return Shade;
 }
 
+Integer WorldTile::GetTravelPenalty() const
+{
+    return Biome->TravelPenalty + Relief->TravelPenalty;
+}
+
 bool WorldTile::HasBiome(WorldBiomes biome) const 
 {
     return biome == Biome->Type;

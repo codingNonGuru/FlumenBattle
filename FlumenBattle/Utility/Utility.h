@@ -14,18 +14,25 @@ namespace utility
 
     typedef int DifficultyClass;
 
-    class Success
+    struct Success
     {
         SuccessTypes Type;
 
         Result Roll;
 
-        Result ModifiedRoll;
+        Bonus Modifier;
+
+        DifficultyClass DC;
 
     public:
         Success() {}
 
         Success(const SuccessTypes &type) : Type(type) {}
+
+        Success(SuccessTypes type, Result roll, Bonus modifier, DifficultyClass dC) : 
+        Type(type), Roll(roll), Modifier(modifier), DC(dC) {}
+
+        bool IsAnyFailure() const {return Type == SuccessTypes::FAILURE || Type == SuccessTypes::CRITICAL_FAILURE;}
 
         bool IsAnySuccess() const {return Type == SuccessTypes::SUCCESS || Type == SuccessTypes::CRITICAL_SUCCESS;}
 
@@ -36,8 +43,6 @@ namespace utility
         //bool operator ==(const Success &other) {return other.Type == Type;}
 
         bool operator ==(const SuccessTypes &other) const {return other == Type;}
-
-        Result GetRollValue() const {return Roll;}
 
         operator SuccessTypes() {return Type;}
     };

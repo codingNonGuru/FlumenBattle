@@ -71,5 +71,5 @@ utility::Success utility::RollD20Dice(DifficultyClass difficultyClass, Bonus bon
         }
     }
 
-    return success;
+    return {success, diceRoll, bonus, difficultyClass};
 }
