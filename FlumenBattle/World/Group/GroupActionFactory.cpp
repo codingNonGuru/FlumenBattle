@@ -163,6 +163,8 @@ namespace world::group
             character.TakeLongRest();
         }
 
+        group.timeSinceLongRest = 0;
+
         group.CancelAction();
     }
 

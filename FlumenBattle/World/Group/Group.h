@@ -74,6 +74,8 @@ namespace world::group
 
         utility::Success actionSuccess;
 
+        int timeSinceLongRest;
+
         Battle *battle;
 
         WorldTile *tile;
@@ -102,6 +104,8 @@ namespace world::group
         utility::Success GetActionSuccess() const {return actionSuccess;}
 
         Pool <Character> & GetCharacters() {return characters;}
+
+        void CheckFatigue();
 
         void DetermineAction();
 

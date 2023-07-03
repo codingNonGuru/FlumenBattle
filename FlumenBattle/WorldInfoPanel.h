@@ -19,6 +19,8 @@ class WorldInfoPanel : public Element, public Singleton<WorldInfoPanel>
 
         Text *healthLabel;
 
+        Text *conditionsLabel;
+
         void HandleConfigure() override;    
 
         void HandleUpdate() override;    

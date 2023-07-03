@@ -24,10 +24,17 @@ void WorldInfoPanel::CharacterItem::HandleConfigure()
     classLabel->Enable();
 
     healthLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, 25.0f), this}}, 
+        {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, 20.0f), this}}, 
         {{"JSLAncient", "Medium"}, Color::RED * 0.5f}
     );
     healthLabel->Enable();
+
+    conditionsLabel = ElementFactory::BuildText(
+        {Size(70, 100), drawOrder_ + 1, {Position2(3.0f, 47.0f), this}}, 
+        {{"JSLAncient", "VerySmall"}, Color::RED * 0.5f, "F C S"}
+    );
+    conditionsLabel->SetAlignment(Text::Alignments::LEFT);
+    conditionsLabel->Enable();
 }
 
 void WorldInfoPanel::CharacterItem::HandleUpdate()
@@ -37,6 +44,9 @@ void WorldInfoPanel::CharacterItem::HandleUpdate()
 
     auto string = Word() << character->GetCurrentHitPoints() << "/" << character->GetMaximumHitPoints();
     healthLabel->Setup(string);
+
+    string = Word() << (character->IsFatigued() ? "F" : "");
+    conditionsLabel->Setup(string);
 }
 
 void WorldInfoPanel::HandleConfigure() 
@@ -48,7 +58,7 @@ void WorldInfoPanel::HandleConfigure()
     for(Index i = 0; i < items.GetCapacity(); ++i, position += Direction2(80.0f, 0.0f))
     {
         auto item = ElementFactory::BuildElement<CharacterItem>(
-            {Size(70, 100), drawOrder_ + 1, {position, ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}, {"Sprite"}, opacity_}
+            {Size(70, 105), drawOrder_ + 1, {position, ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}, {"Sprite"}, opacity_}
         );
     }
 

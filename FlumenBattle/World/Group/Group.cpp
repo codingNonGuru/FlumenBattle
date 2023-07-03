@@ -18,6 +18,10 @@ Array <CharacterClasses> classMakeup; /*= {
     CharacterClasses::WIZARD, CharacterClasses::WIZARD
     };*/
 
+#define FATIGUE_SAVING_THROW_DC 12
+
+#define TIME_UNTIL_FATIGUE_CHECK 96
+
 namespace world::group
 {
     Group::Group() {}
@@ -31,6 +35,8 @@ namespace world::group
         this->color = color;
 
         actionProgress = 0;
+
+        timeSinceLongRest = 0;
 
         action = nullptr;
         battle = nullptr;
@@ -85,6 +91,31 @@ namespace world::group
         return false;
     }
 
+    void Group::CheckFatigue()
+    {
+        timeSinceLongRest += 1;
+
+        if(action != nullptr && action->Type == GroupActions::TAKE_LONG_REST)
+        {
+            return;
+        }
+
+        if(timeSinceLongRest < TIME_UNTIL_FATIGUE_CHECK || (timeSinceLongRest - TIME_UNTIL_FATIGUE_CHECK) % 6 != 0)
+        {
+            return;
+        }
+
+        for(auto &character : characters)
+        {
+            auto bonus = character.GetFortitudeSaveBonus();
+            auto savingThrow = utility::RollD20Dice(FATIGUE_SAVING_THROW_DC, bonus);
+            if(savingThrow.IsAnyFailure())
+            {
+                character.AddFatigue();
+            }
+        }
+    }
+
     void Group::DetermineAction()
     {
         controller->DetermineAction(*this);
@@ -113,6 +144,8 @@ namespace world::group
 
     void Group::PerformAction()
     {
+        CheckFatigue();
+
         if(action)
         {
             actionProgress += GetProgressRate();

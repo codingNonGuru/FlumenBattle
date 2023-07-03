@@ -20,6 +20,8 @@ namespace world::group
 
         void HandleTakeShortRest();
 
+        void HandleTakeLongRest();
+
         void HandleTravel();
 
         void HandleSlackenAction();

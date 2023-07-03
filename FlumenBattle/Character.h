@@ -71,6 +71,8 @@ private:
 
     ProficiencyHandler proficiencies;
 
+    bool isFatigued;
+
     Integer currentHitPoints;
 
     Integer maximumHitPoints;
@@ -107,6 +109,8 @@ public:
     Character();
 
     bool IsAlive() const;
+
+    bool IsFatigued() const {return isFatigued;}
 
     Float GetHealth() const {return (Float)currentHitPoints / (Float)maximumHitPoints;}
 
@@ -175,4 +179,6 @@ public:
     void TakeShortRest();
 
     void TakeLongRest();
+
+    void AddFatigue() {isFatigued = true;}
 };

@@ -14,6 +14,8 @@ static const SDL_Scancode searchInputKey = SDL_Scancode::SDL_SCANCODE_S;
 
 static const SDL_Scancode takeShortRestInputKey = SDL_Scancode::SDL_SCANCODE_R;
 
+static const SDL_Scancode takeLongRestInputKey = SDL_Scancode::SDL_SCANCODE_L;
+
 static const SDL_Scancode travelInputKey = SDL_Scancode::SDL_SCANCODE_T;
 
 static const SDL_Scancode slackenActionKey = SDL_Scancode::SDL_SCANCODE_LEFTBRACKET;
@@ -49,6 +51,8 @@ void HumanMind::EnableInput()
 
     InputHandler::RegisterEvent(takeShortRestInputKey, {this, &HumanMind::HandleTakeShortRest});
 
+    InputHandler::RegisterEvent(takeLongRestInputKey, {this, &HumanMind::HandleTakeLongRest});
+
     InputHandler::RegisterEvent(travelInputKey, {this, &HumanMind::HandleTravel});
 
     InputHandler::RegisterEvent(slackenActionKey, {this, &HumanMind::HandleSlackenAction});
@@ -61,6 +65,8 @@ void HumanMind::DisableInput()
     InputHandler::UnregisterEvent(searchInputKey, {this, &HumanMind::HandleSearch});
 
     InputHandler::UnregisterEvent(takeShortRestInputKey, {this, &HumanMind::HandleTakeShortRest});
+
+    InputHandler::UnregisterEvent(takeLongRestInputKey, {this, &HumanMind::HandleTakeLongRest});
 
     InputHandler::UnregisterEvent(travelInputKey, {this, &HumanMind::HandleTravel});
 
@@ -94,6 +100,15 @@ void HumanMind::HandleTakeShortRest()
     if(playerGroup->ValidateAction(GroupActions::TAKE_SHORT_REST))
     {
         playerGroup->SelectAction(GroupActions::TAKE_SHORT_REST);
+    }
+}
+
+void HumanMind::HandleTakeLongRest()
+{
+    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    if(playerGroup->ValidateAction(GroupActions::TAKE_LONG_REST))
+    {
+        playerGroup->SelectAction(GroupActions::TAKE_LONG_REST);
     }
 }
 

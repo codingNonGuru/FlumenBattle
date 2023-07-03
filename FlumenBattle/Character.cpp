@@ -29,6 +29,8 @@ void Character::Initialize()
     selectedSpell = nullptr;//spells.GetStart();
 
     *spellSlots.Add() = {2};
+
+    isFatigued = false;
 }
 
 bool Character::IsAlive() const
@@ -210,4 +212,6 @@ void Character::TakeLongRest()
     {
         currentHitPoints = maximumHitPoints;
     }
+
+    isFatigued = false;
 }

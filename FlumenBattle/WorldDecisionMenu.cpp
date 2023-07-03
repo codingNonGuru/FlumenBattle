@@ -13,9 +13,11 @@
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/Utility/Utility.h"
 
-#define ROLL_LABEL_COUNT 5
+#define ROLL_LABEL_COUNT 7
 
 Array <Phrase> rollLabelTexts = Array <Phrase> (ROLL_LABEL_COUNT);
+
+Array <Color> rollLabelColors = Array <Color> (ROLL_LABEL_COUNT);
 
 Index currentRollLabelIndex = 0;
 
@@ -28,20 +30,22 @@ void WorldDecisionMenu::HandleConfigure()
 
     for(Index i = 0; i < ROLL_LABEL_COUNT; ++i)
     {
-        static auto defaultText = "...";
+        static auto defaultText = "";
 
-        auto position = Position2(0.0f, 90.0f - (float)i * 30.0f);
-        auto color = Color::RED * (0.0f + (float)i * 0.25f);
+        auto position = Position2(0.0f, 90.0f - (float)i * 25.0f);
+        auto opacity = 0.4f + (float)i * 0.1f;
         auto rollLabel = ElementFactory::BuildText(
             {Size(size_.x - 10, 150), drawOrder_ + 1, {position, this}},
-            {{"JSLAncient", "Medium"}, color, defaultText}
+            {{"JSLAncient", "Small"}, Color::RED, defaultText}
         );
         rollLabel->SetAlignment(Text::Alignments::LEFT);
+        rollLabel->SetOpacity(opacity);
         rollLabel->Enable();
 
         *rollLabels.Add() = rollLabel;
 
         *rollLabelTexts.Add() = Phrase(defaultText);
+        *rollLabelColors.Add() = Color::RED;
     }
     /*travelLabel = ElementFactory::BuildText(
         {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, 30.0f), this}},
@@ -62,8 +66,8 @@ void WorldDecisionMenu::HandleConfigure()
     restLabel->Enable();*/
 
     statusLabel = ElementFactory::BuildText(
-        {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, -75.0f), this}},
-        {{"JSLAncient", "Large"}, Color::RED * 0.5f, "Current action: None"}
+        {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, -85.0f), this}},
+        {{"JSLAncient", "Medium"}, Color::RED * 0.5f, "Current action: None"}
     );
     statusLabel->Enable();
 
@@ -173,7 +177,8 @@ void WorldDecisionMenu::HandleActionSelected()
 
     text << result.Success.Roll + result.Success.Modifier << " (" << result.Success.Roll << "+" << result.Success.Modifier << ") against a DC of " << result.Success.DC;
 
-    *rollLabelTexts.Get(currentRollLabelIndex++) = text;
+    *rollLabelTexts.Get(currentRollLabelIndex) = text;
+    *rollLabelColors.Get(currentRollLabelIndex++) = result.Success.IsAnySuccess() ? Color::DARK_GREEN : Color::RED;
 
     if(currentRollLabelIndex >= ROLL_LABEL_COUNT)
         currentRollLabelIndex = 0;
@@ -189,5 +194,8 @@ void WorldDecisionMenu::HandleActionSelected()
         }
         auto text = rollLabelTexts.Get(textIndex);
         label->Setup(*text);
+
+        auto color = rollLabelColors.Get(textIndex);
+        label->SetColor(*color);
     }
 }
