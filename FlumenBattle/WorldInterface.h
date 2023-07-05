@@ -9,6 +9,7 @@ namespace world
 {
     class WorldDecisionMenu;
     class WorldHoverInfo;
+    class GroupEngageMenu;
 
     namespace settlement
     {
@@ -27,9 +28,17 @@ namespace world
 
         WorldHoverInfo *hoverInfo;
 
+        GroupEngageMenu *engageMenu;
+
         Array <settlement::SettlementLabel *> settlementLabels;
 
         void Update();
+
+        void HandlePlayerEncounter();
+
+        void HandlePlayerDisengage();
+
+        void HandlePlayerBattle();
 
     public:
         WorldInterface();

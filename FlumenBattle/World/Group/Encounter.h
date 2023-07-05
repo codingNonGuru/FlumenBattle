@@ -10,20 +10,20 @@ namespace world
     }
 }
 
-namespace world
+namespace world::group
 {
-    class Battle
+    class Encounter
     {
         bool isOngoing;
 
-        group::Group *first;
+        Group *first;
 
-        group::Group *second;
+        Group *second;
 
     public:
-        Battle() {}
+        Encounter() {}
 
-        Battle(group::Group *, group::Group *);
+        void Initialize(Group *, Group *);
 
         void Update();
 

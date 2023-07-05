@@ -293,6 +293,8 @@ void ActionInfoPanel::HandleWeaponSelected()
             label->SetColor(DEFAULT_COLOR);
         }
     }
+
+    RefreshLayout();
 }
 
 void ActionInfoPanel::HandleSpellSelected()
@@ -324,6 +326,8 @@ void ActionInfoPanel::HandleSpellSelected()
             label->SetColor(DEFAULT_COLOR);
         }
     }
+
+    RefreshLayout();
 }
 
 void ActionInfoPanel::RefreshLayout()

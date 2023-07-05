@@ -39,7 +39,7 @@ namespace world::group
         timeSinceLongRest = 0;
 
         action = nullptr;
-        battle = nullptr;
+        encounter = nullptr;
         tile = nullptr;
 
         for(int i = 0; i < size; ++i)
@@ -201,16 +201,16 @@ namespace world::group
         }
     }
 
-    void Group::EnterBattle(Battle *_battle)
+    void Group::EngageGroup(Encounter *_encounter)
     {
-        battle = _battle;
+        encounter = _encounter;
 
-        SelectAction(GroupActions::FIGHT);
+        SelectAction(GroupActions::ENGAGE);
     }
 
     void Group::ExitBattle()
     {
-        battle = nullptr;
+        encounter = nullptr;
 
         CancelAction();
     }
@@ -267,5 +267,10 @@ namespace world::group
             case ActionIntensities::INTENSE:
                 return GroupAction::ACTION_PROGRESS_RATE + GroupAction::ACTION_PROGRESS_RATE / 2;
         }
+    }
+
+    bool Group::IsDoing(GroupActions actionType) const 
+    {
+        return action != nullptr ? action->Type == actionType : false;
     }
 }

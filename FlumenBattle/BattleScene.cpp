@@ -18,7 +18,7 @@
 #include "FlumenBattle/CombatGroup.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldController.h"
-#include "FlumenBattle/Battle.h"
+#include "FlumenBattle/World/Group/Encounter.h"
 
 static Camera* camera = nullptr;
 

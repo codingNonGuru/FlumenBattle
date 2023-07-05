@@ -12,7 +12,7 @@
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldMap.h"
 #include "FlumenBattle/World/WorldTile.h"
-#include "FlumenBattle/Battle.h"
+#include "FlumenBattle/World/Group/Encounter.h"
 #include "FlumenBattle/BattleState.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
@@ -23,15 +23,21 @@ static const Float CAMERA_PAN_SPEED = 800.0f;
 
 static const Float CAMERA_ZOOM_SPEED = 3.0f;
 
+static const Float TRANSITION_TO_BATTLE_DELAY = 0.5f;
+
 static Camera *camera = nullptr;
 
 namespace world
 {
     void WorldController::Enable()
     {
-        playerBattle = nullptr;
-
         *WorldScene::Get()->OnUpdateStarted += {this, &WorldController::HandleSceneUpdate};
+
+        *WorldScene::Get()->OnPlayerEncounterInitiated += {this, &WorldController::HandlePlayerEncounterInitiated};
+
+        *WorldScene::Get()->OnPlayerEncounterFinished += {this, &WorldController::DisableEncounterMode};
+
+        *WorldScene::Get()->OnPlayerBattleStarted += {this, &WorldController::HandleBattleStarted};
 
         auto controller = group::HumanMind::Get();
         controller->EnableInput();
@@ -46,6 +52,35 @@ namespace world
         InputHandler::RegisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LEFT, {this, &WorldController::HandlePanLeft});
 
         camera = RenderManager::GetCamera(Cameras::WORLD);
+    }
+
+    void WorldController::HandlePlayerEncounterInitiated()
+    {
+        isInEncounterMode = true;
+
+        auto controller = group::HumanMind::Get();
+        controller->DisableInput();
+
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, {this, &WorldController::HandleSpacePressed});
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_COMMA, {this, &WorldController::HandleSpeedUpTime});
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_PERIOD, {this, &WorldController::HandleSlowDownTime});
+    }
+
+    void WorldController::DisableEncounterMode()
+    {
+        if(isInEncounterMode == false)
+        {
+            return;
+        }
+
+        isInEncounterMode = false;
+
+        auto controller = group::HumanMind::Get();
+        controller->EnableInput();
+
+        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, {this, &WorldController::HandleSpacePressed});
+        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_COMMA, {this, &WorldController::HandleSpeedUpTime});
+        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_PERIOD, {this, &WorldController::HandleSlowDownTime});
     }
 
     void WorldController::CheckTileSelection()
@@ -81,7 +116,7 @@ namespace world
             camera->Zoom(1.0f + zoomSpeed);
         }
 
-        auto scene = WorldScene::Get();
+        /*auto scene = WorldScene::Get();
 
         for(auto &battle : scene->GetBattles())
         {
@@ -99,10 +134,10 @@ namespace world
         if(playerBattle == nullptr)
             return;
 
-        StartBattle();
+        StartBattle();*/
     }
 
-    void WorldController::StartBattle()
+    void WorldController::HandleBattleStarted()
     {
         std::cout<<"start battle\n";
         auto scene = WorldScene::Get();
@@ -110,7 +145,7 @@ namespace world
 
         Disable();
 
-        TaskManager::Add({1.0f, []{
+        TaskManager::Add({TRANSITION_TO_BATTLE_DELAY, []{
             BattleState::Get()->Enter();
         }});
     }
@@ -158,7 +193,7 @@ namespace world
 
     void WorldController::Disable()
     {
-        *WorldScene::Get()->OnUpdateStarted -= {this, &WorldController::HandleSceneUpdate};
+        //*WorldScene::Get()->OnUpdateStarted -= {this, &WorldController::HandleSceneUpdate};
 
         auto controller = group::HumanMind::Get();
         controller->DisableInput();
@@ -171,5 +206,10 @@ namespace world
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_DOWN, {this, &WorldController::HandlePanDown});
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_RIGHT, {this, &WorldController::HandlePanRight});
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LEFT, {this, &WorldController::HandlePanLeft});
+    }
+
+    group::Encounter * WorldController::GetPlayerBattle() const 
+    {
+        return WorldScene::Get()->GetPlayerGroup()->GetEncounter();
     }
 }

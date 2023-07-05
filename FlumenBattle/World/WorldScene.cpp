@@ -18,7 +18,7 @@
 #include "FlumenBattle/World/Settlement/SettlementFactory.h"
 #include "FlumenBattle/World/Settlement/SettlementAllocator.h"
 #include "FlumenBattle/World/Polity.h"
-#include "FlumenBattle/Battle.h"
+#include "FlumenBattle/World/Group/Encounter.h"
 #include "FlumenBattle/BattleState.h"
 #include "FlumenBattle/BattleScene.h"
 
@@ -35,6 +35,12 @@ namespace world
     WorldScene::WorldScene()
     {
         OnUpdateStarted = new Delegate();
+
+        OnPlayerEncounterInitiated = new Delegate();
+
+        OnPlayerEncounterFinished = new Delegate();
+
+        OnPlayerBattleStarted = new Delegate();
     }
 
     void WorldScene::Initialize()
@@ -77,7 +83,7 @@ namespace world
 
         auto refreshBattles = [this] 
         {
-            static auto finishedBattles = Array <Battle *> (battles->GetCapacity());
+            static auto finishedBattles = Array <group::Encounter *> (battles->GetCapacity());
 
             for(auto &battle : *battles)
             {
@@ -149,9 +155,33 @@ namespace world
         refreshPolities();
     }
 
-    void WorldScene::StartBattle(group::Group *first, group::Group *second)
+    void WorldScene::InitiateEncounter(group::Group *first, group::Group *second)
     {
-        *battles->Add() = Battle(first, second);
+        auto battle = battles->Add();
+        battle->Initialize(first, second);
+
+        if(playerGroup == first || playerGroup == second)
+        {
+            OnPlayerEncounterInitiated->Invoke();
+
+            this->StopTime();
+        }
+    }
+
+    void WorldScene::InitiatePlayerBattle()
+    {
+        playerGroup->SelectAction(group::GroupActions::FIGHT);
+
+        OnPlayerBattleStarted->Invoke();
+    }
+
+    void WorldScene::FinishPlayerEncounter()
+    {
+        playerGroup->SelectAction(group::GroupActions::DISENGAGE);
+
+        playerGroup->GetEncounter()->Finish();
+
+        OnPlayerEncounterFinished->Invoke();
     }
 
     settlement::Settlement * WorldScene::FoundSettlement(WorldTile *location, Polity *polity)
@@ -190,7 +220,7 @@ namespace world
         static int roundCount = 0;
             
         roundCount++;
-        if(roundCount == BATTLE_ROUNDS_PER_MINUTE)
+        if(roundCount == BATTLE_ROUNDS_PER_TICK)
         {
             roundCount = 0;
 

@@ -4,20 +4,24 @@
 
 namespace world
 {
-    class Battle;
+    namespace group
+    {
+        class Encounter;
+    }
+    
     class WorldTile;
 
     class WorldController : public Singleton<WorldController>
     {
-        Battle *playerBattle;
-
         WorldTile *hoveredTile;
+
+        bool isInEncounterMode {false};
 
         void HandleSceneUpdate();
 
         void CheckTileSelection();
 
-        void StartBattle();
+        void HandleBattleStarted();
 
         void HandleSpacePressed();
 
@@ -42,6 +46,10 @@ namespace world
 
         WorldTile * GetHoveredTile() const {return hoveredTile;}
 
-        Battle * GetPlayerBattle() const {return playerBattle;}
+        group::Encounter * GetPlayerBattle() const;
+
+        void HandlePlayerEncounterInitiated();
+
+        void DisableEncounterMode();
     };
 }

@@ -1,5 +1,3 @@
-#include "FlumenCore/Utility/Utility.hpp"
-
 #include "FlumenBattle/World/Group/GroupActionFactory.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/Group.h"
@@ -7,6 +5,9 @@
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/WorldBiome.h"
 #include "FlumenBattle/Character.h"
+#include "FlumenBattle/Utility/Utility.h"
+
+#define GROUP_SEARCH_DC 12
 
 namespace world::group
 {
@@ -24,6 +25,8 @@ namespace world::group
                 return BuildEngage();
             case GroupActions::FIGHT:
                 return BuildFight();
+            case GroupActions::DISENGAGE:
+                return BuildDisengage();
             case GroupActions::TRAVEL:
                 return BuildTravel();
         }
@@ -83,6 +86,18 @@ namespace world::group
             false,
             &GroupActionValidator::CanFight, 
             &GroupActionPerformer::Fight
+            };
+        return &action;
+    }
+
+    const GroupAction * GroupActionFactory::BuildDisengage()
+    {
+        static GroupAction action = {
+            GroupActions::DISENGAGE, 
+            0 * GroupAction::ACTION_PROGRESS_RATE,
+            false,
+            &GroupActionValidator::CanDisengage, 
+            &GroupActionPerformer::Disengage
             };
         return &action;
     }
@@ -176,7 +191,7 @@ namespace world::group
         if(other == &group)
             return;
 
-        if(other->GetAction() && other->GetAction()->Type == GroupActions::FIGHT)
+        if(other->GetAction() && (other->GetAction()->Type == GroupActions::ENGAGE || other->GetAction()->Type == GroupActions::FIGHT))
             return;
 
         auto perceptionBonus = -50;
@@ -195,8 +210,10 @@ namespace world::group
                 stealthBonus = bonus;
         }
 
-        auto perceptionCheck = utility::GetRandom(1, 20) + perceptionBonus - stealthBonus;
-        if(perceptionCheck <= 30)
+        auto modifier = perceptionBonus - stealthBonus;
+
+        auto perceptionCheck = utility::RollD20Dice(GROUP_SEARCH_DC, modifier);
+        if(perceptionCheck.IsAnyFailure() == true)
             return;
 
         if(group.actionProgress < group.action->BaseDuration)
@@ -204,7 +221,7 @@ namespace world::group
 
         group.CancelAction();
 
-        WorldScene::Get()->StartBattle(&group, other);
+        WorldScene::Get()->InitiateEncounter(&group, other);
     }
 
     GroupActionResult GroupActionPerformer::Fight(Group& group)
@@ -215,6 +232,11 @@ namespace world::group
     GroupActionResult GroupActionPerformer::Engage(Group& group)
     {
         
+    }
+
+    GroupActionResult GroupActionPerformer::Disengage(Group& group)
+    {
+        group.CancelAction();
     }
 
     #define SURVIVAL_DC_WHEN_NOT_LOST 5
@@ -287,12 +309,17 @@ namespace world::group
 
     bool GroupActionValidator::CanFight(Group &group, const GroupActionData &)
     {
-        return true;
+        return group.IsDoing(GroupActions::ENGAGE);
     }
 
     bool GroupActionValidator::CanEngage(Group &group, const GroupActionData &)
     {
         return true;
+    }
+
+    bool GroupActionValidator::CanDisengage(Group &group, const GroupActionData &)
+    {
+        return group.IsDoing(GroupActions::ENGAGE);
     }
 
     bool GroupActionValidator::CanTravel(Group &group, const GroupActionData &data)

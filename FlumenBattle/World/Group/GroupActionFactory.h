@@ -22,6 +22,8 @@ namespace world::group
 
         const GroupAction * BuildFight();
 
+        const GroupAction * BuildDisengage();
+
         const GroupAction * BuildTravel();
 
     public:
@@ -46,6 +48,8 @@ namespace world::group
 
         static GroupActionResult Fight(Group &group);
 
+        static GroupActionResult Disengage(Group &group);
+
         static GroupActionResult Travel(Group &group);
     };
 
@@ -62,6 +66,8 @@ namespace world::group
         static bool CanEngage(Group &, const GroupActionData &);
 
         static bool CanFight(Group &, const GroupActionData &);
+
+        static bool CanDisengage(Group &, const GroupActionData &);
 
         static bool CanTravel(Group &, const GroupActionData &);
     };

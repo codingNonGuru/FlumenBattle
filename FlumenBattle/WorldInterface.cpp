@@ -1,3 +1,5 @@
+#include "FlumenCore/Observer.h"
+
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Render/RenderManager.hpp"
 #include "FlumenEngine/Render/Camera.hpp"
@@ -7,6 +9,7 @@
 #include "FlumenBattle/WorldDecisionMenu.h"
 #include "FlumenBattle/WorldInfoPanel.h"
 #include "FlumenBattle/WorldHoverInfo.h"
+#include "FlumenBattle/World/GroupEngageMenu.h"
 #include "FlumenBattle/World/SettlementLabel.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
@@ -32,6 +35,11 @@ WorldInterface::WorldInterface()
     );
     hoverInfo->Enable();
 
+    engageMenu = ElementFactory::BuildElement<GroupEngageMenu>(
+        {Size(900, 360), DrawOrder(3), {Position2(0.0f, 360.0f), canvas}, {"Sprite"}, Opacity(0.75f)}
+    );
+    engageMenu->Disable();
+
     settlementLabels.Initialize(64);
     for(int i = 0; i < 64; i++)
     {
@@ -54,6 +62,12 @@ void WorldInterface::Initialize()
         (*settlementLabel)->Enable();
         settlementLabel++;
     }
+
+    *WorldScene::Get()->OnPlayerEncounterInitiated += {this, &WorldInterface::HandlePlayerEncounter};
+
+    *WorldScene::Get()->OnPlayerEncounterFinished += {this, &WorldInterface::HandlePlayerDisengage};
+
+    *WorldScene::Get()->OnPlayerBattleStarted += {this, &WorldInterface::HandlePlayerBattle};
 }
 
 void WorldInterface::Enable()
@@ -64,6 +78,25 @@ void WorldInterface::Enable()
 void WorldInterface::Disable()
 {
     canvas->Disable();
+}
+
+void WorldInterface::HandlePlayerEncounter()
+{
+    decisionMenu->Disable();
+
+    engageMenu->Enable();
+}
+
+void WorldInterface::HandlePlayerDisengage()
+{
+    decisionMenu->Enable();
+
+    engageMenu->Disable();
+}
+
+void WorldInterface::HandlePlayerBattle()
+{
+    engageMenu->Disable();
 }
 
 void WorldInterface::Update()

@@ -12,7 +12,7 @@ namespace world::group
 
     const GroupType * GroupTypeFactory::BuildComputerGroupType()
     {
-        static GroupType type = {GroupTypes::COMPUTER, MachineMind::Get(), 5};
+        static GroupType type = {GroupTypes::COMPUTER, MachineMind::Get(), 1};
         return &type;
     }
 

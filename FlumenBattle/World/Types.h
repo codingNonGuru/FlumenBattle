@@ -8,7 +8,7 @@ namespace world
 
         enum class GroupActions
         {
-            TAKE_SHORT_REST, TAKE_LONG_REST, SEARCH, ENGAGE, FIGHT, TRAVEL, NONE
+            TAKE_SHORT_REST, TAKE_LONG_REST, SEARCH, ENGAGE, FIGHT, DISENGAGE, TRAVEL, NONE
         };
 
         enum class ActionIntensities

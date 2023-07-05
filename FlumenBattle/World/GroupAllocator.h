@@ -10,12 +10,11 @@ namespace world::group
 {
     class Group;
     class GroupFactory;
+    class Encounter;
 }
 
 namespace world
-{
-    class Battle;
-    
+{   
     class GroupAllocator : public Singleton<GroupAllocator>
     {
         friend class WorldScene;
@@ -26,13 +25,13 @@ namespace world
 
         container::PoolAllocator <Character>::Memory characterMemory;
 
-        container::Pool <Battle>::Memory battleMemory;
+        container::Pool <group::Encounter>::Memory battleMemory;
 
         container::Pool <group::Group> groups;
 
         container::PoolAllocator <Character> characterAllocator;
 
-        container::Pool <Battle> battles;
+        container::Pool <group::Encounter> battles;
 
         void PerformCleanup();
 
@@ -47,6 +46,6 @@ namespace world
 
         container::Pool <group::Group> *GetGroups() {return &groups;}
 
-        container::Pool <Battle> *GetBattles() {return &battles;}
+        container::Pool <group::Encounter> *GetBattles() {return &battles;}
     };
 }

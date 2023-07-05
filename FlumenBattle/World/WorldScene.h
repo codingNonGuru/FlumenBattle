@@ -15,11 +15,11 @@ namespace world
 {
     class WorldMap;
     class WorldTile;
-    class Battle;
     class Polity;
     namespace group
     {
         class Group;
+        class Encounter;
     }
 
     class WorldScene : Scene
@@ -40,7 +40,7 @@ namespace world
 
         WorldMap *worldMap;
 
-        Pool <Battle> *battles;
+        Pool <group::Encounter> *battles;
 
         group::Group *playerGroup;
 
@@ -79,6 +79,12 @@ namespace world
     public:
         Delegate *OnUpdateStarted;
 
+        Delegate *OnPlayerEncounterInitiated;
+
+        Delegate *OnPlayerEncounterFinished;
+
+        Delegate *OnPlayerBattleStarted;
+
         static WorldScene * Get() 
         {
             static WorldScene scene;
@@ -92,7 +98,7 @@ namespace world
 
         Pool <settlement::Settlement> & GetSettlements() {return *settlements;}
 
-        Pool <Battle> & GetBattles() {return *battles;}
+        Pool <group::Encounter> & GetBattles() {return *battles;}
 
         Pool <group::Group> & GetGroups() {return *groups;}
 
@@ -102,7 +108,11 @@ namespace world
 
         int GetTimeSpeed() const {return time;}
 
-        void StartBattle(group::Group *, group::Group *);
+        void InitiateEncounter(group::Group *, group::Group *);
+
+        void InitiatePlayerBattle();
+
+        void FinishPlayerEncounter();
 
         settlement::Settlement * FoundSettlement(WorldTile *, Polity *);
     };

@@ -5,7 +5,7 @@
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldGenerator.h"
 #include "FlumenBattle/Character.h"
-#include "FlumenBattle/Battle.h"
+#include "FlumenBattle/World/Group/Encounter.h"
 
 #define CHARACTERS_PER_GROUP 16
 
@@ -18,7 +18,7 @@ namespace world
 
         characterMemory = container::PoolAllocator <Character>::PreallocateMemory(groupCount, CHARACTERS_PER_GROUP);
 
-        battleMemory = container::Pool <Battle>::PreallocateMemory(groupCount);
+        battleMemory = container::Pool <group::Encounter>::PreallocateMemory(groupCount);
     }
 
     void GroupAllocator::AllocateWorldMemory(int worldSize)
@@ -28,7 +28,7 @@ namespace world
 
         characterAllocator = container::PoolAllocator <Character> (groupCount, CHARACTERS_PER_GROUP, characterMemory);
 
-        battles = container::Pool <Battle> (groupCount, battleMemory);
+        battles = container::Pool <group::Encounter> (groupCount, battleMemory);
     }
 
     group::Group * GroupAllocator::Allocate()

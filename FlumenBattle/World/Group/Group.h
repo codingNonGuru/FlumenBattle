@@ -14,7 +14,6 @@ class Character;
 class CombatGroup;
 namespace world
 {
-    class Battle;
     class WorldScene;
     class WorldTile;
     class WorldDecisionMenu;
@@ -28,6 +27,7 @@ namespace world::group
     class GroupFactory;
     class GroupActionPerformer;
     class GroupActionValidator;
+    class Encounter;
 
     class Group
     {
@@ -76,7 +76,7 @@ namespace world::group
 
         int timeSinceLongRest;
 
-        Battle *battle;
+        Encounter *encounter;
 
         WorldTile *tile;
 
@@ -95,11 +95,13 @@ namespace world::group
 
         Word GetName() const {return name;}
 
-        Battle * GetBattle() const {return battle;}
+        Encounter * GetEncounter() const {return encounter;}
 
         WorldTile * GetTile() const {return tile;}
 
         const GroupAction * GetAction() const {return action;}
+
+        bool IsDoing(GroupActions actionType) const;
 
         utility::Success GetActionSuccess() const {return actionSuccess;}
 
@@ -121,7 +123,7 @@ namespace world::group
 
         void SlackenAction();
 
-        void EnterBattle(Battle *);
+        void EngageGroup(Encounter *);
 
         void ExitBattle();
 
