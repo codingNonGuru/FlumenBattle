@@ -41,6 +41,8 @@ namespace world
         OnPlayerEncounterFinished = new Delegate();
 
         OnPlayerBattleStarted = new Delegate();
+
+        OnPlayerBattleEnded = new Delegate();
     }
 
     void WorldScene::Initialize()
@@ -164,15 +166,35 @@ namespace world
         {
             OnPlayerEncounterInitiated->Invoke();
 
-            this->StopTime();
+            this->StopTime(1);
         }
+    }
+
+    void WorldScene::InitiatePlayerPersuasion()
+    {
+        playerGroup->SelectAction(group::GroupActions::PERSUADE);
+
+        this->StartTime(1);
     }
 
     void WorldScene::InitiatePlayerBattle()
     {
         playerGroup->SelectAction(group::GroupActions::FIGHT);
 
+        playerGroup->GetEncounter()->StartFighting();
+
         OnPlayerBattleStarted->Invoke();
+
+        this->StartTime();
+    }
+
+    void WorldScene::FinishPlayerBattle()
+    {
+        playerGroup->SelectAction(group::GroupActions::ENGAGE, {true});
+
+        playerGroup->GetEncounter()->EndFighting();
+
+        OnPlayerBattleEnded->Invoke();
     }
 
     void WorldScene::FinishPlayerEncounter()
@@ -182,6 +204,8 @@ namespace world
         playerGroup->GetEncounter()->Finish();
 
         OnPlayerEncounterFinished->Invoke();
+
+        this->StartTime(1);
     }
 
     settlement::Settlement * WorldScene::FoundSettlement(WorldTile *location, Polity *polity)
@@ -207,12 +231,12 @@ namespace world
 
     void WorldScene::HandleEnable() 
     {
-        time = false;
+        time.StopTime();
     }
 
     void WorldScene::HandleDisable() 
     {
-        time = false;
+        time.StopTime();
     }
 
     void WorldScene::HandleBattleRoundEnded()

@@ -68,6 +68,8 @@ void WorldInterface::Initialize()
     *WorldScene::Get()->OnPlayerEncounterFinished += {this, &WorldInterface::HandlePlayerDisengage};
 
     *WorldScene::Get()->OnPlayerBattleStarted += {this, &WorldInterface::HandlePlayerBattle};
+
+    *WorldScene::Get()->OnPlayerBattleEnded += {this, &WorldInterface::HandleBattleEnded};
 }
 
 void WorldInterface::Enable()
@@ -97,6 +99,11 @@ void WorldInterface::HandlePlayerDisengage()
 void WorldInterface::HandlePlayerBattle()
 {
     engageMenu->Disable();
+}
+
+void WorldInterface::HandleBattleEnded()
+{
+    engageMenu->Enable();
 }
 
 void WorldInterface::Update()

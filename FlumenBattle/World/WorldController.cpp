@@ -39,12 +39,14 @@ namespace world
 
         *WorldScene::Get()->OnPlayerBattleStarted += {this, &WorldController::HandleBattleStarted};
 
-        auto controller = group::HumanMind::Get();
-        controller->EnableInput();
-
-        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, {this, &WorldController::HandleSpacePressed});
-        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_COMMA, {this, &WorldController::HandleSpeedUpTime});
-        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_PERIOD, {this, &WorldController::HandleSlowDownTime});
+        if(GetPlayerBattle() != nullptr)
+        {
+            
+        }
+        else
+        {
+            EnableHardInput();
+        }
 
         InputHandler::RegisterContinualEvent(SDL_Scancode::SDL_SCANCODE_UP, {this, &WorldController::HandlePanUp});
         InputHandler::RegisterContinualEvent(SDL_Scancode::SDL_SCANCODE_DOWN, {this, &WorldController::HandlePanDown});
@@ -58,12 +60,7 @@ namespace world
     {
         isInEncounterMode = true;
 
-        auto controller = group::HumanMind::Get();
-        controller->DisableInput();
-
-        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, {this, &WorldController::HandleSpacePressed});
-        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_COMMA, {this, &WorldController::HandleSpeedUpTime});
-        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_PERIOD, {this, &WorldController::HandleSlowDownTime});
+        DisableHardInput();
     }
 
     void WorldController::DisableEncounterMode()
@@ -75,6 +72,21 @@ namespace world
 
         isInEncounterMode = false;
 
+        EnableHardInput();
+    }
+
+    void WorldController::DisableHardInput()
+    {
+        auto controller = group::HumanMind::Get();
+        controller->DisableInput();
+
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, {this, &WorldController::HandleSpacePressed});
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_COMMA, {this, &WorldController::HandleSpeedUpTime});
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_PERIOD, {this, &WorldController::HandleSlowDownTime});
+    }
+
+    void WorldController::EnableHardInput()
+    {
         auto controller = group::HumanMind::Get();
         controller->EnableInput();
 
@@ -193,14 +205,7 @@ namespace world
 
     void WorldController::Disable()
     {
-        //*WorldScene::Get()->OnUpdateStarted -= {this, &WorldController::HandleSceneUpdate};
-
-        auto controller = group::HumanMind::Get();
-        controller->DisableInput();
-
-        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, {this, &WorldController::HandleSpacePressed});
-        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_COMMA, {this, &WorldController::HandleSpeedUpTime});
-        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_PERIOD, {this, &WorldController::HandleSlowDownTime});
+        DisableHardInput();
 
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_UP, {this, &WorldController::HandlePanUp});
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_DOWN, {this, &WorldController::HandlePanDown});

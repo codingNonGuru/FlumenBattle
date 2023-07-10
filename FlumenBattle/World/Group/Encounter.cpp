@@ -6,8 +6,13 @@ namespace world::group
     void Encounter::Initialize(Group * first_, Group * second_)
     {
         first = first_; 
-        second = second_; 
+        second = second_;
+
         isOngoing = true;
+
+        isBattle = false;
+
+        hasBattleEnded = false;
 
         first->EngageGroup(this);
         second->EngageGroup(this);
@@ -22,7 +27,7 @@ namespace world::group
     {
         isOngoing = false;
 
-        first->ExitBattle();
-        second->ExitBattle();
+        //first->ExitBattle();
+        //second->ExitBattle();
     }
 }

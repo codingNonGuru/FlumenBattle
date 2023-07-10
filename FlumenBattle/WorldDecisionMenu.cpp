@@ -73,7 +73,7 @@ void WorldDecisionMenu::HandleConfigure()
 
     *group::HumanMind::Get()->OnActionSelected += {this, &WorldDecisionMenu::HandleActionSelected};
 
-    *group::HumanMind::Get()->OnActionPerformed += {this, &WorldDecisionMenu::HandleActionSelected};
+    *group::HumanMind::Get()->OnSkillCheckRolled += {this, &WorldDecisionMenu::HandleActionSelected};
 }
 
 void WorldDecisionMenu::HandleUpdate() 

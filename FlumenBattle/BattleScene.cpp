@@ -159,8 +159,8 @@ void BattleScene::HandleDisable()
         tile->Combatant = nullptr;
     }
 
-    auto battle = world::WorldController::Get()->GetPlayerBattle();
-    battle->Finish();
+    //auto battle = world::WorldController::Get()->GetPlayerBattle();
+    //battle->Finish();
 }
 
 bool BattleScene::IsCharactersTurn(Combatant *character) const

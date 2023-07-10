@@ -16,5 +16,7 @@ namespace world::group
         virtual void DetermineAction(Group &) const {}
 
         virtual void RegisterActionPerformance(Group &, GroupActionResult) const {}
+
+        virtual void RegisterActionInitiation(Group &, GroupActionResult) const {}
     };  
 };

@@ -8,12 +8,17 @@ namespace world
 
         enum class GroupActions
         {
-            TAKE_SHORT_REST, TAKE_LONG_REST, SEARCH, ENGAGE, FIGHT, DISENGAGE, TRAVEL, NONE
+            TAKE_SHORT_REST, TAKE_LONG_REST, SEARCH, ENGAGE, FIGHT, DISENGAGE, TRAVEL, PERSUADE, NONE
         };
 
         enum class ActionIntensities
         {
             LEISURELY, NORMAL, INTENSE
+        };
+
+        enum class Attitudes
+        {
+            FRIENDLY, INDIFFERENT, HOSTILE
         };
     }
 

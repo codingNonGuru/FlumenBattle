@@ -2,6 +2,7 @@
 
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/GroupType.h"
+#include "FlumenBattle/World/Group/Encounter.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/CharacterFactory.h"
@@ -139,7 +140,11 @@ namespace world::group
 
         travelActionData.Intensity = ActionIntensities::NORMAL;
 
-        return action->Initiate(*this, actionData);
+        auto result = action->Initiate(*this, actionData);
+
+        controller->RegisterActionInitiation(*this, result);
+
+        return result;
     }
 
     void Group::PerformAction()
@@ -205,14 +210,12 @@ namespace world::group
     {
         encounter = _encounter;
 
-        SelectAction(GroupActions::ENGAGE);
+        SelectAction(GroupActions::ENGAGE, {false});
     }
 
     void Group::ExitBattle()
     {
         encounter = nullptr;
-
-        CancelAction();
     }
 
     void Group::SetTile(WorldTile *tile)
@@ -272,5 +275,20 @@ namespace world::group
     bool Group::IsDoing(GroupActions actionType) const 
     {
         return action != nullptr ? action->Type == actionType : false;
+    }
+
+    Group *Group::GetOther()
+    {
+        if(encounter == nullptr)
+        {
+            return nullptr;
+        }
+
+        if(encounter->GetFirst() == this)
+        {
+            return encounter->GetSecond();
+        }
+
+        return encounter->GetFirst();
     }
 }

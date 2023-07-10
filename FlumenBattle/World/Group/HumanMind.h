@@ -16,6 +16,8 @@ namespace world::group
 
         void RegisterActionPerformance(Group &, GroupActionResult) const override;
 
+        void RegisterActionInitiation(Group &, GroupActionResult) const override;
+
         void HandleSearch();
 
         void HandleTakeShortRest();
@@ -32,6 +34,10 @@ namespace world::group
         Delegate *OnActionSelected;
 
         Delegate *OnActionPerformed;
+
+        Delegate *OnActionInitiated;
+
+        Delegate *OnSkillCheckRolled;
 
         HumanMind();
 

@@ -26,6 +26,8 @@ namespace world::group
 
         const GroupAction * BuildTravel();
 
+        const GroupAction * BuildPersuade();
+
     public:
         const GroupAction * BuildAction(GroupActions);
     };
@@ -35,6 +37,8 @@ namespace world::group
         friend class GroupActionFactory;
 
         static GroupActionResult InitiateTravel(Group &, const GroupActionData &);
+
+        static GroupActionResult InitiateEngage(Group &, const GroupActionData &);
 
         static int GetTravelDuration(const Group &);
 
@@ -51,6 +55,8 @@ namespace world::group
         static GroupActionResult Disengage(Group &group);
 
         static GroupActionResult Travel(Group &group);
+
+        static GroupActionResult Persuade(Group &group);
     };
 
     class GroupActionValidator
@@ -70,5 +76,7 @@ namespace world::group
         static bool CanDisengage(Group &, const GroupActionData &);
 
         static bool CanTravel(Group &, const GroupActionData &);
+
+        static bool CanPersuade(Group &, const GroupActionData &);
     };
 }

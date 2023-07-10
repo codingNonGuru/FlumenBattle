@@ -22,6 +22,12 @@ namespace world
 
         void HandleFightPressed();
 
+        void HandlePersuadePressed();
+
         void HandleLeavePressed();
+
+        void RefreshOptions();
+
+        void DisableInput();
     };
 }

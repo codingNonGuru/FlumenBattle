@@ -31,18 +31,29 @@ HumanMind::HumanMind()
     OnActionSelected = new Delegate();
 
     OnActionPerformed = new Delegate();
+
+    OnActionInitiated = new Delegate();
+
+    OnSkillCheckRolled = new Delegate();
 }
 
 void HumanMind::DetermineAction(Group &group) const {}
 
 void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result) const
 {
+    selectedActionResult = result;
+
     if(result.HasRolled == true)
     {
-        selectedActionResult = result;
-        
-        OnActionPerformed->Invoke();
+        OnSkillCheckRolled->Invoke();
     }
+
+    OnActionPerformed->Invoke();
+}
+
+void HumanMind::RegisterActionInitiation(Group &, GroupActionResult) const 
+{
+    OnActionInitiated->Invoke();
 }
 
 void HumanMind::EnableInput()

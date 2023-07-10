@@ -40,6 +40,8 @@ namespace world
 
         void HandlePlayerBattle();
 
+        void HandleBattleEnded();
+
     public:
         WorldInterface();
 

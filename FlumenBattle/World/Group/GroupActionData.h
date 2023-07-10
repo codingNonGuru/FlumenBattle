@@ -14,9 +14,13 @@ namespace world::group
     {
         WorldTile *TravelDestination;
 
-        //GroupActionData() {}
+        bool IsEngaged;
 
-        //GroupActionData(WorldTile *travelDestination) : TravelDestination(travelDestination) {}
+        GroupActionData() {}
+
+        GroupActionData(WorldTile *travelDestination) : TravelDestination(travelDestination) {}
+
+        GroupActionData(bool isEngaged) : IsEngaged(isEngaged) {}
     };
 
     struct GroupActionResult

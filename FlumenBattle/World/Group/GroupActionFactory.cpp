@@ -1,6 +1,7 @@
 #include "FlumenBattle/World/Group/GroupActionFactory.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/Encounter.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/WorldBiome.h"
@@ -29,6 +30,8 @@ namespace world::group
                 return BuildDisengage();
             case GroupActions::TRAVEL:
                 return BuildTravel();
+            case GroupActions::PERSUADE:
+                return BuildPersuade();
         }
     }
 
@@ -73,7 +76,8 @@ namespace world::group
             0 * GroupAction::ACTION_PROGRESS_RATE,
             false,
             &GroupActionValidator::CanEngage, 
-            &GroupActionPerformer::Engage
+            &GroupActionPerformer::Engage,
+            &GroupActionPerformer::InitiateEngage
             };
         return &action;
     }
@@ -116,6 +120,18 @@ namespace world::group
         return &action;
     }
 
+    const GroupAction * GroupActionFactory::BuildPersuade()
+    {
+        static GroupAction action = {
+            GroupActions::PERSUADE, 
+            0 * GroupAction::ACTION_PROGRESS_RATE,
+            false, 
+            &GroupActionValidator::CanPersuade, 
+            &GroupActionPerformer::Persuade 
+            };
+        return &action;
+    }
+
     GroupActionResult GroupActionPerformer::InitiateTravel(Group &group, const GroupActionData &actionData)
     {
         if(group.travelActionData.Destination != actionData.TravelDestination)
@@ -141,6 +157,18 @@ namespace world::group
         group.actionSuccess = utility::RollD20Dice(difficultyClass, modifier);
 
         return {group.actionSuccess.GetRollValue(), modifier, difficultyClass, SkillTypes::SURVIVAL};*/
+    }
+
+    GroupActionResult GroupActionPerformer::InitiateEngage(Group &group, const GroupActionData &data)
+    {
+        std::cout<<"initiate engage\n";
+
+        if(data.IsEngaged == false)
+        {
+            group.attitude = utility::GetRandom(1, 20) > 1 ? Attitudes::HOSTILE : Attitudes::INDIFFERENT;
+
+            group.hasAttemptedPersuasion = false;
+        }
     }
 
     int GroupActionPerformer::GetTravelDuration(const Group &group)
@@ -210,7 +238,7 @@ namespace world::group
                 stealthBonus = bonus;
         }
 
-        auto modifier = perceptionBonus - stealthBonus;
+        auto modifier = perceptionBonus * 3 - stealthBonus;
 
         auto perceptionCheck = utility::RollD20Dice(GROUP_SEARCH_DC, modifier);
         if(perceptionCheck.IsAnyFailure() == true)
@@ -236,7 +264,15 @@ namespace world::group
 
     GroupActionResult GroupActionPerformer::Disengage(Group& group)
     {
+        std::cout<<"disengage\n";
+
         group.CancelAction();
+
+        group.GetOther()->CancelAction();
+
+        group.GetOther()->encounter = nullptr;
+
+        group.encounter = nullptr;
     }
 
     #define SURVIVAL_DC_WHEN_NOT_LOST 5
@@ -292,6 +328,24 @@ namespace world::group
         group.CancelAction();
     }
 
+    GroupActionResult GroupActionPerformer::Persuade(Group& group)
+    {
+        auto success = utility::RollD20Dice(15);
+
+        if(success.IsAnySuccess() == true)
+        {
+            group.GetOther()->attitude = Attitudes::INDIFFERENT;
+        }
+
+        group.hasAttemptedPersuasion = true;
+
+        group.SelectAction(GroupActions::ENGAGE, {true});
+
+        std::cout<<"persuade\n";
+
+        return {success, SkillTypes::PERSUASION};
+    }
+
     bool GroupActionValidator::CanTakeShortRest(Group &group, const GroupActionData &)
     {
         return true;
@@ -309,7 +363,7 @@ namespace world::group
 
     bool GroupActionValidator::CanFight(Group &group, const GroupActionData &)
     {
-        return group.IsDoing(GroupActions::ENGAGE);
+        return group.IsDoing(GroupActions::ENGAGE) && group.GetEncounter()->HasBattleEnded() == false;
     }
 
     bool GroupActionValidator::CanEngage(Group &group, const GroupActionData &)
@@ -319,7 +373,14 @@ namespace world::group
 
     bool GroupActionValidator::CanDisengage(Group &group, const GroupActionData &)
     {
-        return group.IsDoing(GroupActions::ENGAGE);
+        if(group.GetEncounter()->HasBattleEnded() == true)
+        {
+            return true;
+        }
+        else
+        {
+            return group.IsDoing(GroupActions::ENGAGE) && group.GetOther()->attitude != Attitudes::HOSTILE;
+        }
     }
 
     bool GroupActionValidator::CanTravel(Group &group, const GroupActionData &data)
@@ -335,5 +396,13 @@ namespace world::group
             return false;
             
         return true;
+    }
+
+    bool GroupActionValidator::CanPersuade(Group &group, const GroupActionData &data)
+    {
+        return group.IsDoing(GroupActions::ENGAGE) && 
+        group.GetOther()->attitude == Attitudes::HOSTILE && 
+        group.GetEncounter()->HasBattleEnded() == false &&
+        group.hasAttemptedPersuasion == false;
     }
 }

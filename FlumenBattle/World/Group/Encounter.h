@@ -16,6 +16,10 @@ namespace world::group
     {
         bool isOngoing;
 
+        bool isBattle;
+
+        bool hasBattleEnded;
+
         Group *first;
 
         Group *second;
@@ -27,11 +31,19 @@ namespace world::group
 
         void Update();
 
+        void StartFighting() {isBattle = true;}
+
+        void EndFighting() {isBattle = false; hasBattleEnded = true;}
+
         group::Group * GetFirst() const {return first;}
 
         group::Group * GetSecond() const {return second;}
 
         bool IsOngoing() const {return isOngoing;}
+
+        bool IsBattle() const {return isBattle;}
+
+        bool HasBattleEnded() const {return hasBattleEnded;}
 
         void Finish();
     };

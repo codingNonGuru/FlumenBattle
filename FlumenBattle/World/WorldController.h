@@ -39,6 +39,10 @@ namespace world
 
         void HandleTravelPressed();
 
+        void EnableHardInput();
+
+        void DisableHardInput();
+
     public:
         void Enable();
 

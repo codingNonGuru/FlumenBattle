@@ -20,6 +20,10 @@ namespace world
 
         int FlowSpeed;
 
+        bool IsStopDelayed;
+
+        int StopDelay;
+
         bool IsNewHour;
 
         bool IsNewDay;
@@ -29,7 +33,7 @@ namespace world
         WorldTime() {}
 
         WorldTime(int yearCount, int dayCount, int hourCount) : 
-            YearCount(yearCount), DayCount(dayCount), TotalDayCount(dayCount), HourCount(hourCount), MinuteCount(0), IsFlowing(false), FlowSpeed(1) {}
+            YearCount(yearCount), DayCount(dayCount), TotalDayCount(dayCount), HourCount(hourCount), MinuteCount(0), IsFlowing(false), FlowSpeed(1), IsStopDelayed(false) {}
 
         void SpeedUp() 
         {
@@ -84,13 +88,42 @@ namespace world
                 }
             }
 
+            if(IsStopDelayed == true)
+            {
+                StopDelay--;
+                if(StopDelay == 0)
+                {
+                    StopTime();
+
+                    IsStopDelayed = false;
+                }
+            }
+
             return *this;
         }
 
-        WorldTime& operator =(bool value)
+        void StartTime(int stopDelay = 0)
         {
-            IsFlowing = value;
-            return *this;
+            IsFlowing = true;
+
+            if(stopDelay != 0)
+            {
+                IsStopDelayed = true;
+                StopDelay = stopDelay;
+            }
+        }
+
+        void StopTime(int stopDelay = 0)
+        {
+            if(stopDelay == 0)
+            {
+                IsFlowing = false;
+            }
+            else
+            {
+                IsStopDelayed = true;
+                StopDelay = stopDelay;
+            }
         }
 
         operator bool() const

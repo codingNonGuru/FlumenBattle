@@ -6,6 +6,8 @@
 #include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/Encounter.h"
+#include "FlumenBattle/World/Group/HumanMind.h"
 
 using namespace world;
 
@@ -41,11 +43,67 @@ void GroupEngageMenu::HandleConfigure()
     }
 }
 
+struct OptionData
+{
+    SDL_Scancode Key;
+
+    Event Event;
+
+    Phrase Text;
+};
+
 void GroupEngageMenu::HandleEnable()
 {
+    *group::HumanMind::Get()->OnSkillCheckRolled += {this, &GroupEngageMenu::RefreshOptions};
+
+    RefreshOptions();
+}
+
+void GroupEngageMenu::HandleDisable()
+{
+    *group::HumanMind::Get()->OnSkillCheckRolled -= {this, &GroupEngageMenu::RefreshOptions};
+
+    DisableInput();
+}
+
+void GroupEngageMenu::HandleFightPressed()
+{
+    Disable();
+
+    WorldScene::Get()->InitiatePlayerBattle();
+}
+
+void GroupEngageMenu::HandlePersuadePressed()
+{
+    WorldScene::Get()->InitiatePlayerPersuasion();
+
+    //RefreshOptions();
+}
+
+void GroupEngageMenu::HandleLeavePressed()
+{
+    Disable();
+
+    WorldScene::Get()->FinishPlayerEncounter();
+}
+
+void GroupEngageMenu::RefreshOptions()
+{
+    std::cout<<"refresh options\n";
+    DisableInput();
+
     auto player = WorldScene::Get()->GetPlayerGroup();
 
     auto encounter = WorldController::Get()->GetPlayerBattle();
+
+    if(encounter->HasBattleEnded() == true)
+    {
+        descriptionLabel->Setup("My liege, we have made short-shrift of their wretched kin...");
+    }
+    else
+    {
+        descriptionLabel->Setup("You come across a band of travellers most merry...");
+    }
 
     for(auto label : optionLabels)
     {
@@ -71,24 +129,19 @@ void GroupEngageMenu::HandleEnable()
 
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_L, {this, &GroupEngageMenu::HandleLeavePressed});
     }
+    else if(player->ValidateAction(group::GroupActions::PERSUADE) == true)
+    {
+        (*label)->Enable();
+        (*label)->Setup("[P] Attend their ears with sweetly honeyd words");
+        label++;
+
+        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_P, {this, &GroupEngageMenu::HandlePersuadePressed});
+    }
 }
 
-void GroupEngageMenu::HandleDisable()
+void GroupEngageMenu::DisableInput()
 {
     InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_F, {this, &GroupEngageMenu::HandleFightPressed});
     InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_L, {this, &GroupEngageMenu::HandleLeavePressed});
-}
-
-void GroupEngageMenu::HandleFightPressed()
-{
-    Disable();
-
-    WorldScene::Get()->InitiatePlayerBattle();
-}
-
-void GroupEngageMenu::HandleLeavePressed()
-{
-    Disable();
-
-    WorldScene::Get()->FinishPlayerEncounter();
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_P, {this, &GroupEngageMenu::HandlePersuadePressed});
 }

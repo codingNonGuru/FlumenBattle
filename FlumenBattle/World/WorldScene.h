@@ -64,11 +64,11 @@ namespace world
 
         void Refresh();
 
-        void StartTime() {time = true;}
+        void StartTime(int delay = 0) {time.StartTime(delay);}
 
-        void StopTime() {time = false;}
+        void StopTime(int delay = 0) {time.StopTime(delay);}
 
-        void ToggleTime() {time = time ? false : true;}
+        void ToggleTime() {if(time) time.StopTime(); else time.StartTime();}
 
         void SpeedUpTime();
 
@@ -84,6 +84,8 @@ namespace world
         Delegate *OnPlayerEncounterFinished;
 
         Delegate *OnPlayerBattleStarted;
+
+        Delegate *OnPlayerBattleEnded;
 
         static WorldScene * Get() 
         {
@@ -110,7 +112,11 @@ namespace world
 
         void InitiateEncounter(group::Group *, group::Group *);
 
+        void InitiatePlayerPersuasion();
+
         void InitiatePlayerBattle();
+
+        void FinishPlayerBattle();
 
         void FinishPlayerEncounter();
 

@@ -78,6 +78,10 @@ namespace world::group
 
         Encounter *encounter;
 
+        Attitudes attitude;
+
+        bool hasAttemptedPersuasion;
+
         WorldTile *tile;
 
         Color color;
@@ -106,6 +110,8 @@ namespace world::group
         utility::Success GetActionSuccess() const {return actionSuccess;}
 
         Pool <Character> & GetCharacters() {return characters;}
+
+        Group *GetOther();
 
         void CheckFatigue();
 
