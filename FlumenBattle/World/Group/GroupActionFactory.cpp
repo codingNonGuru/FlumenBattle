@@ -161,11 +161,9 @@ namespace world::group
 
     GroupActionResult GroupActionPerformer::InitiateEngage(Group &group, const GroupActionData &data)
     {
-        std::cout<<"initiate engage\n";
-
         if(data.IsEngaged == false)
         {
-            group.attitude = utility::GetRandom(1, 20) > 1 ? Attitudes::HOSTILE : Attitudes::INDIFFERENT;
+            group.attitude = utility::GetRandom(1, 20) > 15 ? Attitudes::HOSTILE : Attitudes::INDIFFERENT;
 
             group.hasAttemptedPersuasion = false;
         }
@@ -264,8 +262,6 @@ namespace world::group
 
     GroupActionResult GroupActionPerformer::Disengage(Group& group)
     {
-        std::cout<<"disengage\n";
-
         group.CancelAction();
 
         group.GetOther()->CancelAction();
@@ -330,7 +326,11 @@ namespace world::group
 
     GroupActionResult GroupActionPerformer::Persuade(Group& group)
     {
-        auto success = utility::RollD20Dice(15);
+        auto difficultyClass = 10 + group.GetOther()->GetLeader()->GetWillSaveBonus();
+
+        auto modifier = group.GetLeader()->GetSkillProficiency(SkillTypes::PERSUASION);
+
+        auto success = utility::RollD20Dice(difficultyClass, modifier);
 
         if(success.IsAnySuccess() == true)
         {
@@ -340,8 +340,6 @@ namespace world::group
         group.hasAttemptedPersuasion = true;
 
         group.SelectAction(GroupActions::ENGAGE, {true});
-
-        std::cout<<"persuade\n";
 
         return {success, SkillTypes::PERSUASION};
     }

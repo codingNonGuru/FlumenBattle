@@ -77,6 +77,18 @@ namespace world::group
 
             CharacterFactory::Create(race, &ClassFactory::BuildClass(type), *this);
         }
+
+        leader = nullptr;
+        auto charismaModifier = -100;
+        for(auto &character : characters)
+        {
+            auto modifier = character.GetAbility(AbilityTypes::CHARISMA).Modifier;
+            if(modifier > charismaModifier)
+            {
+                charismaModifier = modifier;
+                leader = &character;
+            }
+        }
     }
 
     bool Group::IsAlive()

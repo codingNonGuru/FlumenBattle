@@ -12,6 +12,12 @@ class ProficiencyFactory
         return type;
     }
 
+    static const ProficiencyType & BuildPersuasionSkill()
+    {
+        static const ProficiencyType type = {ProficiencyClasses::SKILL, "Persuasion", SkillTypes::PERSUASION, AbilityTypes::CHARISMA};
+        return type;
+    }
+
 public:
     static Proficiency BuildPerceptionProficiency(ProficiencyLevels level)
     {
@@ -103,6 +109,8 @@ public:
         {
             case SkillTypes::SURVIVAL:
                 return BuildSurvivalSkill();
+            case SkillTypes::PERSUASION:
+                return BuildPersuasionSkill();
             default:
                 return {ProficiencyClasses::SKILL, "None", SkillTypes::NONE, AbilityTypes::STRENGTH};
         }

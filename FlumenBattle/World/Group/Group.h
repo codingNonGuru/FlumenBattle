@@ -88,6 +88,8 @@ namespace world::group
 
         Pool <Character> characters;
 
+        Character *leader;
+
         void Initialize(Word, const GroupType *, Integer, Color, RaceTypes);
 
     public:
@@ -110,6 +112,8 @@ namespace world::group
         utility::Success GetActionSuccess() const {return actionSuccess;}
 
         Pool <Character> & GetCharacters() {return characters;}
+
+        Character *GetLeader() const {return leader;}
 
         Group *GetOther();
 
