@@ -1,16 +1,34 @@
-FLUMEN_CORE_PATH="/home/andrei/Documents/Code/Libraries/FlumenCore" 
-FLUMEN_ENGINE_PATH="/home/andrei/Documents/Code/Libraries/FlumenEngine" 
-FLUMEN_GAME_PATH="/home/andrei/Documents/Code/Projects/FlumenBattle" 
-GLM_PATH="/home/andrei/Documents/Code/Libraries/glm"
-GENERAL_PATH="/usr/include"
+#!/bin/bash
 
-FLAGS="-std=gnu++11 -fpermissive -w -g"
+execute=false
+debug=false
 
-FIND_RESULT=$(find ./FlumenBattle/ -iname "*.cpp")
+while getopts 'e' opt
+do
+    case $opt in
+        e) execute=true;;
+        d) debug=true;;
+    esac
+done
 
-echo $FIND_RESULT
+cmake .
 
-#BUILD_RESULT=$(x86_64-w64-mingw32-g++ $FIND_RESULT -o Main -I${FLUMEN_CORE_PATH} -I$GLM_PATH -I$FLUMEN_ENGINE_PATH -I$FLUMEN_GAME_PATH -I$GENERAL_PATH $FLAGS)
-BUILD_RESULT=$(x86_64-w64-mingw32-g++ $FIND_RESULT -o Main -I${FLUMEN_CORE_PATH} -I$GLM_PATH -I$FLUMEN_ENGINE_PATH -I$FLUMEN_GAME_PATH $FLAGS)
+make
 
-echo $BUILD_RESULT
+mkdir ../../Builds
+
+mkdir ../../Builds/Flumen
+
+cp Battle ../../Builds/Flumen --update
+
+cp Shaders ../../Builds/Flumen --update --recursive
+
+cp Textures ../../Builds/Flumen --update --recursive
+
+cp Fonts ../../Builds/Flumen --update --recursive
+
+cp Sounds ../../Builds/Flumen --update --recursive
+
+if "$execute"; then
+    ../../Builds/Flumen/Battle
+fi
