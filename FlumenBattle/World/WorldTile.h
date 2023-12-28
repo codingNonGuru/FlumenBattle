@@ -114,5 +114,7 @@ namespace world
         bool HasBiome(WorldBiomes biome) const;
 
         bool HasRelief(WorldReliefs relief) const;
+
+        bool IsBlocked() const {return false;}
     };
 }

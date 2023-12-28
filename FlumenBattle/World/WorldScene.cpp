@@ -208,7 +208,7 @@ namespace world
         this->StartTime(1);
     }
 
-    settlement::Settlement * WorldScene::FoundSettlement(WorldTile *location, Polity *polity)
+    settlement::Settlement * WorldScene::FoundSettlement(WorldTile *location, Polity *polity, settlement::Settlement *mother)
     {
         auto settlement = settlement::SettlementFactory::Create({"Safehaven", location});
         if(polity == nullptr)
@@ -219,6 +219,51 @@ namespace world
         else
         {
             polity->ExtendRealm(settlement);
+        }
+
+        if(mother != nullptr)
+        {
+            auto path = settlement::SettlementAllocator::Get()->AllocatePath(settlement, mother);
+            *path = {settlement, mother};
+            path->AddTile(location);
+
+            auto tileDatas = utility::Pathfinder <WorldTile>::Get()->FindPath(mother->GetLocation(), 10);
+
+            auto distance = [&] () -> int
+            {
+                for(auto tileIterator = tileDatas.GetStart(); tileIterator != tileDatas.GetEnd(); ++tileIterator)
+                {
+                    if(tileIterator->Tile == location)
+                    {
+                        return tileIterator->Distance;
+                    }
+                }
+            } ();
+
+            auto currentLocation = location;
+            auto heuristic = distance;
+            while(true)
+            {
+                for(auto tileIterator = tileDatas.GetStart(); tileIterator != tileDatas.GetEnd(); ++tileIterator)
+                {
+                    auto tile = tileIterator->Tile;
+                    if(tileIterator->Distance == heuristic - 1 && tile->GetDistanceTo(*currentLocation) == 1)
+                    {
+                        path->AddTile(tile);
+
+                        heuristic--;
+                        currentLocation = tile;
+
+                        break;
+                    }
+                }
+
+                if(currentLocation == mother->GetLocation())
+                {
+                    //path->AddTile(mother->GetLocation());
+                    break;
+                }
+            }
         }
 
         settlement->SetPolity(polity);

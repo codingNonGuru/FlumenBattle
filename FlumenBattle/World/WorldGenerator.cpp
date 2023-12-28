@@ -288,6 +288,12 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
     auto settlements = settlement::SettlementAllocator::Get()->GetSettlements();
     scene.settlements = settlements;
 
+    auto paths = settlement::SettlementAllocator::Get()->GetPaths();
+    scene.paths = paths;
+
+    auto pathSegments = settlement::SettlementAllocator::Get()->GetPathSegments();
+    scene.pathSegments = pathSegments;
+
     auto findSettleLocation = [&]
     {
         while(true)
@@ -315,7 +321,7 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
     for(auto i = 0; i < data.Size / 10; ++i)
     {
         auto location = findSettleLocation();
-        scene.FoundSettlement(location, nullptr);
+        scene.FoundSettlement(location, nullptr, nullptr);
     }
 
     auto groups = GroupAllocator::Get()->GetGroups();

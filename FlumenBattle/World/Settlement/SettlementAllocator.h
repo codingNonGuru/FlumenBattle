@@ -24,6 +24,8 @@ namespace world::settlement
     class Settlement;
     class SettlementProduction;
     class SettlementFactory;
+    struct Path;
+    class PathSegment;
     class Condition;
     class ConditionManager;
     class Building;
@@ -36,6 +38,7 @@ namespace world::settlement
         friend class SettlementFactory;
 
         friend class world::WorldAllocator;
+        
 
         container::Pool <Settlement>::Memory settlementMemory;
 
@@ -57,6 +60,13 @@ namespace world::settlement
 
         container::PoolAllocator <Building>::Memory buildingMemory;
 
+        container::Pool <Path>::Memory pathMemory;
+
+        container::Pool <PathSegment>::Memory pathSegmentMemory;
+
+        container::PoolAllocator <Path *>::Memory pathPointerMemory;
+
+
         container::Pool <Settlement> settlements;
 
         container::Pool <group::GroupDynamics> groupDynamics;
@@ -77,9 +87,18 @@ namespace world::settlement
 
         container::PoolAllocator <Building> buildingAllocator;
 
+        container::Pool <Path> paths;
+
+        container::Pool <PathSegment> pathSegments;
+
+        container::PoolAllocator <Path *> pathPointerAllocator;
+
+
         void PerformCleanup();
 
         Settlement *Allocate();
+
+        Path *AllocatePath(Settlement *, Settlement *);
 
         void AllocateWorldMemory(int);
 
@@ -87,5 +106,9 @@ namespace world::settlement
 
     public:
         container::Pool <Settlement> *GetSettlements() {return &settlements;}
+
+        container::Pool <Path> *GetPaths() {return &paths;}
+
+        container::Pool <PathSegment> *GetPathSegments() {return &pathSegments;}
     };
 }

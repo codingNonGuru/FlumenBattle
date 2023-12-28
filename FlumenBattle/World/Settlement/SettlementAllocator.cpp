@@ -7,6 +7,7 @@
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
 #include "FlumenBattle/World/Settlement/Condition.h"
 #include "FlumenBattle/World/Settlement/Building.h"
+#include "FlumenBattle/World/Settlement/Path.h"
 #include "FlumenBattle/World/Group/GroupDynamics.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldGenerator.h"
@@ -22,6 +23,10 @@
 #define MAXIMUM_AFFLICTIONS_PER_SETTLEMENT 16
 
 #define MAXIMUM_EVENTS_PER_SETTLEMENT 32
+
+#define MAXIMUM_PATHS_PER_SETTLEMENT 6
+
+#define AVERAGE_SEGMENTS_PER_PATH 4
 
 using namespace world::settlement;
 
@@ -50,6 +55,12 @@ void SettlementAllocator::PreallocateMaximumMemory()
     buildingManagerMemory = container::Pool <BuildingManager>::PreallocateMemory (settlementCount);
 
     buildingMemory = container::PoolAllocator <Building>::PreallocateMemory (settlementCount, MAXIMUM_BUILDINGS_PER_SETTLEMENT);
+
+    pathMemory = container::Pool <Path>::PreallocateMemory (settlementCount * MAXIMUM_PATHS_PER_SETTLEMENT);
+
+    pathSegmentMemory = container::Pool <PathSegment>::PreallocateMemory (settlementCount * MAXIMUM_PATHS_PER_SETTLEMENT * AVERAGE_SEGMENTS_PER_PATH);
+
+    pathPointerMemory = container::PoolAllocator <Path *>::PreallocateMemory (settlementCount, MAXIMUM_PATHS_PER_SETTLEMENT);
 }
 
 void SettlementAllocator::AllocateWorldMemory(int worldSize)
@@ -61,6 +72,10 @@ void SettlementAllocator::AllocateWorldMemory(int worldSize)
     settlements.Initialize(settlementCount, settlementMemory);
 
     groupDynamics.Initialize(settlementCount, groupDynamicsMemory);
+
+    paths.Initialize(settlementCount * MAXIMUM_PATHS_PER_SETTLEMENT, pathMemory);
+
+    pathSegments.Initialize(settlementCount * MAXIMUM_PATHS_PER_SETTLEMENT * AVERAGE_SEGMENTS_PER_PATH, pathSegmentMemory);
 
     tileAllocator = container::PoolAllocator <SettlementTile> (settlementCount, MAXIMUM_TILES_PER_SETTLEMENT, tileMemory);
 
@@ -77,6 +92,8 @@ void SettlementAllocator::AllocateWorldMemory(int worldSize)
     buildingManagerAllocator = container::Pool <BuildingManager> (settlementCount, buildingManagerMemory);
 
     buildingAllocator = container::PoolAllocator <Building> (settlementCount, MAXIMUM_BUILDINGS_PER_SETTLEMENT, buildingMemory);
+
+    pathPointerAllocator = container::PoolAllocator <Path *> (settlementCount, MAXIMUM_PATHS_PER_SETTLEMENT, pathPointerMemory);
 }
 
 Settlement * SettlementAllocator::Allocate()
@@ -102,5 +119,18 @@ Settlement * SettlementAllocator::Allocate()
 
     BuildingSetAllocator::Allocate(buildingAllocator, *settlement->buildingManager);
 
+    settlement->paths.Initialize(pathPointerAllocator);
+
     return settlement;
+}
+
+Path * SettlementAllocator::AllocatePath(Settlement *firstSettlement, Settlement *secondSettlement)
+{
+    auto path = paths.Add();
+
+    firstSettlement->paths.Initialize(pathPointerAllocator);
+
+    secondSettlement->paths.Initialize(pathPointerAllocator);
+
+    return path;
 }

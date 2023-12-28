@@ -77,13 +77,13 @@ world::WorldTile * Settlement::FindColonySpot()
         return nullptr;
     };
 
-    auto colonySpot = findColonySpot(3);
+    auto colonySpot = findColonySpot(4);
     if(colonySpot == nullptr)
     {
-        colonySpot = findColonySpot(4);
+        colonySpot = findColonySpot(5);
         if(colonySpot == nullptr)
         {
-            colonySpot = findColonySpot(5);
+            colonySpot = findColonySpot(6);
         }
     }
 
@@ -208,7 +208,7 @@ void Settlement::DecideProduction()
     {
         *currentProduction = SettlementProductionFactory::Get()->Create(SettlementProductionOptions::PATROL);
     }
-    else if(population >= 5)
+    else if(population >= 3)
     {
         auto colonySpot = FindColonySpot();
         if(colonySpot != nullptr)

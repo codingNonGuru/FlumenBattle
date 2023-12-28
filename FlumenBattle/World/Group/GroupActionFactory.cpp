@@ -8,7 +8,7 @@
 #include "FlumenBattle/Character.h"
 #include "FlumenBattle/Utility/Utility.h"
 
-#define GROUP_SEARCH_DC 12
+#define GROUP_SEARCH_DC 32
 
 namespace world::group
 {
@@ -236,7 +236,7 @@ namespace world::group
                 stealthBonus = bonus;
         }
 
-        auto modifier = perceptionBonus * 3 - stealthBonus;
+        auto modifier = perceptionBonus - stealthBonus;
 
         auto perceptionCheck = utility::RollD20Dice(GROUP_SEARCH_DC, modifier);
         if(perceptionCheck.IsAnyFailure() == true)

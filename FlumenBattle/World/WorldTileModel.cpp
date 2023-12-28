@@ -105,11 +105,75 @@ void WorldTileModel::Render()
 
         shader->SetConstant(WORLD_TILE_SIZE, "hexSize");
 
-        shader->SetConstant(tile->IsOwned() ? Color(tile->GetShade()) * 0.4f + tile->GetOwner()->GetRulerBanner() * 0.6f : Color(tile->GetShade()), "color");
+        shader->SetConstant(tile->GetShade(), "color");
         //shader->SetConstant(tile->Shade, "color");
 
         glDrawArrays(GL_TRIANGLES, 0, 18);
     }
+
+    shader->Unbind();
+
+    auto squareShader = ShaderManager::GetShader("Square");
+    squareShader->Bind();
+
+    squareShader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	squareShader->SetConstant(1.0f, "opacity");
+
+	squareShader->SetConstant(0.0f, "depth");
+
+    for(auto &path : *worldScene->paths)
+    {
+        const auto &tiles = path.Tiles;
+
+        for(auto tile = tiles.GetFirst(); tile != tiles.GetLast() - 1; ++tile)
+        {
+            auto nextTile = tile + 1;
+
+            auto position = ((*tile)->Position + (*nextTile)->Position) / 2.0f;
+            squareShader->SetConstant(position, "hexPosition");
+
+            Scale2 scale = Scale2(WORLD_TILE_SIZE * 1.732f, 5.0f);
+            squareShader->SetConstant(scale, "hexSize");
+
+            auto color = Color(0.9f, 0.7f, 0.5f, 1.0f) * 0.8f;
+            squareShader->SetConstant(color, "color");
+
+            auto orientation = (*tile)->Position - (*nextTile)->Position;
+            auto rotation = atan2(orientation.y, orientation.x);
+            squareShader->SetConstant(rotation, "rotation");
+
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+        }
+    }
+
+	squareShader->Unbind();
+
+    shader->Bind();
+
+    shader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	shader->SetConstant(0.4f, "opacity");
+
+	shader->SetConstant(0.0f, "depth");
+
+    map = worldScene->GetWorldMap();
+    for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
+    {
+        if(tile->IsOwned() == false)
+            continue;
+        
+        shader->SetConstant(tile->Position, "hexPosition");
+
+        shader->SetConstant(WORLD_TILE_SIZE, "hexSize");
+
+        shader->SetConstant(tile->GetOwner()->GetRulerBanner(), "color");
+        //shader->SetConstant(tile->Shade, "color");
+
+        glDrawArrays(GL_TRIANGLES, 0, 18);
+    }
+
+    shader->SetConstant(1.0f, "opacity");
 
     auto settlements = worldScene->GetSettlements();
     for(auto& settlement : settlements)
@@ -126,32 +190,7 @@ void WorldTileModel::Render()
         glDrawArrays(GL_TRIANGLES, 0, 18);
     }
 
-    /*auto map = worldScene->GetWorldMap();
-    auto combatant = battleController->GetSelectedCombatant();
-
-    if(combatant != nullptr)
-    {
-        shadeTimer += Time::GetDelta();
-        auto timeFactor = 1.0f + sin(shadeTimer * 6.0f);
-        timeFactor = 0.05f + timeFactor * 0.05f;
-        shader->SetConstant(timeFactor, "opacity");
-
-        const auto &nearbyTiles = map->GetNearbyTiles(combatant->GetTile(), combatant->GetMovement());
-        for(auto tileIterator = nearbyTiles.GetStart(); tileIterator != nearbyTiles.GetEnd(); ++tileIterator)
-        {
-            auto tile = *tileIterator;
-            if(tile == nullptr)
-                continue;
-
-            shader->SetConstant(tile->Position, "hexPosition");
-
-            shader->SetConstant(BATTLE_TILE_SIZE * 0.65f, "hexSize");
-
-            shader->SetConstant(Color::BLACK, "color");
-
-            glDrawArrays(GL_TRIANGLES, 0, 18);
-        }
-    }*/
+    shader->Unbind();
 
     auto hoveredTile = worldController->GetHoveredTile();
     bool canPlayerTravel = worldScene->GetPlayerGroup()->ValidateAction(group::GroupActions::TRAVEL, {hoveredTile});
@@ -159,8 +198,6 @@ void WorldTileModel::Render()
     {
         bootSprite->Draw(camera, {hoveredTile->Position, Scale2(0.3f, 0.3f), Opacity(1.0f), DrawOrder(-2)});
     }
-
-	shader->Unbind();
 
     for(auto &group : *worldScene->groups)
     {

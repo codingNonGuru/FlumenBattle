@@ -3,6 +3,7 @@
 #include "FlumenEngine/Core/Scene.hpp"
 
 #include "FlumenBattle/World/WorldTime.h"
+#include "FlumenBattle/World/Settlement/Path.h"
 
 class Delegate;
 
@@ -49,6 +50,10 @@ namespace world
         Pool <settlement::Settlement> *settlements;
 
         Pool <Polity> polities;
+
+        Pool <settlement::Path> *paths;
+
+        Pool <settlement::PathSegment> *pathSegments;
 
         WorldScene();
 
@@ -100,6 +105,8 @@ namespace world
 
         Pool <settlement::Settlement> & GetSettlements() {return *settlements;}
 
+        Pool <settlement::Path> & GetPaths() {return *paths;}
+
         Pool <group::Encounter> & GetBattles() {return *battles;}
 
         Pool <group::Group> & GetGroups() {return *groups;}
@@ -120,6 +127,6 @@ namespace world
 
         void FinishPlayerEncounter();
 
-        settlement::Settlement * FoundSettlement(WorldTile *, Polity *);
+        settlement::Settlement * FoundSettlement(WorldTile *, Polity *, settlement::Settlement *);
     };
 }

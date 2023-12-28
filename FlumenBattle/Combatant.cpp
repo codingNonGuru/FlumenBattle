@@ -99,6 +99,8 @@ void Combatant::StartTurn()
     conditions.Do([](auto &condition) -> bool
     {
         condition.Apply();
+
+        return true;
     });
 
     movement = GetCurrentSpeed();

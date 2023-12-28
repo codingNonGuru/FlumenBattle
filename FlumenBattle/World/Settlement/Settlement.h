@@ -33,6 +33,7 @@ namespace world::settlement
     class ConditionManager;
     struct ConditionData;
     class BuildingManager;
+    class Path;
 
     struct SettlementTile
     {
@@ -84,6 +85,8 @@ namespace world::settlement
         Pool <Affliction> afflictions;
 
         Pool <SettlementEvent> events;
+
+        Pool <Path *> paths;
 
         SettlementProduction *currentProduction;
 

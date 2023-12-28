@@ -61,7 +61,7 @@ const SettlementProductionType * SettlementProductionFactory::BuildFarmProductio
 
 const SettlementProductionType * SettlementProductionFactory::BuildSettlersProduction()
 {
-    static const SettlementProductionType productionType = {SettlementProductionOptions::SETTLERS, 500, &SettlementProductionFinisher::FinishSettlers};
+    static const SettlementProductionType productionType = {SettlementProductionOptions::SETTLERS, 100, &SettlementProductionFinisher::FinishSettlers};
     return &productionType;
 }
 
@@ -125,11 +125,11 @@ void SettlementProductionFinisher::FinishSettlers(Settlement &settlement)
         auto dice = utility::GetRandom(1, 20);
         if(dice == 20)
         {
-            WorldScene::Get()->FoundSettlement(target, polity);
+            WorldScene::Get()->FoundSettlement(target, polity, &settlement);
         }
         else if(dice > 5)
         {
-            WorldScene::Get()->FoundSettlement(target, polity);
+            WorldScene::Get()->FoundSettlement(target, polity, &settlement);
             settlement.population--;
         }
         else if(dice > 1) //Colonization fails, but settlers survive & return

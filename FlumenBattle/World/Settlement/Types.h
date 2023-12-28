@@ -33,4 +33,13 @@ namespace world::settlement
         MALARIA_EMERGENCE_DIFFICULTY,
         SAVING_THROWS_AGAINST_MALARIA
     };
+
+    enum class RoadTypes
+    {
+        UNTRODDEN,
+        TRODDEN,
+        WELL_TRODDEN,
+        PAVED,
+        WELL_PAVED
+    };
 }

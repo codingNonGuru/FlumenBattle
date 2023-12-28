@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "FlumenCore/Utility/Utility.hpp"
 
 #include "FlumenBattle/Utility/Utility.h"
