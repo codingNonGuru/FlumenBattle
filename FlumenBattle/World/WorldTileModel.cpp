@@ -182,7 +182,12 @@ void WorldTileModel::Render()
 
         shader->SetConstant(tile->Position, "hexPosition");
 
-        shader->SetConstant(WORLD_TILE_SIZE * 0.5f, "hexSize");
+        auto size = [&settlement]
+        {
+            auto factor = pow((float)settlement.GetPopulation(), 0.3f);
+            return factor * 0.25f;
+        } ();
+        shader->SetConstant(WORLD_TILE_SIZE * size, "hexSize");
 
         shader->SetConstant(settlement.GetRulerBanner(), "color");
         //shader->SetConstant(settlement.GetBanner(), "color");
