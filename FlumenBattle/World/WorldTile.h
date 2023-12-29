@@ -18,6 +18,7 @@ namespace world
     namespace settlement
     {
         class Settlement;
+        struct PathSegment;
     }
 }
 
@@ -45,6 +46,8 @@ namespace world
         Integer industry;
 
         bool isBorderingOwnedTile;
+
+        container::SmartBlock <settlement::PathSegment *, 6> links;
 
     public:
         Position2 Position;
@@ -116,5 +119,11 @@ namespace world
         bool HasRelief(WorldReliefs relief) const;
 
         bool IsBlocked() const {return false;}
+
+        bool IsLinkedTo(WorldTile *);
+
+        void AddLink(WorldTile *, settlement::PathSegment *);
+
+        settlement::PathSegment * GetLinkTo(WorldTile *);
     };
 }

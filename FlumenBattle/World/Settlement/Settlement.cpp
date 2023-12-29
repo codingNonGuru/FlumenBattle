@@ -426,7 +426,7 @@ void Settlement::Update()
         growth += 2;
         break;
     case FoodSecurity::ENOUGH:
-        growth += 1;
+        growth += 2;
         break;
     case FoodSecurity::BARELY_AVAILABLE:
         break;
@@ -446,7 +446,7 @@ void Settlement::Update()
         }
     }
 
-    if(growth >= 100)
+    if(growth >= 200)
     {
         growth = 0;
         population++;

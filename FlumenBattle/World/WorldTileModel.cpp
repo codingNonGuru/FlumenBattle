@@ -122,7 +122,33 @@ void WorldTileModel::Render()
 
 	squareShader->SetConstant(0.0f, "depth");
 
-    for(auto &path : *worldScene->paths)
+    auto pathSegments = worldScene->pathSegments;
+    for(auto &segment : *pathSegments)
+    {
+        auto tile = segment.To;
+        auto nextTile = segment.From;
+
+        auto position = (tile->Position + nextTile->Position) / 2.0f;
+        squareShader->SetConstant(position, "hexPosition");
+
+        Scale2 scale = Scale2(WORLD_TILE_SIZE * 1.732f, 5.0f);
+        squareShader->SetConstant(scale, "hexSize");
+
+        auto color = [&segment] () {
+            return segment.Type == settlement::RoadTypes::UNTRODDEN ?
+            Color(0.9f, 0.7f, 0.5f, 1.0f) * 0.6f :
+            Color(0.7f, 0.7f, 0.7f, 1.0f) * 0.6f;
+        } ();
+        squareShader->SetConstant(color, "color");
+
+        auto orientation = tile->Position - nextTile->Position;
+        auto rotation = atan2(orientation.y, orientation.x);
+        squareShader->SetConstant(rotation, "rotation");
+
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+
+    /*for(auto &path : *worldScene->paths)
     {
         const auto &tiles = path.Tiles;
 
@@ -130,13 +156,19 @@ void WorldTileModel::Render()
         {
             auto nextTile = tile + 1;
 
+            auto link = (*tile)->GetLinkTo(*nextTile);
+
             auto position = ((*tile)->Position + (*nextTile)->Position) / 2.0f;
             squareShader->SetConstant(position, "hexPosition");
 
             Scale2 scale = Scale2(WORLD_TILE_SIZE * 1.732f, 5.0f);
             squareShader->SetConstant(scale, "hexSize");
 
-            auto color = Color(0.9f, 0.7f, 0.5f, 1.0f) * 0.8f;
+            auto color = [&link] () {
+                return link->Type == settlement::RoadTypes::UNTRODDEN ?
+                Color(0.9f, 0.7f, 0.5f, 1.0f) * 0.6f :
+                Color(0.7f, 0.7f, 0.7f, 1.0f) * 0.6f;
+            } ();
             squareShader->SetConstant(color, "color");
 
             auto orientation = (*tile)->Position - (*nextTile)->Position;
@@ -145,7 +177,7 @@ void WorldTileModel::Render()
 
             glDrawArrays(GL_TRIANGLES, 0, 6);
         }
-    }
+    }*/
 
 	squareShader->Unbind();
 
@@ -170,7 +202,7 @@ void WorldTileModel::Render()
         shader->SetConstant(tile->GetOwner()->GetRulerBanner(), "color");
         //shader->SetConstant(tile->Shade, "color");
 
-        glDrawArrays(GL_TRIANGLES, 0, 18);
+        //glDrawArrays(GL_TRIANGLES, 0, 18);
     }
 
     shader->SetConstant(1.0f, "opacity");

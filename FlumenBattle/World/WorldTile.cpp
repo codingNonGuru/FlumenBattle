@@ -4,6 +4,7 @@
 #include "FlumenBattle/World/WorldMap.h"
 #include "FlumenBattle/World/WorldBiome.h"
 #include "FlumenBattle/World/WorldRelief.h"
+#include "FlumenBattle/World/Settlement/Path.h"
 
 using namespace world;
 
@@ -114,4 +115,33 @@ void WorldTile::AssertOwnership(settlement::Settlement *owner)
     {
         (*tile)->isBorderingOwnedTile = true;
     }
+}
+
+bool WorldTile::IsLinkedTo(WorldTile *tile) 
+{
+    for(auto iterator = links.GetFirst(); iterator != links.GetLast(); ++iterator)
+    {
+        if(**iterator == settlement::PathSegment(this, tile))
+        {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+void WorldTile::AddLink(WorldTile *tile, settlement::PathSegment *segment) 
+{
+    *links.Add() = segment;
+}
+
+settlement::PathSegment * WorldTile::GetLinkTo(WorldTile *tile)
+{
+    for(auto iterator = links.GetFirst(); iterator != links.GetLast(); ++iterator)
+    {
+        if(**iterator == settlement::PathSegment(this, tile))
+            return *iterator;
+    }
+    
+    return nullptr;
 }

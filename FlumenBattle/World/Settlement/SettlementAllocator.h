@@ -31,13 +31,15 @@ namespace world::settlement
     class Building;
     class BuildingManager;
 
-    class SettlementAllocator : public Singleton<SettlementAllocator>
+    class SettlementAllocator : public Singleton <SettlementAllocator>
     {
         friend class world::WorldScene;
 
         friend class SettlementFactory;
 
         friend class world::WorldAllocator;
+
+        friend class Path;
         
 
         container::Pool <Settlement>::Memory settlementMemory;
@@ -99,6 +101,8 @@ namespace world::settlement
         Settlement *Allocate();
 
         Path *AllocatePath(Settlement *, Settlement *);
+
+        PathSegment *AllocateSegment();
 
         void AllocateWorldMemory(int);
 

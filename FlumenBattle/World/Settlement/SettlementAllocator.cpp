@@ -134,3 +134,10 @@ Path * SettlementAllocator::AllocatePath(Settlement *firstSettlement, Settlement
 
     return path;
 }
+
+PathSegment * SettlementAllocator::AllocateSegment()
+{
+    auto segment = pathSegments.Add();
+
+    return segment;
+}
