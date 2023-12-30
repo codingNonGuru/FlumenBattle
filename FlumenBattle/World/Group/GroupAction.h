@@ -4,7 +4,7 @@
 
 #include "FlumenCore/Conventions.hpp"
 
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 #include "FlumenBattle/World/Types.h"
 #include "FlumenBattle/World/Group/GroupActionData.h"

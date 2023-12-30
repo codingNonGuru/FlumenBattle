@@ -2,7 +2,7 @@
 
 #include <atomic>
 
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 namespace pregame
 {
@@ -13,7 +13,7 @@ namespace world
 {
     class WorldScene;
 
-    class WorldGenerator : public Singleton<WorldGenerator>
+    class WorldGenerator : public core::Singleton<WorldGenerator>
     {
         friend class WorldScene;
 

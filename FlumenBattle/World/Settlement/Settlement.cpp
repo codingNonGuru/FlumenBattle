@@ -446,7 +446,7 @@ void Settlement::Update()
         }
     }
 
-    if(growth >= 200)
+    if(growth >= 100)
     {
         growth = 0;
         population++;

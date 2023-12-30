@@ -21,6 +21,8 @@
 #include "FlumenBattle/World/Group/Encounter.h"
 #include "FlumenBattle/BattleState.h"
 #include "FlumenBattle/BattleScene.h"
+#include "FlumenBattle/Utility/Utility.h"
+#include "FlumenBattle/Utility/Pathfinder.h"
 
 #define AWAIT(length) \
     static float timer = 0.0f;\
@@ -225,9 +227,16 @@ namespace world
         {
             auto path = settlement::SettlementAllocator::Get()->AllocatePath(settlement, mother);
             *path = {settlement, mother};
-            path->AddTile(location);
 
-            auto tileDatas = utility::Pathfinder <WorldTile>::Get()->FindPath(mother->GetLocation(), 10);
+            auto &tileDatas = utility::Pathfinder <WorldTile>::Get()->FindPathImproved(mother->GetLocation(), location, 10);
+            for(auto &data : tileDatas)
+            {
+                path->AddTile(data.Tile);
+            }
+
+            /*path->AddTile(location);
+
+            auto &tileDatas = utility::Pathfinder <WorldTile>::Get()->FindPath(mother->GetLocation(), location, 10);
 
             auto distance = [&] () -> int
             {
@@ -244,26 +253,31 @@ namespace world
             auto heuristic = distance;
             while(true)
             {
+                auto leastDistance = distance;
+                WorldTile *closestNeighbour = nullptr;
                 for(auto tileIterator = tileDatas.GetStart(); tileIterator != tileDatas.GetEnd(); ++tileIterator)
                 {
                     auto tile = tileIterator->Tile;
-                    if(tileIterator->Distance == heuristic - 1 && tile->GetDistanceTo(*currentLocation) == 1)
+
+                    if(tile->GetDistanceTo(*currentLocation) == 1)
                     {
-                        path->AddTile(tile);
-
-                        heuristic--;
-                        currentLocation = tile;
-
-                        break;
+                        if(tileIterator->Distance < leastDistance)
+                        {
+                            leastDistance = tileIterator->Distance;
+                            closestNeighbour = tile;
+                        }
                     }
                 }
+
+                path->AddTile(closestNeighbour);
+                currentLocation = closestNeighbour;
 
                 if(currentLocation == mother->GetLocation())
                 {
                     //path->AddTile(mother->GetLocation());
                     break;
                 }
-            }
+            }*/
         }
 
         settlement->SetPolity(polity);
@@ -295,5 +309,10 @@ namespace world
 
             Refresh();
         }
+    }
+
+    container::Grid <WorldTile> &WorldScene::GetTiles() const 
+    {
+        return worldMap->tiles;
     }
 }

@@ -1,13 +1,13 @@
 #pragma once
 
 #include "FlumenEngine/Core/State.hpp"
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 namespace intro
 {
     //class PreGameController;
 
-    class IntroState : public State, public Singleton<IntroState>
+    class IntroState : public State, public core::Singleton<IntroState>
     {
         //PreGameController *controller;
 

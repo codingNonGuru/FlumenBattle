@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 class WorldInfoPanel;
 class Element;
@@ -10,13 +10,14 @@ namespace world
     class WorldDecisionMenu;
     class WorldHoverInfo;
     class GroupEngageMenu;
+    class PathLabel;
 
     namespace settlement
     {
         class SettlementLabel;
     }
     
-    class WorldInterface : public Singleton <WorldInterface>
+    class WorldInterface : public core::Singleton <WorldInterface>
     {
         friend class WorldState;
 
@@ -31,6 +32,8 @@ namespace world
         GroupEngageMenu *engageMenu;
 
         Array <settlement::SettlementLabel *> settlementLabels;
+
+        Array <PathLabel *> pathLabels;
 
         void Update();
 

@@ -1,13 +1,13 @@
 #pragma once
 
 #include "FlumenEngine/Interface/Element.hpp"
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 class Text;
 
 class Character;
 
-class WorldInfoPanel : public Element, public Singleton<WorldInfoPanel>
+class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
 {
     friend class CharacterItem;
 

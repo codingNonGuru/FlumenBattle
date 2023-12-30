@@ -11,7 +11,7 @@ using namespace world;
 static constexpr auto VARIATION_FACTOR = 0.07f;
 
 WorldTile::WorldTile(Position2 position, Integer2 squareCoordinates) : Position(position), SquareCoordinates(squareCoordinates), 
-group(nullptr), settlement(nullptr), owner(nullptr), isBorderingOwnedTile(false)
+group(nullptr), settlement(nullptr), owner(nullptr), isBorderingOwnedTile(false), pathData(-1)
 {
     HexCoordinates.x = squareCoordinates.x - squareCoordinates.y / 2;
     HexCoordinates.z = squareCoordinates.y;
@@ -60,9 +60,9 @@ void WorldTile::Initialize()
     Shade = color;
 }
 
-const Array <WorldTile*> & WorldTile::GetNearbyTiles(Integer range)
+const Array <WorldTile*> & WorldTile::GetNearbyTiles(Integer range, int bufferIndex = 0)
 {
-    return map->GetNearbyTiles(this, range);
+    return map->GetNearbyTiles(this, range, bufferIndex);
 }
 
 const Array <WorldTile*> & WorldTile::GetTileRing(Integer range)

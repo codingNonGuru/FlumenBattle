@@ -49,7 +49,20 @@ namespace world
 
         container::SmartBlock <settlement::PathSegment *, 6> links;
 
+        int pathData;
+
     public:
+        struct PathData
+        {
+            bool IsVisited;
+
+            bool IsFreshlyVisited;
+
+            bool IsFringe;
+
+            Integer Passes[2];
+        } PathData;
+
         Position2 Position;
 
         Integer2 SquareCoordinates;
@@ -82,7 +95,7 @@ namespace world
             return glm::length(direction);
         }
 
-        const Array <WorldTile*> & GetNearbyTiles(Integer);
+        const Array <WorldTile*> & GetNearbyTiles(Integer, int = 0);
 
         const Array <WorldTile*> & GetTileRing(Integer);
 
@@ -125,5 +138,9 @@ namespace world
         void AddLink(WorldTile *, settlement::PathSegment *);
 
         settlement::PathSegment * GetLinkTo(WorldTile *);
+
+        void SetPathData(int data) {pathData = data;}
+
+        int GetPathData() {return pathData;}
     };
 }

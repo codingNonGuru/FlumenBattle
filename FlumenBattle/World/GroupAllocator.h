@@ -3,7 +3,7 @@
 #include "FlumenCore/Container/PoolAllocator.h"
 #include "FlumenCore/Container/Pool.hpp"
 
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 class Character;
 namespace world::group
@@ -15,7 +15,7 @@ namespace world::group
 
 namespace world
 {   
-    class GroupAllocator : public Singleton<GroupAllocator>
+    class GroupAllocator : public core::Singleton<GroupAllocator>
     {
         friend class WorldScene;
 

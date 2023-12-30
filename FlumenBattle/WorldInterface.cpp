@@ -11,7 +11,10 @@
 #include "FlumenBattle/WorldHoverInfo.h"
 #include "FlumenBattle/World/GroupEngageMenu.h"
 #include "FlumenBattle/World/SettlementLabel.h"
+#include "FlumenBattle/World/PathLabel.h"
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/WorldMap.h"
+#include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 
 using namespace world;
@@ -48,6 +51,16 @@ WorldInterface::WorldInterface()
         );
         settlementLabel->Disable();
         *settlementLabels.Add() = settlementLabel;
+    }
+
+    pathLabels.Initialize(1024);
+    for(int i = 0; i < 1024; i++)
+    {
+        auto label = ElementFactory::BuildElement<PathLabel>(
+            {Size(50, 50), DrawOrder(3), {Position2(0.0f, 0.0f), canvas}, {"Sprite"}, Opacity(0.3f)}
+        );
+        label->Disable();
+        *pathLabels.Add() = label;
     }
 }
 
@@ -126,6 +139,25 @@ void WorldInterface::Update()
                 continue;
 
             label->Enable();
+        }
+    }
+
+    for(auto &label : pathLabels)
+    {
+        label->Disable();
+    }
+
+    auto &tiles = WorldScene::Get()->GetWorldMap()->tiles;
+
+    int index = 0;
+    for(auto tile = tiles.GetStart(); tile != tiles.GetEnd(); ++tile)
+    {
+        if(tile->GetPathData() != -1)
+        {
+            auto label = *pathLabels.Get(index);
+            label->SetTile(tile);
+            label->Enable();
+            index++;
         }
     }
 }

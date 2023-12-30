@@ -18,6 +18,8 @@ namespace world
 
         friend class WorldAllocator;
 
+        friend class WorldInterface;
+
         Grid <WorldTile> tiles;
 
         WorldMap() {}
@@ -39,7 +41,7 @@ namespace world
 
         WorldTile* GetEmptyTileAroundTile(WorldTile *, Integer);
 
-        const Array<WorldTile*> & GetNearbyTiles(WorldTile*, Integer);
+        const Array<WorldTile*> & GetNearbyTiles(WorldTile*, Integer, int = 0);
 
         const Array<WorldTile*> & GetTileRing(WorldTile*, Integer);
     };

@@ -8,7 +8,7 @@ const AfflictionType * AfflictionTypeBuilder::BuildMalaria()
 {
     static AfflictionType affliction = {
         AfflictionTypes::MALARIA, 
-        17,
+        14,
         4,
         5,
         &AfflictionPerformer::PerformMalaria};

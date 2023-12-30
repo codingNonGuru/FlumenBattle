@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 #include "FlumenBattle/World/Science/Types.h"
 
@@ -87,7 +87,7 @@ namespace world::science
         static void ApplyMasonry(settlement::Settlement &);
     };
 
-    class TechnologyFactory : public Singleton <TechnologyFactory>
+    class TechnologyFactory : public core::Singleton <TechnologyFactory>
     {
         const TechnologyType &BuildHandWashing()
         {

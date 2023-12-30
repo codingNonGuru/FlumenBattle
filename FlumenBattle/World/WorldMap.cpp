@@ -1,4 +1,5 @@
 #include "FlumenCore/Utility/Utility.hpp"
+#include "FlumenCore/Container/SmartBlock.hpp"
 
 #include "FlumenBattle/World/WorldMap.h"
 #include "FlumenBattle/World/WorldTile.h"
@@ -6,11 +7,13 @@
 
 using namespace world;
 
-static Array <WorldTile*> nearbyTiles;
+static container::SmartBlock <Array <WorldTile*>, 4> nearbyTileBuffers;
+
+//static Array <WorldTile*> nearbyTilesBackup;
 
 WorldMap::WorldMap(Length size) 
 {
-    WorldAllocator::Get()->AllocateMap(*this, nearbyTiles, size);
+    WorldAllocator::Get()->AllocateMap(*this, nearbyTileBuffers, size);
 
     tiles.Bound();
 
@@ -35,7 +38,7 @@ WorldMap::WorldMap(Length size)
 
 const Array<WorldTile*> & WorldMap::GetTileRing(WorldTile* tile, Integer range)
 {
-    nearbyTiles.Reset();
+    nearbyTileBuffers[0]->Reset();
 
     for(Integer x = -range; x <= range; ++x)
     {
@@ -48,19 +51,21 @@ const Array<WorldTile*> & WorldMap::GetTileRing(WorldTile* tile, Integer range)
                     auto nearbyTile = GetTile(tile->HexCoordinates + Integer3(x, y, z));
                     if(nearbyTile != nullptr)
                     {
-                        *nearbyTiles.Allocate() = nearbyTile;
+                        *nearbyTileBuffers[0]->Allocate() = nearbyTile;
                     }
                 }
             }
         }
     }
 
-    return nearbyTiles;
+    return *nearbyTileBuffers[0];
 }
 
-const Array<WorldTile*> & WorldMap::GetNearbyTiles(WorldTile* tile, Integer range)
+const Array<WorldTile*> & WorldMap::GetNearbyTiles(WorldTile* tile, Integer range, int bufferIndex = 0)
 {
-    nearbyTiles.Reset();
+    auto *nearbyTiles = nearbyTileBuffers[bufferIndex];
+
+    nearbyTiles->Reset();
 
     for(Integer x = -range; x <= range; ++x)
     {
@@ -73,14 +78,14 @@ const Array<WorldTile*> & WorldMap::GetNearbyTiles(WorldTile* tile, Integer rang
                     auto nearbyTile = GetTile(tile->HexCoordinates + Integer3(x, y, z));
                     if(nearbyTile != nullptr)
                     {
-                        *nearbyTiles.Allocate() = nearbyTile;
+                        *nearbyTiles->Allocate() = nearbyTile;
                     }
                 }
             }
         }
     }
 
-    return nearbyTiles;
+    return *nearbyTiles;
 }
 
 WorldTile* WorldMap::GetTile(Integer3 position)

@@ -103,6 +103,8 @@ namespace world
 
         WorldMap * GetWorldMap() const {return worldMap;}
 
+        container::Grid <WorldTile> &GetTiles() const;
+
         Pool <settlement::Settlement> & GetSettlements() {return *settlements;}
 
         Pool <settlement::Path> & GetPaths() {return *paths;}

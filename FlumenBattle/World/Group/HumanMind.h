@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 #include "FlumenBattle/World/Group/GroupMind.h"
 
@@ -10,7 +10,7 @@ namespace world::group
 {
     struct GroupActionResult;
 
-    class HumanMind : public GroupMind, public Singleton <HumanMind>
+    class HumanMind : public GroupMind, public core::Singleton <HumanMind>
     {
         void DetermineAction(Group &) const override;
 

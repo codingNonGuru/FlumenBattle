@@ -3,7 +3,7 @@
 #include "FlumenCore/Delegate/Delegate.hpp"
 
 #include "FlumenEngine/Core/Scene.hpp"
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 #include "FlumenBattle/CharacterActionData.h"
 
@@ -27,7 +27,7 @@ struct Turn
     }
 };
 
-class BattleScene : public Scene, public Singleton<BattleScene>
+class BattleScene : public Scene, public core::Singleton <BattleScene>
 {
     friend class BattleInterface;
 

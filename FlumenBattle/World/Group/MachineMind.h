@@ -1,12 +1,12 @@
 #pragma once
 
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 #include "FlumenBattle/World/Group/GroupMind.h"
 
 namespace world::group
 {
-    class MachineMind : public GroupMind, public Singleton <MachineMind>
+    class MachineMind : public GroupMind, public core::Singleton <MachineMind>
     {
         void DetermineAction(Group &) const override;
 

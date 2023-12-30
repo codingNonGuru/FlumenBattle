@@ -2,7 +2,7 @@
 
 #include "FlumenCore/Conventions.hpp"
 
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 #include "FlumenBattle/World/Types.h"
 
@@ -53,7 +53,7 @@ namespace world::settlement
         static AfflictionResult PerformHunger(Settlement &, Affliction &);
     };
 
-    class AfflictionTypeBuilder : public Singleton<AfflictionTypeBuilder>
+    class AfflictionTypeBuilder : public core::Singleton<AfflictionTypeBuilder>
     {
         const AfflictionType * BuildMalaria();
 
@@ -74,7 +74,7 @@ namespace world::settlement
         bool operator ==(AfflictionTypes Type) {return this->Type->Type == Type;}
     };
 
-    class AfflictionFactory : public Singleton<AfflictionFactory>
+    class AfflictionFactory : public core::Singleton<AfflictionFactory>
     {
         friend class Settlement;
 

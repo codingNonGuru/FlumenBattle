@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 #include "FlumenBattle/World/Types.h"
 #include "FlumenBattle/World/Group/GroupActionData.h"
@@ -10,7 +10,7 @@ namespace world::group
     class Group;
     class GroupAction;
 
-    class GroupActionFactory : public Singleton<GroupActionFactory>
+    class GroupActionFactory : public core::Singleton<GroupActionFactory>
     {
         const GroupAction * BuildTakeShortRest();
 

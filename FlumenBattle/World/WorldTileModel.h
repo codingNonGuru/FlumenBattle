@@ -2,7 +2,7 @@
 
 #include "FlumenEngine/Render/Model.hpp"
 
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 class Shader;
 
@@ -10,7 +10,7 @@ namespace world
 {
     class WorldScene;
 
-    class WorldTileModel : public Model, public Singleton <WorldTileModel>
+    class WorldTileModel : public Model, public core::Singleton <WorldTileModel>
     {
         friend class Singleton;
 

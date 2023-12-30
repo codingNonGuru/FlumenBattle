@@ -3,7 +3,7 @@
 #include "FlumenCore/Container/Pool.hpp"
 #include "FlumenCore/Container/PoolAllocator.h"
 
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 namespace world
 {
@@ -31,7 +31,7 @@ namespace world::settlement
     class Building;
     class BuildingManager;
 
-    class SettlementAllocator : public Singleton <SettlementAllocator>
+    class SettlementAllocator : public core::Singleton <SettlementAllocator>
     {
         friend class world::WorldScene;
 

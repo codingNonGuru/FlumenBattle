@@ -2,7 +2,7 @@
 
 #include "FlumenCore/Conventions.hpp"
 
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 #include "FlumenBattle/World/Types.h"
 
@@ -88,7 +88,7 @@ namespace world::settlement
         }
     };
 
-    class SettlementProductionFactory : public Singleton <SettlementProductionFactory>
+    class SettlementProductionFactory : public core::Singleton <SettlementProductionFactory>
     {
         const SettlementProductionType *BuildProductionType(SettlementProductionOptions);
 

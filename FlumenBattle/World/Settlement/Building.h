@@ -2,7 +2,7 @@
 
 #include "FlumenCore/Container/Pool.hpp"
 
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 #include "FlumenBattle/World/Settlement/Types.h"
 
@@ -110,7 +110,7 @@ namespace world::settlement
         static void DamageBuildings(const disaster::Earthquake &earthquake, BuildingManager &buildingManager);
     };
 
-    class BuildingFactory : public Singleton <BuildingFactory>
+    class BuildingFactory : public core::Singleton <BuildingFactory>
     {
         friend class BuildingManager;
 

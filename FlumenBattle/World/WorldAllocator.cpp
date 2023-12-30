@@ -12,7 +12,10 @@ using namespace world;
 
 WorldAllocator::WorldAllocator()
 {
-    nearbyTileMemory = container::Array <WorldTilePointer>::PreallocateMemory(MAXIMUM_WORLD_SIZE * MAXIMUM_WORLD_SIZE);
+    for(int i = 0; i < 4; ++i)
+    {
+        nearbyTileMemories[i] = container::Array <WorldTilePointer>::PreallocateMemory(MAXIMUM_WORLD_SIZE * MAXIMUM_WORLD_SIZE);
+    }
 
     worldTileMemory = container::Grid <WorldTile>::PreallocateMemory(MAXIMUM_WORLD_SIZE * MAXIMUM_WORLD_SIZE);
 
@@ -24,9 +27,12 @@ WorldAllocator::WorldAllocator()
     world::GroupAllocator::Get()->PreallocateMaximumMemory();
 }
 
-void WorldAllocator::AllocateMap(WorldMap &map, container::Array <WorldTilePointer> &nearbyTiles, int size)
+void WorldAllocator::AllocateMap(WorldMap &map, container::SmartBlock< container::Array <WorldTilePointer>, 4> &nearbyTileBuffers, int size)
 {
-    nearbyTiles.Initialize(size * size, nearbyTileMemory);
+    for(int i = 0; i < 4; ++i)
+    {
+        nearbyTileBuffers.Get(i)->Initialize(size * size, nearbyTileMemories[i]);
+    }
 
     auto height = size;
     map.tiles.Initialize(size, height, worldTileMemory);

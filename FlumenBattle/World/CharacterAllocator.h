@@ -3,7 +3,7 @@
 #include "FlumenCore/Container/PoolAllocator.h"
 #include "FlumenCore/Container/ArrayAllocator.h"
 
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 struct Weapon;
 struct Spell;
@@ -22,7 +22,7 @@ namespace world
         struct CharacterAction;
     }
 
-    class CharacterAllocator : public Singleton<CharacterAllocator>
+    class CharacterAllocator : public core::Singleton<CharacterAllocator>
     {
         container::PoolAllocator <Weapon> weaponAllocator;
 

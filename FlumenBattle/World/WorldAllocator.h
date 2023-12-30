@@ -3,8 +3,9 @@
 #include "FlumenCore/Container/Array.hpp"
 #include "FlumenCore/Container/Pool.hpp"
 #include "FlumenCore/Container/Grid.hpp"
+#include "FlumenCore/Container/SmartBlock.hpp"
 
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 namespace world
 {
@@ -24,7 +25,7 @@ namespace world
         class GroupDynamics;
     }
 
-    class WorldAllocator : public Singleton <WorldAllocator>
+    class WorldAllocator : public core::Singleton <WorldAllocator>
     {
         typedef WorldTile* WorldTilePointer;
 
@@ -36,13 +37,13 @@ namespace world
 
         bool hasPreallocatedMaximumMemory {false};
 
-        container::Array <WorldTilePointer>::Memory nearbyTileMemory;
+        container::Array <WorldTilePointer>::Memory nearbyTileMemories[4];
 
         container::Grid <WorldTile>::Memory worldTileMemory;
 
         container::Pool <Polity>::Memory polityMemory;
 
-        void AllocateMap(WorldMap &, container::Array <WorldTilePointer> &, int);
+        void AllocateMap(WorldMap &, container::SmartBlock< container::Array <WorldTilePointer>, 4> &, int);
 
         void AllocateSociety(int);
 

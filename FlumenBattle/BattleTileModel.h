@@ -2,13 +2,13 @@
 
 #include "FlumenEngine/Render/Model.hpp"
 
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 class Shader;
 
 class BattleScene;
 
-class BattleTileModel : public Model, public Singleton <BattleTileModel>
+class BattleTileModel : public Model, public core::Singleton <BattleTileModel>
 {
     friend class Singleton;
 

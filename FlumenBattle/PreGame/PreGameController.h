@@ -2,11 +2,11 @@
 
 #include "FlumenCore/Delegate/Delegate.hpp"
 
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 namespace pregame
 {
-    class PreGameController : public Singleton<PreGameController>
+    class PreGameController : public core::Singleton<PreGameController>
     {
         friend class PreGameState;
 

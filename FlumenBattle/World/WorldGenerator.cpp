@@ -318,7 +318,7 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
         }
     };
     
-    for(auto i = 0; i < data.Size / 10; ++i)
+    for(auto i = 0; i < 1/*data.Size / 10*/; ++i)
     {
         auto location = findSettleLocation();
         scene.FoundSettlement(location, nullptr, nullptr);

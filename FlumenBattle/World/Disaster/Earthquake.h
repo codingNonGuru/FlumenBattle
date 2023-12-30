@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 namespace world
 {
@@ -33,7 +33,7 @@ namespace world::disaster
         int GetDifficultyClass() const {return baseDifficultyClass + strength;}
     };
 
-    class EarthquakeGenerator : public Singleton <EarthquakeGenerator>
+    class EarthquakeGenerator : public core::Singleton <EarthquakeGenerator>
     {
         friend class world::WorldScene;
 

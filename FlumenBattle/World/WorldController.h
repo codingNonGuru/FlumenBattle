@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 namespace world
 {
@@ -11,7 +11,7 @@ namespace world
     
     class WorldTile;
 
-    class WorldController : public Singleton<WorldController>
+    class WorldController : public core::Singleton<WorldController>
     {
         WorldTile *hoveredTile;
 

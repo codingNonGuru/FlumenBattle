@@ -3,7 +3,7 @@
 #include "FlumenCore/Container/Pool.hpp"
 #include "FlumenCore/Container/PoolAllocator.h"
 
-#include "FlumenEngine/Core/Singleton.h"
+#include "FlumenCore/Singleton.h"
 
 #include "FlumenBattle/World/Types.h"
 
@@ -83,7 +83,7 @@ namespace world::settlement
         }
     };
 
-    class ConditionFactory : public Singleton <ConditionFactory>
+    class ConditionFactory : public core::Singleton <ConditionFactory>
     {
         static void OnApplyMalariaImmunity(Settlement &);
 
