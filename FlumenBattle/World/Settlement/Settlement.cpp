@@ -72,6 +72,11 @@ world::WorldTile * Settlement::FindColonySpot()
             if(tile->Biome->Type != world::WorldBiomes::STEPPE)
                 continue;
 
+            auto &interestMap = this->GetPolity()->GetInterestMap();
+            auto stakeholder = interestMap.GetTile(tile->HexCoordinates)->Owner;
+            if(stakeholder != nullptr && stakeholder != this)
+                continue;
+
             return tile;
         }
         return nullptr;

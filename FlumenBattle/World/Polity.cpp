@@ -2,6 +2,8 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/SettlementEvent.h"
 #include "FlumenBattle/World/Science/Technology.h"
+#include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/WorldTile.h"
 
 using namespace world;
 
@@ -10,16 +12,57 @@ void Polity::Initialize(settlement::Settlement *ruler)
     this->ruler = ruler;
 
     this->settlements.Initialize(64);
-    *this->settlements.Add() = ruler;
 
     malariaDeathCount = 0;
 
     technologyRoster = new science::TechnologyRoster();
+
+    auto &worldTiles = WorldScene::Get()->GetTiles();
+
+    interestMap.Initialize(worldTiles.GetWidth(), worldTiles.GetHeight());
+    for(int x = 0; x < worldTiles.GetWidth(); ++x)
+    {
+        for(int y = 0; y < worldTiles.GetHeight(); ++y)
+        {
+            auto interestTile = interestMap.Get(x, y);
+            *interestTile = {worldTiles.Get(x, y)->HexCoordinates, nullptr, 0};
+        }   
+    }
+
+    //*this->settlements.Add() = ruler;
+    ExtendRealm(ruler);
 }
 
 void Polity::ExtendRealm(settlement::Settlement *domain)
 {
     *this->settlements.Add() = domain;
+
+    auto &tiles = domain->GetLocation()->GetNearbyTiles(6);
+    for(auto &tile : tiles)
+    {
+        auto existingInterest = interestMap.GetTile(tile->HexCoordinates);
+        auto distance = domain->GetLocation()->GetDistanceTo(*tile);
+        if(existingInterest->Owner == nullptr)
+        {
+            existingInterest->Owner = domain;
+            existingInterest->Distance = distance;
+        }
+        else
+        {
+            if(existingInterest->Distance > distance)
+            {
+                existingInterest->Owner = domain;
+                existingInterest->Distance = distance;
+            }
+            else if(existingInterest->Distance == distance)
+            {
+                if(utility::RollDice(0.5f) == true)
+                {
+                    existingInterest->Owner = domain;
+                }
+            }
+        }
+    }
 }
 
 void Polity::DecideResearch()
