@@ -1,6 +1,7 @@
 #pragma once
 
 #include "FlumenCore/Conventions.hpp"
+#include "FlumenCore/Container/Block.hpp"
 
 namespace world
 {
@@ -42,6 +43,8 @@ namespace world
         WorldTile* GetEmptyTileAroundTile(WorldTile *, Integer);
 
         const Array<WorldTile*> & GetNearbyTiles(WorldTile*, Integer, int = 0);
+
+        const container::Block <WorldTile *, 6> GetNearbyTiles(WorldTile*);
 
         const Array<WorldTile*> & GetTileRing(WorldTile*, Integer);
     };

@@ -54,11 +54,13 @@ namespace world
     public:
         struct PathData
         {
-            bool IsVisited;
+            bool IsVisited = false;
 
             bool IsFreshlyVisited;
 
             bool IsFringe;
+
+            bool IsToBeVisited = false;
 
             Integer Passes[2];
         } PathData;
@@ -96,6 +98,8 @@ namespace world
         }
 
         const Array <WorldTile*> & GetNearbyTiles(Integer, int = 0);
+
+        const container::Block <WorldTile *, 6> GetNearbyTiles();
 
         const Array <WorldTile*> & GetTileRing(Integer);
 

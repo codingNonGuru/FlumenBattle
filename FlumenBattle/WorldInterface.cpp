@@ -57,7 +57,7 @@ WorldInterface::WorldInterface()
     for(int i = 0; i < 1024; i++)
     {
         auto label = ElementFactory::BuildElement<PathLabel>(
-            {Size(50, 50), DrawOrder(3), {Position2(0.0f, 0.0f), canvas}, {"Sprite"}, Opacity(0.3f)}
+            {Size(30, 30), DrawOrder(3), {Position2(0.0f, 0.0f), canvas}, {"Sprite"}, Opacity(0.2f)}
         );
         label->Disable();
         *pathLabels.Add() = label;
@@ -68,13 +68,13 @@ void WorldInterface::Initialize()
 {
     auto &settlements = WorldScene::Get()->GetSettlements();
 
-    auto settlementLabel = settlementLabels.GetStart();
+    /*auto settlementLabel = settlementLabels.GetStart();
     for(auto &settlement : settlements)
     {
         (*settlementLabel)->SetSettlement(&settlement);
         (*settlementLabel)->Enable();
         settlementLabel++;
-    }
+    }*/
 
     *WorldScene::Get()->OnPlayerEncounterInitiated += {this, &WorldInterface::HandlePlayerEncounter};
 
@@ -132,14 +132,14 @@ void WorldInterface::Update()
     }
     else
     {
-        for(auto labelIterator = settlementLabels.GetStart(); labelIterator != settlementLabels.GetEnd(); labelIterator++)
+        /*for(auto labelIterator = settlementLabels.GetStart(); labelIterator != settlementLabels.GetEnd(); labelIterator++)
         {
             auto label = *labelIterator;
             if(label->HasSettlement() == false)
                 continue;
 
             label->Enable();
-        }
+        }*/
     }
 
     for(auto &label : pathLabels)
@@ -147,17 +147,17 @@ void WorldInterface::Update()
         label->Disable();
     }
 
-    auto &tiles = WorldScene::Get()->GetWorldMap()->tiles;
+    /*auto &tiles = WorldScene::Get()->GetWorldMap()->tiles;
 
     int index = 0;
     for(auto tile = tiles.GetStart(); tile != tiles.GetEnd(); ++tile)
     {
-        if(tile->GetPathData() != -1)
+        if(tile->PathData.IsVisited == true)
         {
             auto label = *pathLabels.Get(index);
             label->SetTile(tile);
             label->Enable();
             index++;
         }
-    }
+    }*/
 }

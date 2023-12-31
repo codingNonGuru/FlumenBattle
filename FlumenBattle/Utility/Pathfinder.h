@@ -35,11 +35,20 @@ namespace utility
 
             TileData() {}
 
+            TileData(TileType *tile) : Tile(tile) {}
+
             TileData(TileType *tile, Integer distance) : Tile(tile), Distance(distance), IsFringe(false) {}
         };
 
+        struct TraversalData
+        {
+            bool IsPathValid;
+
+            Integer Complexity;
+        };
+
         typedef container::Graph <TileData, 6> GraphType;
-        typedef container::Graph <TileType *, 6> ImprovedGraphType;
+        typedef container::Graph <TileData, 6> ImprovedGraphType;
 
         Array <TileData> visitedTiles;
 
@@ -49,9 +58,15 @@ namespace utility
 
         //Array <TileType *> 
 
-        GraphType paths;
+        //GraphType paths;
 
-        ImprovedGraphType improvedPaths;
+        ImprovedGraphType firstPaths;
+
+        ImprovedGraphType secondPaths;
+
+        Array <TileData> firstOptimalPath;
+
+        Array <TileData> secondOptimalPath;
 
     public:
         Pathfinder()
@@ -71,9 +86,100 @@ namespace utility
                 return arrays;
             } ();
 
-            paths = GraphType(1024);
+            //paths = GraphType(1024);
 
-            improvedPaths = ImprovedGraphType(1024);
+            firstPaths = ImprovedGraphType(65536);
+            secondPaths = ImprovedGraphType(65536);
+
+            firstOptimalPath = Array <TileData>(1024);
+            secondOptimalPath = Array <TileData>(1024);
+        }
+
+        Array <TileData> &FindPathDjikstra(TileType *startTile, TileType *endTile, Integer range = 12)
+        {
+            auto getPenalty = [] (TileType *tile)
+            {
+                if(tile->GetTravelPenalty() > 0)
+                {
+                    return 3;
+                }
+
+                return 1;
+            };
+
+            firstPaths.Clear();
+
+            //auto &worldTiles = world::WorldScene::Get()->GetTiles();
+            auto &tiles = startTile->GetNearbyTiles(range);
+            //for(auto tile = worldTiles.GetStart(); tile != worldTiles.GetEnd(); ++tile)
+            for(auto &tile : tiles)
+            {
+                tile->PathData.IsVisited = false;
+                tile->PathData.IsToBeVisited = true;
+            }
+
+            startTile->PathData.IsVisited = true;
+            startTile->PathData.IsToBeVisited = true;
+
+            typename ImprovedGraphType::Node *championPath = firstPaths.StartGraph({startTile, 1});
+
+            while(true)
+            {
+                auto bestComplexity = INT_MAX;
+                typename ImprovedGraphType::Node *bestNode = nullptr;
+                TileType *bestTile = nullptr;
+                for(auto &tile : tiles)
+                {
+                    if(tile->PathData.IsVisited == true)
+                    {
+                        auto &nearbyTiles = tile->GetNearbyTiles();
+                        for(auto nearbyTile = nearbyTiles.GetStart(); nearbyTile != nearbyTiles.GetEnd(); ++nearbyTile)
+                        {
+                            if((*nearbyTile)->PathData.IsVisited == false && (*nearbyTile)->PathData.IsToBeVisited == true)
+                            {
+                                auto &nodes = firstPaths.GetNodes();
+                                for(auto &node : nodes)
+                                {
+                                    if(node.Content.Tile->GetDistanceTo(**nearbyTile) == 1)
+                                    {
+                                        auto penalty = getPenalty(*nearbyTile) + getPenalty(node.Content.Tile);
+                                        if(node.Content.Distance + penalty < bestComplexity)
+                                        {
+                                            bestComplexity = node.Content.Distance + penalty;
+                                            bestNode = &node;
+                                            bestTile = *nearbyTile;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //if(bestComplexity <= championPath->Content.Distance)
+                //{
+                auto newNode = bestNode->AddNode({bestTile, bestComplexity});
+                championPath = newNode;
+                bestTile->PathData.IsVisited = true;
+                //}
+
+                if(championPath->Content.Tile == endTile)
+                {
+                    break;
+                }
+            }
+
+            visitedTiles.Reset();
+            while(true)
+            {
+                *visitedTiles.Add() = championPath->Content.Tile;
+
+                championPath = championPath->GetPrevious();
+                if(championPath == nullptr)
+                {
+                    return visitedTiles;
+                }
+            }
         }
 
         void PassThroughTiles(TileType *centerTile, Integer range, Integer passIndex)
@@ -148,78 +254,174 @@ namespace utility
             }*/
         }
 
-        const Array <TileData> & FindPathImproved(TileType *startTile, TileType *endTile, Integer range)
+        TraversalData GetLeastComplexPath(TileType *startTile, TileType *endTile, ImprovedGraphType &paths, Array <TileData> &optimalPath)
         {
             auto getPenalty = [] (TileType *tile)
             {
                 if(tile->GetTravelPenalty() > 0)
                 {
-                    return 5;
+                    return 3;
                 }
 
                 return 1;
             };
 
-            PassThroughTiles(startTile, 10, 0);
-            //PassThroughTiles(endTile, 10, 1);
-
-            auto &tiles = startTile->GetNearbyTiles(range);
-            for(auto &tile : tiles)
-            {
-                //tile->PathData.Passes[0] = tile->PathData.Passes[0] + tile->PathData.Passes[1];
-            }
-
-            //auto &endTiles = endTile->GetNearbyTiles(range);
-            improvedPaths.Clear();
-            auto firstNode = improvedPaths.StartGraph(endTile);
+            paths.Clear();
+            auto firstNode = paths.StartGraph({endTile});
+            endTile->PathData.IsFreshlyVisited = true;
 
             TraverseTilesImproved(startTile, endTile, firstNode);
 
-            auto &endNodes = improvedPaths.GetEndNodes();
+            auto &endNodes = paths.GetEndNodes();
+            std::cout<<"possible path count "<<endNodes.GetSize()<<"\n";
+            std::cout<<"total node count "<<paths.GetSize()<<"\n";
+            for(auto &node : paths.GetNodes())
+            {
+                //std::cout<<node.Content.Tile->PathData.Passes[0]<<" ";
+            }
+            std::cout<<"\n";
+            std::cout<<"start tile weight "<<startTile->PathData.Passes[0]<<"\n";
+            std::cout<<"end tile weight "<<endTile->PathData.Passes[0]<<"\n";
+
             for(auto &node : endNodes)
             {
+                if(node->Content.Tile != startTile)
+                    continue;
+
                 auto complexity = 0;
                 auto currentNode = node;
                 while(true)
                 {
-                    complexity += getPenalty(currentNode->Content);
+                    //std::cout<<currentNode->Content.Tile->PathData.Passes[0]<<" ";
+                    complexity += getPenalty(currentNode->Content.Tile);
 
                     currentNode = currentNode->GetPrevious();
                     if(currentNode == nullptr)
                         break;
                 }
 
-                node->Content->PathData.Passes[1] = complexity;
-                std::cout<<"path complexity "<<complexity<<"\n";
+                node->Content.Complexity = complexity;
+                //std::cout<<"path complexity "<<complexity<<"\n";
+            }
+
+            for(auto &node : endNodes)
+            {
+                auto currentNode = node;
+                while(true)
+                {
+                    std::cout<<currentNode->Content.Tile->PathData.Passes[0]<<" ";
+
+                    currentNode = currentNode->GetPrevious();
+                    if(currentNode == nullptr)
+                        break;
+                }
+
+                //std::cout<<"path complexity "<<node->Content.Complexity<<"\n";
             }
 
             auto leastComplexity = INT_MAX;
-            typename ImprovedGraphType::Node *chosenNode;
+            typename ImprovedGraphType::Node *chosenNode = nullptr;
             for(auto &node : endNodes)
             {
-                if(node->Content->PathData.Passes[1] < leastComplexity)
+                if(node->Content.Tile != startTile)
+                    continue;
+
+                if(node->Content.Complexity < leastComplexity)
                 {
-                    leastComplexity = node->Content->PathData.Passes[1];
+                    leastComplexity = node->Content.Complexity;
                     chosenNode = node;
                 }
             }
-            std::cout<<"chosen complexity "<<chosenNode->Content->PathData.Passes[1]<<"\n";
 
-            visitedTiles.Reset();
-            while(true)
+            if(chosenNode != nullptr)
             {
-                *visitedTiles.Add() = {chosenNode->Content, 0};
-
-                if(chosenNode->GetPrevious() == nullptr)
-                {
-                    break;
-                }
-
-                chosenNode = chosenNode->GetPrevious();
+                std::cout<<"chosen complexity "<<chosenNode->Content.Complexity<<"\n\n";
             }
-            std::cout<<"path Length "<<visitedTiles.GetSize()<<"\n\n";
+            else
+            {
+                std::cout<<"no optimal path has been found\n\n";
+            }
 
-            return visitedTiles;
+            optimalPath.Reset();
+
+            if(chosenNode != nullptr)
+            {
+                while(true)
+                {
+                    *optimalPath.Add() = {chosenNode->Content.Tile, 0};
+
+                    if(chosenNode->GetPrevious() == nullptr)
+                    {
+                        break;
+                    }
+
+                    chosenNode = chosenNode->GetPrevious();
+                }
+                std::cout<<"path Length "<<optimalPath.GetSize()<<"\n\n";
+
+                return {true, chosenNode->Content.Complexity};
+            }
+            else
+            {
+                return {false, INT_MAX};
+            }
+
+            //return visitedTiles;
+        }
+
+        const Array <TileData> & FindPathImproved(TileType *startTile, TileType *endTile, Integer range)
+        {
+            auto &worldTiles = world::WorldScene::Get()->GetTiles();
+            for(auto tile = worldTiles.GetStart(); tile != worldTiles.GetEnd(); ++tile)
+            {
+                tile->PathData.IsVisited = false;
+            }
+
+            PassThroughTiles(startTile, range, 0);
+            PassThroughTiles(endTile, range, 1);
+
+            auto &tiles = startTile->GetNearbyTiles(range);
+            for(auto &tile : tiles)
+            {
+                tile->PathData.Passes[0] = tile->PathData.Passes[0] + tile->PathData.Passes[1];
+                tile->PathData.IsFreshlyVisited = false;
+            }
+
+            //return;
+
+            //auto &endTiles = endTile->GetNearbyTiles(range);
+            auto firstData = GetLeastComplexPath(startTile, endTile, firstPaths, firstOptimalPath);
+            auto secondData = GetLeastComplexPath(endTile, startTile, secondPaths, secondOptimalPath);
+            //GetLeastComplexPath(endTile, startTile, secondPaths);
+
+            if(firstData.IsPathValid && secondData.IsPathValid)
+            {
+                if(firstData.Complexity > secondData.Complexity)
+                {
+                    return secondOptimalPath;
+                }
+                else
+                {
+                    return firstOptimalPath;
+                }
+            }
+            else
+            {
+                if(firstData.IsPathValid)
+                {
+                    return firstOptimalPath;
+                }
+                else if(secondData.IsPathValid)
+                {
+                    return secondOptimalPath;
+                }
+                else
+                {
+                    firstOptimalPath.Reset();
+                    return firstOptimalPath;
+                }
+            }
+
         }
 
         void TraverseTilesImproved(TileType *startTile, TileType *endTile, ImprovedGraphType::Node *node)
@@ -230,30 +432,59 @@ namespace utility
                 //std::cout<<"node "<<theNode.GetLinks().GetSize()<<"\n";
             }*/
 
-            static container::SmartBlock <TileType *, 6> neighbours;
-            static container::SmartBlock <TileType *, 6> contenders;
+            container::SmartBlock <TileType *, 6> neighbours;
+            container::SmartBlock <TileType *, 6> contenders;
             neighbours.Clear();
             contenders.Clear();
 
             auto score = INT_MAX;
-            auto &tiles = node->Content->GetNearbyTiles(1);
-            for(auto &tile : tiles)
+            auto nextLowestScore = INT_MAX;
+            auto &tiles = node->Content.Tile->GetNearbyTiles();
+
+            bool hasFoundDestination = false;
+            for(auto tile = tiles.GetStart(); tile != tiles.GetEnd(); ++tile)
             {
-                if(tile->PathData.IsVisited == true && tile != node->Content)
+                if(*tile == startTile)
                 {
-                    *neighbours.Add() = tile;
-                    if(tile->PathData.Passes[0] <= score)
+                    hasFoundDestination = true;
+                    break;
+                }
+
+                if((*tile)->PathData.IsVisited == true && *tile != node->Content.Tile)
+                {
+                    //std::cout<<(*tile)->PathData.Passes[0]<<" ";
+
+                    *neighbours.Add() = *tile;
+                    if(*tile == endTile)
+                        continue;
+
+                    if((*tile)->PathData.Passes[0] < score)
                     {
-                        score = tile->PathData.Passes[0];
+                        nextLowestScore = score;
+
+                        score = (*tile)->PathData.Passes[0];
+                        
+                    }
+                    else if((*tile)->PathData.Passes[0] < nextLowestScore && (*tile)->PathData.Passes[0] > score)
+                    {
+                        nextLowestScore = (*tile)->PathData.Passes[0];
                     }
                 }
             }
+            //std::cout<<"       "<<score<<" "<<nextLowestScore<<"\n";
 
-            for(auto tile = neighbours.GetFirst(); tile != neighbours.GetLast(); ++tile)
+            if(hasFoundDestination == true)
             {
-                if((*tile)->PathData.Passes[0] == score)
+                *contenders.Add() = startTile;
+            }
+            else
+            {
+                for(auto tile = neighbours.GetFirst(); tile != neighbours.GetLast(); ++tile)
                 {
-                    *contenders.Add() = *tile;
+                    if((*tile)->PathData.Passes[0] == score || (*tile)->PathData.Passes[0] == nextLowestScore)
+                    {
+                        *contenders.Add() = *tile;
+                    }
                 }
             }
 
@@ -264,10 +495,29 @@ namespace utility
                 if(*tile == startTile)
                     continue;
 
+                auto currentNode = newNode;
+                bool hasFoundCircularity = false;
+                while(true)
+                {
+                    currentNode = currentNode->GetPrevious();
+                    if(currentNode == nullptr)
+                    {
+                        break;
+                    }
+                    else if(currentNode->Content.Tile == newNode->Content.Tile)
+                    {
+                        hasFoundCircularity = true;
+                        break;
+                    }
+                }
+
+                if(hasFoundCircularity == true)
+                    continue;
+
                 TraverseTilesImproved(startTile, endTile, newNode);
             }
         };
-
+    /*
         const Array <TileData> & FindPath(TileType *startTile, TileType *endTile, Integer range)
         {
             auto getPenalty = [] (TileType *tile)
@@ -487,6 +737,7 @@ namespace utility
                 TraverseTiles(startTile, endTile, newNode);
             }
         };
+        */
     };
 
     //template <class TileType> requires CanBeTravelled <TileType>

@@ -11,7 +11,7 @@ void Polity::Initialize(settlement::Settlement *ruler)
 {
     this->ruler = ruler;
 
-    this->settlements.Initialize(64);
+    this->settlements.Initialize(256);
 
     malariaDeathCount = 0;
 

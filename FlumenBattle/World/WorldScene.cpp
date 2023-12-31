@@ -225,14 +225,25 @@ namespace world
 
         if(mother != nullptr)
         {
-            auto path = settlement::SettlementAllocator::Get()->AllocatePath(settlement, mother);
-            *path = {settlement, mother};
+            /*auto path = settlement::SettlementAllocator::Get()->AllocatePath(settlement, mother);
+            *path = {settlement, mother};*/
 
-            auto &tileDatas = utility::Pathfinder <WorldTile>::Get()->FindPathImproved(mother->GetLocation(), location, 10);
-            for(auto &data : tileDatas)
+            //auto &tileDatas = utility::Pathfinder <WorldTile>::Get()->FindPathImproved(mother->GetLocation(), location, 9);
+            auto &tileDatas = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(mother->GetLocation(), location);
+            if(tileDatas.GetSize() > 0)
+            {
+                auto path = settlement::SettlementAllocator::Get()->AllocatePath(settlement, mother);
+                *path = {settlement, mother};
+
+                for(auto &data : tileDatas)
+                {
+                    path->AddTile(data.Tile);
+                }
+            }
+            /*for(auto &data : tileDatas)
             {
                 path->AddTile(data.Tile);
-            }
+            }*/
 
             /*path->AddTile(location);
 

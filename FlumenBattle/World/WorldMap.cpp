@@ -88,6 +88,33 @@ const Array<WorldTile*> & WorldMap::GetNearbyTiles(WorldTile* tile, Integer rang
     return *nearbyTiles;
 }
 
+const container::Block <WorldTile *, 6> WorldMap::GetNearbyTiles(WorldTile* tile)
+{
+    auto nearbyTiles = container::Block <WorldTile *, 6>();
+
+    int i = 0;
+    for(Integer x = -1; x <= 1; ++x)
+    {
+        for(Integer y = -1; y <= 1; ++y)
+        {
+            for(Integer z = -1; z <= 1; ++z)
+            {
+                if(x + y + z == 0)
+                {
+                    auto nearbyTile = GetTile(tile->HexCoordinates + Integer3(x, y, z));
+                    if(nearbyTile != nullptr && nearbyTile != tile)
+                    {
+                        *nearbyTiles[i] = nearbyTile;
+                        i++;
+                    }
+                }
+            }
+        }
+    }
+
+    return nearbyTiles;
+}
+
 WorldTile* WorldMap::GetTile(Integer3 position)
 {
     return tiles.Get(position.x + position.z / 2, position.z);

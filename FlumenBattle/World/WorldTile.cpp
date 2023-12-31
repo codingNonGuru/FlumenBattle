@@ -65,6 +65,11 @@ const Array <WorldTile*> & WorldTile::GetNearbyTiles(Integer range, int bufferIn
     return map->GetNearbyTiles(this, range, bufferIndex);
 }
 
+const container::Block <WorldTile *, 6> WorldTile::GetNearbyTiles()
+{
+    return map->GetNearbyTiles(this);
+}
+
 const Array <WorldTile*> & WorldTile::GetTileRing(Integer range)
 {
     return map->GetTileRing(this, range);

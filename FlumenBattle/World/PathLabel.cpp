@@ -19,7 +19,7 @@ void PathLabel::HandleConfigure()
     //auto height = -float(size_.y) / 2.0f + 20.0f;
     label = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, 0.0f), this}},
-        {{"JSLAncient", "Large"}, color, "1"}
+        {{"JSLAncient", "Medium"}, color, "1"}
     );
     label->SetAlignment(Text::Alignments::CENTER);
     label->Enable();
@@ -29,7 +29,7 @@ void PathLabel::HandleUpdate()
 {
     //Configure(Size(100, 100), drawOrder_, {Position2()});
 
-    auto weight = tile->GetPathData();
+    auto weight = tile->PathData.Passes[0];
 
     Phrase text; 
     text << weight;

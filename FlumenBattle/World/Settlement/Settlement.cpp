@@ -344,7 +344,7 @@ Integer Settlement::GetIndustrialProduction() const
         }
     }
 
-    return production;
+    return 10;//production;
 }
 
 Integer Settlement::GetScienceProduction() const
