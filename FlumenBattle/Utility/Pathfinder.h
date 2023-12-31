@@ -101,7 +101,11 @@ namespace utility
             auto getPenalty = [] (TileType *tile)
             {
                 auto penalties = tile->GetTravelPenalty();
-                if(penalties.Penalties.Find(TravelPenaltyTypes::MOUNTAINS) != nullptr)
+                if(penalties.Penalties.Find(TravelPenaltyTypes::SEA) != nullptr)
+                {
+                    return 10;
+                }
+                else if(penalties.Penalties.Find(TravelPenaltyTypes::MOUNTAINS) != nullptr)
                 {
                     return 5;
                 }

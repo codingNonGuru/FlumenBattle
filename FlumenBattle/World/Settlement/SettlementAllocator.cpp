@@ -12,7 +12,7 @@
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldGenerator.h"
 
-#define MAXIMUM_SETTLEMENT_COUNT 128
+#define MAXIMUM_SETTLEMENT_COUNT 256
 
 #define MAXIMUM_TILES_PER_SETTLEMENT 19
 
@@ -24,7 +24,7 @@
 
 #define MAXIMUM_EVENTS_PER_SETTLEMENT 32
 
-#define MAXIMUM_PATHS_PER_SETTLEMENT 6
+#define MAXIMUM_PATHS_PER_SETTLEMENT 8
 
 #define AVERAGE_SEGMENTS_PER_PATH 4
 

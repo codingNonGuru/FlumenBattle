@@ -12,6 +12,7 @@
 #include "FlumenBattle/World/Settlement/Condition.h"
 #include "FlumenBattle/World/Settlement/Building.h"
 #include "FlumenBattle/World/Group/GroupDynamics.h"
+#include "FlumenBattle/World/Settlement/Path.h"
 
 using namespace world::settlement;
 
@@ -56,6 +57,23 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
     {
         tile.Tile->AssertOwnership(this);
     }
+}
+
+void Settlement::AddPath(Path *path) 
+{
+    *paths.Add() = path;
+}
+
+Path *Settlement::GetPathTo(Settlement *settlement) 
+{
+    for(auto &pathIterator : paths)
+    {
+        Path &path = *pathIterator;
+        if(path == Path(this, settlement))
+            return &path;
+    }
+
+    return nullptr;
 }
 
 world::WorldTile * Settlement::FindColonySpot()

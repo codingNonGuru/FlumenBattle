@@ -225,9 +225,6 @@ namespace world
 
         if(mother != nullptr)
         {
-            /*auto path = settlement::SettlementAllocator::Get()->AllocatePath(settlement, mother);
-            *path = {settlement, mother};*/
-
             //auto &tileDatas = utility::Pathfinder <WorldTile>::Get()->FindPathImproved(mother->GetLocation(), location, 9);
             auto &tileDatas = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(mother->GetLocation(), location);
             if(tileDatas.GetSize() > 0)
@@ -239,56 +236,10 @@ namespace world
                 {
                     path->AddTile(data.Tile);
                 }
+
+                mother->AddPath(path);
+                settlement->AddPath(path);
             }
-            /*for(auto &data : tileDatas)
-            {
-                path->AddTile(data.Tile);
-            }*/
-
-            /*path->AddTile(location);
-
-            auto &tileDatas = utility::Pathfinder <WorldTile>::Get()->FindPath(mother->GetLocation(), location, 10);
-
-            auto distance = [&] () -> int
-            {
-                for(auto tileIterator = tileDatas.GetStart(); tileIterator != tileDatas.GetEnd(); ++tileIterator)
-                {
-                    if(tileIterator->Tile == location)
-                    {
-                        return tileIterator->Distance;
-                    }
-                }
-            } ();
-
-            auto currentLocation = location;
-            auto heuristic = distance;
-            while(true)
-            {
-                auto leastDistance = distance;
-                WorldTile *closestNeighbour = nullptr;
-                for(auto tileIterator = tileDatas.GetStart(); tileIterator != tileDatas.GetEnd(); ++tileIterator)
-                {
-                    auto tile = tileIterator->Tile;
-
-                    if(tile->GetDistanceTo(*currentLocation) == 1)
-                    {
-                        if(tileIterator->Distance < leastDistance)
-                        {
-                            leastDistance = tileIterator->Distance;
-                            closestNeighbour = tile;
-                        }
-                    }
-                }
-
-                path->AddTile(closestNeighbour);
-                currentLocation = closestNeighbour;
-
-                if(currentLocation == mother->GetLocation())
-                {
-                    //path->AddTile(mother->GetLocation());
-                    break;
-                }
-            }*/
         }
 
         settlement->SetPolity(polity);

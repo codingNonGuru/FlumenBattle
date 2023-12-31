@@ -148,5 +148,9 @@ namespace world::settlement
         void ProcessEarthquake(const disaster::Earthquake &);
 
         void Update();
+
+        void AddPath(Path *path);
+
+        Path *GetPathTo(Settlement *settlement);
     };
 }

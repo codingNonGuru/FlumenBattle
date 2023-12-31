@@ -52,6 +52,11 @@ namespace world::settlement
 
         Path(Settlement *to, Settlement *from) : To(to), From(from) {}
 
+        bool operator== (const Path &path) const
+        {
+            return ((To == path.To && From == path.From) || (To == path.From && From == path.To));
+        }
+
         void AddTile(WorldTile *tile);
     };
 }
