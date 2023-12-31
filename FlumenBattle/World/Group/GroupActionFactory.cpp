@@ -173,8 +173,8 @@ namespace world::group
     {
         auto durationModifier = 0;
 
-        durationModifier += group.tile->GetTravelPenalty();
-        durationModifier += group.travelActionData.Destination->GetTravelPenalty();
+        durationModifier += group.tile->GetTravelPenalty().Value;
+        durationModifier += group.travelActionData.Destination->GetTravelPenalty().Value;
 
         return group.action->BaseDuration + durationModifier * 6 * GroupAction::ACTION_PROGRESS_RATE;
     }
@@ -291,8 +291,8 @@ namespace world::group
 
             auto difficultyClass = group.travelActionData.IsLost ? SURVIVAL_DC_WHEN_LOST : SURVIVAL_DC_WHEN_NOT_LOST;
 
-            difficultyClass += group.travelActionData.Source->GetTravelPenalty();
-            difficultyClass += group.travelActionData.Destination->GetTravelPenalty();
+            difficultyClass += group.travelActionData.Source->GetTravelPenalty().Value;
+            difficultyClass += group.travelActionData.Destination->GetTravelPenalty().Value;
 
             int modifier = -100;
             for(auto &character : group.characters)

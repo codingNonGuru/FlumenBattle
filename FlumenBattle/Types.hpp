@@ -83,3 +83,18 @@ enum class AbilityTypes
 {
     STRENGTH, DEXTERITY, CONSTITUTION, INTELLIGENCE, WISDOM, CHARISMA
 };
+
+enum class TravelPenaltyTypes
+{
+	MOUNTAINS,
+	WOODS,
+	SEA
+};
+
+struct TravelPenalty
+{
+	Integer Value;
+
+	container::Block <TravelPenaltyTypes, 4> Penalties;
+};
+

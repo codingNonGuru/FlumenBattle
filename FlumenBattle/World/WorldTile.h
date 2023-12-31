@@ -2,6 +2,7 @@
 
 #include "FlumenCore/Conventions.hpp"
 
+#include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/World/Types.h"
 
 namespace world
@@ -119,7 +120,9 @@ namespace world
 
         Float4 GetShade() const;
 
-        Integer GetTravelPenalty() const;
+        //Integer GetTravelPenalty() const;
+
+        TravelPenalty GetTravelPenalty() const;
 
         void Settle(settlement::Settlement *);
 

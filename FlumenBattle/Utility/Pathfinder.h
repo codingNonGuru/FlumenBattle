@@ -7,6 +7,7 @@
 #include "FlumenCore/Container/Graph.h"
 
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/Types.hpp"
 
 namespace utility
 {
@@ -17,7 +18,7 @@ namespace utility
 
         { a.IsBlocked() };
 
-        { a.GetTravelPenalty() };
+        { a.GetTravelPenalty() } -> std::same_as <TravelPenalty>;
 	};
 
     template <class TileType> requires CanBeTravelled <TileType>
@@ -99,12 +100,19 @@ namespace utility
         {
             auto getPenalty = [] (TileType *tile)
             {
-                if(tile->GetTravelPenalty() > 0)
+                auto penalties = tile->GetTravelPenalty();
+                if(penalties.Penalties.Find(TravelPenaltyTypes::MOUNTAINS) != nullptr)
+                {
+                    return 5;
+                }
+                else if(penalties.Penalties.Find(TravelPenaltyTypes::WOODS) != nullptr)
                 {
                     return 3;
                 }
-
-                return 1;
+                else
+                {
+                    return 1;
+                }
             };
 
             firstPaths.Clear();

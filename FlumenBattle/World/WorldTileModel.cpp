@@ -216,8 +216,8 @@ void WorldTileModel::Render()
 
         auto size = [&settlement]
         {
-            auto factor = pow((float)settlement.GetPopulation(), 0.3f);
-            return factor * 0.25f;
+            auto factor = pow((float)settlement.GetPopulation(), 0.5f);
+            return factor * 0.2f;
         } ();
         shader->SetConstant(WORLD_TILE_SIZE * size, "hexSize");
 

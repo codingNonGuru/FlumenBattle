@@ -91,9 +91,33 @@ Float4 WorldTile::GetShade() const
     return Shade;
 }
 
-Integer WorldTile::GetTravelPenalty() const
+/*Integer WorldTile::GetTravelPenalty() const
 {
     return Biome->TravelPenalty + Relief->TravelPenalty;
+}*/
+
+TravelPenalty WorldTile::GetTravelPenalty() const
+{
+    container::Block <TravelPenaltyTypes, 4> penalties;
+
+    int i = 0;
+
+    if(Biome->Type == WorldBiomes::WOODS)
+    {
+        *penalties[i++] = TravelPenaltyTypes::WOODS;
+    }
+
+    if(Relief->Type == WorldReliefs::MOUNTAINS)
+    {
+        *penalties[i++] = TravelPenaltyTypes::MOUNTAINS;
+    }
+
+    if(Type == WorldTiles::SEA)
+    {
+        *penalties[i++] = TravelPenaltyTypes::SEA;
+    }
+
+    return {Biome->TravelPenalty + Relief->TravelPenalty, penalties};
 }
 
 bool WorldTile::HasBiome(WorldBiomes biome) const 
