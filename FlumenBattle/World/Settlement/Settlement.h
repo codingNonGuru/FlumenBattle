@@ -74,6 +74,14 @@ namespace world::settlement
 
         group::GroupDynamics *groupDynamics;
 
+        Integer foodStorage;
+
+        Integer foodProduction;
+
+        Integer foodBalance;
+
+        FoodSecurity foodSecurity;
+
         Integer growth;
 
         Integer cultureGrowth;
@@ -117,9 +125,11 @@ namespace world::settlement
 
         Pool <SettlementTile> & GetTiles();
 
-        FoodSecurity GetFoodSecurity() const;
+        void UpdateFoodSituation();
 
         Integer GetFoodProduction() const;
+
+        Integer GetFoodStorage() const {return foodStorage;}
 
         Integer GetIndustrialProduction() const;
 

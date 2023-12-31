@@ -45,6 +45,8 @@ namespace world
 
         void HandleBattleEnded();
 
+        void HandleSettlementFounded();
+
     public:
         WorldInterface();
 

@@ -45,6 +45,8 @@ namespace world
         OnPlayerBattleStarted = new Delegate();
 
         OnPlayerBattleEnded = new Delegate();
+
+        OnSettlementFounded = new Delegate();
     }
 
     void WorldScene::Initialize()
@@ -210,6 +212,8 @@ namespace world
         this->StartTime(1);
     }
 
+    static settlement::Settlement *foundedSettlement = nullptr;
+
     settlement::Settlement * WorldScene::FoundSettlement(WorldTile *location, Polity *polity, settlement::Settlement *mother)
     {
         auto settlement = settlement::SettlementFactory::Create({"Safehaven", location});
@@ -225,7 +229,6 @@ namespace world
 
         if(mother != nullptr)
         {
-            //auto &tileDatas = utility::Pathfinder <WorldTile>::Get()->FindPathImproved(mother->GetLocation(), location, 9);
             auto &tileDatas = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(mother->GetLocation(), location);
             if(tileDatas.GetSize() > 0)
             {
@@ -243,6 +246,14 @@ namespace world
         }
 
         settlement->SetPolity(polity);
+
+        foundedSettlement = settlement;
+        OnSettlementFounded->Invoke();
+    }
+
+    const settlement::Settlement *WorldScene::GetFoundedSettlement() const 
+    {
+        return foundedSettlement;
     }
 
     void WorldScene::Render()

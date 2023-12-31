@@ -14,9 +14,15 @@ namespace world::settlement
 
         Text * populationLabel;
 
+        Element * populationBackdrop;
+
+        Element * hoverBackdrop;
+
         Text * growthLabel;
 
         Text * foodLabel;
+
+        Text * storageLabel;
 
         Text * industryLabel;
 
@@ -36,5 +42,7 @@ namespace world::settlement
         void SetSettlement(Settlement *);
 
         bool HasSettlement() const {return settlement != nullptr;}
+
+        bool IsSettlementHovered();
     };
 }

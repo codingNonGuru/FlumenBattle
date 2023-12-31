@@ -32,6 +32,8 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
 
     this->growth = 0;
 
+    this->foodStorage = 0;
+
     this->cultureGrowth = 0;
 
     *this->currentProduction = SettlementProductionFactory::Get()->Create(SettlementProductionOptions::NONE);
@@ -315,35 +317,49 @@ Integer Settlement::GetFoodProduction() const
     return production;
 }
 
-FoodSecurity Settlement::GetFoodSecurity() const
+void Settlement::UpdateFoodSituation()
 {
-    auto production = GetFoodProduction();
+    foodProduction = GetFoodProduction();
 
     auto consumption = population;
 
-    if(production >= consumption * 3)
+    int availableFood = foodProduction + foodStorage;
+
+    foodSecurity = FoodSecurity();
+    if(availableFood >= consumption * 3)
     {
-        return FoodSecurity::CORNUCOPIA;
+        foodSecurity = FoodSecurity::CORNUCOPIA;
     }
-    else if(production >= consumption * 2)
+    else if(availableFood >= consumption * 2)
     {
-        return FoodSecurity::ABUNDANT;
+        foodSecurity = FoodSecurity::ABUNDANT;
     }
-    else if(production > consumption)
+    else if(availableFood > consumption)
     {
-        return FoodSecurity::ENOUGH;
+        foodSecurity = FoodSecurity::ENOUGH;
     }
-    else if(production == consumption)
+    else if(availableFood == consumption)
     {
-        return FoodSecurity::BARELY_AVAILABLE;
+        foodSecurity = FoodSecurity::BARELY_AVAILABLE;
     }
-    else if(production * 2 > consumption)
+    else if(availableFood * 2 > consumption)
     {
-        return FoodSecurity::LACKING;
+        foodSecurity = FoodSecurity::LACKING;
     }
     else
     {
-        return FoodSecurity::SORELY_LACKING;
+        foodSecurity = FoodSecurity::SORELY_LACKING;
+    }
+
+    foodStorage += foodProduction - consumption;
+
+    if(foodStorage > 200)
+    {
+        foodStorage = 200;
+    }
+    else if(foodStorage < 0)
+    {
+        foodStorage = 0;
     }
 }
 
@@ -438,7 +454,7 @@ void Settlement::Update()
 
     updateModifiers();
 
-    auto foodSecurity = GetFoodSecurity();
+    UpdateFoodSituation();
 
     switch(foodSecurity)
     {

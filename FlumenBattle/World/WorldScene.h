@@ -92,6 +92,8 @@ namespace world
 
         Delegate *OnPlayerBattleEnded;
 
+        Delegate *OnSettlementFounded;
+
         static WorldScene * Get() 
         {
             static WorldScene scene;
@@ -114,6 +116,8 @@ namespace world
         Pool <group::Group> & GetGroups() {return *groups;}
 
         const WorldTime & GetTime() const {return time;}
+
+        const settlement::Settlement *GetFoundedSettlement() const;
 
         bool IsTimeFlowing() const {return time;}
 

@@ -96,7 +96,7 @@ namespace utility
             secondOptimalPath = Array <TileData>(1024);
         }
 
-        Array <TileData> &FindPathDjikstra(TileType *startTile, TileType *endTile, Integer range = 12)
+        Array <TileData> &FindPathDjikstra(TileType *startTile, TileType *endTile, Integer range = 7)
         {
             auto getPenalty = [] (TileType *tile)
             {
@@ -121,9 +121,10 @@ namespace utility
 
             firstPaths.Clear();
 
-            //auto &worldTiles = world::WorldScene::Get()->GetTiles();
-            auto &tiles = startTile->GetNearbyTiles(range);
-            //for(auto tile = worldTiles.GetStart(); tile != worldTiles.GetEnd(); ++tile)
+            auto coordinates = (startTile->SquareCoordinates + endTile->SquareCoordinates) / 2;
+            auto middleTile = world::WorldScene::Get()->GetTiles().Get(coordinates.x, coordinates.y);
+
+            auto &tiles = middleTile->GetNearbyTiles(range);
             for(auto &tile : tiles)
             {
                 tile->PathData.IsVisited = false;
@@ -133,18 +134,24 @@ namespace utility
             startTile->PathData.IsVisited = true;
             startTile->PathData.IsToBeVisited = true;
 
+            visitedTiles.Reset();
+            *visitedTiles.Add() = startTile;
+
             typename ImprovedGraphType::Node *championPath = firstPaths.StartGraph({startTile, 1});
 
+            int searches = 0;
             while(true)
             {
                 auto bestComplexity = INT_MAX;
                 typename ImprovedGraphType::Node *bestNode = nullptr;
                 TileType *bestTile = nullptr;
-                for(auto &tile : tiles)
+                
+                for(auto &tile : visitedTiles)
                 {
-                    if(tile->PathData.IsVisited == true)
+                    searches++;
+                    if(tile.Tile->PathData.IsVisited == true)
                     {
-                        auto &nearbyTiles = tile->GetNearbyTiles();
+                        auto &nearbyTiles = tile.Tile->GetNearbyTiles();
                         for(auto nearbyTile = nearbyTiles.GetStart(); nearbyTile != nearbyTiles.GetEnd(); ++nearbyTile)
                         {
                             if((*nearbyTile)->PathData.IsVisited == false && (*nearbyTile)->PathData.IsToBeVisited == true)
@@ -168,18 +175,17 @@ namespace utility
                     }
                 }
 
-                //if(bestComplexity <= championPath->Content.Distance)
-                //{
                 auto newNode = bestNode->AddNode({bestTile, bestComplexity});
                 championPath = newNode;
                 bestTile->PathData.IsVisited = true;
-                //}
+                *visitedTiles.Add() = bestTile;
 
                 if(championPath->Content.Tile == endTile)
                 {
                     break;
                 }
             }
+            std::cout<<"searches "<<searches<<"\n";
 
             visitedTiles.Reset();
             while(true)
