@@ -78,9 +78,11 @@ Path *Settlement::GetPathTo(Settlement *settlement)
     return nullptr;
 }
 
+static Array <world::WorldTile *> candidateTiles = Array <world::WorldTile *> (128);
+
 world::WorldTile * Settlement::FindColonySpot()
 {
-    auto findColonySpot = [this] (float distance) -> WorldTile*
+    /*auto findColonySpot = [this] (float distance) -> WorldTile*
     {
         auto &tileRing = location->GetTileRing(distance);
         for(auto tileIterator = tileRing.GetStart(); tileIterator != tileRing.GetEnd(); ++tileIterator)
@@ -108,11 +110,79 @@ world::WorldTile * Settlement::FindColonySpot()
         colonySpot = findColonySpot(5);
         if(colonySpot == nullptr)
         {
-            colonySpot = findColonySpot(6);
+            //colonySpot = findColonySpot(6);
+        }
+    }*/
+
+    candidateTiles.Reset();
+
+    auto bestChance = INT_MAX;
+    WorldTile *bestTile = nullptr;
+    for(int i = 4; i < 6; ++i)
+    {
+        auto &tileRing = location->GetTileRing(i);
+        for(auto tileIterator = tileRing.GetStart(); tileIterator != tileRing.GetEnd(); ++tileIterator)
+        {
+            auto tile = *tileIterator;
+            if(tile->IsBorderingOwnedTile())
+                continue;
+
+            if(tile->Biome->Type != world::WorldBiomes::STEPPE)
+                continue;
+
+            auto &interestMap = this->GetPolity()->GetInterestMap();
+            auto prospectedTile = interestMap.GetTile(tile->HexCoordinates);
+            auto stakeholder = prospectedTile->Owner;
+            if(stakeholder != nullptr && stakeholder != this)
+                continue;
+
+            if(prospectedTile->Distance < bestChance)
+            {
+                bestChance = prospectedTile->Distance;
+                bestTile = tile;
+            }
         }
     }
 
-    return colonySpot;
+    if(bestTile == nullptr)
+    {
+        return;
+    }
+
+    for(int i = 4; i < 6; ++i)
+    {
+        auto &tileRing = location->GetTileRing(i);
+        for(auto tileIterator = tileRing.GetStart(); tileIterator != tileRing.GetEnd(); ++tileIterator)
+        {
+            auto tile = *tileIterator;
+            if(tile->IsBorderingOwnedTile())
+                continue;
+
+            if(tile->Biome->Type != world::WorldBiomes::STEPPE)
+                continue;
+
+            auto &interestMap = this->GetPolity()->GetInterestMap();
+            auto prospectedTile = interestMap.GetTile(tile->HexCoordinates);
+            auto stakeholder = prospectedTile->Owner;
+            if(stakeholder != nullptr && stakeholder != this)
+                continue;
+
+            if(prospectedTile->Distance == bestChance)
+            {
+                *candidateTiles.Add() = tile;
+            }
+        }
+    }
+
+    auto candidate = candidateTiles.GetRandom();
+    if(candidate == nullptr)
+    {
+        return nullptr;
+    }
+    else
+    {
+        return *candidate;
+    }
 }
 
 void Settlement::WorkNewTile()

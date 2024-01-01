@@ -48,6 +48,13 @@ namespace utility
             Integer Complexity;
         };
 
+        struct PathData
+        {
+            const Array <TileData> &Tiles;
+
+            Integer Complexity;
+        };
+
         typedef container::Graph <TileData, 6> GraphType;
         typedef container::Graph <TileData, 6> ImprovedGraphType;
 
@@ -96,7 +103,7 @@ namespace utility
             secondOptimalPath = Array <TileData>(1024);
         }
 
-        Array <TileData> &FindPathDjikstra(TileType *startTile, TileType *endTile, Integer range = 7)
+        PathData FindPathDjikstra(TileType *startTile, TileType *endTile, Integer range = 7)
         {
             auto getPenalty = [] (TileType *tile)
             {
@@ -186,7 +193,9 @@ namespace utility
                 }
             }
             std::cout<<"searches "<<searches<<"\n";
+            //std::cout<<"complexity "<<championPath->Content.Distance<<"\n";
 
+            auto complexity = championPath->Content.Distance;
             visitedTiles.Reset();
             while(true)
             {
@@ -195,7 +204,7 @@ namespace utility
                 championPath = championPath->GetPrevious();
                 if(championPath == nullptr)
                 {
-                    return visitedTiles;
+                    return {visitedTiles, complexity};
                 }
             }
         }

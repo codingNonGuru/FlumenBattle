@@ -229,7 +229,8 @@ namespace world
 
         if(mother != nullptr)
         {
-            auto &tileDatas = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(mother->GetLocation(), location);
+            auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(mother->GetLocation(), location);
+            auto &tileDatas = pathData.Tiles; 
             if(tileDatas.GetSize() > 0)
             {
                 auto path = settlement::SettlementAllocator::Get()->AllocatePath(settlement, mother);

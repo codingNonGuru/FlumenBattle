@@ -4,6 +4,7 @@
 #include "FlumenBattle/World/Science/Technology.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/Utility/Pathfinder.h"
 
 using namespace world;
 
@@ -37,28 +38,52 @@ void Polity::ExtendRealm(settlement::Settlement *domain)
 {
     *this->settlements.Add() = domain;
 
-    auto &tiles = domain->GetLocation()->GetNearbyTiles(6);
+    auto &tiles = domain->GetLocation()->GetNearbyTiles(5, 2);
     for(auto &tile : tiles)
     {
         auto existingInterest = interestMap.GetTile(tile->HexCoordinates);
-        auto distance = domain->GetLocation()->GetDistanceTo(*tile);
-        if(existingInterest->Owner == nullptr)
+        if(tile == domain->GetLocation())
         {
             existingInterest->Owner = domain;
-            existingInterest->Distance = distance;
+            existingInterest->Distance = 1;
         }
         else
         {
-            if(existingInterest->Distance > distance)
+            //auto distance = domain->GetLocation()->GetDistanceTo(*tile);
+            auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(domain->GetLocation(), tile);
+            auto cost = pathData.Complexity;
+
+            auto nearbyTiles = tile->GetNearbyTiles(1, 3);
+            for(auto neighbour = nearbyTiles.GetStart(); neighbour != nearbyTiles.GetEnd(); ++neighbour)
+            {
+                if((*neighbour)->HasBiome(WorldBiomes::STEPPE))
+                {
+                    cost -= 2;
+                }
+                else if((*neighbour)->HasBiome(WorldBiomes::WOODS))
+                {
+                    cost -= 1;
+                }
+            }
+
+            if(existingInterest->Owner == nullptr)
             {
                 existingInterest->Owner = domain;
-                existingInterest->Distance = distance;
+                existingInterest->Distance = cost;
             }
-            else if(existingInterest->Distance == distance)
+            else
             {
-                if(utility::RollDice(0.5f) == true)
+                if(existingInterest->Distance > cost)
                 {
                     existingInterest->Owner = domain;
+                    existingInterest->Distance = cost;
+                }
+                else if(existingInterest->Distance == cost)
+                {
+                    if(utility::RollDice(0.5f) == true)
+                    {
+                        existingInterest->Owner = domain;
+                    }
                 }
             }
         }

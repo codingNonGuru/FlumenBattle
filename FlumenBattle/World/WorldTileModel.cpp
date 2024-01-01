@@ -22,6 +22,7 @@
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Polity.h"
 
 #define WORLD_TILE_SIZE 34.6666f
 
@@ -204,6 +205,22 @@ void WorldTileModel::Render()
 
         //glDrawArrays(GL_TRIANGLES, 0, 18);
     }
+
+    /*auto polity = worldScene->polities.Get(0);
+    auto &interestTiles = polity->GetInterestMap().GetTiles();
+    for(auto tile = interestTiles.GetStart(); tile != interestTiles.GetEnd(); ++tile)
+    {
+        if(tile->Owner == nullptr)
+            continue;
+        
+        shader->SetConstant(map->GetTile(tile->Coordinates)->Position, "hexPosition");
+
+        shader->SetConstant(WORLD_TILE_SIZE, "hexSize");
+
+        shader->SetConstant(tile->Owner->GetBanner(), "color");
+
+        glDrawArrays(GL_TRIANGLES, 0, 18);
+    }*/
 
     shader->SetConstant(1.0f, "opacity");
 
