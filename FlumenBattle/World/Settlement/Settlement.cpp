@@ -82,38 +82,6 @@ static Array <world::WorldTile *> candidateTiles = Array <world::WorldTile *> (1
 
 world::WorldTile * Settlement::FindColonySpot()
 {
-    /*auto findColonySpot = [this] (float distance) -> WorldTile*
-    {
-        auto &tileRing = location->GetTileRing(distance);
-        for(auto tileIterator = tileRing.GetStart(); tileIterator != tileRing.GetEnd(); ++tileIterator)
-        {
-            auto tile = *tileIterator;
-            if(tile->IsBorderingOwnedTile())
-                continue;
-
-            if(tile->Biome->Type != world::WorldBiomes::STEPPE)
-                continue;
-
-            auto &interestMap = this->GetPolity()->GetInterestMap();
-            auto stakeholder = interestMap.GetTile(tile->HexCoordinates)->Owner;
-            if(stakeholder != nullptr && stakeholder != this)
-                continue;
-
-            return tile;
-        }
-        return nullptr;
-    };
-
-    auto colonySpot = findColonySpot(4);
-    if(colonySpot == nullptr)
-    {
-        colonySpot = findColonySpot(5);
-        if(colonySpot == nullptr)
-        {
-            //colonySpot = findColonySpot(6);
-        }
-    }*/
-
     candidateTiles.Reset();
 
     auto bestChance = INT_MAX;
