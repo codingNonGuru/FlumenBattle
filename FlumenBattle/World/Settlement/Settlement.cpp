@@ -86,7 +86,7 @@ world::WorldTile * Settlement::FindColonySpot()
 
     auto bestChance = INT_MAX;
     WorldTile *bestTile = nullptr;
-    for(int i = 4; i < 6; ++i)
+    for(int i = MINIMUM_COLONIZATION_RANGE; i <= MAXIMUM_COLONIZATION_RANGE; ++i)
     {
         auto &tileRing = location->GetTileRing(i);
         for(auto tileIterator = tileRing.GetStart(); tileIterator != tileRing.GetEnd(); ++tileIterator)
@@ -114,10 +114,10 @@ world::WorldTile * Settlement::FindColonySpot()
 
     if(bestTile == nullptr)
     {
-        return;
+        return nullptr;
     }
 
-    for(int i = 4; i < 6; ++i)
+    for(int i = MINIMUM_COLONIZATION_RANGE; i <= MAXIMUM_COLONIZATION_RANGE; ++i)
     {
         auto &tileRing = location->GetTileRing(i);
         for(auto tileIterator = tileRing.GetStart(); tileIterator != tileRing.GetEnd(); ++tileIterator)

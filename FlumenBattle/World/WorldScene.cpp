@@ -229,27 +229,52 @@ namespace world
 
         if(mother != nullptr)
         {
-            auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(mother->GetLocation(), location);
-            auto &tileDatas = pathData.Tiles; 
-            if(tileDatas.GetSize() > 0)
-            {
-                auto path = settlement::SettlementAllocator::Get()->AllocatePath(settlement, mother);
-                *path = {settlement, mother};
-
-                for(auto &data : tileDatas)
-                {
-                    path->AddTile(data.Tile);
-                }
-
-                mother->AddPath(path);
-                settlement->AddPath(path);
-            }
+            ForgePath(settlement, mother);
         }
 
         settlement->SetPolity(polity);
 
+        auto &tiles = location->GetNearbyTiles(MAXIMUM_COLONIZATION_RANGE, 3);
+        for(auto &tile : tiles)
+        {
+            if(tile == location)
+                continue;
+
+            auto other = tile->GetSettlement();
+            if(other == nullptr)
+                continue;
+
+            if(settlement->GetPathTo(other) != nullptr)
+                continue;
+
+            ForgePath(settlement, other, MAXIMUM_COLONIZATION_RANGE);                        
+        }
+
         foundedSettlement = settlement;
         OnSettlementFounded->Invoke();
+    }
+
+    settlement::Settlement * WorldScene::ForgePath(settlement::Settlement *from, settlement::Settlement *to, int complexityLimit = INT_MAX)
+    {
+        auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(from->GetLocation(), to->GetLocation());
+        
+        if(pathData.Complexity > complexityLimit)
+            return;
+
+        auto &tileDatas = pathData.Tiles; 
+        if(tileDatas.GetSize() > 0)
+        {
+            auto path = settlement::SettlementAllocator::Get()->AllocatePath(from, to);
+            *path = {from, to};
+
+            for(auto &data : tileDatas)
+            {
+                path->AddTile(data.Tile);
+            }
+
+            from->AddPath(path);
+            to->AddPath(path);
+        }
     }
 
     const settlement::Settlement *WorldScene::GetFoundedSettlement() const 

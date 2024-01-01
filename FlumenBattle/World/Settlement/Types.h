@@ -1,5 +1,9 @@
 #pragma once
 
+#define MINIMUM_COLONIZATION_RANGE 5
+
+#define MAXIMUM_COLONIZATION_RANGE 6
+
 namespace world::settlement
 {
     enum class BuildingTypes

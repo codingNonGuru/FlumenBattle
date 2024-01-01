@@ -134,5 +134,7 @@ namespace world
         void FinishPlayerEncounter();
 
         settlement::Settlement * FoundSettlement(WorldTile *, Polity *, settlement::Settlement *);
+
+        settlement::Settlement * ForgePath(settlement::Settlement *, settlement::Settlement *, int = INT_MAX);
     };
 }

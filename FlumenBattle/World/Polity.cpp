@@ -38,7 +38,7 @@ void Polity::ExtendRealm(settlement::Settlement *domain)
 {
     *this->settlements.Add() = domain;
 
-    auto &tiles = domain->GetLocation()->GetNearbyTiles(5, 2);
+    auto &tiles = domain->GetLocation()->GetNearbyTiles(MAXIMUM_COLONIZATION_RANGE, 2);
     for(auto &tile : tiles)
     {
         auto existingInterest = interestMap.GetTile(tile->HexCoordinates);

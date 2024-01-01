@@ -53,6 +53,8 @@ namespace utility
             const Array <TileData> &Tiles;
 
             Integer Complexity;
+
+            Integer Length;
         };
 
         typedef container::Graph <TileData, 6> GraphType;
@@ -144,7 +146,7 @@ namespace utility
             visitedTiles.Reset();
             *visitedTiles.Add() = startTile;
 
-            typename ImprovedGraphType::Node *championPath = firstPaths.StartGraph({startTile, 1});
+            typename ImprovedGraphType::Node *championPath = firstPaths.StartGraph({startTile, 0});
 
             int searches = 0;
             while(true)
@@ -192,7 +194,7 @@ namespace utility
                     break;
                 }
             }
-            std::cout<<"searches "<<searches<<"\n";
+            //std::cout<<"searches "<<searches<<"\n";
             //std::cout<<"complexity "<<championPath->Content.Distance<<"\n";
 
             auto complexity = championPath->Content.Distance;
@@ -204,7 +206,7 @@ namespace utility
                 championPath = championPath->GetPrevious();
                 if(championPath == nullptr)
                 {
-                    return {visitedTiles, complexity};
+                    return {visitedTiles, complexity / 2, visitedTiles.GetSize()};
                 }
             }
         }
