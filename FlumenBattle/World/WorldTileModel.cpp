@@ -36,6 +36,8 @@ static Sprite *groupSprite = nullptr;
 
 static Sprite *bootSprite = nullptr;
 
+static Sprite *metalSprite = nullptr;
+
 static Sprite *dotSprite = nullptr;
 
 using namespace world;
@@ -51,11 +53,14 @@ WorldTileModel::WorldTileModel()
 
     groupShader = ShaderManager::GetShader("Sprite");
 
-    groupSprite = new Sprite(nullptr, groupShader);
+    groupSprite = new Sprite(groupShader);
 
-    bootSprite = new Sprite(TextureManager::GetTexture("TravelBoot"), groupShader); 
+    bootSprite = new Sprite(groupShader, render::TextureManager::GetTexture("TravelBoot")); 
 
-    dotSprite = new Sprite(TextureManager::GetTexture("Dot"), groupShader); 
+    //metalSprite = new Sprite(groupShader, {render::TextureManager::GetTexture("FantRpg_assets"), {0.333f, 0.1f}, {0.04166f, 0.1f}});
+    metalSprite = new Sprite(groupShader, render::TextureManager::GetTexture("Metal"));
+
+    dotSprite = new Sprite(groupShader, render::TextureManager::GetTexture("Dot")); 
 
     worldScene = WorldScene::Get();
 
@@ -245,6 +250,18 @@ void WorldTileModel::Render()
     }
 
     shader->Unbind();
+
+    if(WorldController::Get()->ShouldDisplayResources() == true)
+    {
+        map = worldScene->GetWorldMap();
+        for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
+        {
+            if(tile->GetMetal() == 0)
+                continue;
+
+            metalSprite->Draw(camera, {tile->Position, Scale2(1.0f, 1.0f) * 1.5f, Opacity(1.0f), DrawOrder(-2)});
+        }
+    }
 
     auto hoveredTile = worldController->GetHoveredTile();
     bool canPlayerTravel = worldScene->GetPlayerGroup()->ValidateAction(group::GroupActions::TRAVEL, {hoveredTile});

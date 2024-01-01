@@ -17,6 +17,8 @@ namespace world
 
         bool isInEncounterMode {false};
 
+        bool isResourceDisplayActive {false};
+
         void HandleSceneUpdate();
 
         void CheckTileSelection();
@@ -39,6 +41,8 @@ namespace world
 
         void HandleTravelPressed();
 
+        void HandleResourceDisplayPressed();
+
         void EnableHardInput();
 
         void DisableHardInput();
@@ -55,5 +59,7 @@ namespace world
         void HandlePlayerEncounterInitiated();
 
         void DisableEncounterMode();
+
+        bool ShouldDisplayResources() const {return isResourceDisplayActive;}
     };
 }

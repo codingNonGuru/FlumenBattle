@@ -52,6 +52,7 @@ namespace world
         InputHandler::RegisterContinualEvent(SDL_Scancode::SDL_SCANCODE_DOWN, {this, &WorldController::HandlePanDown});
         InputHandler::RegisterContinualEvent(SDL_Scancode::SDL_SCANCODE_RIGHT, {this, &WorldController::HandlePanRight});
         InputHandler::RegisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LEFT, {this, &WorldController::HandlePanLeft});
+        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_M, {this, &WorldController::HandleResourceDisplayPressed});
 
         camera = RenderManager::GetCamera(Cameras::WORLD);
     }
@@ -203,6 +204,18 @@ namespace world
         WorldScene::Get()->SlowDownTime();
     }
 
+    void WorldController::HandleResourceDisplayPressed()
+    {
+        if(isResourceDisplayActive)
+        {
+            isResourceDisplayActive = false;
+        }
+        else
+        {
+            isResourceDisplayActive = true;
+        }
+    }
+
     void WorldController::Disable()
     {
         DisableHardInput();
@@ -211,6 +224,7 @@ namespace world
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_DOWN, {this, &WorldController::HandlePanDown});
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_RIGHT, {this, &WorldController::HandlePanRight});
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LEFT, {this, &WorldController::HandlePanLeft});
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_M, {this, &WorldController::HandleResourceDisplayPressed});
     }
 
     group::Encounter * WorldController::GetPlayerBattle() const 

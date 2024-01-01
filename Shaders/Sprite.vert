@@ -15,6 +15,10 @@ layout (location = 2) uniform vec2 spriteSize;
 
 layout (location = 4) uniform float depth;  
 
+layout (location = 6) uniform vec2 textureOffset;
+
+layout (location = 7) uniform vec2 textureScale;
+
 // DATA BUFFERS
 
 // TEXTURES
@@ -27,7 +31,7 @@ void main()
 {	
 	vec2 vertices[6] = vec2[6](vec2(-0.5f, -0.5f), vec2(0.5f, -0.5f), vec2(0.5f, 0.5f), vec2(-0.5f, -0.5f), vec2(0.5f, 0.5f), vec2(-0.5f, 0.5f));
 	
-	textureCoordinates = vertices[gl_VertexID] + vec2(0.5f, 0.5f);
+	textureCoordinates = ((vertices[gl_VertexID] + vec2(0.5f, 0.5f)) * textureScale) + textureOffset;
 
 	vec2 position = vertices[gl_VertexID] * spriteSize + spritePosition;
 

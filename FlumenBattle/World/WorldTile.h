@@ -46,6 +46,8 @@ namespace world
 
         Integer industry;
 
+        Integer metal;
+
         bool isBorderingOwnedTile;
 
         container::SmartBlock <settlement::PathSegment *, 6> links;
@@ -117,6 +119,8 @@ namespace world
         Integer GetFertility() const {return fertility;}
 
         Integer GetIndustry() const {return industry;}
+
+        Integer GetMetal() const {return metal;}
 
         Float4 GetShade() const;
 

@@ -34,6 +34,8 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
 
     this->foodStorage = 0;
 
+    this->metalStorage = 0;
+
     this->cultureGrowth = 0;
 
     *this->currentProduction = SettlementProductionFactory::Get()->Create(SettlementProductionOptions::NONE);
@@ -355,6 +357,29 @@ Integer Settlement::GetFoodProduction() const
     return production;
 }
 
+Integer Settlement::GetMetalProduction() const
+{
+    auto production = 0;
+    for(auto &tile : tiles)
+    {
+        if(tile.IsWorked == false)
+            continue;
+
+        production += tile.Tile->GetMetal();
+        if(tile.IsBuilt)
+        {
+            production++;
+        }
+
+        /*if(tile.Tile->Biome->Type == world::WorldBiomes::DESERT)
+        {
+            production += GetModifier(Modifiers::FOOD_PRODUCTION_ON_DESERT_TILES);
+        }*/
+    }
+
+    return production;
+}
+
 void Settlement::UpdateFoodSituation()
 {
     foodProduction = GetFoodProduction();
@@ -398,6 +423,26 @@ void Settlement::UpdateFoodSituation()
     else if(foodStorage < 0)
     {
         foodStorage = 0;
+    }
+}
+
+void Settlement::UpdateMetalSituation()
+{
+    auto production = GetMetalProduction();
+
+    //auto consumption = population;
+
+    //int availableFood = foodProduction + foodStorage;
+
+    metalStorage += production;// - consumption;
+
+    if(metalStorage > 200)
+    {
+        metalStorage = 200;
+    }
+    else if(metalStorage < 0)
+    {
+        metalStorage = 0;
     }
 }
 
@@ -493,6 +538,8 @@ void Settlement::Update()
     updateModifiers();
 
     UpdateFoodSituation();
+
+    UpdateMetalSituation();
 
     switch(foodSecurity)
     {

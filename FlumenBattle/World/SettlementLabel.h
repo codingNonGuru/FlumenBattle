@@ -32,6 +32,10 @@ namespace world::settlement
 
         Text * groupLabel;
 
+        Text * metalLabel;
+
+        Element * metalSprite;
+
         Settlement *settlement;
 
         void HandleConfigure() override;

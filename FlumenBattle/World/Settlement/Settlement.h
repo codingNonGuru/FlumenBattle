@@ -82,6 +82,12 @@ namespace world::settlement
 
         FoodSecurity foodSecurity;
 
+        Integer metalStorage;
+
+        Integer metalProduction;
+
+        Integer metalBalance;
+
         Integer growth;
 
         Integer cultureGrowth;
@@ -127,9 +133,15 @@ namespace world::settlement
 
         void UpdateFoodSituation();
 
+        void UpdateMetalSituation();
+
         Integer GetFoodProduction() const;
 
         Integer GetFoodStorage() const {return foodStorage;}
+
+        Integer GetMetalStorage() const {return metalStorage;}
+
+        Integer GetMetalProduction() const;
 
         Integer GetIndustrialProduction() const;
 

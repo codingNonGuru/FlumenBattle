@@ -185,9 +185,12 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data)
 
                 tile->fertility = 1;
                 tile->industry = 0;
+                tile->metal = 0;
             }
             else
             {
+                tile->metal = utility::RollD100Dice() > 98 ? 1 : 0;
+
                 if(tile->HasRelief(WorldReliefs::MOUNTAINS))
                 {
                     tile->Biome = WorldBiomeFactory::BuildBiome(WorldBiomes::DESERT);
