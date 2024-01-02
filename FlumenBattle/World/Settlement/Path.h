@@ -58,5 +58,17 @@ namespace world::settlement
         }
 
         void AddTile(WorldTile *tile);
+
+        Settlement *GetOther(Settlement *settlement) 
+        {
+            if(To == settlement)
+            {
+                return From;
+            }
+            else
+            {
+                return To;
+            }
+        }
     };
 }

@@ -16,6 +16,19 @@
 
 using namespace world::settlement;
 
+#define TIME_BETWEEN_SHIPMENTS 12
+
+#define VOLUME_PER_SHIPMENT 10
+
+#define STORAGE_THRESHOLD 100
+
+#define SHIPMENT_VOLUME_LOSS 3
+
+bool Link::operator== (const settlement::Path &path) const 
+{
+    return *Path == path;
+}
+
 void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
 {
     this->modifierManager.Initialize();
@@ -65,16 +78,16 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
 
 void Settlement::AddPath(Path *path) 
 {
-    *paths.Add() = path;
+    *links.Add() = {path};
+    std::cout<<"capacity "<<links.GetCapacity()<<" "<<links.GetSize()<<"\n";
 }
 
 Path *Settlement::GetPathTo(Settlement *settlement) 
 {
-    for(auto &pathIterator : paths)
+    for(auto &link : links)
     {
-        Path &path = *pathIterator;
-        if(path == Path(this, settlement))
-            return &path;
+        if(*link.Path == Path(this, settlement))
+            return link.Path;
     }
 
     return nullptr;
@@ -428,7 +441,7 @@ void Settlement::UpdateFoodSituation()
 
 void Settlement::UpdateMetalSituation()
 {
-    auto production = GetMetalProduction();
+    auto production = polity->GetRuler() == this ? 1 : 0; //GetMetalProduction();
 
     //auto consumption = population;
 
@@ -544,21 +557,21 @@ void Settlement::Update()
     switch(foodSecurity)
     {
     case FoodSecurity::CORNUCOPIA:
-        growth += 3;
+        growth += 5;
         break;
     case FoodSecurity::ABUNDANT:
-        growth += 2;
+        growth += 4;
         break;
     case FoodSecurity::ENOUGH:
-        growth += 2;
+        growth += 3;
         break;
     case FoodSecurity::BARELY_AVAILABLE:
         break;
     case FoodSecurity::LACKING:
-        growth -= 1;
+        growth -= 3;
         break;
     case FoodSecurity::SORELY_LACKING:
-        growth -= 2;
+        growth -= 5;
         break;
     }
 
@@ -570,7 +583,7 @@ void Settlement::Update()
         }
     }
 
-    if(growth >= 100)
+    if(growth >= 200)
     {
         growth = 0;
         population++;
@@ -624,4 +637,77 @@ void Settlement::Update()
     {
         groupDynamics->Update(*this);
     }
+}
+
+void Settlement::PrepareTransport()
+{
+    lastShipmentTime--;
+
+    if(lastShipmentTime < 0)
+    {
+        lastShipmentTime = 0;
+    }
+
+    if(lastShipmentTime > 0)
+        return;
+
+    if(metalStorage < STORAGE_THRESHOLD)
+        return;
+
+    for(auto &link : links)
+    {
+        if(link.HasShipped == true)
+            continue;
+
+        auto other = link.Path->GetOther(this);
+
+        if(other->GetMetalStorage() > STORAGE_THRESHOLD || other->GetMetalStorage() > metalStorage)
+            continue;
+
+        lastShipmentTime = TIME_BETWEEN_SHIPMENTS;
+        shipment = {other};
+        link.HasShipped = true;
+
+        break;
+    }
+
+    bool hasShippedToAll = true;
+    for(auto &link : links)
+    {
+        if(link.HasShipped == true)
+            continue;
+
+        auto other = link.Path->GetOther(this);
+
+        bool cannotSendToOther = other->GetMetalStorage() > STORAGE_THRESHOLD || other->GetMetalStorage() > metalStorage;
+        if(cannotSendToOther == true)
+            continue;
+        
+        hasShippedToAll = false;
+    }
+
+    if(hasShippedToAll == true)
+    {
+        for(auto &link : links)
+        {
+            link.HasShipped = false;
+        }   
+    }
+}
+
+void Settlement::SendTransport()
+{
+    if(shipment.To == nullptr)
+        return;
+
+    metalStorage -= VOLUME_PER_SHIPMENT;
+
+    shipment.To->ReceiveTransport();
+
+    shipment.To = nullptr;
+}
+
+void Settlement::ReceiveTransport()
+{
+    metalStorage += VOLUME_PER_SHIPMENT - SHIPMENT_VOLUME_LOSS;
 }

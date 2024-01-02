@@ -60,7 +60,7 @@ void SettlementAllocator::PreallocateMaximumMemory()
 
     pathSegmentMemory = container::Pool <PathSegment>::PreallocateMemory (settlementCount * MAXIMUM_PATHS_PER_SETTLEMENT * AVERAGE_SEGMENTS_PER_PATH);
 
-    pathPointerMemory = container::PoolAllocator <Path *>::PreallocateMemory (settlementCount, MAXIMUM_PATHS_PER_SETTLEMENT);
+    linkMemory = container::PoolAllocator <Link>::PreallocateMemory (settlementCount, MAXIMUM_PATHS_PER_SETTLEMENT);
 }
 
 void SettlementAllocator::AllocateWorldMemory(int worldSize)
@@ -93,7 +93,7 @@ void SettlementAllocator::AllocateWorldMemory(int worldSize)
 
     buildingAllocator = container::PoolAllocator <Building> (settlementCount, MAXIMUM_BUILDINGS_PER_SETTLEMENT, buildingMemory);
 
-    pathPointerAllocator = container::PoolAllocator <Path *> (settlementCount, MAXIMUM_PATHS_PER_SETTLEMENT, pathPointerMemory);
+    linkAllocator = container::PoolAllocator <Link> (settlementCount, MAXIMUM_PATHS_PER_SETTLEMENT, linkMemory);
 }
 
 Settlement * SettlementAllocator::Allocate()
@@ -119,7 +119,7 @@ Settlement * SettlementAllocator::Allocate()
 
     BuildingSetAllocator::Allocate(buildingAllocator, *settlement->buildingManager);
 
-    settlement->paths.Initialize(pathPointerAllocator);
+    settlement->links.Initialize(linkAllocator);
 
     return settlement;
 }
@@ -128,9 +128,9 @@ Path * SettlementAllocator::AllocatePath(Settlement *firstSettlement, Settlement
 {
     auto path = paths.Add();
 
-    firstSettlement->paths.Initialize(pathPointerAllocator);
+    //firstSettlement->links.Initialize(linkAllocator);
 
-    secondSettlement->paths.Initialize(pathPointerAllocator);
+    //secondSettlement->links.Initialize(linkAllocator);
 
     return path;
 }

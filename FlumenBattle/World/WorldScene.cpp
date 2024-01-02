@@ -137,6 +137,16 @@ namespace world
             {
                 settlement.Update();
             }
+
+            for(auto &settlement : *settlements)
+            {
+                settlement.PrepareTransport();
+            }
+
+            for(auto &settlement : *settlements)
+            {
+                settlement.SendTransport();
+            }
         };
 
         refreshSettlements();

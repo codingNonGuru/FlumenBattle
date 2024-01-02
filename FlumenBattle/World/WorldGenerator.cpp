@@ -14,6 +14,8 @@
 
 using namespace world;
 
+#define METAL_SPAWN_CHANCE 1
+
 int WorldGenerator::GenerateWorld(pregame::NewWorldData data)
 {
     std::cout<<"World has started generating\n";
@@ -189,7 +191,7 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data)
             }
             else
             {
-                tile->metal = utility::RollD100Dice() > 98 ? 1 : 0;
+                tile->metal = (utility::RollD100Dice() > 100 - METAL_SPAWN_CHANCE) ? 1 : 0;
 
                 if(tile->HasRelief(WorldReliefs::MOUNTAINS))
                 {

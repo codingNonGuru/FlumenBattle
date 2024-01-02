@@ -25,6 +25,7 @@ namespace world::settlement
     class SettlementProduction;
     class SettlementFactory;
     struct Path;
+    struct Link;
     class PathSegment;
     class Condition;
     class ConditionManager;
@@ -41,6 +42,7 @@ namespace world::settlement
 
         friend class Path;
         
+        friend struct Link;
 
         container::Pool <Settlement>::Memory settlementMemory;
 
@@ -66,7 +68,7 @@ namespace world::settlement
 
         container::Pool <PathSegment>::Memory pathSegmentMemory;
 
-        container::PoolAllocator <Path *>::Memory pathPointerMemory;
+        container::PoolAllocator <Link>::Memory linkMemory;
 
 
         container::Pool <Settlement> settlements;
@@ -93,7 +95,7 @@ namespace world::settlement
 
         container::Pool <PathSegment> pathSegments;
 
-        container::PoolAllocator <Path *> pathPointerAllocator;
+        container::PoolAllocator <Link> linkAllocator;
 
 
         void PerformCleanup();

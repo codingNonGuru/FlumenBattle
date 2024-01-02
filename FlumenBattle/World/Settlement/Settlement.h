@@ -4,6 +4,7 @@
 
 #include "FlumenEngine/Utility/Color.hpp"
 
+#include "FlumenBattle/World/Settlement/Shipment.h"
 #include "FlumenBattle/World/Settlement/Modifier.h"
 #include "FlumenBattle/World/Settlement/Types.h"
 
@@ -24,7 +25,7 @@ namespace world
     }
 }
 
-namespace world::settlement
+namespace world::settlement 
 {
     struct Affliction;
     struct SettlementEvent;
@@ -42,6 +43,15 @@ namespace world::settlement
         bool IsWorked;
 
         bool IsBuilt;
+    };
+
+    struct Link
+    {
+        Path *Path;
+
+        bool HasShipped {false};
+
+        bool operator== (const settlement::Path &path) const;
     };
 
     class Settlement
@@ -100,7 +110,7 @@ namespace world::settlement
 
         Pool <SettlementEvent> events;
 
-        Pool <Path *> paths;
+        Pool <Link> links;
 
         SettlementProduction *currentProduction;
 
@@ -109,6 +119,10 @@ namespace world::settlement
         ConditionManager *conditionManager;
         
         BuildingManager *buildingManager;
+
+        Shipment shipment;
+
+        Integer lastShipmentTime;
 
         void Initialize(Word, Color, world::WorldTile *);
 
@@ -170,6 +184,12 @@ namespace world::settlement
         void ProcessEarthquake(const disaster::Earthquake &);
 
         void Update();
+
+        void PrepareTransport();
+
+        void SendTransport();
+
+        void ReceiveTransport();
 
         void AddPath(Path *path);
 
