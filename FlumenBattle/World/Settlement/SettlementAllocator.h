@@ -20,7 +20,7 @@ namespace world::settlement
 {
     struct Affliction;
     struct SettlementTile;
-    struct SettlementEvent;
+    struct Event;
     class Settlement;
     class SettlementProduction;
     class SettlementFactory;
@@ -52,7 +52,7 @@ namespace world::settlement
 
         container::PoolAllocator <Affliction>::Memory afflictionMemory;
 
-        container::PoolAllocator <SettlementEvent>::Memory eventMemory;
+        container::PoolAllocator <Event>::Memory eventMemory;
 
         container::Pool <SettlementProduction>::Memory productionMemory;
 
@@ -79,7 +79,7 @@ namespace world::settlement
 
         container::PoolAllocator <Affliction> afflictionAllocator;
 
-        container::PoolAllocator <SettlementEvent> eventAllocator;
+        container::PoolAllocator <Event> eventAllocator;
 
         container::Pool <SettlementProduction> productionAllocator;
 

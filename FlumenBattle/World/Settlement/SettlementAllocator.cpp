@@ -44,7 +44,7 @@ void SettlementAllocator::PreallocateMaximumMemory()
 
     afflictionMemory = container::PoolAllocator <Affliction>::PreallocateMemory (settlementCount, MAXIMUM_AFFLICTIONS_PER_SETTLEMENT);
 
-    eventMemory = container::PoolAllocator <SettlementEvent>::PreallocateMemory (settlementCount, MAXIMUM_EVENTS_PER_SETTLEMENT);
+    eventMemory = container::PoolAllocator <Event>::PreallocateMemory (settlementCount, MAXIMUM_EVENTS_PER_SETTLEMENT);
 
     productionMemory = container::Pool <SettlementProduction>::PreallocateMemory (settlementCount);
 
@@ -81,7 +81,7 @@ void SettlementAllocator::AllocateWorldMemory(int worldSize)
 
     afflictionAllocator = container::PoolAllocator <Affliction> (settlementCount, MAXIMUM_AFFLICTIONS_PER_SETTLEMENT, afflictionMemory);
 
-    eventAllocator = container::PoolAllocator <SettlementEvent> (settlementCount, MAXIMUM_EVENTS_PER_SETTLEMENT, eventMemory);
+    eventAllocator = container::PoolAllocator <Event> (settlementCount, MAXIMUM_EVENTS_PER_SETTLEMENT, eventMemory);
 
     productionAllocator = container::Pool <SettlementProduction> (settlementCount, productionMemory);
 

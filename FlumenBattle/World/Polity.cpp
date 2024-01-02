@@ -172,7 +172,7 @@ void Polity::Update()
     {
         for(auto event : settlement->events)
         {
-            if(event.EventType == SettlementEventTypes::DEPOPULATION)
+            if(event.EventType == settlement::EventTypes::DEPOPULATION)
             {
                 malariaDeathCount++;
             }    

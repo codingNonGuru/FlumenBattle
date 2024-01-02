@@ -28,8 +28,8 @@ namespace world
 namespace world::settlement 
 {
     struct Affliction;
-    struct SettlementEvent;
-    struct SettlementEventGenerator;
+    struct Event;
+    struct EventGenerator;
     class SettlementProduction;
     class ConditionManager;
     struct ConditionData;
@@ -66,7 +66,7 @@ namespace world::settlement
 
         friend class SettlementAllocator;
 
-        friend struct SettlementEventGenerator;
+        friend struct EventGenerator;
 
         friend class SettlementProductionFinisher;
 
@@ -108,7 +108,7 @@ namespace world::settlement
 
         Pool <Affliction> afflictions;
 
-        Pool <SettlementEvent> events;
+        Pool <Event> events;
 
         Pool <Link> links;
 

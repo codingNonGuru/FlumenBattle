@@ -10,6 +10,8 @@ namespace world
 
         int HourCount;
 
+        int TotalHourCount;
+
         int DayCount;
 
         int TotalDayCount;
@@ -33,7 +35,7 @@ namespace world
         WorldTime() {}
 
         WorldTime(int yearCount, int dayCount, int hourCount) : 
-            YearCount(yearCount), DayCount(dayCount), TotalDayCount(dayCount), HourCount(hourCount), MinuteCount(0), IsFlowing(false), FlowSpeed(1), IsStopDelayed(false) {}
+            YearCount(yearCount), DayCount(dayCount), TotalDayCount(dayCount), HourCount(hourCount), TotalHourCount(hourCount), MinuteCount(0), IsFlowing(false), FlowSpeed(1), IsStopDelayed(false) {}
 
         void SpeedUp() 
         {
@@ -72,6 +74,7 @@ namespace world
                 IsNewHour = true;
 
                 HourCount++;
+                TotalHourCount++;
                 if(HourCount >= 24)
                 {
                     HourCount = 0;

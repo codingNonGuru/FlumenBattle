@@ -79,7 +79,6 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
 void Settlement::AddPath(Path *path) 
 {
     *links.Add() = {path};
-    std::cout<<"capacity "<<links.GetCapacity()<<" "<<links.GetSize()<<"\n";
 }
 
 Path *Settlement::GetPathTo(Settlement *settlement) 
@@ -616,7 +615,7 @@ void Settlement::Update()
         for(auto &affliction : afflictions)
         {
             auto result = affliction.Type->OnPerform(*this, affliction);
-            SettlementEventGenerator::GenerateEvent(*this, result);
+            EventGenerator::GenerateEvent(*this, result);
         }
     }
 

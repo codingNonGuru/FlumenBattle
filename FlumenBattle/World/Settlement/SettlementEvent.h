@@ -7,14 +7,16 @@ namespace world::settlement
     class Settlement;
     struct AfflictionResult;
 
-    struct SettlementEvent
+    struct Event
     {
-        SettlementEventTypes EventType;
+        EventTypes EventType;
 
         AfflictionTypes CauseType;
+
+        int Time;
     };
 
-    class SettlementEventGenerator
+    class EventGenerator
     {
         friend class Settlement;
 

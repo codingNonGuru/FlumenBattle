@@ -72,13 +72,13 @@ namespace world
         DEATH
     };
 
-    enum class SettlementEventTypes
-    {
-        DEPOPULATION
-    };
-
     namespace settlement
     {
+        enum class EventTypes
+        {
+            DEPOPULATION
+        };
+
         enum class Conditions
         {
             SICKENED,
