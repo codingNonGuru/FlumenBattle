@@ -14,11 +14,18 @@ namespace world
 
         WorldTile *tile;
 
+        int value;
+
         void HandleConfigure() override;
 
         void HandleUpdate() override;
 
     public:
-        void SetTile(WorldTile *newTile) {tile = newTile;}
+        void SetTile(WorldTile *newTile, int newValue) 
+        {
+            tile = newTile;
+            
+            value = newValue;
+        }
     };
 }

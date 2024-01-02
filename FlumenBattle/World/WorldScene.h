@@ -115,6 +115,8 @@ namespace world
 
         Pool <group::Group> & GetGroups() {return *groups;}
 
+        Pool <Polity> & GetPolities() {return polities;}
+
         const WorldTime & GetTime() const {return time;}
 
         const settlement::Settlement *GetFoundedSettlement() const;

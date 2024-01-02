@@ -105,6 +105,82 @@ namespace utility
             secondOptimalPath = Array <TileData>(1024);
         }
 
+        int GetPenalty(TileType *tile)
+        {
+            auto penalties = tile->GetTravelPenalty();
+            if(penalties.Penalties.Find(TravelPenaltyTypes::SEA) != nullptr)
+            {
+                return 10;
+            }
+            else if(penalties.Penalties.Find(TravelPenaltyTypes::MOUNTAINS) != nullptr)
+            {
+                return 5;
+            }
+            else if(penalties.Penalties.Find(TravelPenaltyTypes::WOODS) != nullptr)
+            {
+                return 3;
+            }
+            else
+            {
+                return 1;
+            }
+        };
+
+        const Array <TileData> &MapArea(TileType *centerTile, Integer range = 7)
+        {
+            auto &tiles = centerTile->GetNearbyTiles(range);
+            for(auto &tile : tiles)
+            {
+                tile->PathData.IsVisited = false;
+                tile->PathData.IsToBeVisited = true;
+            }
+
+            centerTile->PathData.IsVisited = true;
+            centerTile->PathData.IsToBeVisited = true;
+
+            visitedTiles.Reset();
+            *visitedTiles.Add() = {centerTile, 0};
+
+            int searches = 0;
+            while(true)
+            {
+                auto bestComplexity = INT_MAX;
+                TileData bestTile = {nullptr, 0};
+                
+                for(auto &tile : visitedTiles)
+                {
+                    searches++;
+                    if(tile.Tile->PathData.IsVisited == false)
+                        continue;
+
+                    auto &nearbyTiles = tile.Tile->GetNearbyTiles();
+                    for(auto nearbyTile = nearbyTiles.GetStart(); nearbyTile != nearbyTiles.GetEnd(); ++nearbyTile)
+                    {
+                        if((*nearbyTile)->PathData.IsVisited == false && (*nearbyTile)->PathData.IsToBeVisited == true)
+                        {
+                            //auto penalty = GetPenalty(*nearbyTile) + GetPenalty(tile.Tile);
+                            auto penalty = GetPenalty(*nearbyTile);
+                            if(tile.Distance + penalty < bestComplexity)
+                            {
+                                bestComplexity = tile.Distance + penalty;
+                                bestTile.Tile = *nearbyTile;
+                            }
+                        }
+                    }
+                }
+
+                bestTile.Tile->PathData.IsVisited = true;
+                *visitedTiles.Add() = {bestTile.Tile, bestComplexity};
+
+                if(tiles.GetSize() == visitedTiles.GetSize())
+                {
+                    break;
+                }
+            }
+
+            return visitedTiles;
+        }
+
         PathData FindPathDjikstra(TileType *startTile, TileType *endTile, Integer range = 7)
         {
             auto getPenalty = [] (TileType *tile)

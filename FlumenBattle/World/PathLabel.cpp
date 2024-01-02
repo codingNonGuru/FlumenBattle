@@ -29,10 +29,8 @@ void PathLabel::HandleUpdate()
 {
     //Configure(Size(100, 100), drawOrder_, {Position2()});
 
-    auto weight = tile->PathData.Passes[0];
-
     Phrase text; 
-    text << weight;
+    text << value;
     label->Setup(text);
 
     auto camera = RenderManager::GetCamera(Cameras::WORLD);

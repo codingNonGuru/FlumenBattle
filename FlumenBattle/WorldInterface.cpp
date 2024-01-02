@@ -16,6 +16,7 @@
 #include "FlumenBattle/World/WorldMap.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Polity.h"
 
 using namespace world;
 
@@ -171,9 +172,11 @@ void WorldInterface::Update()
         label->Disable();
     }
 
-    /*auto &tiles = WorldScene::Get()->GetWorldMap()->tiles;
+    auto worldMap = WorldScene::Get()->GetWorldMap();
+    auto polity = WorldScene::Get()->GetPolities().Get(0);
+    auto &interestMap = polity->GetInterestMap().GetTiles();
 
-    int index = 0;
+    /*int index = 0;
     for(auto tile = tiles.GetStart(); tile != tiles.GetEnd(); ++tile)
     {
         if(tile->PathData.IsVisited == true)
@@ -183,5 +186,17 @@ void WorldInterface::Update()
             label->Enable();
             index++;
         }
+    }*/
+
+    /*int index = 0;
+    for(auto tile = interestMap.GetStart(); tile != interestMap.GetEnd(); ++tile)
+    {
+        if(tile->GetOwner() == nullptr)
+            continue;
+    
+        auto label = *pathLabels.Get(index);
+        label->SetTile(worldMap->GetTile(tile->Coordinates), tile->GetDistance());
+        label->Enable();
+        index++;
     }*/
 }

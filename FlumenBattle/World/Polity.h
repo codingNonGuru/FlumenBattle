@@ -21,13 +21,27 @@ namespace world
     {
         struct Interest : public core::hex::Tile
         {
+            friend class Polity;
+
+        private:
             settlement::Settlement *Owner;
 
             int Distance;
 
+            int Value {0};
+
+            int Risk {0};
+
+        public:
             Interest() {}
 
             Interest(Integer3 coordinates, settlement::Settlement *owner, int distance) : core::hex::Tile(coordinates), Owner(owner), Distance(distance) {}
+
+            Integer GetCost() const {return Distance - Value;}
+
+            Integer GetDistance() const {return Distance;}
+
+            settlement::Settlement *GetOwner() const {return Owner;}
         };
 
         Pool <settlement::Settlement *> settlements;

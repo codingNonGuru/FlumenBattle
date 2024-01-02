@@ -114,13 +114,13 @@ world::WorldTile * Settlement::FindColonySpot()
 
             auto &interestMap = this->GetPolity()->GetInterestMap();
             auto prospectedTile = interestMap.GetTile(tile->HexCoordinates);
-            auto stakeholder = prospectedTile->Owner;
+            auto stakeholder = prospectedTile->GetOwner();
             if(stakeholder != nullptr && stakeholder != this)
                 continue;
 
-            if(prospectedTile->Distance < bestChance)
+            if(prospectedTile->GetCost() < bestChance)
             {
-                bestChance = prospectedTile->Distance;
+                bestChance = prospectedTile->GetCost();
                 bestTile = tile;
             }
         }
@@ -145,11 +145,11 @@ world::WorldTile * Settlement::FindColonySpot()
 
             auto &interestMap = this->GetPolity()->GetInterestMap();
             auto prospectedTile = interestMap.GetTile(tile->HexCoordinates);
-            auto stakeholder = prospectedTile->Owner;
+            auto stakeholder = prospectedTile->GetOwner();
             if(stakeholder != nullptr && stakeholder != this)
                 continue;
 
-            if(prospectedTile->Distance == bestChance)
+            if(prospectedTile->GetCost() == bestChance)
             {
                 *candidateTiles.Add() = tile;
             }

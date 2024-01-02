@@ -38,47 +38,51 @@ void Polity::ExtendRealm(settlement::Settlement *domain)
 {
     *this->settlements.Add() = domain;
 
-    auto &tiles = domain->GetLocation()->GetNearbyTiles(MAXIMUM_COLONIZATION_RANGE, 2);
-    for(auto &tile : tiles)
+    auto &mappedTiles = utility::Pathfinder <WorldTile>::Get()->MapArea(domain->GetLocation(), MAXIMUM_COLONIZATION_RANGE);
+
+    //auto &tiles = domain->GetLocation()->GetNearbyTiles(MAXIMUM_COLONIZATION_RANGE, 2);
+    for(auto &tile : mappedTiles)
     {
-        auto existingInterest = interestMap.GetTile(tile->HexCoordinates);
-        if(tile == domain->GetLocation())
+        auto existingInterest = interestMap.GetTile(tile.Tile->HexCoordinates);
+        if(tile.Tile == domain->GetLocation())
         {
             existingInterest->Owner = domain;
-            existingInterest->Distance = 1;
+            existingInterest->Distance = 0;
+            existingInterest->Value = 5;
         }
         else
         {
-            //auto distance = domain->GetLocation()->GetDistanceTo(*tile);
-            auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(domain->GetLocation(), tile);
-            auto cost = pathData.Complexity;
+            auto distance = tile.Distance; //pathData.Complexity; 
 
-            auto nearbyTiles = tile->GetNearbyTiles(1, 3);
+            auto value = 0;
+            auto nearbyTiles = tile.Tile->GetNearbyTiles(1, 3);
             for(auto neighbour = nearbyTiles.GetStart(); neighbour != nearbyTiles.GetEnd(); ++neighbour)
             {
                 if((*neighbour)->HasBiome(WorldBiomes::STEPPE))
                 {
-                    cost -= 2;
+                    value += 2;
                 }
                 else if((*neighbour)->HasBiome(WorldBiomes::WOODS))
                 {
-                    cost -= 1;
+                    value += 1;
                 }
             }
+
+            existingInterest->Value = value;
 
             if(existingInterest->Owner == nullptr)
             {
                 existingInterest->Owner = domain;
-                existingInterest->Distance = cost;
+                existingInterest->Distance = distance;
             }
             else
             {
-                if(existingInterest->Distance > cost)
+                if(existingInterest->Distance > distance)
                 {
                     existingInterest->Owner = domain;
-                    existingInterest->Distance = cost;
+                    existingInterest->Distance = distance;
                 }
-                else if(existingInterest->Distance == cost)
+                else if(existingInterest->Distance == distance)
                 {
                     if(utility::RollDice(0.5f) == true)
                     {

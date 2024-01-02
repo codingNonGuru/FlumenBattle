@@ -95,6 +95,6 @@ struct TravelPenalty
 {
 	Integer Value;
 
-	container::Block <TravelPenaltyTypes, 4> Penalties;
+	container::SmartBlock <TravelPenaltyTypes, 4> Penalties;
 };
 

@@ -215,14 +215,14 @@ void WorldTileModel::Render()
     auto &interestTiles = polity->GetInterestMap().GetTiles();
     for(auto tile = interestTiles.GetStart(); tile != interestTiles.GetEnd(); ++tile)
     {
-        if(tile->Owner == nullptr)
+        if(tile->GetOwner() == nullptr)
             continue;
         
         shader->SetConstant(map->GetTile(tile->Coordinates)->Position, "hexPosition");
 
         shader->SetConstant(WORLD_TILE_SIZE, "hexSize");
 
-        shader->SetConstant(tile->Owner->GetBanner(), "color");
+        shader->SetConstant(tile->GetOwner()->GetBanner(), "color");
 
         glDrawArrays(GL_TRIANGLES, 0, 18);
     }*/

@@ -98,23 +98,21 @@ Float4 WorldTile::GetShade() const
 
 TravelPenalty WorldTile::GetTravelPenalty() const
 {
-    container::Block <TravelPenaltyTypes, 4> penalties;
-
-    int i = 0;
+    container::SmartBlock <TravelPenaltyTypes, 4> penalties;
 
     if(Biome->Type == WorldBiomes::WOODS)
     {
-        *penalties[i++] = TravelPenaltyTypes::WOODS;
+        *penalties.Add() = TravelPenaltyTypes::WOODS; 
     }
 
     if(Relief->Type == WorldReliefs::MOUNTAINS)
     {
-        *penalties[i++] = TravelPenaltyTypes::MOUNTAINS;
+        *penalties.Add() = TravelPenaltyTypes::MOUNTAINS; 
     }
 
     if(Type == WorldTiles::SEA)
     {
-        *penalties[i++] = TravelPenaltyTypes::SEA;
+        *penalties.Add() = TravelPenaltyTypes::SEA; 
     }
 
     return {Biome->TravelPenalty + Relief->TravelPenalty, penalties};
