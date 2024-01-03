@@ -7,6 +7,8 @@
 #include "FlumenBattle/World/Character/Ability.h"
 #include "FlumenBattle/World/Character/AbilityHandler.h"
 #include "FlumenBattle/Race.h"
+#include "FlumenBattle/World/Character/Condition.h"
+#include "FlumenBattle/World/Character/Modifier.h"
 
 struct Weapon;
 struct Spell;
@@ -43,6 +45,7 @@ namespace world
         class CharacterClass;
         class Condition;
         class CharacterFactory;
+        class Modifier;
     }
 }
 
@@ -62,6 +65,8 @@ namespace world::character
         friend class battle::BattleInterface;
 
         friend class Condition; 
+
+        friend class ModifierAccessor;
 
         friend class battle::SpellCaster;
 
@@ -91,8 +96,6 @@ namespace world::character
 
         ProficiencyHandler proficiencies;
 
-        bool isFatigued;
-
         Integer currentHitPoints;
 
         Integer maximumHitPoints;
@@ -113,6 +116,10 @@ namespace world::character
 
         battle::Combatant *combatant;
 
+        ConditionManager conditions;
+
+        ModifierManager modifiers;
+
         void Initialize();
 
         Integer GetActionRange() const;
@@ -123,12 +130,12 @@ namespace world::character
 
         void AddProficiency(Proficiency);
 
+        void AddModifier(Modifier modifier) {modifiers.AddModifier(modifier);}
+
     public:
         Character();
 
         bool IsAlive() const;
-
-        bool IsFatigued() const {return isFatigued;}
 
         Float GetHealth() const {return (Float)currentHitPoints / (Float)maximumHitPoints;}
 
@@ -196,10 +203,14 @@ namespace world::character
 
         Spell* GetSelectedSpell() const {return selectedSpell;}
 
+        bool HasCondition(Conditions condition) {return conditions.HasCondition(condition);}
+
         void TakeShortRest();
 
         void TakeLongRest();
 
-        void AddFatigue() {isFatigued = true;}
+        void AddCondition(ConditionData);
+
+        void Update();
     };
 }

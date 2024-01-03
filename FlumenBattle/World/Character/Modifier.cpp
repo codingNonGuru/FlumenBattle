@@ -1,6 +1,13 @@
 #include "Modifier.h"
 
-using namespace world::settlement;
+using namespace world::character;
+
+#define MODIFIER_COUNT_PER_CHARACTER 16
+
+void ModifierManager::Initialize()
+{
+    //modifiers.Initialize(MODIFIER_COUNT_PER_CHARACTER);
+}
 
 void ModifierManager::AddModifier(Modifier modifier)
 {

@@ -126,7 +126,7 @@ namespace world::group
             auto savingThrow = utility::RollD20Dice(FATIGUE_SAVING_THROW_DC, bonus);
             if(savingThrow.IsAnyFailure())
             {
-                character.AddFatigue();
+                character.AddCondition({Conditions::FATIGUE});
             }
         }
     }

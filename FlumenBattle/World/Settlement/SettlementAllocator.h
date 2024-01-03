@@ -31,6 +31,7 @@ namespace world::settlement
     class ConditionManager;
     class Building;
     class BuildingManager;
+    struct Modifier;
 
     class SettlementAllocator : public core::Singleton <SettlementAllocator>
     {
@@ -70,6 +71,8 @@ namespace world::settlement
 
         container::PoolAllocator <Link>::Memory linkMemory;
 
+        container::ArrayAllocator <Modifier>::Memory modifierMemory;
+
 
         container::Pool <Settlement> settlements;
 
@@ -96,6 +99,8 @@ namespace world::settlement
         container::Pool <PathSegment> pathSegments;
 
         container::PoolAllocator <Link> linkAllocator;
+
+        container::ArrayAllocator <Modifier> modifierAllocator;
 
 
         void PerformCleanup();

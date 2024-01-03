@@ -31,8 +31,6 @@ bool Link::operator== (const settlement::Path &path) const
 
 void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
 {
-    this->modifierManager.Initialize();
-
     this->buildingManager->Initialize(this);
 
     this->name = name;

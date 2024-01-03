@@ -48,8 +48,6 @@ enum class SpellTypes {
 	CURE_WOUNDS, MAGIC_MISSILE, HEALING_WORD
 	};
 
-enum class ConditionTypes {CHILL, PARALYSIS, CHARM, EVASION, NONE};
-
 enum class SavingThrows
 {
 	REFLEX_SAVE, FORTITUDE_SAVE, WILL_SAVE

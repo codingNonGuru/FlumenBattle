@@ -2,11 +2,11 @@
 
 #include "FlumenCore/Container/Array.hpp"
 
-#include "FlumenBattle/World/Settlement/Types.h"
+#include "FlumenBattle/World/Character/Types.h"
 
-namespace world::settlement
+namespace world::character
 {
-    class Settlement;
+    class Character;
 
     struct Modifier
     {
@@ -29,7 +29,9 @@ namespace world::settlement
     {
         friend class ModifierAllocator;
 
-        friend class Settlement;
+        friend class Character;
+
+        void Initialize();
 
         void AddModifier(Modifier);
 
@@ -40,7 +42,7 @@ namespace world::settlement
 
     class ModifierAllocator
     {
-        friend class SettlementAllocator;
+        friend class CharacterAllocator;
 
         static void Allocate(container::ArrayAllocator <Modifier> &allocator, ModifierManager &manager) 
         {

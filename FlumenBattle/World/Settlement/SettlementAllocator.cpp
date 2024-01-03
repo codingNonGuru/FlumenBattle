@@ -12,8 +12,6 @@
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldGenerator.h"
 
-#define MAXIMUM_SETTLEMENT_COUNT 256
-
 #define MAXIMUM_TILES_PER_SETTLEMENT 19
 
 #define MAXIMUM_CONDITIONS_PER_SETTLEMENT 32
@@ -27,6 +25,8 @@
 #define MAXIMUM_PATHS_PER_SETTLEMENT 8
 
 #define AVERAGE_SEGMENTS_PER_PATH 4
+
+#define MODIFIERS_PER_SETTLEMENT 32
 
 using namespace world::settlement;
 
@@ -61,6 +61,8 @@ void SettlementAllocator::PreallocateMaximumMemory()
     pathSegmentMemory = container::Pool <PathSegment>::PreallocateMemory (settlementCount * MAXIMUM_PATHS_PER_SETTLEMENT * AVERAGE_SEGMENTS_PER_PATH);
 
     linkMemory = container::PoolAllocator <Link>::PreallocateMemory (settlementCount, MAXIMUM_PATHS_PER_SETTLEMENT);
+
+    modifierMemory = container::ArrayAllocator <Modifier>::PreallocateMemory (settlementCount, MODIFIERS_PER_SETTLEMENT);
 }
 
 void SettlementAllocator::AllocateWorldMemory(int worldSize)
@@ -94,6 +96,8 @@ void SettlementAllocator::AllocateWorldMemory(int worldSize)
     buildingAllocator = container::PoolAllocator <Building> (settlementCount, MAXIMUM_BUILDINGS_PER_SETTLEMENT, buildingMemory);
 
     linkAllocator = container::PoolAllocator <Link> (settlementCount, MAXIMUM_PATHS_PER_SETTLEMENT, linkMemory);
+
+    modifierAllocator = container::ArrayAllocator <Modifier> (settlementCount, MODIFIERS_PER_SETTLEMENT, modifierMemory);
 }
 
 Settlement * SettlementAllocator::Allocate()
@@ -114,6 +118,8 @@ Settlement * SettlementAllocator::Allocate()
     settlement->conditionManager = conditionManagerAllocator.Add();
 
     ConditionAllocator::Allocate(conditionAllocator, *settlement->conditionManager);
+
+    ModifierAllocator::Allocate(modifierAllocator, settlement->modifierManager);
 
     settlement->buildingManager = buildingManagerAllocator.Add();
 

@@ -32,7 +32,7 @@ namespace world::character
 
         *spellSlots.Add() = {2};
 
-        isFatigued = false;
+        //isFatigued = false;
     }
 
     bool Character::IsAlive() const
@@ -220,6 +220,18 @@ namespace world::character
             currentHitPoints = maximumHitPoints;
         }
 
-        isFatigued = false;
+        conditions.RemoveCondition(Conditions::FATIGUE);
+    }
+
+    void Character::AddCondition(ConditionData data)
+    {
+        conditions.AddCondition(data);
+    }
+
+    void Character::Update()
+    {
+        modifiers.ClearModifiers();
+
+        conditions.ApplyModifiers(*this);
     }
 }

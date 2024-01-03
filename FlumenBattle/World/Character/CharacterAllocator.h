@@ -20,21 +20,32 @@ namespace world
     {
         struct CharacterAction;
         class Character;
+        class Condition;
+        class Modifier;
 
-        class CharacterAllocator : public core::Singleton<CharacterAllocator>
+        class CharacterAllocator : public core::Singleton <CharacterAllocator>
         {
+            container::PoolAllocator <Condition>::Memory conditionMemory;
+
+            container::ArrayAllocator <Modifier>::Memory modifierMemory;
+
+
             container::PoolAllocator <Weapon> weaponAllocator;
 
             container::PoolAllocator <Spell> spellAllocator;
 
             container::PoolAllocator <SpellSlot> spellSlotAllocator;
 
-            container::ArrayAllocator <CharacterAction> actionAllocator;
+            container::PoolAllocator <Condition> conditionAllocator;
+
+            container::ArrayAllocator <Modifier> modifierAllocator;
 
         public:
-            CharacterAllocator();
+            void AllocateWorldMemory(int);
 
-            Character * Allocate(group::Group &);
+            void PreallocateMaximumMemory();
+
+            Character *Allocate(group::Group &);
         };
     }
 }

@@ -5,18 +5,46 @@
 #include "FlumenBattle/World/Character/Weapon.h"
 #include "FlumenBattle/World/Character/CharacterAction.h"
 #include "FlumenBattle/World/Character/CharacterClass.h"
+#include "FlumenBattle/World/WorldGenerator.h"
 
 namespace world::character
 {
-    CharacterAllocator::CharacterAllocator()
+    #define MAXIMUM_GROUPS_PER_WORLD 64
+
+    #define MAXIMUM_CHARACTERS_PER_GROUP 16
+
+    #define CONDITIONS_PER_CHARACTER 16
+
+    #define MODIFIERS_PER_CHARACTER 16
+
+    void CharacterAllocator::PreallocateMaximumMemory()
     {
-        weaponAllocator = container::PoolAllocator <Weapon> (16 * 64, 4);
+        auto worldGenerator = WorldGenerator::Get();
 
-        spellAllocator = container::PoolAllocator <Spell> (16 * 64, 8);
+        auto groupCount = worldGenerator->GetMaximumGroupCount(MAXIMUM_WORLD_SIZE);
 
-        spellSlotAllocator = container::PoolAllocator <SpellSlot> (16 * 64, 8);
+        conditionMemory = container::PoolAllocator <Condition>::PreallocateMemory(groupCount * MAXIMUM_CHARACTERS_PER_GROUP, CONDITIONS_PER_CHARACTER);
 
-        actionAllocator = container::ArrayAllocator <character::CharacterAction> (16 * 64, 8);
+        modifierMemory = container::ArrayAllocator <Modifier>::PreallocateMemory(groupCount * MAXIMUM_CHARACTERS_PER_GROUP, MODIFIERS_PER_CHARACTER);
+    }
+
+    void CharacterAllocator::AllocateWorldMemory(int worldSize)
+    {
+        auto worldGenerator = WorldGenerator::Get();
+
+        auto groupCount = worldGenerator->GetMaximumGroupCount(worldSize);
+
+        weaponAllocator = container::PoolAllocator <Weapon> (MAXIMUM_CHARACTERS_PER_GROUP * groupCount, 4);
+
+        spellAllocator = container::PoolAllocator <Spell> (MAXIMUM_CHARACTERS_PER_GROUP * groupCount, 8);
+
+        spellSlotAllocator = container::PoolAllocator <SpellSlot> (MAXIMUM_CHARACTERS_PER_GROUP * groupCount, 8);
+
+        //actionAllocator = container::ArrayAllocator <character::CharacterAction> (MAXIMUM_CHARACTERS_PER_GROUP * MAXIMUM_GROUPS_PER_WORLD, 8);
+
+        conditionAllocator = container::PoolAllocator <Condition> (MAXIMUM_CHARACTERS_PER_GROUP * groupCount, CONDITIONS_PER_CHARACTER);
+
+        modifierAllocator = container::ArrayAllocator <Modifier> (MAXIMUM_CHARACTERS_PER_GROUP * groupCount, MODIFIERS_PER_CHARACTER);
     }
 
     Character * CharacterAllocator::Allocate(group::Group &group)
@@ -26,7 +54,11 @@ namespace world::character
         character->weapons.Initialize(weaponAllocator);
         character->spells.Initialize(spellAllocator);
         character->spellSlots.Initialize(spellSlotAllocator);
-        //character->type->Actions.Initialize(actionAllocator);
+
+        ConditionAllocator::Allocate(conditionAllocator, character->conditions);
+
+        ModifierAllocator::Allocate(modifierAllocator, character->modifiers);
+        
         return character;
     }
 }

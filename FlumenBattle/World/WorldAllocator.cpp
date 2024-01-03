@@ -7,6 +7,7 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/SettlementAllocator.h"
 #include "FlumenBattle/World/GroupAllocator.h"
+#include "FlumenBattle/World/Character/CharacterAllocator.h"
 
 using namespace world;
 
@@ -25,6 +26,8 @@ WorldAllocator::WorldAllocator()
     settlement::SettlementAllocator::Get()->PreallocateMaximumMemory();
 
     world::GroupAllocator::Get()->PreallocateMaximumMemory();
+
+    world::character::CharacterAllocator::Get()->PreallocateMaximumMemory();
 }
 
 void WorldAllocator::AllocateMap(WorldMap &map, container::SmartBlock< container::Array <WorldTilePointer>, 4> &nearbyTileBuffers, int size)
@@ -48,4 +51,6 @@ void WorldAllocator::AllocateSociety(int worldSize)
     settlement::SettlementAllocator::Get()->AllocateWorldMemory(worldSize);
 
     world::GroupAllocator::Get()->AllocateWorldMemory(worldSize);
+
+    world::character::CharacterAllocator::Get()->AllocateWorldMemory(worldSize);
 }

@@ -350,5 +350,5 @@ int WorldGenerator::GetMaximumSettlementCount(int worldSize) const
 
 int WorldGenerator::GetMaximumGroupCount(int worldSize) const
 {
-    return (worldSize * worldSize) / 15;
+    return (worldSize * worldSize) / 25;
 }

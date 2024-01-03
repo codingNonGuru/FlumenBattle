@@ -60,7 +60,7 @@ void WorldInfoPanel::CharacterItem::HandleUpdate()
     auto string = Word() << character->GetCurrentHitPoints() << "/" << character->GetMaximumHitPoints();
     healthLabel->Setup(string);
 
-    string = Word() << (character->IsFatigued() ? "F" : "");
+    string = Word() << (character->HasCondition(world::character::Conditions::FATIGUE) ? "F" : "");
     conditionsLabel->Setup(string);
 }
 
