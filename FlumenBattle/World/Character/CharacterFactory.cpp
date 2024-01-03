@@ -1,5 +1,7 @@
 #include "FlumenCore/Utility/Utility.hpp"
 
+#include "FlumenEngine/Render/TextureManager.hpp"
+
 #include "FlumenBattle/World/Character/CharacterFactory.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Character/CharacterAllocator.h"
@@ -16,6 +18,10 @@
 using namespace world::character;
 
 Integer abilityScores[ABILITY_COUNT];
+
+int textureIndex = 0;
+
+const Array <Word> avatarTextures = {"Icons_01", "Icons_02", "Icons_03", "Icons_13", "Icons_14", "Icons_15", "Icons_16", "Icons_17"};
 
 Character* CharacterFactory::Create(const Race *race, const CharacterClass *type, world::group::Group& group)
 {
@@ -175,6 +181,13 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
     for(auto boost : race->Boosts)
     {
         character->BoostAbility(boost.Type, boost.Boost);
+    }
+
+    auto textureName = avatarTextures.Get(textureIndex++);
+    character->avatar = render::TextureManager::GetTexture(*textureName);
+    if(textureIndex == avatarTextures.GetSize())
+    {
+        textureIndex = 0;
     }
 
     character->maximumHitPoints = type->HitDice;

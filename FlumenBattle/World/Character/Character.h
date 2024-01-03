@@ -12,6 +12,11 @@ struct Weapon;
 struct Spell;
 struct SpellSlot;
 
+namespace render
+{
+    class Texture;
+}
+
 namespace battle
 {
     class Combatant;
@@ -78,6 +83,8 @@ namespace world::character
 
         const Race *race;
 
+        const render::Texture *avatar;
+
         Integer level;
 
         AbilityHandler abilities;
@@ -136,6 +143,8 @@ namespace world::character
         const CharacterClass * GetClass() const {return type;}
 
         world::group::Group * GetGroup() const {return group;}
+
+        const render::Texture *GetAvatar() const {return avatar;}
 
         const Ability & GetAbility(AbilityTypes type) const {return *abilities.GetAbility(type);}
 

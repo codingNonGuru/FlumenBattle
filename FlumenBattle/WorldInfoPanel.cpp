@@ -1,5 +1,6 @@
 #include "FlumenEngine/Interface/Text.hpp"
 #include "FlumenEngine/Interface/ElementFactory.h"
+#include "FlumenEngine/Interface/Sprite.hpp"
 
 #include "FlumenBattle/WorldInfoPanel.h"
 #include "FlumenBattle/World/WorldScene.h"
@@ -15,13 +16,27 @@ void * WorldInfoPanel::CharacterItem::operator new(size_t size)
     return item;
 }
 
+void WorldInfoPanel::CharacterItem::SetCharacter(world::character::Character *_character) 
+{
+    character = _character;
+
+    icon->GetSprite()->SetTexture(character->GetAvatar());
+}
+
 void WorldInfoPanel::CharacterItem::HandleConfigure()
 {
-    classLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, -15.0f), this}},
+    /*classLabel = ElementFactory::BuildText(
+        {Size(100, 100), drawOrder_ + 2, {Position2(0.0f, -15.0f), this}},
         {{"JSLAncient", "Large"}, Color::RED * 0.75f}
     );
-    classLabel->Enable();
+    classLabel->Enable();*/
+
+    icon = ElementFactory::BuildElement<Element>(
+        {Size(32, 32), drawOrder_ + 1, {Position2(0.0f, 15.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}, {"Icons_01", "Sprite"}, Opacity(1.0f)}
+    );
+    static SpriteDrawData drawData = {Position2(), Scale2(1.5f, 1.5f), Opacity(1.0f), DrawOrder(-2)};
+    icon->GetSprite()->SetDrawData(&drawData);
+    icon->Enable();
 
     healthLabel = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, 20.0f), this}}, 
@@ -39,8 +54,8 @@ void WorldInfoPanel::CharacterItem::HandleConfigure()
 
 void WorldInfoPanel::CharacterItem::HandleUpdate()
 {
-    auto className = character->GetClass()->Name;
-    classLabel->Setup(className.GetFirstCharacter());
+    /*auto className = character->GetClass()->Name;
+    classLabel->Setup(className.GetFirstCharacter());*/
 
     auto string = Word() << character->GetCurrentHitPoints() << "/" << character->GetMaximumHitPoints();
     healthLabel->Setup(string);

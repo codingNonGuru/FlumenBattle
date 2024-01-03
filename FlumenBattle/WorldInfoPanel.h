@@ -24,6 +24,8 @@ class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
 
         Text *conditionsLabel;
 
+        Element *icon;
+
         void HandleConfigure() override;    
 
         void HandleUpdate() override;    
@@ -31,7 +33,7 @@ class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
     public:
         void * operator new(size_t size);
 
-        void SetCharacter(world::character::Character *_character) {character = _character;}
+        void SetCharacter(world::character::Character *_character);
     };
 
     Text *timeLabel;
