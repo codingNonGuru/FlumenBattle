@@ -40,7 +40,6 @@ void Polity::ExtendRealm(settlement::Settlement *domain)
 
     auto &mappedTiles = utility::Pathfinder <WorldTile>::Get()->MapArea(domain->GetLocation(), MAXIMUM_COLONIZATION_RANGE);
 
-    //auto &tiles = domain->GetLocation()->GetNearbyTiles(MAXIMUM_COLONIZATION_RANGE, 2);
     for(auto &tile : mappedTiles)
     {
         auto existingInterest = interestMap.GetTile(tile.Tile->HexCoordinates);
@@ -55,7 +54,7 @@ void Polity::ExtendRealm(settlement::Settlement *domain)
             auto distance = tile.Distance; //pathData.Complexity; 
 
             auto value = 0;
-            auto nearbyTiles = tile.Tile->GetNearbyTiles(1, 3);
+            auto nearbyTiles = tile.Tile->GetNearbyTiles();
             for(auto neighbour = nearbyTiles.GetStart(); neighbour != nearbyTiles.GetEnd(); ++neighbour)
             {
                 if((*neighbour)->HasBiome(WorldBiomes::STEPPE))

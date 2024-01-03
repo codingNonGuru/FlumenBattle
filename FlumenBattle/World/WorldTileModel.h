@@ -1,8 +1,9 @@
 #pragma once
 
-#include "FlumenEngine/Render/Model.hpp"
-
 #include "FlumenCore/Singleton.h"
+
+#include "FlumenEngine/Render/Model.hpp"
+#include "FlumenEngine/Utility/Color.hpp"
 
 class Shader;
 
@@ -30,5 +31,7 @@ namespace world
         void CreateCamera();
 
         void HandleCharacterSelected();
+
+        Color GetGlobalLightColor();
     };
 }

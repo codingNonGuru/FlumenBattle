@@ -92,6 +92,64 @@ void WorldTileModel::HandleCharacterSelected()
     //camera->SetTarget(Position3(combatant->GetPosition(), 0.0f), CAMERA_SHIFT_DURATION);
 }
 
+Color WorldTileModel::GetGlobalLightColor()
+{
+    auto &time = worldScene->GetTime();
+    Color color;
+
+    Color nightColor = Color::BLUE * 0.4f + Color::BLACK * 0.6f;
+    nightColor.a_ = 0.8f;
+
+    Color eveningColor = Color::BLUE * 0.4f + Color::BLACK * 0.6f;
+    eveningColor.a_ = 0.6f;
+
+    Color noonColor = Color::YELLOW;
+    noonColor.a_ = 0.05f;
+
+    Color dawnColor = Color::ORANGE;
+    dawnColor.a_ = 0.2f;
+
+    if(time.HourCount >= 23 || time.HourCount < 5)
+    {
+        color = nightColor;
+    }
+    else if(time.HourCount >= 5 && time.HourCount < 6)
+    {
+        auto factor = (float)time.MinuteCount / 60.0f;
+        color = nightColor * (1.0f - factor) + dawnColor * factor;
+    }
+    else if(time.HourCount >= 6 && time.HourCount < 7)
+    {
+        auto factor = (float)time.MinuteCount / 60.0f;
+        color = dawnColor * (1.0f - factor) + noonColor * factor;
+    }
+    else if(time.HourCount >= 7 && time.HourCount < 19)
+    {
+        color = noonColor;
+    }
+    else if(time.HourCount >= 19 && time.HourCount < 20)
+    {
+        auto factor = (float)time.MinuteCount / 60.0f;
+        color = noonColor * (1.0f - factor) + dawnColor * factor;
+    }
+    else if(time.HourCount >= 20 && time.HourCount < 21)
+    {
+        auto factor = (float)time.MinuteCount / 60.0f;
+        color = dawnColor * (1.0f - factor) + eveningColor * factor;
+    }
+    else if(time.HourCount >= 21 && time.HourCount < 22)
+    {
+        color = eveningColor;
+    }
+    else if(time.HourCount >= 22 && time.HourCount < 23)
+    {
+        auto factor = (float)time.MinuteCount / 60.0f;
+        color = eveningColor * (1.0f - factor) + nightColor * factor;
+    }
+
+    return color;
+}
+
 void WorldTileModel::Render() 
 {
 	shader->Bind();
@@ -245,6 +303,21 @@ void WorldTileModel::Render()
 
         shader->SetConstant(settlement.GetRulerBanner(), "color");
         //shader->SetConstant(settlement.GetBanner(), "color");
+
+        glDrawArrays(GL_TRIANGLES, 0, 18);
+    }
+
+    shader->SetConstant(0.8f, "opacity");
+
+    auto lightColor = GetGlobalLightColor();
+    for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
+    {
+        shader->SetConstant(tile->Position, "hexPosition");
+
+        shader->SetConstant(WORLD_TILE_SIZE, "hexSize");
+
+        shader->SetConstant(lightColor, "color");
+        //shader->SetConstant(tile->Shade, "color");
 
         glDrawArrays(GL_TRIANGLES, 0, 18);
     }
