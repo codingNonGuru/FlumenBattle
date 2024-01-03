@@ -13,7 +13,7 @@
 #include "FlumenBattle/World/WorldMap.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Group/Encounter.h"
-#include "FlumenBattle/BattleState.h"
+#include "FlumenBattle/Battle/BattleState.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
@@ -159,7 +159,7 @@ namespace world
         Disable();
 
         TaskManager::Add({TRANSITION_TO_BATTLE_DELAY, []{
-            BattleState::Get()->Enter();
+            battle::BattleState::Get()->Enter();
         }});
     }
 

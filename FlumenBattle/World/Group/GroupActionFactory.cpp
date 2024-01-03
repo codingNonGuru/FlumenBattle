@@ -5,7 +5,7 @@
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/WorldBiome.h"
-#include "FlumenBattle/Character.h"
+#include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/Utility/Utility.h"
 
 #define GROUP_SEARCH_DC 32

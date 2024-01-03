@@ -5,12 +5,16 @@
 
 #include "FlumenCore/Singleton.h"
 
-class Character;
 namespace world::group
 {
     class Group;
     class GroupFactory;
     class Encounter;
+}
+
+namespace world::character
+{
+    class Character;
 }
 
 namespace world
@@ -23,13 +27,13 @@ namespace world
 
         container::Pool <group::Group>::Memory groupMemory;
 
-        container::PoolAllocator <Character>::Memory characterMemory;
+        container::PoolAllocator <character::Character>::Memory characterMemory;
 
         container::Pool <group::Encounter>::Memory battleMemory;
 
         container::Pool <group::Group> groups;
 
-        container::PoolAllocator <Character> characterAllocator;
+        container::PoolAllocator <character::Character> characterAllocator;
 
         container::Pool <group::Encounter> battles;
 
@@ -37,7 +41,7 @@ namespace world
 
         group::Group *Allocate();
 
-        container::PoolAllocator <Character> &GetCharacterAllocator() {return characterAllocator;}
+        container::PoolAllocator <character::Character> &GetCharacterAllocator() {return characterAllocator;}
 
     public:
         void PreallocateMaximumMemory();

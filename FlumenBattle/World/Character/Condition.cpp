@@ -1,12 +1,14 @@
 #include "FlumenCore/Utility/Utility.hpp"
 
-#include "FlumenBattle/Condition.h"
-#include "FlumenBattle/Character.h"
-#include "FlumenBattle/Combatant.h"
+#include "FlumenBattle/World/Character/Condition.h"
+#include "FlumenBattle/World/Character/Character.h"
+#include "FlumenBattle/Battle/Combatant.h"
+
+using namespace world::character;
 
 Condition::Condition() {duration = 0;}
 
-Condition::Condition(ConditionTypes _type, Combatant * _combatant, Integer _difficultyClass) : combatant(_combatant)
+Condition::Condition(ConditionTypes _type, battle::Combatant * _combatant, Integer _difficultyClass) : combatant(_combatant)
 {
     type = _type;
     difficultyClass = _difficultyClass;

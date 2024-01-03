@@ -1,7 +1,9 @@
-#include "FlumenBattle/ProficiencyHandler.h"
-#include "FlumenBattle/ProficiencyFactory.h"
-#include "FlumenBattle/Character.h"
-#include "FlumenBattle/Weapon.h"
+#include "FlumenBattle/World/Character/ProficiencyHandler.h"
+#include "FlumenBattle/World/Character/ProficiencyFactory.h"
+#include "FlumenBattle/World/Character/Character.h"
+#include "FlumenBattle/World/Character/Weapon.h"
+
+using namespace world::character;
 
 Integer ProficiencyHandler::GetLevelModifier(Proficiency proficiency)
 {

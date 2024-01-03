@@ -4,15 +4,17 @@
 #include "FlumenBattle/World/Group/GroupType.h"
 #include "FlumenBattle/World/Group/Encounter.h"
 #include "FlumenBattle/World/WorldTile.h"
-#include "FlumenBattle/Character.h"
-#include "FlumenBattle/CharacterFactory.h"
+#include "FlumenBattle/World/Character/Character.h"
+#include "FlumenBattle/World/Character/CharacterFactory.h"
 #include "FlumenBattle/RaceFactory.h"
-#include "FlumenBattle/ClassFactory.h"
+#include "FlumenBattle/World/Character/ClassFactory.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/GroupActionFactory.h"
 #include "FlumenBattle/World/Group/GroupMind.h"
 
-Array <CharacterClasses> classMakeup; /*= {
+using namespace world::character;
+
+Array <world::character::CharacterClasses> classMakeup; /*= {
     CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, 
     CharacterClasses::RANGER, CharacterClasses::RANGER, CharacterClasses::RANGER, 
     CharacterClasses::CLERIC,

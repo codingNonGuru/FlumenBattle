@@ -1,11 +1,12 @@
-#include "FlumenBattle/World/CharacterAllocator.h"
+#include "FlumenBattle/World/Character/CharacterAllocator.h"
 #include "FlumenBattle/World/Group/Group.h"
-#include "FlumenBattle/Character.h"
-#include "FlumenBattle/Spell.h"
-#include "FlumenBattle/Weapon.h"
+#include "FlumenBattle/World/Character/Character.h"
+#include "FlumenBattle/World/Character/Spell.h"
+#include "FlumenBattle/World/Character/Weapon.h"
 #include "FlumenBattle/World/Character/CharacterAction.h"
+#include "FlumenBattle/World/Character/CharacterClass.h"
 
-namespace world
+namespace world::character
 {
     CharacterAllocator::CharacterAllocator()
     {
@@ -25,7 +26,7 @@ namespace world
         character->weapons.Initialize(weaponAllocator);
         character->spells.Initialize(spellAllocator);
         character->spellSlots.Initialize(spellSlotAllocator);
-        character->actions.Initialize(actionAllocator);
+        //character->type->Actions.Initialize(actionAllocator);
         return character;
     }
 }

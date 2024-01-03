@@ -5,8 +5,15 @@
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/World/Types.h"
 
-class Character;
-struct BattleTile;
+namespace world::character
+{
+    class Character;
+}
+
+namespace battle
+{
+    struct BattleTile;
+}
 
 namespace world::group
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FlumenBattle/Proficiency.h"
+#include "FlumenBattle/World/Character/Proficiency.h"
 
 class Proficiency;
 

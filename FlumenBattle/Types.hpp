@@ -39,11 +39,7 @@ typedef float Money;
 
 typedef float Labor;
 
-enum class CharacterClasses {FIGHTER, RANGER, CLERIC, WIZARD};
-
 enum class RaceTypes {DWARF, GNOME, HUMAN, HALFLING, ELF, ORC, GOBLIN};
-
-enum class CharacterActions {ATTACK, CAST_SPELL, DASH, DISENGAGE, DODGE, HELP, HIDE, READY, SEARCH, USE_OBJECT, MOVE};
 
 enum class WeaponTypes {SHORT_SWORD, GREAT_SWORD, HAND_AXE, GREAT_AXE, SHORT_BOW, LONG_BOW, STAFF, MACE};
 

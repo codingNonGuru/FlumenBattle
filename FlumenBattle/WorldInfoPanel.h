@@ -5,7 +5,10 @@
 
 class Text;
 
-class Character;
+namespace world::character
+{
+    class Character;
+}
 
 class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
 {
@@ -13,7 +16,7 @@ class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
 
     class CharacterItem : public Element
     {
-        Character *character;
+        world::character::Character *character;
 
         Text *classLabel;
 
@@ -28,7 +31,7 @@ class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
     public:
         void * operator new(size_t size);
 
-        void SetCharacter(Character *_character) {character = _character;}
+        void SetCharacter(world::character::Character *_character) {character = _character;}
     };
 
     Text *timeLabel;

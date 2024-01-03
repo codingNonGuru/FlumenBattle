@@ -4,7 +4,7 @@
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldGenerator.h"
-#include "FlumenBattle/Character.h"
+#include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/World/Group/Encounter.h"
 
 #define CHARACTERS_PER_GROUP 16
@@ -16,7 +16,7 @@ namespace world
         auto groupCount = WorldGenerator::Get()->GetMaximumGroupCount(MAXIMUM_WORLD_SIZE);
         groupMemory = container::Pool <group::Group>::PreallocateMemory(groupCount);
 
-        characterMemory = container::PoolAllocator <Character>::PreallocateMemory(groupCount, CHARACTERS_PER_GROUP);
+        characterMemory = container::PoolAllocator <character::Character>::PreallocateMemory(groupCount, CHARACTERS_PER_GROUP);
 
         battleMemory = container::Pool <group::Encounter>::PreallocateMemory(groupCount);
     }
@@ -26,7 +26,7 @@ namespace world
         auto groupCount = WorldGenerator::Get()->GetMaximumGroupCount(worldSize);
         groups.Initialize(groupCount, groupMemory);
 
-        characterAllocator = container::PoolAllocator <Character> (groupCount, CHARACTERS_PER_GROUP, characterMemory);
+        characterAllocator = container::PoolAllocator <character::Character> (groupCount, CHARACTERS_PER_GROUP, characterMemory);
 
         battles = container::Pool <group::Encounter> (groupCount, battleMemory);
     }

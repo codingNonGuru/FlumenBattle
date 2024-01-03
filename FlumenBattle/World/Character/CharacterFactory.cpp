@@ -1,23 +1,25 @@
 #include "FlumenCore/Utility/Utility.hpp"
 
-#include "FlumenBattle/CharacterFactory.h"
+#include "FlumenBattle/World/Character/CharacterFactory.h"
 #include "FlumenBattle/World/Group/Group.h"
-#include "FlumenBattle/World/CharacterAllocator.h"
-#include "FlumenBattle/Character.h"
-#include "FlumenBattle/BattleScene.h"
-#include "FlumenBattle/BattleTile.h"
-#include "FlumenBattle/Weapon.h"
-#include "FlumenBattle/Spell.h"
-#include "FlumenBattle/ProficiencyFactory.h"
+#include "FlumenBattle/World/Character/CharacterAllocator.h"
+#include "FlumenBattle/World/Character/Character.h"
+#include "FlumenBattle/Battle/BattleScene.h"
+#include "FlumenBattle/Battle/BattleTile.h"
+#include "FlumenBattle/World/Character/Weapon.h"
+#include "FlumenBattle/World/Character/Spell.h"
+#include "FlumenBattle/World/Character/ProficiencyFactory.h"
 #include "FlumenBattle/RaceFactory.h"
-#include "FlumenBattle/ClassFactory.h"
+#include "FlumenBattle/World/Character/ClassFactory.h"
 #include "FlumenBattle/World/Character/CharacterAction.h"
+
+using namespace world::character;
 
 Integer abilityScores[ABILITY_COUNT];
 
 Character* CharacterFactory::Create(const Race *race, const CharacterClass *type, world::group::Group& group)
 {
-    auto character = world::CharacterAllocator::Get()->Allocate(group);// group.GetCharacters().Add();
+    auto character = world::character::CharacterAllocator::Get()->Allocate(group);// group.GetCharacters().Add();
 
     character->group = &group;
 
@@ -54,9 +56,9 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
 
         character->abilities.SetAttackAbility(AbilityTypes::STRENGTH);
 
-        *character->actions.Allocate() = {CharacterActions::ATTACK};
+        /**character->actions.Allocate() = {CharacterActions::ATTACK};
         *character->actions.Allocate() = {CharacterActions::DODGE};
-        *character->actions.Allocate() = {CharacterActions::DASH};
+        *character->actions.Allocate() = {CharacterActions::DASH};*/
 
         character->AddWeapon(WeaponFactory::BuildGreatSword());
         character->AddWeapon(WeaponFactory::BuildHatchet());
@@ -81,9 +83,9 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
 
         character->abilities.SetAttackAbility(AbilityTypes::DEXTERITY);
 
-        *character->actions.Allocate() = {CharacterActions::ATTACK};
+        /**character->actions.Allocate() = {CharacterActions::ATTACK};
         *character->actions.Allocate() = {CharacterActions::DODGE};
-        *character->actions.Allocate() = {CharacterActions::DASH};
+        *character->actions.Allocate() = {CharacterActions::DASH};*/
 
         character->AddWeapon(WeaponFactory::BuildLongBow());
         character->AddWeapon(WeaponFactory::BuildShortSword());
@@ -111,11 +113,11 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
         character->abilities.SetAttackAbility(AbilityTypes::STRENGTH);
         character->abilities.SetSpellCastingAbility(AbilityTypes::WISDOM);
 
-        *character->actions.Allocate() = {CharacterActions::ATTACK};
+        /**character->actions.Allocate() = {CharacterActions::ATTACK};
         *character->actions.Allocate() = {CharacterActions::CAST_SPELL};
         *character->actions.Allocate() = {CharacterActions::DODGE};
         *character->actions.Allocate() = {CharacterActions::DASH};
-        *character->actions.Allocate() = {CharacterActions::HELP};
+        *character->actions.Allocate() = {CharacterActions::HELP};*/
 
         character->AddWeapon(WeaponFactory::BuildMace());
 
@@ -145,10 +147,10 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
         character->abilities.SetAttackAbility(AbilityTypes::STRENGTH);
         character->abilities.SetSpellCastingAbility(AbilityTypes::INTELLIGENCE);
 
-        *character->actions.Allocate() = {CharacterActions::ATTACK};
+        /**character->actions.Allocate() = {CharacterActions::ATTACK};
         *character->actions.Allocate() = {CharacterActions::CAST_SPELL};
         *character->actions.Allocate() = {CharacterActions::DODGE};
-        *character->actions.Allocate() = {CharacterActions::DASH};
+        *character->actions.Allocate() = {CharacterActions::DASH};*/
 
         character->AddWeapon(WeaponFactory::BuildStaff());
 

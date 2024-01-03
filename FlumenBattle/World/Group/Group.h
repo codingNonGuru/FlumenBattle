@@ -7,16 +7,23 @@
 #include "FlumenBattle/World/Group/GroupActionData.h"
 #include "FlumenBattle/Utility/Utility.h"
 
-class Character;
-
 enum class RaceTypes;
-class Character;
-class CombatGroup;
+
+namespace battle
+{
+    class CombatGroup;
+}
+
 namespace world
 {
     class WorldScene;
     class WorldTile;
     class WorldDecisionMenu;
+
+    namespace character
+    {
+        class Character;
+    }
 }
 
 namespace world::group
@@ -86,9 +93,9 @@ namespace world::group
 
         Color color;
 
-        Pool <Character> characters;
+        Pool <character::Character> characters;
 
-        Character *leader;
+        character::Character *leader;
 
         void Initialize(Word, const GroupType *, Integer, Color, RaceTypes);
 
@@ -111,9 +118,9 @@ namespace world::group
 
         utility::Success GetActionSuccess() const {return actionSuccess;}
 
-        Pool <Character> & GetCharacters() {return characters;}
+        Pool <character::Character> & GetCharacters() {return characters;}
 
-        Character *GetLeader() const {return leader;}
+        character::Character *GetLeader() const {return leader;}
 
         Group *GetOther();
 

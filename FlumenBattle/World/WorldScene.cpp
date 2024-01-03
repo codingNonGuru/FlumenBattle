@@ -19,8 +19,8 @@
 #include "FlumenBattle/World/Settlement/SettlementAllocator.h"
 #include "FlumenBattle/World/Polity.h"
 #include "FlumenBattle/World/Group/Encounter.h"
-#include "FlumenBattle/BattleState.h"
-#include "FlumenBattle/BattleScene.h"
+#include "FlumenBattle/Battle/BattleState.h"
+#include "FlumenBattle/Battle/BattleScene.h"
 #include "FlumenBattle/Utility/Utility.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 
@@ -56,7 +56,7 @@ namespace world
 
         time = WorldTime(230, 63, 14);
 
-        BattleScene::Get()->OnRoundEnded += {this, &WorldScene::HandleBattleRoundEnded};
+        battle::BattleScene::Get()->OnRoundEnded += {this, &WorldScene::HandleBattleRoundEnded};
 
         WorldInterface::Get()->Initialize();        
     }

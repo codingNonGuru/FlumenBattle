@@ -4,8 +4,8 @@
 #include "FlumenBattle/WorldInfoPanel.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Group/Group.h"
-#include "FlumenBattle/Character.h"
-#include "FlumenBattle/CharacterClass.h"
+#include "FlumenBattle/World/Character/Character.h"
+#include "FlumenBattle/World/Character/CharacterClass.h"
 
 void * WorldInfoPanel::CharacterItem::operator new(size_t size)
 {

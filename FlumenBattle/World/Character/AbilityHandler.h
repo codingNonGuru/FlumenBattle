@@ -2,7 +2,7 @@
 
 #include "FlumenCore/Conventions.hpp"
 
-#include "FlumenBattle/Ability.h"
+#include "FlumenBattle/World/Character/Ability.h"
 
 class AbilityHandler
 {
