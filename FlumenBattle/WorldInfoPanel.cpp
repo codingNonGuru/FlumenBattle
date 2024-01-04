@@ -23,6 +23,24 @@ void WorldInfoPanel::CharacterItem::SetCharacter(world::character::Character *_c
     icon->GetSprite()->SetTexture(character->GetAvatar());
 }
 
+static Color selectedColor = Color(1.0f, 0.7f, 0.7f, 1.0f);
+
+static Color unselectedColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
+
+void WorldInfoPanel::CharacterItem::ToggleSelection() 
+{
+    isSelected = isSelected == true ? false : true;
+
+    GetSprite()->SetColor(isSelected ? &selectedColor : &unselectedColor);
+}
+
+void WorldInfoPanel::CharacterItem::ForceSelection()
+{
+    isSelected = true;
+
+    GetSprite()->SetColor(isSelected ? &selectedColor : &unselectedColor);
+}
+
 void WorldInfoPanel::CharacterItem::HandleConfigure()
 {
     /*classLabel = ElementFactory::BuildText(
@@ -72,7 +90,7 @@ void WorldInfoPanel::HandleConfigure()
 
     for(Index i = 0; i < items.GetCapacity(); ++i, position += Direction2(80.0f, 0.0f))
     {
-        auto item = ElementFactory::BuildElement<CharacterItem>(
+        auto item = ElementFactory::BuildElement <CharacterItem>(
             {Size(70, 105), drawOrder_ + 1, {position, ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}, {"Sprite"}, opacity_}
         );
     }
@@ -88,6 +106,61 @@ void WorldInfoPanel::HandleConfigure()
         {{"JSLAncient", "Large"}, Color::RED * 0.65f}
     );
     speedLabel->Enable();
+}
+
+void WorldInfoPanel::SelectCharacter(int index, bool isInInventoryMode)
+{
+    assert(index < items.GetSize() && "Character selection index is off the charts.\n");
+
+    if(isInInventoryMode == false)
+    {
+        if(index == selectionIndex)
+        {
+            auto item = items.Get(selectionIndex);
+            item->ToggleSelection();
+
+            selectionIndex = -1;
+        }
+        else
+        {
+            auto item = items.Get(selectionIndex);
+            item->ToggleSelection();
+
+            item = items.Get(index);
+            item->ToggleSelection();
+
+            selectionIndex = index;
+        }
+    }
+    else
+    {
+        if(index != selectionIndex)
+        {
+            auto item = items.Get(selectionIndex);
+            item->ToggleSelection();
+
+            item = items.Get(index);
+            item->ToggleSelection();
+
+            selectionIndex = index;
+        }
+    }
+}
+
+void WorldInfoPanel::HandleInventoryOpen(int index)
+{
+    if(index == selectionIndex)
+    {
+        auto item = items.Get(selectionIndex);
+        item->ForceSelection();
+    }
+    else
+    {
+        auto item = items.Get(index);
+        item->ToggleSelection();
+
+        selectionIndex = index;
+    }
 }
 
 void WorldInfoPanel::HandleEnable()

@@ -29,6 +29,13 @@ static Camera *camera = nullptr;
 
 namespace world
 {
+    WorldController::WorldController()
+    {
+        onInventoryPressed = new Delegate();
+
+        onCharacterSelected = new Delegate();
+    }
+
     void WorldController::Enable()
     {
         *WorldScene::Get()->OnUpdateStarted += {this, &WorldController::HandleSceneUpdate};
@@ -53,6 +60,13 @@ namespace world
         InputHandler::RegisterContinualEvent(SDL_Scancode::SDL_SCANCODE_RIGHT, {this, &WorldController::HandlePanRight});
         InputHandler::RegisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LEFT, {this, &WorldController::HandlePanLeft});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_M, {this, &WorldController::HandleResourceDisplayPressed});
+        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_1, {this, &WorldController::HandleCharacterSelected});
+        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_2, {this, &WorldController::HandleCharacterSelected});
+        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_3, {this, &WorldController::HandleCharacterSelected});
+        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_4, {this, &WorldController::HandleCharacterSelected});
+        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_5, {this, &WorldController::HandleCharacterSelected});
+        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_6, {this, &WorldController::HandleCharacterSelected});
+        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_I, {this, &WorldController::HandleInventoryPressed});
 
         camera = RenderManager::GetCamera(Cameras::WORLD);
     }
@@ -216,6 +230,61 @@ namespace world
         }
     }
 
+    void WorldController::HandleCharacterSelected()
+    {
+        int index = 0;
+        if(InputHandler::IsPressed(SDL_SCANCODE_1))
+        {
+            index = 0;
+        }
+        else if(InputHandler::IsPressed(SDL_SCANCODE_2))
+        {
+            index = 1;
+        }
+        else if(InputHandler::IsPressed(SDL_SCANCODE_3))
+        {
+            index = 2;
+        }
+        else if(InputHandler::IsPressed(SDL_SCANCODE_4))
+        {
+            index = 3;
+        }
+        else if(InputHandler::IsPressed(SDL_SCANCODE_5))
+        {
+            index = 4;
+        }
+        else if(InputHandler::IsPressed(SDL_SCANCODE_6))
+        {
+            index = 5;
+        }
+
+        if(characterSelection.IsSelected == true)
+        {
+            if(characterSelection.Index == index)
+            {
+                characterSelection.IsSelected = false;
+            }
+            else
+            {
+                characterSelection.Index = index;
+            }
+        }
+        else
+        {
+            characterSelection.IsSelected = true;
+            characterSelection.Index = index;
+        }
+
+        onCharacterSelected->Invoke();
+    }
+
+    void WorldController::HandleInventoryPressed()
+    {
+        characterSelection.IsSelected = true;
+
+        onInventoryPressed->Invoke();
+    }
+
     void WorldController::Disable()
     {
         DisableHardInput();
@@ -225,6 +294,13 @@ namespace world
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_RIGHT, {this, &WorldController::HandlePanRight});
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LEFT, {this, &WorldController::HandlePanLeft});
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_M, {this, &WorldController::HandleResourceDisplayPressed});
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_1, {this, &WorldController::HandleCharacterSelected});
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_2, {this, &WorldController::HandleCharacterSelected});
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_3, {this, &WorldController::HandleCharacterSelected});
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_4, {this, &WorldController::HandleCharacterSelected});
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_5, {this, &WorldController::HandleCharacterSelected});
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_6, {this, &WorldController::HandleCharacterSelected});
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_I, {this, &WorldController::HandleInventoryPressed});
     }
 
     group::Encounter * WorldController::GetPlayerBattle() const 

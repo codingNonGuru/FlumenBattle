@@ -291,6 +291,11 @@ namespace world::group
         return action != nullptr ? action->Type == actionType : false;
     }
 
+    character::Character *Group::GetCharacter(int index) 
+    {
+        return characters.Get(index);
+    }
+
     Group *Group::GetOther()
     {
         if(encounter == nullptr)

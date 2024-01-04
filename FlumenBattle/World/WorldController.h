@@ -2,6 +2,8 @@
 
 #include "FlumenCore/Singleton.h"
 
+class Delegate;
+
 namespace world
 {
     namespace group
@@ -10,14 +12,28 @@ namespace world
     }
     
     class WorldTile;
+    class WorldInterface;
 
     class WorldController : public core::Singleton<WorldController>
     {
+        friend class WorldInterface;
+
         WorldTile *hoveredTile;
 
         bool isInEncounterMode {false};
 
         bool isResourceDisplayActive {false};
+
+        struct CharacterSelection
+        {
+            bool IsSelected;
+
+            Integer Index;
+        } characterSelection {false, 0};
+
+        Delegate *onInventoryPressed;
+
+        Delegate *onCharacterSelected;
 
         void HandleSceneUpdate();
 
@@ -43,11 +59,19 @@ namespace world
 
         void HandleResourceDisplayPressed();
 
+        void HandleCharacterSelected();
+
+        void HandleInventoryPressed();
+
         void EnableHardInput();
 
         void DisableHardInput();
 
+        CharacterSelection GetSelectionData() const {return characterSelection;}
+
     public:
+        WorldController();
+
         void Enable();
 
         void Disable();

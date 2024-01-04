@@ -13,10 +13,13 @@
 #include "FlumenBattle/World/SettlementLabel.h"
 #include "FlumenBattle/World/PathLabel.h"
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/World/WorldMap.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Polity.h"
+#include "FlumenBattle/World/Interface/InventoryMenu.h"
+#include "FlumenBattle/World/Group/Group.h"
 
 using namespace world;
 
@@ -43,6 +46,11 @@ WorldInterface::WorldInterface()
         {Size(900, 360), DrawOrder(6), {Position2(0.0f, 360.0f), canvas}, {"Sprite"}, Opacity(0.75f)}
     );
     engageMenu->Disable();
+
+    inventoryMenu = ElementFactory::BuildElement <interface::InventoryMenu>(
+        {Size(480, 360), DrawOrder(6), {Position2(0.0f, 0.0f), canvas}, {"Sprite"}, Opacity(0.75f)}
+    );
+    inventoryMenu->Disable();
 
     settlementLabels.Initialize(256);
     for(int i = 0; i < settlementLabels.GetCapacity(); i++)
@@ -86,6 +94,10 @@ void WorldInterface::Initialize()
     *WorldScene::Get()->OnPlayerBattleEnded += {this, &WorldInterface::HandleBattleEnded};
 
     *WorldScene::Get()->OnSettlementFounded += {this, &WorldInterface::HandleSettlementFounded};
+
+    *WorldController::Get()->onInventoryPressed += {this, &WorldInterface::HandleInventoryPressed};
+
+    *WorldController::Get()->onCharacterSelected += {this, &WorldInterface::HandleCharacterSelected};
 }
 
 void WorldInterface::Enable()
@@ -134,6 +146,39 @@ void WorldInterface::HandleSettlementFounded()
             label->Enable();
             break;
         }
+    }
+}
+
+void WorldInterface::HandleInventoryPressed()
+{
+    if(isInInventoryMode == true)
+    {
+        isInInventoryMode = false;
+        inventoryMenu->Disable();
+    }
+    else
+    {
+        isInInventoryMode = true;
+        inventoryMenu->Enable();
+
+        auto selectionData = WorldController::Get()->GetSelectionData();
+        infoPanel->HandleInventoryOpen(selectionData.Index);
+
+        auto character = WorldScene::Get()->GetPlayerGroup()->GetCharacter(selectionData.Index);
+        inventoryMenu->SelectCharacter(character);
+    }
+}
+
+void WorldInterface::HandleCharacterSelected()
+{
+    auto selectionData = WorldController::Get()->GetSelectionData();
+    infoPanel->SelectCharacter(selectionData.Index, isInInventoryMode);
+
+    if(isInInventoryMode == true)
+    {
+        auto selectionData = WorldController::Get()->GetSelectionData();
+        auto character = WorldScene::Get()->GetPlayerGroup()->GetCharacter(selectionData.Index);
+        inventoryMenu->SelectCharacter(character);
     }
 }
 

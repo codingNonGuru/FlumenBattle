@@ -26,6 +26,8 @@ class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
 
         Element *icon;
 
+        bool isSelected {false};
+
         void HandleConfigure() override;    
 
         void HandleUpdate() override;    
@@ -34,6 +36,10 @@ class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
         void * operator new(size_t size);
 
         void SetCharacter(world::character::Character *_character);
+
+        void ToggleSelection();
+
+        void ForceSelection();
     };
 
     Text *timeLabel;
@@ -42,6 +48,8 @@ class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
 
     Array <CharacterItem> items;
 
+    int selectionIndex {-1};
+
     void HandleConfigure() override;
 
     void HandleEnable() override;
@@ -49,4 +57,9 @@ class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
     void HandleUpdate() override;
 
     Array <CharacterItem> & GetItemAllocator() {return items;}
+
+public:
+    void SelectCharacter(int, bool);
+
+    void HandleInventoryOpen(int);
 };

@@ -12,6 +12,8 @@ layout (location = 5) uniform int hasTexture;
 
 layout (location = 6) uniform vec2 textureOffset;
 
+layout (location = 8) uniform vec4 color;
+
 layout (location = 0) out vec4 fragment;
 
 in vec2 textureCoordinates;
@@ -24,7 +26,7 @@ void main()
 	}
 	else
 	{
-		fragment = vec4(1.0f);
+		fragment = color; //vec4(1.0f);
 	}
 	
 	fragment.a *= opacity;

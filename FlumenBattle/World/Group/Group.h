@@ -120,6 +120,8 @@ namespace world::group
 
         Pool <character::Character> & GetCharacters() {return characters;}
 
+        character::Character *GetCharacter(int index);
+
         character::Character *GetLeader() const {return leader;}
 
         Group *GetOther();

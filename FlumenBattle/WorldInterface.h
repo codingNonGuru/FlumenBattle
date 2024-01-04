@@ -12,6 +12,11 @@ namespace world
     class GroupEngageMenu;
     class PathLabel;
 
+    namespace interface
+    {
+        class InventoryMenu;
+    }
+
     namespace settlement
     {
         class SettlementLabel;
@@ -31,6 +36,10 @@ namespace world
 
         GroupEngageMenu *engageMenu;
 
+        interface::InventoryMenu *inventoryMenu;
+
+        bool isInInventoryMode {false};
+
         Array <settlement::SettlementLabel *> settlementLabels;
 
         Array <PathLabel *> pathLabels;
@@ -46,6 +55,10 @@ namespace world
         void HandleBattleEnded();
 
         void HandleSettlementFounded();
+
+        void HandleInventoryPressed();
+
+        void HandleCharacterSelected();
 
     public:
         WorldInterface();
