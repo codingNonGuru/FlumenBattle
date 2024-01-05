@@ -33,7 +33,7 @@ WorldInterface::WorldInterface()
     decisionMenu->Enable();
 
     infoPanel = ElementFactory::BuildElement<WorldInfoPanel>(
-        {Size(1900, 100), DrawOrder(6), {Position2(0.0f, -480.0f), canvas}, {"Sprite"}, Opacity(0.75f)}
+        {Size(1900, 80), DrawOrder(6), {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, canvas}, {"Sprite"}, Opacity(0.75f)}
     );
     infoPanel->Enable();
 
@@ -48,14 +48,14 @@ WorldInterface::WorldInterface()
     engageMenu->Disable();
 
     inventoryMenu = ElementFactory::BuildElement <interface::InventoryMenu>(
-        {Size(480, 360), DrawOrder(6), {Position2(0.0f, 0.0f), canvas}, {"Sprite"}, Opacity(0.75f)}
+        {Size(480, 360), DrawOrder(6), {Position2(0.0f, 0.0f), canvas}, {"panel-transparent-center-031", "SlicedSprite"}, Opacity(0.75f)}
     );
     inventoryMenu->Disable();
 
     settlementLabels.Initialize(256);
     for(int i = 0; i < settlementLabels.GetCapacity(); i++)
     {
-        auto settlementLabel = ElementFactory::BuildElement<settlement::SettlementLabel>(
+        auto settlementLabel = ElementFactory::BuildElement <settlement::SettlementLabel>(
             {Size(200, 40), DrawOrder(3), {Position2(0.0f, 0.0f), canvas}, {"Sprite"}, Opacity(0.4f)}
         );
         settlementLabel->Disable();

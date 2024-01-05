@@ -31,14 +31,25 @@ void WorldInfoPanel::CharacterItem::ToggleSelection()
 {
     isSelected = isSelected == true ? false : true;
 
-    GetSprite()->SetColor(isSelected ? &selectedColor : &unselectedColor);
+    if(isSelected)
+    {
+        border->Enable();
+    }
+    else
+    {
+        border->Disable();
+    }
+
+    //GetSprite()->SetColor(isSelected ? &selectedColor : &unselectedColor);
 }
 
 void WorldInfoPanel::CharacterItem::ForceSelection()
 {
     isSelected = true;
 
-    GetSprite()->SetColor(isSelected ? &selectedColor : &unselectedColor);
+    border->Enable();
+
+    //GetSprite()->SetColor(isSelected ? &selectedColor : &unselectedColor);
 }
 
 void WorldInfoPanel::CharacterItem::HandleConfigure()
@@ -68,6 +79,11 @@ void WorldInfoPanel::CharacterItem::HandleConfigure()
     );
     conditionsLabel->SetAlignment(Text::Alignments::LEFT);
     conditionsLabel->Enable();
+
+    border = ElementFactory::BuildElement <Element>(
+        {size_, drawOrder_ + 1, {Position2(0.0f, 0.0f), this}, {"panel-border-019", "SlicedSprite"}, Opacity(0.5f)}
+    );
+    border->Disable();
 }
 
 void WorldInfoPanel::CharacterItem::HandleUpdate()
@@ -84,14 +100,14 @@ void WorldInfoPanel::CharacterItem::HandleUpdate()
 
 void WorldInfoPanel::HandleConfigure() 
 {
-    auto position = Position2(10.0f, 10.0f);
+    auto position = Position2(10.0f, 20.0f);
 
     items.Initialize(16);
 
     for(Index i = 0; i < items.GetCapacity(); ++i, position += Direction2(80.0f, 0.0f))
     {
         auto item = ElementFactory::BuildElement <CharacterItem>(
-            {Size(70, 105), drawOrder_ + 1, {position, ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}, {"Sprite"}, opacity_}
+            {Size(70, 105), drawOrder_ + 1, {position, ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}, {"panel-019", "SlicedSprite"}, Opacity(0.5f)}
         );
     }
 

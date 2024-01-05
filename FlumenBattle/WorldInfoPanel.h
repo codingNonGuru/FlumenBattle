@@ -26,6 +26,8 @@ class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
 
         Element *icon;
 
+        Element *border;
+
         bool isSelected {false};
 
         void HandleConfigure() override;    
