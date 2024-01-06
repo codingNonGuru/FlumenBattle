@@ -6,6 +6,7 @@
 #include "FlumenBattle/World/Types.h"
 #include "FlumenBattle/World/Group/GroupActionData.h"
 #include "FlumenBattle/Utility/Utility.h"
+#include "FlumenBattle/World/Character/Item.h"
 
 enum class RaceTypes;
 
@@ -54,6 +55,8 @@ namespace world::group
 
         friend class world::WorldDecisionMenu;
 
+        friend class GroupAllocator;
+
         Word name;
 
         const GroupType *type;
@@ -94,6 +97,8 @@ namespace world::group
         Color color;
 
         Pool <character::Character> characters;
+
+        character::ItemManager items;
 
         character::Character *leader;
 

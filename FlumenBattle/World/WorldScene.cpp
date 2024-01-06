@@ -113,7 +113,7 @@ namespace world
 
         auto refreshGroups = [this] 
         {
-            GroupAllocator::Get()->PerformCleanup();
+            group::GroupAllocator::Get()->PerformCleanup();
 
             for(auto &group : *groups)
             {

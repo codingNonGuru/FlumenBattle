@@ -9,16 +9,20 @@
 
 #define CHARACTERS_PER_GROUP 16
 
-namespace world
+#define ITEMS_PER_GROUP 64
+
+namespace world::group
 {
     void GroupAllocator::PreallocateMaximumMemory()
     {
         auto groupCount = WorldGenerator::Get()->GetMaximumGroupCount(MAXIMUM_WORLD_SIZE);
-        groupMemory = container::Pool <group::Group>::PreallocateMemory(groupCount);
+        groupMemory = container::Pool <Group>::PreallocateMemory(groupCount);
 
         characterMemory = container::PoolAllocator <character::Character>::PreallocateMemory(groupCount, CHARACTERS_PER_GROUP);
 
-        battleMemory = container::Pool <group::Encounter>::PreallocateMemory(groupCount);
+        battleMemory = container::Pool <Encounter>::PreallocateMemory(groupCount);
+
+        itemMemory = container::PoolAllocator <character::Item>::PreallocateMemory(groupCount, ITEMS_PER_GROUP);
     }
 
     void GroupAllocator::AllocateWorldMemory(int worldSize)
@@ -28,21 +32,25 @@ namespace world
 
         characterAllocator = container::PoolAllocator <character::Character> (groupCount, CHARACTERS_PER_GROUP, characterMemory);
 
-        battles = container::Pool <group::Encounter> (groupCount, battleMemory);
+        battles = container::Pool <Encounter> (groupCount, battleMemory);
+
+        itemAllocator = container::PoolAllocator <character::Item> (groupCount, ITEMS_PER_GROUP);
     }
 
-    group::Group * GroupAllocator::Allocate()
+    Group * GroupAllocator::Allocate()
     {
         auto group = groups.Add();
 
         group->GetCharacters().Initialize(characterAllocator);
+
+        character::ItemAllocator::Allocate(itemAllocator, group->items);
 
         return group;
     }
 
     void GroupAllocator::PerformCleanup()
     {
-        static auto finishedGroups = Array <group::Group *> (groups.GetCapacity());
+        static auto finishedGroups = Array <Group *> (groups.GetCapacity());
 
         for(auto &group : groups)
         {
@@ -57,6 +65,8 @@ namespace world
             groups.Remove(group);
 
             group->GetCharacters().Terminate(characterAllocator);
+
+            character::ItemAllocator::Free(itemAllocator, group->items);
         }
 
         finishedGroups.Reset();

@@ -25,7 +25,7 @@ WorldAllocator::WorldAllocator()
 
     settlement::SettlementAllocator::Get()->PreallocateMaximumMemory();
 
-    world::GroupAllocator::Get()->PreallocateMaximumMemory();
+    world::group::GroupAllocator::Get()->PreallocateMaximumMemory();
 
     world::character::CharacterAllocator::Get()->PreallocateMaximumMemory();
 }
@@ -50,7 +50,7 @@ void WorldAllocator::AllocateSociety(int worldSize)
 
     settlement::SettlementAllocator::Get()->AllocateWorldMemory(worldSize);
 
-    world::GroupAllocator::Get()->AllocateWorldMemory(worldSize);
+    world::group::GroupAllocator::Get()->AllocateWorldMemory(worldSize);
 
     world::character::CharacterAllocator::Get()->AllocateWorldMemory(worldSize);
 }

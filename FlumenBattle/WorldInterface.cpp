@@ -47,8 +47,15 @@ WorldInterface::WorldInterface()
     );
     engageMenu->Disable();
 
-    inventoryMenu = ElementFactory::BuildElement <interface::InventoryMenu>(
-        {Size(480, 360), DrawOrder(6), {Position2(0.0f, 0.0f), canvas}, {"panel-transparent-center-031", "SlicedSprite"}, Opacity(0.75f)}
+    inventoryMenu = ElementFactory::BuildElement <interface::InventoryMenu>
+    (
+        {
+            Size(480, 360), 
+            DrawOrder(6), 
+            {Position2(0.0f, 0.0f), canvas}, 
+            {"panel-transparent-center-031", "SlicedSprite"}, 
+            Opacity(1.0f)
+        }
     );
     inventoryMenu->Disable();
 

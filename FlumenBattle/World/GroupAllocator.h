@@ -5,41 +5,49 @@
 
 #include "FlumenCore/Singleton.h"
 
-namespace world::group
+namespace world
 {
-    class Group;
-    class GroupFactory;
-    class Encounter;
+    class WorldScene;
 }
 
 namespace world::character
 {
     class Character;
+    class Item;
 }
 
-namespace world
+namespace world::group
 {   
-    class GroupAllocator : public core::Singleton<GroupAllocator>
+    class Group;
+    class GroupFactory;
+    class Encounter;
+
+    class GroupAllocator : public core::Singleton <GroupAllocator>
     {
-        friend class WorldScene;
+        friend class world::WorldScene;
 
-        friend class group::GroupFactory;
+        friend class GroupFactory;
 
-        container::Pool <group::Group>::Memory groupMemory;
+        container::Pool <Group>::Memory groupMemory;
 
         container::PoolAllocator <character::Character>::Memory characterMemory;
 
-        container::Pool <group::Encounter>::Memory battleMemory;
+        container::Pool <Encounter>::Memory battleMemory;
 
-        container::Pool <group::Group> groups;
+        container::PoolAllocator <character::Item>::Memory itemMemory;
+
+
+        container::Pool <Group> groups;
 
         container::PoolAllocator <character::Character> characterAllocator;
 
-        container::Pool <group::Encounter> battles;
+        container::Pool <Encounter> battles;
+
+        container::PoolAllocator <character::Item> itemAllocator;
 
         void PerformCleanup();
 
-        group::Group *Allocate();
+        Group *Allocate();
 
         container::PoolAllocator <character::Character> &GetCharacterAllocator() {return characterAllocator;}
 
@@ -48,8 +56,8 @@ namespace world
 
         void AllocateWorldMemory(int);
 
-        container::Pool <group::Group> *GetGroups() {return &groups;}
+        container::Pool <Group> *GetGroups() {return &groups;}
 
-        container::Pool <group::Encounter> *GetBattles() {return &battles;}
+        container::Pool <Encounter> *GetBattles() {return &battles;}
     };
 }

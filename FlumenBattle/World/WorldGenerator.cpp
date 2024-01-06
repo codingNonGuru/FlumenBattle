@@ -329,10 +329,10 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
         scene.FoundSettlement(location, nullptr, nullptr);
     }
 
-    auto groups = GroupAllocator::Get()->GetGroups();
+    auto groups = group::GroupAllocator::Get()->GetGroups();
     scene.groups = groups;
 
-    auto battles = GroupAllocator::Get()->GetBattles();
+    auto battles = group::GroupAllocator::Get()->GetBattles();
     scene.battles = battles;
 
     group::GroupFactory::Create({group::GroupTypes::COMPUTER, RaceTypes::ORC})->SetTile(worldMap->GetEmptyRandomTile());
