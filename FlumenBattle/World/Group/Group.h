@@ -24,6 +24,7 @@ namespace world
     namespace character
     {
         class Character;
+        class Item;
     }
 }
 
@@ -160,5 +161,7 @@ namespace world::group
         int GetRemainingActionDuration() const;
 
         int GetProgressRate() const;
+
+        world::character::Item *GetItem(int);
     };
 }

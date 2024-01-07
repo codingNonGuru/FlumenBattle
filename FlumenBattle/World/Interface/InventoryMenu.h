@@ -15,7 +15,15 @@ namespace world::interface
 {
     class InventorySlot : public Element
     {
-        world::character::Item *item;
+        friend class InventoryMenu;
+
+        Element *icon;
+
+        world::character::Item *item {nullptr};
+
+        void HandleConfigure() override;
+
+        void SetItem(world::character::Item *newItem);
     };
 
     class InventoryMenu : public Element

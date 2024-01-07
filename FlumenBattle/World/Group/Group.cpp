@@ -91,6 +91,10 @@ namespace world::group
                 leader = &character;
             }
         }
+
+        items.Add(character::ItemTypes::SWORD);
+        items.Add(character::ItemTypes::ARMOR);
+        items.Add(character::ItemTypes::HELMET);
     }
 
     bool Group::IsAlive()
@@ -309,5 +313,10 @@ namespace world::group
         }
 
         return encounter->GetFirst();
+    }
+
+    world::character::Item *Group::GetItem(int index)
+    {
+        return items.GetItem(index);
     }
 }

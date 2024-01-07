@@ -131,3 +131,8 @@ int ItemManager::GetAmount(ItemTypes type)
 
     return amount;
 }
+
+Item *ItemManager::GetItem(int index)
+{
+    return items.Get(index);
+}

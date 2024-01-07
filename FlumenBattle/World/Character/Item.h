@@ -8,6 +8,7 @@
 namespace world::group
 {
     class GroupAllocator;
+    class Group;
 }
 
 namespace world::character
@@ -44,13 +45,15 @@ namespace world::character
     {
         friend class ItemAllocator;
 
-        friend class Group;
+        friend class group::Group;
 
         void Add(ItemTypes);
 
         void Remove(Item *);
 
         int GetAmount(ItemTypes);
+
+        Item *GetItem(int);
     };
 
     class ItemFactory : public core::Singleton <ItemFactory>

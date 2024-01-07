@@ -6,6 +6,8 @@
 #include "InventoryMenu.h"
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/World/Character/CharacterClass.h"
+#include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/Group/Group.h"
 
 using namespace world::interface;
 
@@ -13,8 +15,29 @@ using namespace world::interface;
 
 static auto color = Color::RED * 0.5f;
 
+world::group::Group *playerGroup = nullptr;
+
+void InventorySlot::HandleConfigure()
+{
+    icon = ElementFactory::BuildElement <Element>
+    (
+        {size_, drawOrder_ + 1, {Position2(0.0f, 0.0f), ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, this}, {"SwordT1", "Sprite"}}
+    );
+    icon->Disable();
+}
+
+void InventorySlot::SetItem(world::character::Item *newItem) 
+{
+    item = newItem;
+
+    icon->GetSprite()->SetTexture(item->Type->TextureName);
+    icon->Enable();
+}
+
 void InventoryMenu::HandleConfigure()
 {
+    playerGroup = world::WorldScene::Get()->GetPlayerGroup();
+
     characterLabel = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, 0.0f), ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, this}}, 
         {{"JSLAncient", "Medium"}, Color::RED * 0.5f, "Cleric"}
@@ -52,9 +75,16 @@ void InventoryMenu::HandleConfigure()
     {
         auto slot = ElementFactory::BuildElement <InventorySlot>
         (
-            {Size(60, 60), drawOrder_ + 1, {Position2(0.0f, 0.0f), slotLayout}, {"panel-transparent-center-019", "SlicedSprite"}, Opacity(0.3f)}
+            {Size(60, 60), drawOrder_ + 1, {Position2(0.0f, 0.0f), slotLayout}, {"panel-007", "SlicedSprite"}, Opacity(0.3f)}
         );
         slot->GetSprite()->SetColor(&color);
+
+        auto item = playerGroup->GetItem(i);
+        if(item != nullptr)
+        {
+            slot->SetItem(item);
+        }
+
         slot->Enable();
 
         *inventorySlots.Add() = slot;
