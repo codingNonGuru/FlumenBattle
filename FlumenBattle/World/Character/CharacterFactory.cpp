@@ -14,6 +14,7 @@
 #include "FlumenBattle/RaceFactory.h"
 #include "FlumenBattle/World/Character/ClassFactory.h"
 #include "FlumenBattle/World/Character/CharacterAction.h"
+#include "FlumenBattle/World/Character/NameGenerator.h"
 
 using namespace world::character;
 
@@ -182,6 +183,8 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
     {
         character->BoostAbility(boost.Type, boost.Boost);
     }
+
+    character->name = NameGenerator::Get()->GenerateName();
 
     auto textureName = avatarTextures.Get(textureIndex++);
     character->avatar = render::TextureManager::GetTexture(*textureName);

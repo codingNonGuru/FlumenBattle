@@ -50,11 +50,11 @@ WorldInterface::WorldInterface()
     inventoryMenu = ElementFactory::BuildElement <interface::InventoryMenu>
     (
         {
-            Size(480, 360), 
+            Size(480, 540), 
             DrawOrder(6), 
             {Position2(0.0f, 0.0f), canvas}, 
-            {"panel-transparent-center-031", "SlicedSprite"}, 
-            Opacity(1.0f)
+            {"Sprite"}, 
+            Opacity(0.9f)
         }
     );
     inventoryMenu->Disable();

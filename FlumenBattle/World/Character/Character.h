@@ -90,6 +90,8 @@ namespace world::character
 
         const render::Texture *avatar;
 
+        Word name;
+
         Integer level;
 
         AbilityHandler abilities;
@@ -143,7 +145,7 @@ namespace world::character
 
         Integer GetMaximumHitPoints() const {return maximumHitPoints;}
 
-        Word GetName();
+        Word GetClassName();
 
         const Race * GetRace() const {return race;}
 
@@ -152,6 +154,8 @@ namespace world::character
         world::group::Group * GetGroup() const {return group;}
 
         const render::Texture *GetAvatar() const {return avatar;}
+
+        const Word GetName() const {return name;}
 
         const Ability & GetAbility(AbilityTypes type) const {return *abilities.GetAbility(type);}
 

@@ -80,7 +80,7 @@ namespace world::character
         }
     }
 
-    Word Character::GetName()
+    Word Character::GetClassName()
     {
         return type->Name;
     }

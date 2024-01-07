@@ -44,7 +44,9 @@ namespace world::interface
     {
         friend class InventorySlot;
 
-        Text *characterLabel;
+        Text *nameLabel;
+
+        Text *classLabel;
 
         Element *border;
 

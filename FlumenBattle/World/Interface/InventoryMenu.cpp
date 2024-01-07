@@ -75,16 +75,24 @@ void InventoryMenu::HandleConfigure()
 {
     playerGroup = world::WorldScene::Get()->GetPlayerGroup();
 
-    characterLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, 0.0f), ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, this}}, 
+    nameLabel = ElementFactory::BuildText(
+        {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}}, 
+        {{"JSLAncient", "Large"}, Color::RED * 0.5f, "Elric"}
+    );
+    nameLabel->AdjustSize();
+    nameLabel->Enable();
+
+    classLabel = ElementFactory::BuildText(
+        {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, 25.0f), ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, nameLabel}}, 
         {{"JSLAncient", "Medium"}, Color::RED * 0.5f, "Cleric"}
     );
-    characterLabel->Enable();
+    classLabel->AdjustSize();
+    classLabel->Enable();
 
     border = ElementFactory::BuildElement <Element>
     (
         {
-            size_, 
+            size_ - Size(4, 4), 
             drawOrder_ + 1, 
             {Position2(0.0f, 0.0f), this}, 
             {"panel-border-031", "SlicedSprite"}, 
@@ -200,7 +208,9 @@ void InventoryMenu::SelectCharacter(character::Character *newCharacter)
 {
     character = newCharacter;
 
-    characterLabel->Setup(character->GetClass()->Name.Get());
+    classLabel->Setup(character->GetClass()->Name.Get());
+
+    nameLabel->Setup(character->GetName());
 }
 
 void InventoryMenu::HandleUpdate()
