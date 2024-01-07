@@ -23,9 +23,7 @@ void WorldInfoPanel::CharacterItem::SetCharacter(world::character::Character *_c
     icon->GetSprite()->SetTexture(character->GetAvatar());
 }
 
-static Color selectedColor = Color(1.0f, 0.7f, 0.7f, 1.0f);
-
-static Color unselectedColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
+static Color borderColor = Color::RED * 0.5f;
 
 void WorldInfoPanel::CharacterItem::ToggleSelection() 
 {
@@ -81,8 +79,9 @@ void WorldInfoPanel::CharacterItem::HandleConfigure()
     conditionsLabel->Enable();
 
     border = ElementFactory::BuildElement <Element>(
-        {size_, drawOrder_ + 1, {Position2(0.0f, 0.0f), this}, {"panel-border-019", "SlicedSprite"}, Opacity(0.5f)}
+        {size_, drawOrder_ + 1, {Position2(0.0f, 0.0f), this}, {"panel-border-019", "SlicedSprite"}, Opacity(1.0f)}
     );
+    border->GetSprite()->SetColor(&borderColor);
     border->Disable();
 }
 
