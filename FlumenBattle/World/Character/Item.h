@@ -2,8 +2,9 @@
 
 #include "FlumenCore/Container/Pool.hpp"
 #include "FlumenCore/Conventions.hpp"
-
 #include "FlumenCore/Singleton.h"
+
+#include "FlumenBattle/World/Character/Types.h"
 
 namespace world::group
 {
@@ -21,16 +22,22 @@ namespace world::character
 
         Word TextureName;
 
+        ItemUses Use {ItemUses::OTHER};
+
         ItemType(ItemTypes type, Word textureName) : Type(type), TextureName(textureName) {}
+
+        ItemType(ItemTypes type, Word textureName, ItemUses use) : Type(type), TextureName(textureName), Use(use) {}
     };
 
     struct Item
     {
         const ItemType *Type;
 
-        int Amount;
+        int Amount {1};
 
-        bool IsUsed;
+        bool IsUsed {false};
+
+        bool CanFitInto(ItemPositions position);
     };
 
     class ItemSet

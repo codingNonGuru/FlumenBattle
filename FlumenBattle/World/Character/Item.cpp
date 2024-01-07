@@ -34,6 +34,16 @@ class Axe : public ItemType
     }*/
 };
 
+class Spear : public ItemType
+{
+    using ItemType::ItemType; 
+
+    /*void HandleApplyEffect(Character &character) const override
+    {
+        ModifierAccessor::AddModifier(character, {Modifiers::DAMAGE_INCREASE, 1});
+    }*/
+};
+
 class Shield : public ItemType
 {
     using ItemType::ItemType; 
@@ -64,6 +74,23 @@ class Helmet : public ItemType
     }*/
 };
 
+bool Item::CanFitInto(ItemPositions position)
+{
+    switch(position)
+    {
+    case ItemPositions::MAIN_HAND:
+        return Type->Use == ItemUses::WEAPON;
+    case ItemPositions::OFF_HAND:
+        return Type->Use == ItemUses::WEAPON || Type->Use == ItemUses::SHIELD;
+    case ItemPositions::HEAD:
+        return Type->Use == ItemUses::HEAD_WEAR;
+    case ItemPositions::BODY:
+        return Type->Use == ItemUses::BODY_WEAR;
+    case ItemPositions::POUCH:
+        return Type->Use == ItemUses::POTION;
+    }
+}
+
 Item ItemFactory::Create(ItemTypes type)
 {
     switch(type)
@@ -71,38 +98,27 @@ Item ItemFactory::Create(ItemTypes type)
     case ItemTypes::SWORD:
         return 
         {
-            [&] {static const auto itemType = Sword(type, "SwordT1"); return &itemType;} (), 
-            1,
-            false
+            [&] {static const auto itemType = Sword(type, "SwordT1", ItemUses::WEAPON); return &itemType;} ()
         };
     case ItemTypes::ARMOR:
         return 
         {
-            [&] {static const auto itemType = Armor(type, "ArmorT1"); return &itemType;} (), 
-            1,
-            false
+            [&] {static const auto itemType = Armor(type, "ArmorT1", ItemUses::BODY_WEAR); return &itemType;} ()
+        };
+    case ItemTypes::SPEAR:
+        return 
+        {
+            [&] {static const auto itemType = Armor(type, "SpearT1", ItemUses::WEAPON); return &itemType;} ()
         };
     case ItemTypes::SHIELD:
         return 
         {
-            [&] {static const auto itemType = Shield(type, "ShieldLargeT1"); return &itemType;} (), 
-            1,
-            false
+            [&] {static const auto itemType = Shield(type, "ShieldLargeT1", ItemUses::SHIELD); return &itemType;} ()
         };
     case ItemTypes::HELMET:
-        return 
-        {
-            [&] {static const auto itemType = Helmet(type, "HelmetT1"); return &itemType;} (), 
-            1,
-            false
-        };
+        return {[&] {static const auto itemType = Helmet(type, "HelmetT1", ItemUses::HEAD_WEAR); return &itemType;} ()};
     case ItemTypes::AXE:
-        return 
-        {
-            [&] {static const auto itemType = Axe(type, "AxeT1"); return &itemType;} (), 
-            1,
-            false
-        };
+        return {[&] {static const auto itemType = Axe(type, "AxeT1", ItemUses::WEAPON); return &itemType;} ()};
     }
 }
 

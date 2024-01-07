@@ -2,6 +2,8 @@
 
 #include "FlumenEngine/Interface/Element.hpp"
 
+#include "FlumenBattle/World/Character/Types.h"
+
 class Text;
 class LayoutGroup;
 
@@ -28,6 +30,10 @@ namespace world::interface
         bool isSelected {false};
 
         InventoryMenu *menu;
+
+        bool isCharacterItem {false};
+
+        world::character::ItemPositions itemPosition;
 
         void HandleConfigure() override;
 
@@ -58,6 +64,12 @@ namespace world::interface
 
         InventorySlot *selectedSlot {nullptr};
 
+        InventorySlot *mainHandSlot; 
+        
+        InventorySlot *bodySlot; 
+        
+        InventorySlot *headSlot;
+
         Element *grabbedItem;
 
         void HandleConfigure() override;
@@ -65,6 +77,14 @@ namespace world::interface
         void HandleUpdate() override;
 
         void SelectSlot(InventorySlot *slot);
+
+        void GrabItem(InventorySlot *slot);
+
+        void MoveItem(InventorySlot *slot);
+
+        void SwapItem(InventorySlot *slot);
+
+        void DropItem();
 
     public:
         void SelectCharacter(character::Character *);

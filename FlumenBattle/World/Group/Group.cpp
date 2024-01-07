@@ -94,7 +94,13 @@ namespace world::group
 
         items.Add(character::ItemTypes::SWORD);
         items.Add(character::ItemTypes::ARMOR);
+        items.Add(character::ItemTypes::ARMOR);
         items.Add(character::ItemTypes::HELMET);
+        items.Add(character::ItemTypes::HELMET);
+        items.Add(character::ItemTypes::AXE);
+        items.Add(character::ItemTypes::SHIELD);
+        items.Add(character::ItemTypes::ARMOR);
+        items.Add(character::ItemTypes::SPEAR);
     }
 
     bool Group::IsAlive()

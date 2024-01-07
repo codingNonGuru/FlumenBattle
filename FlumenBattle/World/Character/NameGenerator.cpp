@@ -8,7 +8,7 @@ container::Array <Word> particles = {
     };
 
 container::Array <Word> startParticles = {
-    "maeri", "rae", "gaeli", "ziu", "sha", "tra", "brai", "belo", "teo", "clio", "lama", "doro", "rana", "gama", "vala", "dava", "blaya", "fae"
+    "maeri", "rae", "gaeli", "ziu", "sha", "tra", "brai", "belo", "teo", "clio", "lama", "doro", "rana", "gama", "vala", "dava", "blaya", "fae", 
     "asa", "oro", "isa", "ula", "ara", "ama", "ela", "eno", "oni", "iba"
     };
 

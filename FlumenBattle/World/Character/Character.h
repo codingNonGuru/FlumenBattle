@@ -46,6 +46,7 @@ namespace world
         class Condition;
         class CharacterFactory;
         class Modifier;
+        struct Item;
     }
 }
 
@@ -122,6 +123,8 @@ namespace world::character
 
         ModifierManager modifiers;
 
+        container::Block <Item *, (int)ItemPositions::COUNT> items {nullptr};
+
         void Initialize();
 
         Integer GetActionRange() const;
@@ -197,6 +200,8 @@ namespace world::character
 
         bool SelectSpell(SpellTypes);
 
+        void SetItem(Item *item, ItemPositions position) {*items[(int)position] = item;}
+
         Index GetSelectedActionIndex() const;
 
         Index GetSelectedSubactionIndex() const;
@@ -206,6 +211,8 @@ namespace world::character
         Weapon* GetSelectedWeapon() const {return selectedWeapon;}
 
         Spell* GetSelectedSpell() const {return selectedSpell;}
+
+        Item *GetItem(ItemPositions position) {return *items.Get((int)position);}
 
         bool HasCondition(Conditions condition) {return conditions.HasCondition(condition);}
 

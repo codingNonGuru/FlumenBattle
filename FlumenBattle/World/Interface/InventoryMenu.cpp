@@ -125,7 +125,7 @@ void InventoryMenu::HandleConfigure()
         slot->GetSprite()->SetColor(&color);
 
         auto item = playerGroup->GetItem(i);
-        if(item != nullptr)
+        if(item != nullptr && item->IsUsed == false)
         {
             slot->SetItem(item);
         }
@@ -138,6 +138,41 @@ void InventoryMenu::HandleConfigure()
         *inventorySlots.Add() = slot;
 
         slotLayout->AddChild(slot);
+    }
+
+    struct SlotData
+    {
+        InventorySlot **Slot;
+
+        Position2 Position;
+
+        world::character::ItemPositions Use;
+    };
+
+    SlotData characterSlots[] = {
+        {&mainHandSlot, Position2(-170.0f, 140.0f), character::ItemPositions::MAIN_HAND}, 
+        {&bodySlot, Position2(-70.0f, 190.0f), character::ItemPositions::BODY}, 
+        {&headSlot, Position2(-80.0f, 100.0f), character::ItemPositions::HEAD}
+        };
+
+    for(auto slotData : characterSlots)
+    {
+        *slotData.Slot = ElementFactory::BuildElement <InventorySlot>
+        (
+            {Size(60, 60), drawOrder_ + 1, {slotData.Position, ElementAnchors::UPPER_RIGHT, ElementPivots::MIDDLE_CENTER, this}, {"panel-007", "SlicedSprite"}, Opacity(0.3f)}
+        );
+
+        auto slot = *slotData.Slot;
+        slot->GetSprite()->SetColor(&color);
+
+        slot->SetItem(nullptr);
+
+        slot->menu = this;
+        slot->isCharacterItem = true;
+        slot->itemPosition = slotData.Use;
+
+        slot->SetInteractivity(true);
+        slot->Enable();
     }
 
     grabbedItem = ElementFactory::BuildElement <Element>
@@ -153,10 +188,7 @@ void InventoryMenu::SelectSlot(InventorySlot *slot)
 {
     if(selectedSlot == slot)
     {
-        selectedSlot->Deselect();
-        selectedSlot = nullptr;
-
-        grabbedItem->Disable();
+        DropItem();
     }
     else
     {
@@ -164,44 +196,103 @@ void InventoryMenu::SelectSlot(InventorySlot *slot)
         {
             if(selectedSlot == nullptr)
             {
-                selectedSlot = slot;
-
-                selectedSlot->Select();
-
-                grabbedItem->Enable();
-
-                grabbedItem->GetSprite()->SetTexture(slot->item->Type->TextureName);
+                GrabItem(slot);
             }
-            else
+            else 
             {
-                slot->Deselect();
-
-                selectedSlot->Deselect();
-
-                auto newItem = slot->item;
-
-                slot->SetItem(selectedSlot->item);
-
-                selectedSlot->SetItem(newItem);
-
-                selectedSlot = nullptr;
-
-                grabbedItem->Disable();
+                SwapItem(slot);
             }
         }
-        else
+        else 
         {
-            selectedSlot->Deselect();
-
-            grabbedItem->Disable();
-
-            slot->SetItem(selectedSlot->item);
-
-            selectedSlot->SetItem(nullptr);
-
-            selectedSlot = nullptr;
+            MoveItem(slot);
         }
     }
+}
+
+void InventoryMenu::DropItem()
+{
+    selectedSlot->Deselect();
+    selectedSlot = nullptr;
+
+    grabbedItem->Disable();
+}
+
+void InventoryMenu::GrabItem(InventorySlot *slot)
+{
+    selectedSlot = slot;
+
+    selectedSlot->Select();
+
+    grabbedItem->Enable();
+
+    grabbedItem->GetSprite()->SetTexture(slot->item->Type->TextureName);
+}
+
+void InventoryMenu::MoveItem(InventorySlot *slot)
+{
+    if(slot->isCharacterItem == true && selectedSlot->item->CanFitInto(slot->itemPosition) == false)
+        return;
+
+    if(slot->isCharacterItem == true)
+    {
+        selectedSlot->item->IsUsed = true;
+
+        character->SetItem(selectedSlot->item, slot->itemPosition);
+    }
+
+    if(selectedSlot->isCharacterItem == true)
+    {
+        if(slot->isCharacterItem == false)
+        {
+            selectedSlot->item->IsUsed = false;
+        }
+
+        character->SetItem(nullptr, selectedSlot->itemPosition);
+    }
+
+    selectedSlot->Deselect();
+
+    grabbedItem->Disable();
+
+    slot->SetItem(selectedSlot->item);
+
+    selectedSlot->SetItem(nullptr);
+
+    selectedSlot = nullptr;
+}
+
+void InventoryMenu::SwapItem(InventorySlot *slot)
+{
+    if(slot->isCharacterItem == true && selectedSlot->item->CanFitInto(slot->itemPosition) == false)
+        return;
+
+    if(selectedSlot->isCharacterItem == true && slot->item->CanFitInto(selectedSlot->itemPosition) == false)
+        return;
+
+    if(slot->isCharacterItem == true)
+    {
+        character->SetItem(selectedSlot->item, slot->itemPosition);
+    }
+
+    if(selectedSlot->isCharacterItem == true)
+    {
+        character->SetItem(slot->item, selectedSlot->itemPosition);
+    }
+
+    slot->Deselect();
+
+    selectedSlot->Deselect();
+
+    auto newItem = slot->item;
+
+    slot->SetItem(selectedSlot->item);
+
+    selectedSlot->SetItem(newItem);
+
+    selectedSlot = nullptr;
+
+    grabbedItem->Disable();
 }
 
 void InventoryMenu::SelectCharacter(character::Character *newCharacter)
@@ -211,6 +302,10 @@ void InventoryMenu::SelectCharacter(character::Character *newCharacter)
     classLabel->Setup(character->GetClass()->Name.Get());
 
     nameLabel->Setup(character->GetName());
+
+    mainHandSlot->SetItem(character->GetItem(character::ItemPositions::MAIN_HAND));
+    bodySlot->SetItem(character->GetItem(character::ItemPositions::BODY));
+    headSlot->SetItem(character->GetItem(character::ItemPositions::HEAD));
 }
 
 void InventoryMenu::HandleUpdate()

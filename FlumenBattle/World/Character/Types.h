@@ -10,5 +10,9 @@ namespace world::character
 
     enum class Modifiers {DAMAGE_INCREASE, ALL_ROLLS_PENALTY};
 
-    enum class ItemTypes {SWORD, AXE, SHIELD, ARMOR, HELMET};
+    enum class ItemTypes {SWORD, AXE, SHIELD, ARMOR, HELMET, SPEAR};
+
+    enum class ItemPositions {HEAD, MAIN_HAND, OFF_HAND, BODY, FEET, POUCH, COUNT, NONE};
+
+    enum class ItemUses {WEAPON, BODY_WEAR, HEAD_WEAR, SHIELD, POTION, SCROLL, OTHER};
 }
