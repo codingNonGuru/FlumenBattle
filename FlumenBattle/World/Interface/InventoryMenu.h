@@ -54,6 +54,12 @@ namespace world::interface
 
         Text *classLabel;
 
+        Text *healthLabel;
+
+        Text *armorLabel;
+
+        Text *attackLabel;
+
         Element *border;
 
         character::Character *character;

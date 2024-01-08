@@ -10,19 +10,27 @@ namespace world::settlement
 
     class SettlementLabel : public Element
     {
-        Text * nameLabel;
+        Text *nameLabel;
 
-        Text * populationLabel;
+        Element *backdrop;
 
-        Element * populationBackdrop;
+        Text *populationLabel;
 
-        Element * hoverBackdrop;
+        Element *populationBackdrop;
+
+        Element *populationBorder;
+
+        Element *hoverBackdrop;
+
+        Element *hoverBorder;
 
         Text * growthLabel;
 
-        Text * foodLabel;
+        Text *foodLabel;
 
-        Text * storageLabel;
+        Text *storageLabel;
+
+        Element *foodIcon;
 
         Text * industryLabel;
 
@@ -34,7 +42,7 @@ namespace world::settlement
 
         Text * metalLabel;
 
-        Element * metalSprite;
+        Element * metalIcon;
 
         Settlement *settlement;
 

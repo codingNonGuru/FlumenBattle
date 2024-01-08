@@ -14,24 +14,40 @@
 
 using namespace world::settlement;
 
+auto color = Color::RED * 0.5f;
+
+auto borderColor = Color::RED * 0.25f;
+
 void SettlementLabel::HandleConfigure() 
 {
     this->settlement = nullptr;
 
-    auto color = Color::RED * 0.5f;
+    this->SetSpriteColor(borderColor);
+
     auto height = -float(size_.y) / 2.0f + 20.0f;
     nameLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {Position2(5.0f, 0.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}},
+        {Size(100, 100), drawOrder_ + 1, {Position2(10.0f, 3.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}},
         {{"JSLAncient", "Medium"}, color, "Aloha"}
     );
     nameLabel->SetAlignment(Text::Alignments::LEFT);
     nameLabel->AdjustSize();
     nameLabel->Enable();
 
+    backdrop = ElementFactory::BuildElement <Element>(
+        {size_, drawOrder_ - 1, {Position2(0.0f, 0.0f), this}, {"Sprite"}, Opacity(0.5f)}
+    );
+    backdrop->Enable();
+
     populationBackdrop = ElementFactory::BuildElement <Element>(
-        {Size(50, 50), drawOrder_ + 1, {Position2(-5.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}, {"Sprite"}, Opacity(0.4f)}
+        {Size(50, 50), drawOrder_ + 1, {Position2(-20.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}, {"Sprite"}, Opacity(0.5f)}
     );
     populationBackdrop->Enable();
+
+    populationBorder = ElementFactory::BuildElement <Element>(
+        {populationBackdrop->GetSize(), drawOrder_ + 2, {Position2(0.0f, 0.0f), populationBackdrop}, {"panel-border-015","SlicedSprite"}, Opacity(0.8f)}
+    );
+    populationBorder->SetSpriteColor(borderColor);
+    populationBorder->Enable();
 
     populationLabel = ElementFactory::BuildText(
         {Size(50, 50), drawOrder_ + 2, {Position2(0.0f, 0.0f), populationBackdrop}},
@@ -41,54 +57,70 @@ void SettlementLabel::HandleConfigure()
     populationLabel->Enable();
 
     hoverBackdrop = ElementFactory::BuildElement <Element>(
-        {Size(size_.x - 10, 110), drawOrder_, {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, this}, {"Sprite"}, Opacity(0.4f)}
+        {Size(size_.x - 10, 125), drawOrder_, {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, this}, {"Sprite"}, Opacity(0.4f)}
     );
     hoverBackdrop->Disable();
 
+    hoverBorder = ElementFactory::BuildElement <Element>(
+        {hoverBackdrop->GetSize(), drawOrder_ + 1, {Position2(0.0f, 0.0f), hoverBackdrop}, {"panel-border-007", "SlicedSprite"}, Opacity(0.8f)}
+    );
+    hoverBorder->SetSpriteColor(borderColor);
+    hoverBorder->Enable();
+
+    auto basePosition = Position2(8.0f, 23.0f);
+
     growthLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {Position2(5.0f, 15.0f), ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, hoverBackdrop}},
+        {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, hoverBackdrop}},
         {{"JSLAncient", "Small"}, color, "Growth: 20"}
     );
     growthLabel->SetAlignment(Text::Alignments::LEFT);
     growthLabel->AdjustSize();
     growthLabel->Enable();
+    basePosition.y += 20.0f;
 
     foodLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {Position2(5.0f, 35.0f), ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, hoverBackdrop}},
+        {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, hoverBackdrop}},
         {{"JSLAncient", "Small"}, color, "Food: 20"}
     );
     foodLabel->SetAlignment(Text::Alignments::LEFT);
     foodLabel->AdjustSize();
     foodLabel->Enable();
-
-    storageLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {Position2(5.0f, 55.0f), ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, hoverBackdrop}},
-        {{"JSLAncient", "Small"}, color, "Food: 20"}
-    );
-    storageLabel->SetAlignment(Text::Alignments::LEFT);
-    storageLabel->AdjustSize();
-    storageLabel->Enable();
+    basePosition.y += 20.0f;
 
     industryLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {Position2(5.0f, 75.0f), ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, hoverBackdrop}},
+        {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, hoverBackdrop}},
         {{"JSLAncient", "Small"}, color, "Industry: 20"}
     );
     industryLabel->SetAlignment(Text::Alignments::LEFT);
     industryLabel->AdjustSize();
     industryLabel->Enable();
+    basePosition.y += 20.0f;
 
-    metalSprite = ElementFactory::BuildElement <Element>(
-        {Size(32, 32), drawOrder_ + 1, {Position2(0.0f, 95.0f), ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, hoverBackdrop}, {"Metal", "Sprite"}, Opacity(1.0f)}
+    metalIcon = ElementFactory::BuildElement <Element>(
+        {Size(32, 32), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, hoverBackdrop}, {"Metal", "Sprite"}, Opacity(1.0f)}
     );
-    metalSprite->Enable();
+    metalIcon->Enable();
 
     metalLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, metalSprite}},
+        {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, metalIcon}},
         {{"JSLAncient", "Small"}, color, "20"}
     );
     metalLabel->SetAlignment(Text::Alignments::LEFT);
     metalLabel->AdjustSize();
     metalLabel->Enable();
+
+    foodIcon = ElementFactory::BuildElement <Element>(
+        {Size(32, 32), drawOrder_ + 1, {Position2(60.0f, 0.0f), ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, metalIcon}, {"Carrot", "Sprite"}, Opacity(1.0f)}
+    );
+    foodIcon->Enable();
+
+    storageLabel = ElementFactory::BuildText(
+        {Size(100, 100), drawOrder_ + 1, {Position2(), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, foodIcon}},
+        {{"JSLAncient", "Small"}, color, "Food: 20"}
+    );
+    storageLabel->SetAlignment(Text::Alignments::LEFT);
+    storageLabel->AdjustSize();
+    storageLabel->Enable();
 
     /*foodLabel = ElementFactory::BuildText(
         {Size(size_.x - 10, 150), drawOrder_ + 1, {Position2(0.0f, height + 60.0f), this}},
@@ -180,7 +212,7 @@ void SettlementLabel::HandleUpdate()
     text << settlement->GetFoodProduction();
     foodLabel->Setup(text);
 
-    text = "Food stored: ";
+    text = "";
     text << settlement->GetFoodStorage();
     storageLabel->Setup(text);
 

@@ -8,9 +8,9 @@ namespace world::character
 
     enum class Conditions {SICKENED, FRIGHTENED, PARALYZED, HOBBLED, EVASION, FATIGUE};
 
-    enum class Modifiers {DAMAGE_INCREASE, ALL_ROLLS_PENALTY};
+    enum class Modifiers {BASE_ATTACK_DIE_TYPE, BASE_ATTACK_DIE_COUNT, BONUS_ARMOR_CLASS, ARMOR_DEXTERITY_LIMIT, ALL_ROLLS_PENALTY, ATTACK_RATING_BONUS};
 
-    enum class ItemTypes {SWORD, AXE, SHIELD, ARMOR, HELMET, SPEAR};
+    enum class ItemTypes {SWORD, AXE, SHIELD, ARMOR, HELMET, SPEAR, BOW, DAGGER};
 
     enum class ItemPositions {HEAD, MAIN_HAND, OFF_HAND, BODY, FEET, POUCH, COUNT, NONE};
 

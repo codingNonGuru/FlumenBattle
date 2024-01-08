@@ -14,6 +14,7 @@ namespace world::group
 
 namespace world::character
 {
+    class Character;
     enum class ItemTypes;
 
     struct ItemType
@@ -27,6 +28,10 @@ namespace world::character
         ItemType(ItemTypes type, Word textureName) : Type(type), TextureName(textureName) {}
 
         ItemType(ItemTypes type, Word textureName, ItemUses use) : Type(type), TextureName(textureName), Use(use) {}
+
+        virtual void ApplyEffect(Character &) const {}
+
+        virtual bool IsRangedWeapon() const {return false;}
     };
 
     struct Item
@@ -38,6 +43,10 @@ namespace world::character
         bool IsUsed {false};
 
         bool CanFitInto(ItemPositions position);
+
+        void ApplyEffect(Character &character) const {Type->ApplyEffect(character);}
+
+        bool IsRangedWeapon() const {return Type->IsRangedWeapon();}
     };
 
     class ItemSet

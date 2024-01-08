@@ -1,47 +1,54 @@
 #include "Item.h"
 #include "FlumenBattle/World/Character/Types.h"
+#include "FlumenBattle/World/Character/Character.h"
 
 using namespace world::character;
 
 #define ITEM_COUNT_PER_GROUP 64
 
-/*class ModifierAccessor
+namespace world::character
 {
-public:
-    static void AddModifier(Character &character, Modifier modifier)
+    class ModifierAccessor
     {
-        character.AddModifier(modifier);
-    }
-};*/
+    public:
+        static void AddModifier(Character &character, Modifier modifier)
+        {
+            character.AddModifier(modifier);
+        }
+    };
+}
 
 class Sword : public ItemType
 {
     using ItemType::ItemType; 
 
-    /*void HandleApplyEffect(Character &character) const override
+    void ApplyEffect(Character &character) const override
     {
-        ModifierAccessor::AddModifier(character, {Modifiers::DAMAGE_INCREASE, 1});
-    }*/
+        ModifierAccessor::AddModifier(character, {Modifiers::BASE_ATTACK_DIE_TYPE, 6});
+        ModifierAccessor::AddModifier(character, {Modifiers::BASE_ATTACK_DIE_COUNT, 2});
+    }
 };
 
 class Axe : public ItemType
 {
     using ItemType::ItemType; 
 
-    /*void HandleApplyEffect(Character &character) const override
+    void ApplyEffect(Character &character) const override
     {
-        ModifierAccessor::AddModifier(character, {Modifiers::DAMAGE_INCREASE, 1});
-    }*/
+        ModifierAccessor::AddModifier(character, {Modifiers::BASE_ATTACK_DIE_TYPE, 10});
+        ModifierAccessor::AddModifier(character, {Modifiers::BASE_ATTACK_DIE_COUNT, 1});
+    }
 };
 
 class Spear : public ItemType
 {
     using ItemType::ItemType; 
 
-    /*void HandleApplyEffect(Character &character) const override
+    void ApplyEffect(Character &character) const override
     {
-        ModifierAccessor::AddModifier(character, {Modifiers::DAMAGE_INCREASE, 1});
-    }*/
+        ModifierAccessor::AddModifier(character, {Modifiers::BASE_ATTACK_DIE_TYPE, 8});
+        ModifierAccessor::AddModifier(character, {Modifiers::BASE_ATTACK_DIE_COUNT, 1});
+    }
 };
 
 class Shield : public ItemType
@@ -58,10 +65,11 @@ class Armor : public ItemType
 {
     using ItemType::ItemType; 
 
-    /*void HandleApplyEffect(Character &character) const override
+    void ApplyEffect(Character &character) const override
     {
-        ModifierAccessor::AddModifier(character, {Modifiers::ALL_ROLLS_PENALTY, 1});
-    }*/
+        ModifierAccessor::AddModifier(character, {Modifiers::BONUS_ARMOR_CLASS, 3});
+        ModifierAccessor::AddModifier(character, {Modifiers::ARMOR_DEXTERITY_LIMIT, 2});
+    }
 };
 
 class Helmet : public ItemType
@@ -72,6 +80,19 @@ class Helmet : public ItemType
     {
         ModifierAccessor::AddModifier(character, {Modifiers::ALL_ROLLS_PENALTY, 1});
     }*/
+};
+
+class Bow : public ItemType
+{
+    using ItemType::ItemType;
+
+    bool IsRangedWeapon() const override {return true;} 
+
+    void ApplyEffect(Character &character) const override
+    {
+        ModifierAccessor::AddModifier(character, {Modifiers::BASE_ATTACK_DIE_TYPE, 8});
+        ModifierAccessor::AddModifier(character, {Modifiers::BASE_ATTACK_DIE_COUNT, 1});
+    }
 };
 
 bool Item::CanFitInto(ItemPositions position)
@@ -108,7 +129,7 @@ Item ItemFactory::Create(ItemTypes type)
     case ItemTypes::SPEAR:
         return 
         {
-            [&] {static const auto itemType = Armor(type, "SpearT1", ItemUses::WEAPON); return &itemType;} ()
+            [&] {static const auto itemType = Spear(type, "SpearT1", ItemUses::WEAPON); return &itemType;} ()
         };
     case ItemTypes::SHIELD:
         return 
@@ -119,6 +140,8 @@ Item ItemFactory::Create(ItemTypes type)
         return {[&] {static const auto itemType = Helmet(type, "HelmetT1", ItemUses::HEAD_WEAR); return &itemType;} ()};
     case ItemTypes::AXE:
         return {[&] {static const auto itemType = Axe(type, "AxeT1", ItemUses::WEAPON); return &itemType;} ()};
+    case ItemTypes::BOW:
+        return {[&] {static const auto itemType = Bow(type, "BowT1", ItemUses::WEAPON); return &itemType;} ()};
     }
 }
 
@@ -140,8 +163,7 @@ int ItemManager::GetAmount(ItemTypes type)
     {
         if(item.Type->Type == type)
         {
-            //amount += item.Amount;
-            amount += 1;
+            amount += item.Amount;
         }
     }
 

@@ -110,6 +110,46 @@ namespace world::character
         return type->Actions;
     }
 
+    Integer Character::GetArmorClass() const
+    {
+        auto armorClass = 10 + modifiers.GetAmount(Modifiers::BONUS_ARMOR_CLASS);
+
+        auto dexterityLimit = modifiers.GetAmount(Modifiers::ARMOR_DEXTERITY_LIMIT);
+        auto dexterityBonus = GetAbility(AbilityTypes::DEXTERITY).Modifier;
+        if(dexterityBonus > dexterityLimit)
+        {
+            dexterityBonus = dexterityLimit;
+        }
+
+        return armorClass + dexterityBonus;
+    }
+
+    Integer Character::GetAttackRating() const
+    {
+        auto bonus = [&] 
+        {
+            auto mainHandItem = GetItem(ItemPositions::MAIN_HAND);
+            if(mainHandItem != nullptr)
+            {
+                bool isRanged = mainHandItem->IsRangedWeapon();
+                if(isRanged)
+                {
+                    return GetAbility(AbilityTypes::DEXTERITY).Modifier;
+                }
+                else
+                {
+                    return GetAbility(AbilityTypes::STRENGTH).Modifier;
+                }
+            }
+            else
+            {
+                return GetAbility(AbilityTypes::STRENGTH).Modifier;
+            }
+        } ();
+
+        return modifiers.GetAmount(Modifiers::ATTACK_RATING_BONUS) + bonus;
+    }
+
     bool Character::SelectAction(Index index)
     {
         if(index >= type->Actions.GetSize())
@@ -230,8 +270,21 @@ namespace world::character
 
     void Character::Update()
     {
+        RefreshModifiers();
+    }
+
+    void Character::RefreshModifiers()
+    {
         modifiers.ClearModifiers();
 
         conditions.ApplyModifiers(*this);
+
+        for(auto &item : items)
+        {
+            if(item == nullptr)
+                continue;
+
+            item->ApplyEffect(*this);
+        }
     }
 }

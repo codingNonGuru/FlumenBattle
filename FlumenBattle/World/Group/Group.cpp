@@ -101,6 +101,7 @@ namespace world::group
         items.Add(character::ItemTypes::SHIELD);
         items.Add(character::ItemTypes::ARMOR);
         items.Add(character::ItemTypes::SPEAR);
+        items.Add(character::ItemTypes::BOW);
     }
 
     bool Group::IsAlive()

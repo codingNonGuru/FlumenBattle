@@ -89,6 +89,21 @@ void InventoryMenu::HandleConfigure()
     classLabel->AdjustSize();
     classLabel->Enable();
 
+    Text **labels[] = {&healthLabel, &armorLabel, &attackLabel};
+    auto height = 120.0f;
+    for(auto label : labels)
+    {
+        *label = ElementFactory::BuildText(
+            {Size(100, 100), drawOrder_ + 1, {Position2(10.0f, height), ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
+            {{"JSLAncient", "Small"}, Color::RED * 0.5f, "Health: 10 / 10"}
+        );
+        (*label)->SetAlignment(Text::Alignments::LEFT);
+        (*label)->AdjustSize();
+        (*label)->Enable();
+
+        height += (*label)->GetFontHeight() - 5.0f;
+    }
+
     border = ElementFactory::BuildElement <Element>
     (
         {
@@ -208,6 +223,8 @@ void InventoryMenu::SelectSlot(InventorySlot *slot)
             MoveItem(slot);
         }
     }
+
+    character->RefreshModifiers();
 }
 
 void InventoryMenu::DropItem()
@@ -310,6 +327,18 @@ void InventoryMenu::SelectCharacter(character::Character *newCharacter)
 
 void InventoryMenu::HandleUpdate()
 {
-    if(selectedSlot == nullptr)
-        return;
+    Word text = "Health: ";
+    text << character->GetCurrentHitPoints();
+
+    healthLabel->Setup(text);
+
+    text = "Armor: ";
+    text << character->GetArmorClass();
+
+    armorLabel->Setup(text);
+
+    text = "Attack: ";
+    text << character->GetAttackRating();
+
+    attackLabel->Setup(text);
 }

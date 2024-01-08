@@ -117,7 +117,7 @@ namespace world::character
 
         void HandleApplyEffect(Character &character) const override
         {
-            ModifierAccessor::AddModifier(character, {Modifiers::DAMAGE_INCREASE, 1});
+            ModifierAccessor::AddModifier(character, {Modifiers::ALL_ROLLS_PENALTY, 1});
         }
     };
 
@@ -127,7 +127,7 @@ namespace world::character
 
         void HandleApplyEffect(Character &character) const override
         {
-            ModifierAccessor::AddModifier(character, {Modifiers::DAMAGE_INCREASE, 1});
+            ModifierAccessor::AddModifier(character, {Modifiers::ALL_ROLLS_PENALTY, 1});
         }
     };
 
@@ -137,7 +137,7 @@ namespace world::character
 
         void HandleApplyEffect(Character &character) const override
         {
-            ModifierAccessor::AddModifier(character, {Modifiers::DAMAGE_INCREASE, 1});
+            ModifierAccessor::AddModifier(character, {Modifiers::ALL_ROLLS_PENALTY, 1});
         }
     };
 

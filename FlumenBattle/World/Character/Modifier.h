@@ -37,7 +37,7 @@ namespace world::character
 
         void ClearModifiers();
 
-        int GetAmount(Modifiers);
+        int GetAmount(Modifiers) const;
     };
 
     class ModifierAllocator

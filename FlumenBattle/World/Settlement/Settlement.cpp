@@ -376,7 +376,7 @@ Integer Settlement::GetMetalProduction() const
             continue;
 
         production += tile.Tile->GetMetal();
-        if(tile.IsBuilt)
+        if(production > 0 && tile.IsBuilt)
         {
             production++;
         }
@@ -438,11 +438,10 @@ void Settlement::UpdateFoodSituation()
 
 void Settlement::UpdateMetalSituation()
 {
-    auto production = polity->GetRuler() == this ? 1 : 0; //GetMetalProduction();
+    //auto production = polity->GetRuler() == this ? 1 : 0; //GetMetalProduction();
+    auto production = GetMetalProduction();
 
     //auto consumption = population;
-
-    //int availableFood = foodProduction + foodStorage;
 
     metalStorage += production;// - consumption;
 
@@ -471,7 +470,7 @@ Integer Settlement::GetIndustrialProduction() const
         }
     }
 
-    return 10;//production;
+    return production;
 }
 
 Integer Settlement::GetScienceProduction() const
@@ -580,7 +579,7 @@ void Settlement::Update()
         }
     }
 
-    if(growth >= 200)
+    if(growth >= 1000)
     {
         growth = 0;
         population++;

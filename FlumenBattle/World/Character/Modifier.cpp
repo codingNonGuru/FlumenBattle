@@ -2,12 +2,7 @@
 
 using namespace world::character;
 
-#define MODIFIER_COUNT_PER_CHARACTER 16
-
-void ModifierManager::Initialize()
-{
-    //modifiers.Initialize(MODIFIER_COUNT_PER_CHARACTER);
-}
+void ModifierManager::Initialize() {}
 
 void ModifierManager::AddModifier(Modifier modifier)
 {
@@ -19,7 +14,7 @@ void ModifierManager::ClearModifiers()
     modifiers.Reset();
 }
 
-int ModifierManager::GetAmount(Modifiers type)
+int ModifierManager::GetAmount(Modifiers type) const
 {
     auto amount = 0;
 

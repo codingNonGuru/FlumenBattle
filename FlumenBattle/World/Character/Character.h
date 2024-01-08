@@ -186,6 +186,10 @@ namespace world::character
 
         const Pool <Spell> & GetSpells() {return spells;}
 
+        Integer GetArmorClass() const;
+
+        Integer GetAttackRating() const;
+
         bool SelectAction(Index);
 
         bool SelectActionOption(Index);
@@ -212,7 +216,7 @@ namespace world::character
 
         Spell* GetSelectedSpell() const {return selectedSpell;}
 
-        Item *GetItem(ItemPositions position) {return *items.Get((int)position);}
+        Item *GetItem(ItemPositions position) const {return *items.Get((int)position);}
 
         bool HasCondition(Conditions condition) {return conditions.HasCondition(condition);}
 
@@ -223,5 +227,7 @@ namespace world::character
         void AddCondition(ConditionData);
 
         void Update();
+
+        void RefreshModifiers();
     };
 }
