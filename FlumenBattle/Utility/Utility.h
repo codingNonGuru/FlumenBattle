@@ -18,6 +18,15 @@ namespace utility
 
     typedef int DifficultyClass;
 
+    struct RollMaterial
+    {
+        RollDies Die;
+
+        int DieCount;
+
+        int Bonus;
+    };
+
     struct Success
     {
         SuccessTypes Type;

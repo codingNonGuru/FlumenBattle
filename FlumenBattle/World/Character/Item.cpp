@@ -1,6 +1,7 @@
 #include "Item.h"
 #include "FlumenBattle/World/Character/Types.h"
 #include "FlumenBattle/World/Character/Character.h"
+#include "FlumenBattle/Utility/Types.h"
 
 using namespace world::character;
 
@@ -24,7 +25,7 @@ class Sword : public ItemType
 
     void ApplyEffect(Character &character) const override
     {
-        ModifierAccessor::AddModifier(character, {Modifiers::BASE_ATTACK_DIE_TYPE, 6});
+        ModifierAccessor::AddModifier(character, {Modifiers::BASE_ATTACK_DIE_TYPE, (int)utility::RollDies::D6});
         ModifierAccessor::AddModifier(character, {Modifiers::BASE_ATTACK_DIE_COUNT, 2});
     }
 };
@@ -35,7 +36,7 @@ class Axe : public ItemType
 
     void ApplyEffect(Character &character) const override
     {
-        ModifierAccessor::AddModifier(character, {Modifiers::BASE_ATTACK_DIE_TYPE, 10});
+        ModifierAccessor::AddModifier(character, {Modifiers::BASE_ATTACK_DIE_TYPE, (int)utility::RollDies::D10});
         ModifierAccessor::AddModifier(character, {Modifiers::BASE_ATTACK_DIE_COUNT, 1});
     }
 };
@@ -46,7 +47,7 @@ class Spear : public ItemType
 
     void ApplyEffect(Character &character) const override
     {
-        ModifierAccessor::AddModifier(character, {Modifiers::BASE_ATTACK_DIE_TYPE, 8});
+        ModifierAccessor::AddModifier(character, {Modifiers::BASE_ATTACK_DIE_TYPE, (int)utility::RollDies::D8});
         ModifierAccessor::AddModifier(character, {Modifiers::BASE_ATTACK_DIE_COUNT, 1});
     }
 };
@@ -90,7 +91,7 @@ class Bow : public ItemType
 
     void ApplyEffect(Character &character) const override
     {
-        ModifierAccessor::AddModifier(character, {Modifiers::BASE_ATTACK_DIE_TYPE, 8});
+        ModifierAccessor::AddModifier(character, {Modifiers::BASE_ATTACK_DIE_TYPE, (int)utility::RollDies::D8});
         ModifierAccessor::AddModifier(character, {Modifiers::BASE_ATTACK_DIE_COUNT, 1});
     }
 };

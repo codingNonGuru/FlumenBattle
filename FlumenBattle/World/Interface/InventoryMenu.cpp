@@ -89,7 +89,7 @@ void InventoryMenu::HandleConfigure()
     classLabel->AdjustSize();
     classLabel->Enable();
 
-    Text **labels[] = {&healthLabel, &armorLabel, &attackLabel};
+    Text **labels[] = {&healthLabel, &armorLabel, &attackLabel, &damageLabel};
     auto height = 120.0f;
     for(auto label : labels)
     {
@@ -316,9 +316,12 @@ void InventoryMenu::SelectCharacter(character::Character *newCharacter)
 {
     character = newCharacter;
 
-    classLabel->Setup(character->GetClass()->Name.Get());
-
     nameLabel->Setup(character->GetName());
+
+    Word description = character->GetRace()->Name;
+    description << ", ";
+    description << character->GetClass()->Name;
+    classLabel->Setup(description);
 
     mainHandSlot->SetItem(character->GetItem(character::ItemPositions::MAIN_HAND));
     bodySlot->SetItem(character->GetItem(character::ItemPositions::BODY));
@@ -329,6 +332,8 @@ void InventoryMenu::HandleUpdate()
 {
     Word text = "Health: ";
     text << character->GetCurrentHitPoints();
+    text << " / ";
+    text << character->GetMaximumHitPoints();
 
     healthLabel->Setup(text);
 
@@ -338,7 +343,42 @@ void InventoryMenu::HandleUpdate()
     armorLabel->Setup(text);
 
     text = "Attack: ";
-    text << character->GetAttackRating();
+    auto attackRating = character->GetAttackRating();
+    if(attackRating > 0)
+    {
+        text << "+";
+    }
+    text << attackRating;
 
     attackLabel->Setup(text);
+
+    text = "Damage: ";
+    auto damage = character->GetDamage();
+    if(damage.Bonus > 0)
+    {
+        text << damage.Bonus;
+        text << " + ";
+    }
+    text << damage.DieCount;
+    text << "d";
+    switch(damage.Die)
+    {
+    case utility::RollDies::D4:
+        text << "4";
+        break;
+    case utility::RollDies::D6:
+        text << "6";
+        break;
+    case utility::RollDies::D8:
+        text << "8";
+        break;
+    case utility::RollDies::D10:
+        text << "10";
+        break;
+    case utility::RollDies::D12:
+        text << "12";
+        break;
+    }
+
+    damageLabel->Setup(text);
 }

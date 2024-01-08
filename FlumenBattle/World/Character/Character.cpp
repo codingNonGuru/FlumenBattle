@@ -112,16 +112,23 @@ namespace world::character
 
     Integer Character::GetArmorClass() const
     {
-        auto armorClass = 10 + modifiers.GetAmount(Modifiers::BONUS_ARMOR_CLASS);
-
-        auto dexterityLimit = modifiers.GetAmount(Modifiers::ARMOR_DEXTERITY_LIMIT);
-        auto dexterityBonus = GetAbility(AbilityTypes::DEXTERITY).Modifier;
-        if(dexterityBonus > dexterityLimit)
+        if(GetItem(ItemPositions::BODY) != nullptr)
         {
-            dexterityBonus = dexterityLimit;
-        }
+            auto armorClass = 10 + modifiers.GetAmount(Modifiers::BONUS_ARMOR_CLASS);
 
-        return armorClass + dexterityBonus;
+            auto dexterityLimit = modifiers.GetAmount(Modifiers::ARMOR_DEXTERITY_LIMIT);
+            auto dexterityBonus = GetAbility(AbilityTypes::DEXTERITY).Modifier;
+            if(dexterityBonus > dexterityLimit)
+            {
+                dexterityBonus = dexterityLimit;
+            }
+
+            return armorClass + dexterityBonus;
+        }
+        else
+        {
+            return 10 + GetAbility(AbilityTypes::DEXTERITY).Modifier;
+        }
     }
 
     Integer Character::GetAttackRating() const
@@ -148,6 +155,45 @@ namespace world::character
         } ();
 
         return modifiers.GetAmount(Modifiers::ATTACK_RATING_BONUS) + bonus;
+    }
+
+    utility::RollMaterial Character::GetDamage() const
+    {
+        auto bonus = [&] 
+        {
+            auto mainHandItem = GetItem(ItemPositions::MAIN_HAND);
+            if(mainHandItem != nullptr)
+            {
+                bool isRanged = mainHandItem->IsRangedWeapon();
+                if(isRanged)
+                {
+                    return GetAbility(AbilityTypes::DEXTERITY).Modifier;
+                }
+                else
+                {
+                    return GetAbility(AbilityTypes::STRENGTH).Modifier;
+                }
+            }
+            else
+            {
+                return GetAbility(AbilityTypes::STRENGTH).Modifier;
+            }
+        } ();
+
+        if(bonus < 0)
+        {
+            bonus = 0;
+        }
+
+        auto mainHandItem = GetItem(ItemPositions::MAIN_HAND);
+        if(mainHandItem != nullptr)
+        {
+            return {(utility::RollDies)modifiers.GetAmount(Modifiers::BASE_ATTACK_DIE_TYPE), modifiers.GetAmount(Modifiers::BASE_ATTACK_DIE_COUNT), bonus};
+        }
+        else
+        {
+            return {utility::RollDies::D4, 1, bonus};
+        }
     }
 
     bool Character::SelectAction(Index index)

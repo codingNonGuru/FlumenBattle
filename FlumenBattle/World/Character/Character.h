@@ -36,6 +36,11 @@ namespace world::group
     class Group;
 }
 
+namespace utility
+{
+    struct RollMaterial;
+}
+
 namespace world
 {
     namespace character
@@ -189,6 +194,8 @@ namespace world::character
         Integer GetArmorClass() const;
 
         Integer GetAttackRating() const;
+
+        utility::RollMaterial GetDamage() const;
 
         bool SelectAction(Index);
 

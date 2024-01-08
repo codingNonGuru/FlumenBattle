@@ -60,6 +60,8 @@ namespace world::interface
 
         Text *attackLabel;
 
+        Text *damageLabel;
+
         Element *border;
 
         character::Character *character;
