@@ -11,6 +11,7 @@
 #include "FlumenBattle/World/Group/GroupFactory.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/PreGame/Types.h"
+#include "FlumenBattle/World/Settlement/Types.h"
 
 using namespace world;
 
@@ -185,20 +186,20 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data)
             {
                 tile->Biome = WorldBiomeFactory::BuildBiome(WorldBiomes::MARINE);
 
-                tile->fertility = 1;
-                tile->industry = 0;
-                tile->metal = 0;
+                tile->SetResource(settlement::ResourceTypes::FOOD, 1);
+                tile->SetResource(settlement::ResourceTypes::TIMBER, 0);
+                tile->SetResource(settlement::ResourceTypes::METAL, 0);
             }
             else
             {
-                tile->metal = (utility::RollD100Dice() > 100 - METAL_SPAWN_CHANCE) ? 1 : 0;
+                tile->SetResource(settlement::ResourceTypes::METAL, (utility::RollD100Dice() > 100 - METAL_SPAWN_CHANCE) ? 1 : 0);
 
                 if(tile->HasRelief(WorldReliefs::MOUNTAINS))
                 {
                     tile->Biome = WorldBiomeFactory::BuildBiome(WorldBiomes::DESERT);
 
-                    tile->fertility = 0;
-                    tile->industry = utility::GetRandom(1, 100) < 50 ? 2 : 1;   
+                    tile->SetResource(settlement::ResourceTypes::FOOD, 0);
+                    tile->SetResource(settlement::ResourceTypes::TIMBER, utility::GetRandom(1, 100) < 50 ? 2 : 1);
                 }
                 else
                 {
@@ -224,8 +225,8 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data)
                     {
                         tile->Biome = WorldBiomeFactory::BuildBiome(WorldBiomes::WOODS);
 
-                        tile->fertility = 1;
-                        tile->industry = utility::GetRandom(1, 100) < 50 ? 1 : 2;
+                        tile->SetResource(settlement::ResourceTypes::FOOD, 1);
+                        tile->SetResource(settlement::ResourceTypes::TIMBER, utility::GetRandom(1, 100) < 50 ? 1 : 2);
                     }
                     else
                     {
@@ -234,16 +235,15 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data)
                             tile->Biome = WorldBiomeFactory::BuildBiome(WorldBiomes::STEPPE);
 
                             bool hasMaxFertility = utility::GetRandom(1, 100) < 5;
-                            tile->fertility = hasMaxFertility ? 4 : utility::GetRandom(1, 100) < 35 ? 3 : 2;
-
-                            tile->industry = hasMaxFertility ? 0 : utility::GetRandom(1, 100) < 50 ? 1 : 0;
+                            tile->SetResource(settlement::ResourceTypes::FOOD, hasMaxFertility ? 4 : utility::GetRandom(1, 100) < 35 ? 3 : 2);
+                            tile->SetResource(settlement::ResourceTypes::TIMBER, hasMaxFertility ? 0 : utility::GetRandom(1, 100) < 50 ? 1 : 0);
                         }
                         else 
                         {
                             tile->Biome = WorldBiomeFactory::BuildBiome(WorldBiomes::DESERT);
 
-                            tile->fertility = 0;
-                            tile->industry = utility::GetRandom(1, 100) < 50 ? 1 : 0;
+                            tile->SetResource(settlement::ResourceTypes::FOOD, 0);
+                            tile->SetResource(settlement::ResourceTypes::TIMBER, utility::GetRandom(1, 100) < 50 ? 1 : 0);
                         }
                     }
                 }

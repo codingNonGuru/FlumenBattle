@@ -16,7 +16,7 @@ namespace world::settlement
         LIBRARY
     };
 
-    enum class FoodSecurity
+    enum class AbundanceLevels
     {
         CORNUCOPIA,
         ABUNDANT,
@@ -45,5 +45,45 @@ namespace world::settlement
         WELL_TRODDEN,
         PAVED,
         WELL_PAVED
+    };
+
+    #define GOODS_TYPES_COUNT 5
+
+    #define BASIC_RESOURCES_COUNT 5
+
+    enum class ResourceTypes
+    {
+        FOOD,
+        TIMBER,
+        METAL,
+        WOOL,
+        STONE
+        //LEATHER
+        //POTTERY
+        //FURNITURE
+        //TOOLS
+        //CARTS
+        //PAPER
+        //WINE
+        //ROPE
+        //GLASS
+        //SOAP
+        //CLOTHING
+        //SHOES
+        //BOATS
+        //MACHINERY
+        //JEWELRY
+        //SPICE
+        //INCENSE
+        //TEA
+        //MULES
+        //CANDLES
+        //MEDICINE
+        //CUTLERY
+        //FURS
+        //GOLD
+        //DYES
+        //TOBACCO
+        //IVORY
     };
 }

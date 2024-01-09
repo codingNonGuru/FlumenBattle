@@ -6,6 +6,7 @@
 
 #include "FlumenBattle/World/Settlement/Shipment.h"
 #include "FlumenBattle/World/Settlement/Modifier.h"
+#include "FlumenBattle/World/Settlement/Resource.h"
 #include "FlumenBattle/World/Settlement/Types.h"
 
 namespace world
@@ -74,6 +75,8 @@ namespace world::settlement
 
         friend class BuildingDamager;
 
+        friend struct Resource;
+
         Word name;
 
         Color banner;
@@ -83,20 +86,6 @@ namespace world::settlement
         Integer population;
 
         group::GroupDynamics *groupDynamics;
-
-        Integer foodStorage;
-
-        Integer foodProduction;
-
-        Integer foodBalance;
-
-        FoodSecurity foodSecurity;
-
-        Integer metalStorage;
-
-        Integer metalProduction;
-
-        Integer metalBalance;
 
         Integer growth;
 
@@ -119,6 +108,10 @@ namespace world::settlement
         ConditionManager *conditionManager;
         
         BuildingManager *buildingManager;
+
+        ResourceHandler resourceHandler;
+
+        int storage {400};
 
         Shipment shipment;
 
@@ -145,18 +138,6 @@ namespace world::settlement
 
         Pool <SettlementTile> & GetTiles();
 
-        void UpdateFoodSituation();
-
-        void UpdateMetalSituation();
-
-        Integer GetFoodProduction() const;
-
-        Integer GetFoodStorage() const {return foodStorage;}
-
-        Integer GetMetalStorage() const {return metalStorage;}
-
-        Integer GetMetalProduction() const;
-
         Integer GetIndustrialProduction() const;
 
         Integer GetScienceProduction() const;
@@ -170,6 +151,10 @@ namespace world::settlement
         world::Polity *GetPolity() const {return polity;}
 
         int GetModifier(Modifiers) const;
+
+        Resource *GetResource(ResourceTypes type) const {return resourceHandler.Get(type);}
+
+        int GetStock(ResourceTypes type) const {return resourceHandler.Get(type)->Storage;}
 
         void SetPolity(world::Polity *);
 

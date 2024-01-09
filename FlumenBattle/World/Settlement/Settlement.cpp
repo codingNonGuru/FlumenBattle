@@ -20,7 +20,7 @@ using namespace world::settlement;
 
 #define VOLUME_PER_SHIPMENT 10
 
-#define STORAGE_THRESHOLD 100
+#define STORAGE_THRESHOLD 200
 
 #define SHIPMENT_VOLUME_LOSS 3
 
@@ -33,6 +33,8 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
 {
     this->buildingManager->Initialize(this);
 
+    this->resourceHandler.Initialize();
+
     this->name = name;
 
     this->banner = banner;
@@ -42,10 +44,6 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
     this->population = 1;
 
     this->growth = 0;
-
-    this->foodStorage = 0;
-
-    this->metalStorage = 0;
 
     this->cultureGrowth = 0;
 
@@ -344,121 +342,10 @@ Pool <SettlementTile> & Settlement::GetTiles()
     return tiles;
 }
 
-Integer Settlement::GetFoodProduction() const
-{
-    auto production = 0;
-    for(auto &tile : tiles)
-    {
-        if(tile.IsWorked == false)
-            continue;
-
-        production += tile.Tile->GetFertility();
-        if(tile.IsBuilt)
-        {
-            production++;
-        }
-
-        if(tile.Tile->Biome->Type == world::WorldBiomes::DESERT)
-        {
-            production += GetModifier(Modifiers::FOOD_PRODUCTION_ON_DESERT_TILES);
-        }
-    }
-
-    return production;
-}
-
-Integer Settlement::GetMetalProduction() const
-{
-    auto production = 0;
-    for(auto &tile : tiles)
-    {
-        if(tile.IsWorked == false)
-            continue;
-
-        production += tile.Tile->GetMetal();
-        if(production > 0 && tile.IsBuilt)
-        {
-            production++;
-        }
-
-        /*if(tile.Tile->Biome->Type == world::WorldBiomes::DESERT)
-        {
-            production += GetModifier(Modifiers::FOOD_PRODUCTION_ON_DESERT_TILES);
-        }*/
-    }
-
-    return production;
-}
-
-void Settlement::UpdateFoodSituation()
-{
-    foodProduction = GetFoodProduction();
-
-    auto consumption = population;
-
-    int availableFood = foodProduction + foodStorage;
-
-    foodSecurity = FoodSecurity();
-    if(availableFood >= consumption * 3)
-    {
-        foodSecurity = FoodSecurity::CORNUCOPIA;
-    }
-    else if(availableFood >= consumption * 2)
-    {
-        foodSecurity = FoodSecurity::ABUNDANT;
-    }
-    else if(availableFood > consumption)
-    {
-        foodSecurity = FoodSecurity::ENOUGH;
-    }
-    else if(availableFood == consumption)
-    {
-        foodSecurity = FoodSecurity::BARELY_AVAILABLE;
-    }
-    else if(availableFood * 2 > consumption)
-    {
-        foodSecurity = FoodSecurity::LACKING;
-    }
-    else
-    {
-        foodSecurity = FoodSecurity::SORELY_LACKING;
-    }
-
-    foodStorage += foodProduction - consumption;
-
-    if(foodStorage > 200)
-    {
-        foodStorage = 200;
-    }
-    else if(foodStorage < 0)
-    {
-        foodStorage = 0;
-    }
-}
-
-void Settlement::UpdateMetalSituation()
-{
-    //auto production = polity->GetRuler() == this ? 1 : 0; //GetMetalProduction();
-    auto production = GetMetalProduction();
-
-    //auto consumption = population;
-
-    metalStorage += production;// - consumption;
-
-    if(metalStorage > 200)
-    {
-        metalStorage = 200;
-    }
-    else if(metalStorage < 0)
-    {
-        metalStorage = 0;
-    }
-}
-
 Integer Settlement::GetIndustrialProduction() const
 {
-    auto production = 0;
-    for(auto &tile : tiles)
+    auto production = GetPopulation();
+    /*for(auto &tile : tiles)
     {
         if(tile.IsWorked == false)
             continue;
@@ -468,7 +355,7 @@ Integer Settlement::GetIndustrialProduction() const
         {
             production++;
         }
-    }
+    }*/
 
     return production;
 }
@@ -546,32 +433,31 @@ void Settlement::Update()
 
     updateModifiers();
 
-    UpdateFoodSituation();
+    resourceHandler.Update(*this);
 
-    UpdateMetalSituation();
-
+    auto foodSecurity = resourceHandler.Get(ResourceTypes::FOOD)->Abundance;
     switch(foodSecurity)
     {
-    case FoodSecurity::CORNUCOPIA:
+    case AbundanceLevels::CORNUCOPIA:
         growth += 5;
         break;
-    case FoodSecurity::ABUNDANT:
+    case AbundanceLevels::ABUNDANT:
         growth += 4;
         break;
-    case FoodSecurity::ENOUGH:
+    case AbundanceLevels::ENOUGH:
         growth += 3;
         break;
-    case FoodSecurity::BARELY_AVAILABLE:
+    case AbundanceLevels::BARELY_AVAILABLE:
         break;
-    case FoodSecurity::LACKING:
+    case AbundanceLevels::LACKING:
         growth -= 3;
         break;
-    case FoodSecurity::SORELY_LACKING:
+    case AbundanceLevels::SORELY_LACKING:
         growth -= 5;
         break;
     }
 
-    if(foodSecurity == FoodSecurity::LACKING || foodSecurity == FoodSecurity::SORELY_LACKING)
+    if(foodSecurity == AbundanceLevels::LACKING || foodSecurity == AbundanceLevels::SORELY_LACKING)
     {
         if(afflictions.Find(AfflictionTypes::HUNGER) == nullptr)
         {
@@ -647,7 +533,7 @@ void Settlement::PrepareTransport()
     if(lastShipmentTime > 0)
         return;
 
-    if(metalStorage < STORAGE_THRESHOLD)
+    if(GetStock(ResourceTypes::METAL) < STORAGE_THRESHOLD)
         return;
 
     for(auto &link : links)
@@ -657,7 +543,7 @@ void Settlement::PrepareTransport()
 
         auto other = link.Path->GetOther(this);
 
-        if(other->GetMetalStorage() > STORAGE_THRESHOLD || other->GetMetalStorage() > metalStorage)
+        if(other->GetStock(ResourceTypes::METAL) > STORAGE_THRESHOLD || other->GetStock(ResourceTypes::METAL) > GetStock(ResourceTypes::METAL))
             continue;
 
         lastShipmentTime = TIME_BETWEEN_SHIPMENTS;
@@ -675,7 +561,7 @@ void Settlement::PrepareTransport()
 
         auto other = link.Path->GetOther(this);
 
-        bool cannotSendToOther = other->GetMetalStorage() > STORAGE_THRESHOLD || other->GetMetalStorage() > metalStorage;
+        bool cannotSendToOther = other->GetStock(ResourceTypes::METAL) > STORAGE_THRESHOLD || other->GetStock(ResourceTypes::METAL) > GetStock(ResourceTypes::METAL);
         if(cannotSendToOther == true)
             continue;
         
@@ -696,7 +582,7 @@ void Settlement::SendTransport()
     if(shipment.To == nullptr)
         return;
 
-    metalStorage -= VOLUME_PER_SHIPMENT;
+    resourceHandler.Get(ResourceTypes::METAL)->Storage -= VOLUME_PER_SHIPMENT;
 
     shipment.To->ReceiveTransport();
 
@@ -705,5 +591,5 @@ void Settlement::SendTransport()
 
 void Settlement::ReceiveTransport()
 {
-    metalStorage += VOLUME_PER_SHIPMENT - SHIPMENT_VOLUME_LOSS;
+    resourceHandler.Get(ResourceTypes::METAL)->Storage += VOLUME_PER_SHIPMENT - SHIPMENT_VOLUME_LOSS;
 }

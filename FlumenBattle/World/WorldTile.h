@@ -1,9 +1,11 @@
 #pragma once
 
 #include "FlumenCore/Conventions.hpp"
+#include "FlumenCore/Container/Map.hpp"
 
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/World/Types.h"
+#include "FlumenBattle/World/Settlement/Types.h"
 
 namespace world
 {
@@ -20,6 +22,7 @@ namespace world
     {
         class Settlement;
         struct PathSegment;
+        enum class ResourceTypes;
     }
 }
 
@@ -42,11 +45,9 @@ namespace world
 
         settlement::Settlement *owner;
 
-        Integer fertility;
+        typedef int ResourceAmount;
 
-        Integer industry;
-
-        Integer metal;
+        container::Block <ResourceAmount, BASIC_RESOURCES_COUNT> resources {0};
 
         bool isBorderingOwnedTile;
 
@@ -116,12 +117,6 @@ namespace world
 
         settlement::Settlement * GetOwner() {return owner;}
 
-        Integer GetFertility() const {return fertility;}
-
-        Integer GetIndustry() const {return industry;}
-
-        Integer GetMetal() const {return metal;}
-
         Float4 GetShade() const;
 
         //Integer GetTravelPenalty() const;
@@ -153,5 +148,9 @@ namespace world
         void SetPathData(int data) {pathData = data;}
 
         int GetPathData() {return pathData;}
+
+        ResourceAmount GetResource(settlement::ResourceTypes type) {return *resources[(int)type];}
+
+        void SetResource(settlement::ResourceTypes type, ResourceAmount amount) {*resources[(int)type] = amount;}
     };
 }

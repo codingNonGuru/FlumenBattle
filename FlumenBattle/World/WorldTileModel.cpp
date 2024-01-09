@@ -329,7 +329,7 @@ void WorldTileModel::Render()
         map = worldScene->GetWorldMap();
         for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
         {
-            if(tile->GetMetal() == 0)
+            if(tile->GetResource(settlement::ResourceTypes::METAL) == 0)
                 continue;
 
             metalSprite->Draw(camera, {tile->Position, Scale2(1.0f, 1.0f) * 1.5f, Opacity(1.0f), DrawOrder(-2)});

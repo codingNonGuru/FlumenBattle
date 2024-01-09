@@ -3,6 +3,7 @@
 #include "FlumenEngine/Core/Transform.hpp"
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/Text.hpp"
+#include "FlumenEngine/Interface/LayoutGroup.h"
 
 #include "SettlementLabel.h"
 #include "FlumenBattle/Types.hpp"
@@ -17,6 +18,31 @@ using namespace world::settlement;
 auto color = Color::RED * 0.5f;
 
 auto borderColor = Color::RED * 0.25f;
+
+void SettlementLabel::ResourceWidget::HandleConfigure()
+{
+    Label = ElementFactory::BuildText(
+        {Size(100, 100), drawOrder_ + 1, {Position2(), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, this}},
+        {{"JSLAncient", "Small"}, color, "20"}
+    );
+    Label->SetAlignment(Text::Alignments::LEFT);
+    Label->AdjustSize();
+    Label->Enable();
+}
+
+void SettlementLabel::ResourceWidget::HandleUpdate()
+{
+    Phrase text;
+    if(IsTrackingProduction == true)
+    {
+        text << Parent->settlement->GetResource(Resource)->GetProduction(*Parent->settlement);
+    }
+    else
+    {
+        text << Parent->settlement->GetResource(Resource)->Storage;
+    }
+    Label->Setup(text);
+}
 
 void SettlementLabel::HandleConfigure() 
 {
@@ -39,7 +65,7 @@ void SettlementLabel::HandleConfigure()
     backdrop->Enable();
 
     populationBackdrop = ElementFactory::BuildElement <Element>(
-        {Size(50, 50), drawOrder_ + 1, {Position2(-20.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}, {"Sprite"}, Opacity(0.5f)}
+        {Size(50, 50), drawOrder_ + 1, {Position2(-15.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}, {"Sprite"}, Opacity(0.5f)}
     );
     populationBackdrop->Enable();
 
@@ -57,7 +83,7 @@ void SettlementLabel::HandleConfigure()
     populationLabel->Enable();
 
     hoverBackdrop = ElementFactory::BuildElement <Element>(
-        {Size(size_.x - 10, 125), drawOrder_, {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, this}, {"Sprite"}, Opacity(0.4f)}
+        {Size(size_.x - 10, 135), drawOrder_, {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, this}, {"Sprite"}, Opacity(0.4f)}
     );
     hoverBackdrop->Disable();
 
@@ -78,15 +104,6 @@ void SettlementLabel::HandleConfigure()
     growthLabel->Enable();
     basePosition.y += 20.0f;
 
-    foodLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, hoverBackdrop}},
-        {{"JSLAncient", "Small"}, color, "Food: 20"}
-    );
-    foodLabel->SetAlignment(Text::Alignments::LEFT);
-    foodLabel->AdjustSize();
-    foodLabel->Enable();
-    basePosition.y += 20.0f;
-
     industryLabel = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, hoverBackdrop}},
         {{"JSLAncient", "Small"}, color, "Industry: 20"}
@@ -94,47 +111,42 @@ void SettlementLabel::HandleConfigure()
     industryLabel->SetAlignment(Text::Alignments::LEFT);
     industryLabel->AdjustSize();
     industryLabel->Enable();
-    basePosition.y += 20.0f;
+    basePosition.y += 10.0f;
 
-    metalIcon = ElementFactory::BuildElement <Element>(
-        {Size(32, 32), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, hoverBackdrop}, {"Metal", "Sprite"}, Opacity(1.0f)}
+    storageLayout = ElementFactory::BuildElement <LayoutGroup>(
+        {Size(0, 0), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, hoverBackdrop}}
     );
-    metalIcon->Enable();
+    storageLayout->Enable();
+    storageLayout->SetDistancing(3, 30.0f, -5.0f);
 
-    metalLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, metalIcon}},
-        {{"JSLAncient", "Small"}, color, "20"}
-    );
-    metalLabel->SetAlignment(Text::Alignments::LEFT);
-    metalLabel->AdjustSize();
-    metalLabel->Enable();
+    struct Data
+    {
+        ResourceWidget **Widget;
 
-    foodIcon = ElementFactory::BuildElement <Element>(
-        {Size(32, 32), drawOrder_ + 1, {Position2(60.0f, 0.0f), ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, metalIcon}, {"Carrot", "Sprite"}, Opacity(1.0f)}
-    );
-    foodIcon->Enable();
+        ResourceTypes Type;
 
-    storageLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {Position2(), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, foodIcon}},
-        {{"JSLAncient", "Small"}, color, "Food: 20"}
-    );
-    storageLabel->SetAlignment(Text::Alignments::LEFT);
-    storageLabel->AdjustSize();
-    storageLabel->Enable();
+        Word Texture;
 
-    /*foodLabel = ElementFactory::BuildText(
-        {Size(size_.x - 10, 150), drawOrder_ + 1, {Position2(0.0f, height + 60.0f), this}},
-        {{"JSLAncient", "Small"}, color, "Food: 20"}
-    );
-    foodLabel->SetAlignment(Text::Alignments::LEFT);
-    foodLabel->Disable();*/
+        bool IsTrackingProduction {false};
+    };
 
-    /*industryLabel = ElementFactory::BuildText(
-        {Size(size_.x - 10, 150), drawOrder_ + 1, {Position2(0.0f, height + 80.0f), this}},
-        {{"JSLAncient", "Small"}, color, "Food: 20"}
-    );
-    industryLabel->SetAlignment(Text::Alignments::LEFT);
-    industryLabel->Disable();*/
+    Data resources[] = {
+        {&foodWidget, ResourceTypes::FOOD, "Radish"}, {&timberWidget, ResourceTypes::TIMBER, "Timber"}, {&metalWidget, ResourceTypes::METAL, "Metal"},
+        {&foodProduction, ResourceTypes::FOOD, "Radish", true}, {&timberProduction, ResourceTypes::TIMBER, "Timber", true}, {&metalProduction, ResourceTypes::METAL, "Metal", true}
+        };
+
+    for(auto resource : resources)
+    {
+        *resource.Widget = ElementFactory::BuildElement <ResourceWidget>(
+            {Size(32, 32), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, storageLayout}, {resource.Texture, "Sprite"}, Opacity(1.0f)}
+        );
+        (*resource.Widget)->Resource = resource.Type;
+        (*resource.Widget)->Parent = this;
+        (*resource.Widget)->IsTrackingProduction = resource.IsTrackingProduction;
+        (*resource.Widget)->Enable();
+
+        storageLayout->AddChild(*resource.Widget);
+    }
 
     tileLabel = ElementFactory::BuildText(
         {Size(size_.x - 10, 150), drawOrder_ + 1, {Position2(0.0f, height + 100.0f), this}},
@@ -208,14 +220,6 @@ void SettlementLabel::HandleUpdate()
     text << settlement->GetGrowth();
     growthLabel->Setup(text);
 
-    text = "Food prod: ";
-    text << settlement->GetFoodProduction();
-    foodLabel->Setup(text);
-
-    text = "";
-    text << settlement->GetFoodStorage();
-    storageLabel->Setup(text);
-
     text = "Industry: ";
     text << settlement->GetIndustrialProduction();
     industryLabel->Setup(text);
@@ -223,10 +227,6 @@ void SettlementLabel::HandleUpdate()
     text = "Tiles: ";
     text << settlement->GetWorkedTiles();
     tileLabel->Setup(text);
-
-    text = "";
-    text << settlement->GetMetalStorage();
-    metalLabel->Setup(text);
 
     auto malaria = settlement->afflictions.Find(AfflictionTypes::MALARIA);
 

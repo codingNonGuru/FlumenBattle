@@ -11,6 +11,7 @@
 #include "FlumenBattle/World/Group/GroupDynamics.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldGenerator.h"
+#include "FlumenBattle/World/Settlement/Resource.h"
 
 #define MAXIMUM_TILES_PER_SETTLEMENT 19
 
@@ -63,6 +64,8 @@ void SettlementAllocator::PreallocateMaximumMemory()
     linkMemory = container::PoolAllocator <Link>::PreallocateMemory (settlementCount, MAXIMUM_PATHS_PER_SETTLEMENT);
 
     modifierMemory = container::ArrayAllocator <Modifier>::PreallocateMemory (settlementCount, MODIFIERS_PER_SETTLEMENT);
+
+    resourceMemory = container::ArrayAllocator <Resource>::PreallocateMemory (settlementCount, GOODS_TYPES_COUNT);
 }
 
 void SettlementAllocator::AllocateWorldMemory(int worldSize)
@@ -98,6 +101,8 @@ void SettlementAllocator::AllocateWorldMemory(int worldSize)
     linkAllocator = container::PoolAllocator <Link> (settlementCount, MAXIMUM_PATHS_PER_SETTLEMENT, linkMemory);
 
     modifierAllocator = container::ArrayAllocator <Modifier> (settlementCount, MODIFIERS_PER_SETTLEMENT, modifierMemory);
+
+    resourceAllocator = container::ArrayAllocator <Resource> (settlementCount, GOODS_TYPES_COUNT, resourceMemory);
 }
 
 Settlement * SettlementAllocator::Allocate()
@@ -127,16 +132,14 @@ Settlement * SettlementAllocator::Allocate()
 
     settlement->links.Initialize(linkAllocator);
 
+    ResourceAllocator::Allocate(resourceAllocator, settlement->resourceHandler);
+
     return settlement;
 }
 
 Path * SettlementAllocator::AllocatePath(Settlement *firstSettlement, Settlement *secondSettlement)
 {
     auto path = paths.Add();
-
-    //firstSettlement->links.Initialize(linkAllocator);
-
-    //secondSettlement->links.Initialize(linkAllocator);
 
     return path;
 }

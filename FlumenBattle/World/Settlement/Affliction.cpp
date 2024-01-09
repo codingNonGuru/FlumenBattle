@@ -113,12 +113,12 @@ AfflictionResult AfflictionPerformer::PerformHunger(Settlement &settlement, Affl
 {
     auto result = AfflictionResultTypes::NONE;
 
-    auto foodSecurity = settlement.foodSecurity;
+    auto foodSecurity = settlement.GetResource(ResourceTypes::FOOD)->Abundance;
 
-    if(foodSecurity == FoodSecurity::SORELY_LACKING || foodSecurity == FoodSecurity::LACKING)
+    if(foodSecurity == AbundanceLevels::SORELY_LACKING || foodSecurity == AbundanceLevels::LACKING)
     {
-        auto foodPrivationPenalty = foodSecurity == FoodSecurity::SORELY_LACKING ? 3 : (foodSecurity == FoodSecurity::LACKING ? 1 : 0);
-        auto foodAbundanceBonus = foodSecurity == FoodSecurity::CORNUCOPIA ? 2 : (foodSecurity == FoodSecurity::ABUNDANT ? 1 : 0);
+        auto foodPrivationPenalty = foodSecurity == AbundanceLevels::SORELY_LACKING ? 3 : (foodSecurity == AbundanceLevels::LACKING ? 1 : 0);
+        auto foodAbundanceBonus = foodSecurity == AbundanceLevels::CORNUCOPIA ? 2 : (foodSecurity == AbundanceLevels::ABUNDANT ? 1 : 0);
 
         auto diceRoll = utility::GetRandom(1, 20);
         if(diceRoll + foodAbundanceBonus - foodPrivationPenalty >= affliction.Type->Throw)
@@ -155,7 +155,7 @@ AfflictionResult AfflictionPerformer::PerformHunger(Settlement &settlement, Affl
             }
         }
     }
-    else if(foodSecurity == FoodSecurity::CORNUCOPIA || foodSecurity == FoodSecurity::ABUNDANT || foodSecurity == FoodSecurity::ENOUGH)
+    else if(foodSecurity == AbundanceLevels::CORNUCOPIA || foodSecurity == AbundanceLevels::ABUNDANT || foodSecurity == AbundanceLevels::ENOUGH)
     {
         auto diceRoll = utility::GetRandom(1, 20);
         if(diceRoll >= affliction.Type->Throw)
