@@ -389,6 +389,15 @@ void Settlement::SetPolity(world::Polity *polity)
     this->polity = polity;
 }
 
+void Settlement::KillPopulation()
+{
+    population--;
+    if(population < 0)
+    {
+        population = 0;
+    }
+}
+
 void Settlement::StrengthenPatrol()
 {
     groupDynamics->StrengthenPatrol();

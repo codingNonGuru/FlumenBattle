@@ -95,7 +95,7 @@ AfflictionResult AfflictionPerformer::PerformMalaria(Settlement &settlement, Aff
 
     if(affliction.Stage == affliction.Type->StageCount)
     {
-        settlement.population--;
+        settlement.KillPopulation();
         result = AfflictionResultTypes::DEATH;
         //std::cout<<"death! "<<settlement.GetName()<<"\n";
     }
@@ -176,7 +176,7 @@ AfflictionResult AfflictionPerformer::PerformHunger(Settlement &settlement, Affl
         }
         else
         {
-            settlement.population--;
+            settlement.KillPopulation();
         }
     }
 }

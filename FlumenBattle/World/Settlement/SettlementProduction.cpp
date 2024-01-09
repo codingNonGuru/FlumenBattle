@@ -130,7 +130,7 @@ void SettlementProductionFinisher::FinishSettlers(Settlement &settlement)
         else if(dice > 5)
         {
             WorldScene::Get()->FoundSettlement(target, polity, &settlement);
-            settlement.population--;
+            settlement.KillPopulation();
         }
         else if(dice > 1) //Colonization fails, but settlers survive & return
         {
@@ -139,7 +139,7 @@ void SettlementProductionFinisher::FinishSettlers(Settlement &settlement)
         else if(dice == 1) //Colonization fails and settlers perish
         {
             std::cout<<"critical failure\n";
-            settlement.population--;
+            settlement.KillPopulation();
         }
     }
 }

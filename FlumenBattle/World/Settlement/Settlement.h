@@ -164,6 +164,8 @@ namespace world::settlement
 
         void SetPolity(world::Polity *);
 
+        void KillPopulation();
+
         void AddModifier(Modifier);
 
         void AddCondition(ConditionData);
