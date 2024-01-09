@@ -27,7 +27,11 @@ namespace world::settlement
     private:
         SettlementProductionType(SettlementProductionOptions type, Integer cost, void (*onFinish) (Settlement &)) : Type(type), Cost(cost), OnFinish(onFinish) {}
 
+        SettlementProductionType(SettlementProductionOptions type, Word name, Integer cost, void (*onFinish) (Settlement &)) : Type(type), Name(name), Cost(cost), OnFinish(onFinish) {}
+
         SettlementProductionOptions Type;
+
+        Word Name;
 
         Integer Cost;
 
@@ -76,6 +80,8 @@ namespace world::settlement
         Integer GetCost() const {return type->Cost;}
 
         SettlementProductionOptions GetType() const {return type->Type;}
+
+        Word GetName() const {return type->Name;}
 
         void Finish(Settlement &settlement) 
         {

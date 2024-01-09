@@ -57,7 +57,6 @@ WorldTileModel::WorldTileModel()
 
     bootSprite = new Sprite(groupShader, render::TextureManager::GetTexture("TravelBoot")); 
 
-    //metalSprite = new Sprite(groupShader, {render::TextureManager::GetTexture("FantRpg_assets"), {0.333f, 0.1f}, {0.04166f, 0.1f}});
     metalSprite = new Sprite(groupShader, render::TextureManager::GetTexture("Metal"));
 
     dotSprite = new Sprite(groupShader, render::TextureManager::GetTexture("Dot")); 
@@ -239,7 +238,7 @@ void WorldTileModel::Render()
             auto rotation = atan2(orientation.y, orientation.x) + 1.5707f;
             squareShader->SetConstant(rotation, "rotation");
 
-            squareShader->SetConstant(Color::RED, "color");
+            squareShader->SetConstant(tile->GetOwner()->GetRulerBanner(), "color");
 
             glDrawArrays(GL_TRIANGLES, 0, 6);
 
@@ -267,7 +266,7 @@ void WorldTileModel::Render()
                     auto rotation = atan2(orientation.y, orientation.x);
                     squareShader->SetConstant(rotation, "rotation");
 
-                    squareShader->SetConstant(Color::RED, "color");
+                    squareShader->SetConstant(tile->GetOwner()->GetRulerBanner(), "color");
 
                     glDrawArrays(GL_TRIANGLES, 0, 6);
                 }

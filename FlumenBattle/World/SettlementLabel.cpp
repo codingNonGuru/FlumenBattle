@@ -4,10 +4,12 @@
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/Text.hpp"
 #include "FlumenEngine/Interface/LayoutGroup.h"
+#include "FlumenEngine/Interface/ProgressBar.h"
 
 #include "SettlementLabel.h"
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Settlement/SettlementProduction.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Settlement/Affliction.h"
 #include "FlumenBattle/World/Group/GroupDynamics.h"
@@ -83,7 +85,7 @@ void SettlementLabel::HandleConfigure()
     populationLabel->Enable();
 
     hoverBackdrop = ElementFactory::BuildElement <Element>(
-        {Size(size_.x - 10, 135), drawOrder_, {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, this}, {"Sprite"}, Opacity(0.4f)}
+        {Size(size_.x - 10, 160), drawOrder_, {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, this}, {"Sprite"}, Opacity(0.4f)}
     );
     hoverBackdrop->Disable();
 
@@ -147,6 +149,22 @@ void SettlementLabel::HandleConfigure()
 
         storageLayout->AddChild(*resource.Widget);
     }
+    basePosition.y += 70.0f;
+
+    productionLabel = ElementFactory::BuildText(
+        {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, hoverBackdrop}},
+        {{"JSLAncient", "Small"}, color, "Industry: 20"}
+    );
+    productionLabel->SetAlignment(Text::Alignments::LEFT);
+    productionLabel->AdjustSize();
+    productionLabel->Enable();
+    basePosition.y += 20.0f;
+
+    /*productionProgress = ElementFactory::BuildProgressBar <ProgressBar>(
+        {Size(128, 32), drawOrder_ + 1, {Position2(0.0f, basePosition.y), ElementAnchors::UPPER_CENTER, ElementPivots::MIDDLE_CENTER, hoverBackdrop}, {"Settings", "SlicedSprite"}},
+        {"SettingsBar"}
+    );
+    productionProgress->Enable();*/
 
     tileLabel = ElementFactory::BuildText(
         {Size(size_.x - 10, 150), drawOrder_ + 1, {Position2(0.0f, height + 100.0f), this}},
@@ -227,6 +245,10 @@ void SettlementLabel::HandleUpdate()
     text = "Tiles: ";
     text << settlement->GetWorkedTiles();
     tileLabel->Setup(text);
+
+    text = "Building: ";
+    text << settlement->GetCurrentProduction()->GetName();
+    productionLabel->Setup(text);
 
     auto malaria = settlement->afflictions.Find(AfflictionTypes::MALARIA);
 

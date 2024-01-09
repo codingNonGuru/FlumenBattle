@@ -63,6 +63,10 @@ namespace world::settlement
 
         ResourceWidget *foodProduction, *timberProduction, *metalProduction;
 
+        Text *productionLabel;
+
+        Element *productionProgress;
+
         void HandleConfigure() override;
 
         void HandleUpdate() override;

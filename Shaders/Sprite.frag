@@ -10,8 +10,6 @@ uniform sampler2D diffuse;
 
 layout (location = 5) uniform int hasTexture;
 
-layout (location = 6) uniform vec2 textureOffset;
-
 layout (location = 8) uniform vec4 color;
 
 layout (location = 0) out vec4 fragment;
@@ -30,4 +28,6 @@ void main()
 	}
 	
 	fragment.a *= opacity;
+
+	//fragment = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 }

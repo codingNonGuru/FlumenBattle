@@ -15,9 +15,9 @@ layout (location = 2) uniform vec2 spriteSize;
 
 layout (location = 4) uniform float depth;  
 
-layout (location = 6) uniform vec2 textureOffset;
+layout (location = 5) uniform vec2 sliceCornerSize;
 
-layout (location = 7) uniform vec2 textureScale;
+//uniform sampler2D diffuse;
 
 // DATA BUFFERS
 
@@ -28,16 +28,22 @@ layout (location = 7) uniform vec2 textureScale;
 out vec2 textureCoordinates;
 
 void main()
-{	
-	float slice = 0.16666f;
+{
+	//ivec2 baseSize = ivec2(480, 480); //textureSize(diffuse, 0);
+	int baseSizex = 48;
+	int baseSizey = 48;
 
-	float pixelsPerCorner = 16.0f;
+	float horizontalPixelsPerCorner = 16.0f;//sliceCornerSize.x;
+	float verticalPixelsPerCorner = 32.0f;//sliceCornerSize.y;
+
+	float horizontalSlice = (float(baseSizex / 2) - horizontalPixelsPerCorner) / float(baseSizex);
+	float verticalSlice = (float(baseSizey / 2) - verticalPixelsPerCorner) / float(baseSizey);
 
 	vec2 vertices[16] = vec2[16](
-		vec2(-0.5f, -0.5f), vec2(-slice, -0.5f), vec2(slice, -0.5f), vec2(0.5f, -0.5f), 
-		vec2(-0.5f, -slice), vec2(-slice, -slice), vec2(slice, -slice), vec2(0.5f, -slice), 
-		vec2(-0.5f, slice), vec2(-slice, slice), vec2(slice, slice), vec2(0.5f, slice), 
-		vec2(-0.5f, 0.5f), vec2(-slice, 0.5f), vec2(slice, 0.5f), vec2(0.5f, 0.5f)
+		vec2(-0.5f, -0.5f), vec2(-horizontalSlice, -0.5f), vec2(horizontalSlice, -0.5f), vec2(0.5f, -0.5f), 
+		vec2(-0.5f, -verticalSlice), vec2(-horizontalSlice, -verticalSlice), vec2(horizontalSlice, -verticalSlice), vec2(0.5f, -verticalSlice), 
+		vec2(-0.5f, verticalSlice), vec2(-horizontalSlice, verticalSlice), vec2(horizontalSlice, verticalSlice), vec2(0.5f, verticalSlice), 
+		vec2(-0.5f, 0.5f), vec2(-horizontalSlice, 0.5f), vec2(horizontalSlice, 0.5f), vec2(0.5f, 0.5f)
 		);
 
 	int indices[54] = int[54](
@@ -84,13 +90,14 @@ void main()
 
 	vec2 position = vertices[index];
 
-	float cornerCorrection = pixelsPerCorner / (0.5f - slice);
+	float horizontalCornerCorrection = horizontalPixelsPerCorner / (0.5f - horizontalSlice);
+	float verticalCornerCorrection = verticalPixelsPerCorner / (0.5f - verticalSlice);
 
-	vec2 displacePower = (spriteSize * vec2(0.5f, 0.5f)) - (vec2(cornerCorrection, cornerCorrection) * 0.5f);
+	vec2 displacePower = (spriteSize * vec2(0.5f, 0.5f)) - (vec2(horizontalCornerCorrection, verticalCornerCorrection) * 0.5f);
 
 	if(sectionType == 0)
 	{
-		position = position * vec2(cornerCorrection, cornerCorrection);
+		position = position * vec2(horizontalCornerCorrection, verticalCornerCorrection);
 
 		if(displacePatterns[gl_VertexID] == 1)
 		{
@@ -113,36 +120,36 @@ void main()
 	}
 	else
 	{
-		displacePower = (spriteSize * vec2(0.5f, 0.5f)) - vec2(pixelsPerCorner, pixelsPerCorner);
+		displacePower = (spriteSize * vec2(0.5f, 0.5f)) - vec2(horizontalPixelsPerCorner, verticalPixelsPerCorner);
 
 		if(sectionType == 1)
 		{
-			position.x *= displacePower.x * (1.0f / slice);
+			position.x *= displacePower.x * (1.0f / horizontalSlice);
 			
-			position.y = (position.y + slice) * cornerCorrection - displacePower.y;
+			position.y = (position.y + verticalSlice) * verticalCornerCorrection - displacePower.y;
 		}
 		else if(sectionType == 2)
 		{
-			position.x = (position.x + slice) * cornerCorrection - displacePower.x;
+			position.x = (position.x + horizontalSlice) * horizontalCornerCorrection - displacePower.x;
 
-			position.y *= displacePower.y * (1.0f / slice);
+			position.y *= displacePower.y * (1.0f / verticalSlice);
 		}
 		else if(sectionType == 3)
 		{
-			position.x *= displacePower.x * (1.0f / slice);
-			position.y *= displacePower.y * (1.0f / slice);
+			position.x *= displacePower.x * (1.0f / horizontalSlice);
+			position.y *= displacePower.y * (1.0f / verticalSlice);
 		}
 		else if(sectionType == 4)
 		{
-			position.x = (position.x - slice) * cornerCorrection + displacePower.x;
+			position.x = (position.x - horizontalSlice) * horizontalCornerCorrection + displacePower.x;
 
-			position.y *= displacePower.y * (1.0f / slice);
+			position.y *= displacePower.y * (1.0f / verticalSlice);
 		}
 		else if(sectionType == 5)
 		{
-			position.x *= displacePower.x * (1.0f / slice);
+			position.x *= displacePower.x * (1.0f / horizontalSlice);
 
-			position.y = (position.y - slice) * cornerCorrection + displacePower.y;
+			position.y = (position.y - verticalSlice) * verticalCornerCorrection + displacePower.y;
 		}
 	}
 

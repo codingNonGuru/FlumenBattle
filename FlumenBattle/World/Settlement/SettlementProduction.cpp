@@ -49,43 +49,43 @@ const SettlementProductionType * SettlementProductionFactory::BuildProductionTyp
 
 const SettlementProductionType * SettlementProductionFactory::BuildPatrolProduction()
 {
-    static const SettlementProductionType productionType = {SettlementProductionOptions::PATROL, 100, &SettlementProductionFinisher::FinishPatrol};
+    static const SettlementProductionType productionType = {SettlementProductionOptions::PATROL, "Patrol", 100, &SettlementProductionFinisher::FinishPatrol};
     return &productionType;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildFarmProduction()
 {
-    static const SettlementProductionType productionType = {SettlementProductionOptions::FARM, 200, &SettlementProductionFinisher::FinishFarm};
+    static const SettlementProductionType productionType = {SettlementProductionOptions::FARM, "Farm", 200, &SettlementProductionFinisher::FinishFarm};
     return &productionType;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildSettlersProduction()
 {
-    static const SettlementProductionType productionType = {SettlementProductionOptions::SETTLERS, 100, &SettlementProductionFinisher::FinishSettlers};
+    static const SettlementProductionType productionType = {SettlementProductionOptions::SETTLERS, "Settlers", 100, &SettlementProductionFinisher::FinishSettlers};
     return &productionType;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildSewageProduction()
 {
-    static const SettlementProductionType productionType = {SettlementProductionOptions::SEWAGE, 400, &SettlementProductionFinisher::FinishSewage};
+    static const SettlementProductionType productionType = {SettlementProductionOptions::SEWAGE, "Sewage", 400, &SettlementProductionFinisher::FinishSewage};
     return &productionType;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildIrrigationProduction()
 {
-    static const SettlementProductionType productionType = {SettlementProductionOptions::SEWAGE, 700, &SettlementProductionFinisher::FinishIrrigation};
+    static const SettlementProductionType productionType = {SettlementProductionOptions::IRRIGATION, "Irrigation", 700, &SettlementProductionFinisher::FinishIrrigation};
     return &productionType;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildLibraryProduction()
 {
-    static const SettlementProductionType productionType = {SettlementProductionOptions::LIBRARY, 500, &SettlementProductionFinisher::FinishLibrary};
+    static const SettlementProductionType productionType = {SettlementProductionOptions::LIBRARY, "Library", 500, &SettlementProductionFinisher::FinishLibrary};
     return &productionType;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildNoneProduction()
 {
-    static const SettlementProductionType productionType = {SettlementProductionOptions::NONE, 0, nullptr};
+    static const SettlementProductionType productionType = {SettlementProductionOptions::NONE, "None", 0, nullptr};
     return &productionType;
 }
 

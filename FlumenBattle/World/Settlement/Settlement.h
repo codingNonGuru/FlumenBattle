@@ -156,6 +156,8 @@ namespace world::settlement
 
         int GetStock(ResourceTypes type) const {return resourceHandler.Get(type)->Storage;}
 
+        SettlementProduction *GetCurrentProduction() const {return currentProduction;}
+
         void SetPolity(world::Polity *);
 
         void AddModifier(Modifier);
