@@ -77,6 +77,8 @@ namespace world::settlement
 
         void AddProgress(Integer progress) {this->progress += progress;}
 
+        float GetProgressRatio() const {return float(this->progress) / float(GetCost());}
+
         Integer GetCost() const {return type->Cost;}
 
         SettlementProductionOptions GetType() const {return type->Type;}

@@ -29,13 +29,13 @@ out vec2 textureCoordinates;
 
 void main()
 {
-	ivec2 baseSize = ivec2(48, 48);//textureSize(diffuse, 0);
+	ivec2 baseSize = textureSize(diffuse, 0);
 
-	float horizontalPixelsPerCorner = 16.0f;//sliceCornerSize.x;
-	float verticalPixelsPerCorner = 16.0f;//sliceCornerSize.y;
+	float horizontalPixelsPerCorner = sliceCornerSize.x;
+	float verticalPixelsPerCorner = sliceCornerSize.y;
 
-	float horizontalSlice = 0.16666f;//(float(baseSize.x / 2) - horizontalPixelsPerCorner) / float(baseSize.x);
-	float verticalSlice = 0.16666f;//(float(baseSize.y / 2) - verticalPixelsPerCorner) / float(baseSize.y);
+	float horizontalSlice = (float(baseSize.x / 2) - horizontalPixelsPerCorner) / float(baseSize.x);
+	float verticalSlice = (float(baseSize.y / 2) - verticalPixelsPerCorner) / float(baseSize.y);
 
 	vec2 vertices[16] = vec2[16](
 		vec2(-0.5f, -0.5f), vec2(-horizontalSlice, -0.5f), vec2(horizontalSlice, -0.5f), vec2(0.5f, -0.5f), 

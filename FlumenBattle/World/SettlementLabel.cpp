@@ -160,11 +160,11 @@ void SettlementLabel::HandleConfigure()
     productionLabel->Enable();
     basePosition.y += 20.0f;
 
-    /*productionProgress = ElementFactory::BuildProgressBar <ProgressBar>(
-        {Size(128, 32), drawOrder_ + 1, {Position2(0.0f, basePosition.y), ElementAnchors::UPPER_CENTER, ElementPivots::MIDDLE_CENTER, hoverBackdrop}, {"Settings", "SlicedSprite"}},
-        {"SettingsBar"}
+    productionProgress = ElementFactory::BuildProgressBar <ProgressBar>(
+        {Size(192, 32), drawOrder_ + 1, {Position2(0.0f, basePosition.y), ElementAnchors::UPPER_CENTER, ElementPivots::MIDDLE_CENTER, hoverBackdrop}, {"Settings", "SlicedSprite"}},
+        {"SettingsBar", {32.0f, 16.0f}}
     );
-    productionProgress->Enable();*/
+    productionProgress->Enable();
 
     tileLabel = ElementFactory::BuildText(
         {Size(size_.x - 10, 150), drawOrder_ + 1, {Position2(0.0f, height + 100.0f), this}},
@@ -249,6 +249,13 @@ void SettlementLabel::HandleUpdate()
     text = "Building: ";
     text << settlement->GetCurrentProduction()->GetName();
     productionLabel->Setup(text);
+
+    auto progress = settlement->GetCurrentProduction()->GetProgressRatio();
+    if(settlement->GetCurrentProduction()->Is(SettlementProductionOptions::NONE) == true)
+    {
+        progress = 0.0f;
+    }
+    productionProgress->SetProgress(progress);
 
     auto malaria = settlement->afflictions.Find(AfflictionTypes::MALARIA);
 

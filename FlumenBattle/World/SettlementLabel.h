@@ -4,6 +4,7 @@
 
 class Text;
 class LayoutGroup;
+class ProgressBar;
 
 namespace world::settlement
 {
@@ -65,7 +66,7 @@ namespace world::settlement
 
         Text *productionLabel;
 
-        Element *productionProgress;
+        ProgressBar *productionProgress;
 
         void HandleConfigure() override;
 
