@@ -89,6 +89,8 @@ namespace world::settlement
 
         Integer growth;
 
+        Integer growthThreshold {1000};
+
         Integer cultureGrowth;
 
         Pool <SettlementTile> tiles;
@@ -145,6 +147,8 @@ namespace world::settlement
         Integer GetPopulation() const {return population;}
 
         Integer GetGrowth() const {return growth;}
+
+        float GetGrowthRatio() const {return float(growth) / float(growthThreshold);}
 
         Integer GetWorkedTiles() const;
 

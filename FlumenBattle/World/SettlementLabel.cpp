@@ -99,12 +99,18 @@ void SettlementLabel::HandleConfigure()
 
     growthLabel = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, hoverBackdrop}},
-        {{"JSLAncient", "Small"}, color, "Growth: 20"}
+        {{"JSLAncient", "Small"}, color, "Growth "}
     );
     growthLabel->SetAlignment(Text::Alignments::LEFT);
     growthLabel->AdjustSize();
     growthLabel->Enable();
     basePosition.y += 20.0f;
+
+    growthProgress = ElementFactory::BuildProgressBar <ProgressBar>(
+        {Size(96, 16), drawOrder_ + 1, {Position2(), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, growthLabel}, {"Settings", "SlicedSprite"}},
+        {"SettingsBar", {20.0f, 8.0f}}
+    );
+    growthProgress->Enable();
 
     industryLabel = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, hoverBackdrop}},
@@ -161,8 +167,8 @@ void SettlementLabel::HandleConfigure()
     basePosition.y += 20.0f;
 
     productionProgress = ElementFactory::BuildProgressBar <ProgressBar>(
-        {Size(192, 32), drawOrder_ + 1, {Position2(0.0f, basePosition.y), ElementAnchors::UPPER_CENTER, ElementPivots::MIDDLE_CENTER, hoverBackdrop}, {"Settings", "SlicedSprite"}},
-        {"SettingsBar", {32.0f, 16.0f}}
+        {Size(192, 16), drawOrder_ + 1, {Position2(0.0f, basePosition.y), ElementAnchors::UPPER_CENTER, ElementPivots::MIDDLE_CENTER, hoverBackdrop}, {"Settings", "SlicedSprite"}},
+        {"SettingsBar", {20.0f, 8.0f}}
     );
     productionProgress->Enable();
 
@@ -234,9 +240,11 @@ void SettlementLabel::HandleUpdate()
     text << settlement->GetPopulation();
     populationLabel->Setup(text);
 
-    text = "Growth: ";
-    text << settlement->GetGrowth();
+    text = "Growth ";
+    //text << settlement->GetGrowth();
     growthLabel->Setup(text);
+
+    growthProgress->SetProgress(settlement->GetGrowthRatio());
 
     text = "Industry: ";
     text << settlement->GetIndustrialProduction();

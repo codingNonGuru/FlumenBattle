@@ -46,7 +46,9 @@ namespace world::settlement
 
         Element *hoverBorder;
 
-        Text * growthLabel;
+        Text *growthLabel;
+
+        ProgressBar *growthProgress;
 
         Text * industryLabel;
 
