@@ -533,7 +533,7 @@ void Settlement::PrepareTransport()
     if(lastShipmentTime > 0)
         return;
 
-    if(GetStock(ResourceTypes::METAL) < STORAGE_THRESHOLD)
+    if(GetStock(ResourceTypes::METAL) < storage / 2)
         return;
 
     for(auto &link : links)
@@ -543,7 +543,7 @@ void Settlement::PrepareTransport()
 
         auto other = link.Path->GetOther(this);
 
-        if(other->GetStock(ResourceTypes::METAL) > STORAGE_THRESHOLD || other->GetStock(ResourceTypes::METAL) > GetStock(ResourceTypes::METAL))
+        if(other->GetStock(ResourceTypes::METAL) > other->storage / 4 || other->GetStock(ResourceTypes::METAL) > GetStock(ResourceTypes::METAL))
             continue;
 
         lastShipmentTime = TIME_BETWEEN_SHIPMENTS;
@@ -561,7 +561,7 @@ void Settlement::PrepareTransport()
 
         auto other = link.Path->GetOther(this);
 
-        bool cannotSendToOther = other->GetStock(ResourceTypes::METAL) > STORAGE_THRESHOLD || other->GetStock(ResourceTypes::METAL) > GetStock(ResourceTypes::METAL);
+        bool cannotSendToOther = other->GetStock(ResourceTypes::METAL) > other->storage / 4 || other->GetStock(ResourceTypes::METAL) > GetStock(ResourceTypes::METAL);
         if(cannotSendToOther == true)
             continue;
         

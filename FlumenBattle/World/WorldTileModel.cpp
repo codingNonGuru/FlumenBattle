@@ -212,36 +212,68 @@ void WorldTileModel::Render()
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
-    /*for(auto &path : *worldScene->paths)
+    for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
     {
-        const auto &tiles = path.Tiles;
+        if(tile->IsOwned() == false)
+            continue;
 
-        for(auto tile = tiles.GetFirst(); tile != tiles.GetLast() - 1; ++tile)
+        auto nearbyTiles = tile->GetNearbyTiles();
+        for(auto &neighbour : nearbyTiles)
         {
-            auto nextTile = tile + 1;
+            if(neighbour->IsOwned() == true && tile->GetOwner() == neighbour->GetOwner())
+                continue;
 
-            auto link = (*tile)->GetLinkTo(*nextTile);
+            bool isHardBorder = neighbour->IsOwned() == false || neighbour->GetOwner()->GetPolity() != tile->GetOwner()->GetPolity();
 
-            auto position = ((*tile)->Position + (*nextTile)->Position) / 2.0f;
+            auto position = (tile->Position + neighbour->Position) / 2.0f;
+            if(isHardBorder == true)
+            {
+                position = (position + tile->Position * 0.2f) / 1.2f;
+            }
             squareShader->SetConstant(position, "hexPosition");
-
-            Scale2 scale = Scale2(WORLD_TILE_SIZE * 1.732f, 5.0f);
+        
+            Scale2 scale = Scale2(WORLD_TILE_SIZE * 1.0f, isHardBorder ? 10.0f : 2.0f);
             squareShader->SetConstant(scale, "hexSize");
 
-            auto color = [&link] () {
-                return link->Type == settlement::RoadTypes::UNTRODDEN ?
-                Color(0.9f, 0.7f, 0.5f, 1.0f) * 0.6f :
-                Color(0.7f, 0.7f, 0.7f, 1.0f) * 0.6f;
-            } ();
-            squareShader->SetConstant(color, "color");
-
-            auto orientation = (*tile)->Position - (*nextTile)->Position;
-            auto rotation = atan2(orientation.y, orientation.x);
+            auto orientation = tile->Position - neighbour->Position;
+            auto rotation = atan2(orientation.y, orientation.x) + 1.5707f;
             squareShader->SetConstant(rotation, "rotation");
 
+            squareShader->SetConstant(Color::RED, "color");
+
             glDrawArrays(GL_TRIANGLES, 0, 6);
+
+            if(isHardBorder)
+            {
+                for(auto &secondaryNeighbour : nearbyTiles)
+                {
+                    if(secondaryNeighbour->GetDistanceTo(*neighbour) != 1)
+                        continue;
+
+                    if(secondaryNeighbour->IsOwned() == false)
+                        continue;
+
+                    if(neighbour->IsOwned() && secondaryNeighbour->GetOwner()->GetPolity() == neighbour->GetOwner()->GetPolity())
+                        continue;
+
+                    auto position = (tile->Position + neighbour->Position + secondaryNeighbour->Position) / 3.0f;
+                    position = (position + tile->Position * 0.15f + secondaryNeighbour->Position * 0.15f) / 1.3f;
+                    squareShader->SetConstant(position, "hexPosition");
+                
+                    Scale2 scale = Scale2(WORLD_TILE_SIZE * 0.3f, 10.0f);
+                    squareShader->SetConstant(scale, "hexSize");
+
+                    auto orientation = tile->Position - secondaryNeighbour->Position;
+                    auto rotation = atan2(orientation.y, orientation.x);
+                    squareShader->SetConstant(rotation, "rotation");
+
+                    squareShader->SetConstant(Color::RED, "color");
+
+                    glDrawArrays(GL_TRIANGLES, 0, 6);
+                }
+            }
         }
-    }*/
+    }
 
 	squareShader->Unbind();
 
