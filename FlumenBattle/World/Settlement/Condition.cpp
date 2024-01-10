@@ -42,7 +42,7 @@ void ConditionManager::Update()
 
             if(condition.HoursElapsed >= condition.Duration)
             {
-                conditionSet.Get().Remove(&condition);
+                conditionSet.Get().RemoveAt(&condition);
             }
         }
     }

@@ -153,7 +153,7 @@ void ItemManager::Add(ItemTypes type)
 
 void ItemManager::Remove(Item *item)
 {
-    items.Remove(item);
+    items.RemoveAt(item);
 }
 
 int ItemManager::GetAmount(ItemTypes type)

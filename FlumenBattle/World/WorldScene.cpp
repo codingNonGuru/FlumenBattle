@@ -103,7 +103,7 @@ namespace world
 
             for(auto &battle : finishedBattles)
             {
-                battles->Remove(battle);
+                battles->RemoveAt(battle);
             }
 
             finishedBattles.Reset();
@@ -146,6 +146,11 @@ namespace world
             for(auto &settlement : *settlements)
             {
                 settlement.SendTransport();
+            }
+
+            for(auto &settlement : *settlements)
+            {
+                settlement.UpdatePolitics();
             }
         };
 
@@ -224,13 +229,14 @@ namespace world
 
     static settlement::Settlement *foundedSettlement = nullptr;
 
-    settlement::Settlement * WorldScene::FoundSettlement(WorldTile *location, Polity *polity, settlement::Settlement *mother)
+    settlement::Settlement * WorldScene::FoundSettlement(WorldTile *location, settlement::Settlement *mother)
     {
         auto settlement = settlement::SettlementFactory::Create({"Safehaven", location});
+
+        auto polity = mother != nullptr ? mother->GetPolity() : nullptr;
         if(polity == nullptr)
         {
-            polity = polities.Add();
-            polity->Initialize(settlement);
+            FoundPolity(settlement);
         }
         else
         {
@@ -241,8 +247,6 @@ namespace world
         {
             ForgePath(settlement, mother);
         }
-
-        settlement->SetPolity(polity);
 
         auto &tiles = location->GetNearbyTiles(MAXIMUM_COLONIZATION_RANGE, 3);
         for(auto &tile : tiles)
@@ -287,6 +291,23 @@ namespace world
 
             path->Complexity = pathData.Complexity;
         }
+    }
+
+    Polity *WorldScene::FoundPolity(settlement::Settlement *ruler)
+    {
+        auto polity = polities.Add();
+        polity->Initialize(ruler);
+
+        return polity;
+    }
+
+    Polity *WorldScene::SplitPolity(settlement::Settlement *secceder)
+    {
+        auto oldPolity = secceder->GetPolity();
+        oldPolity->RemoveSettlement(secceder);
+
+        auto polity = FoundPolity(secceder);
+        return polity;
     }
 
     const settlement::Settlement *WorldScene::GetFoundedSettlement() const 

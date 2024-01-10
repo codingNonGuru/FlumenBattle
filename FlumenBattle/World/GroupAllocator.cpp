@@ -62,7 +62,7 @@ namespace world::group
 
         for(auto group : finishedGroups)
         {
-            groups.Remove(group);
+            groups.RemoveAt(group);
 
             group->GetCharacters().Terminate(characterAllocator);
 

@@ -326,7 +326,7 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
     for(auto i = 0; i < 5/*data.Size / 10*/; ++i)
     {
         auto location = findSettleLocation();
-        scene.FoundSettlement(location, nullptr, nullptr);
+        scene.FoundSettlement(location, nullptr);
     }
 
     auto groups = group::GroupAllocator::Get()->GetGroups();

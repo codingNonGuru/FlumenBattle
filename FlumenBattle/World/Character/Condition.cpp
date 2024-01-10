@@ -215,7 +215,7 @@ void ConditionManager::RemoveCondition(Conditions type)
     if(condition == nullptr)
         return;
 
-    conditionSet.conditions.Remove(condition);
+    conditionSet.conditions.RemoveAt(condition);
 }
 
 void ConditionManager::ApplyModifiers(Character &character) const

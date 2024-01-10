@@ -13,6 +13,7 @@
 #include "FlumenBattle/World/Settlement/Building.h"
 #include "FlumenBattle/World/Group/GroupDynamics.h"
 #include "FlumenBattle/World/Settlement/Path.h"
+#include "FlumenBattle/Utility/Pathfinder.h"
 
 using namespace world::settlement;
 
@@ -630,4 +631,22 @@ void Settlement::SendTransport()
 void Settlement::ReceiveTransport()
 {
     resourceHandler.Get(ResourceTypes::METAL)->Storage += VOLUME_PER_SHIPMENT - SHIPMENT_VOLUME_LOSS;
+}
+
+void Settlement::UpdatePolitics()
+{
+    if(polity->GetRuler() == this)
+        return;
+
+    auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathToSettlement(this, polity->GetRuler());
+    if(pathData.Complexity > 15)
+    {
+        independenceDrive++;
+
+        if(independenceDrive > 100)
+        {
+            independenceDrive = 0;
+            WorldScene::Get()->SplitPolity(this);
+        }
+    }
 }

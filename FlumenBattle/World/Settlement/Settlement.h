@@ -121,6 +121,8 @@ namespace world::settlement
 
         Integer lastShipmentTime;
 
+        Integer independenceDrive {0};
+
         struct PathData
         {
             bool IsVisited = false;
@@ -188,6 +190,8 @@ namespace world::settlement
         void ProcessEarthquake(const disaster::Earthquake &);
 
         void Update();
+
+        void UpdatePolitics();
 
         void PrepareTransport();
 

@@ -125,11 +125,11 @@ void SettlementProductionFinisher::FinishSettlers(Settlement &settlement)
         auto dice = utility::GetRandom(1, 20);
         if(dice == 20)
         {
-            WorldScene::Get()->FoundSettlement(target, polity, &settlement);
+            WorldScene::Get()->FoundSettlement(target, &settlement);
         }
         else if(dice > 5)
         {
-            WorldScene::Get()->FoundSettlement(target, polity, &settlement);
+            WorldScene::Get()->FoundSettlement(target, &settlement);
             settlement.KillPopulation();
         }
         else if(dice > 1) //Colonization fails, but settlers survive & return

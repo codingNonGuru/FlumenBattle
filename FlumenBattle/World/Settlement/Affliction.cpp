@@ -43,7 +43,7 @@ AfflictionResult AfflictionPerformer::PerformMalaria(Settlement &settlement, Aff
 {
     auto removeMalaria = [&]
     {
-        settlement.afflictions.Remove(&affliction);
+        settlement.afflictions.RemoveAt(&affliction);
 
         auto duration = 24 * utility::GetRandom(1, 4);
 
@@ -163,7 +163,7 @@ AfflictionResult AfflictionPerformer::PerformHunger(Settlement &settlement, Affl
             affliction.Stage--;
             if(affliction.Stage == 0)
             {
-                settlement.afflictions.Remove(&affliction);
+                settlement.afflictions.RemoveAt(&affliction);
             }
         }
     }

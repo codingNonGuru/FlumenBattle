@@ -54,10 +54,14 @@ namespace world
 
         container::HexGrid <Interest> interestMap;
 
+        void MapInterest(settlement::Settlement *);
+
     public:
         void Initialize(settlement::Settlement *);
 
         void ExtendRealm(settlement::Settlement *);
+
+        void RemoveSettlement(settlement::Settlement *);
 
         void DecideResearch();
 

@@ -30,7 +30,6 @@ void Polity::Initialize(settlement::Settlement *ruler)
         }   
     }
 
-    //*this->settlements.Add() = ruler;
     ExtendRealm(ruler);
 }
 
@@ -38,6 +37,36 @@ void Polity::ExtendRealm(settlement::Settlement *domain)
 {
     *this->settlements.Add() = domain;
 
+    domain->SetPolity(this);
+
+    MapInterest(domain);
+}
+
+void Polity::RemoveSettlement(settlement::Settlement *settlement)
+{
+    this->settlements.Remove(settlement);
+
+    auto &interests = interestMap.GetTiles();
+    for(auto interest = interests.GetStart(); interest != interests.GetEnd(); ++interest)
+    {
+        if(interest->Owner == settlement)
+        {
+            interest->Owner = nullptr;
+        }
+    }
+
+    for(auto &link : settlement->GetLinks())
+    {
+        auto other = link.Path->GetOther(settlement);
+        if(other->GetPolity() != this)
+            continue;
+
+        MapInterest(other);
+    }
+}
+
+void Polity::MapInterest(settlement::Settlement *domain)
+{
     auto &mappedTiles = utility::Pathfinder <WorldTile>::Get()->MapArea(domain->GetLocation(), MAXIMUM_COLONIZATION_RANGE);
 
     for(auto &tile : mappedTiles)

@@ -18,7 +18,7 @@ void EventGenerator::GenerateEvent(Settlement &settlement, const AfflictionResul
             auto elapsed = worldTime - event.Time;
             if(elapsed > EVENT_EXPIRATION_TIME)
             {
-                settlement.events.Remove(&event);
+                settlement.events.RemoveAt(&event);
             }
         }
     }

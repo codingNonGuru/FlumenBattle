@@ -96,7 +96,7 @@ void BuildingManager::RemoveBuilding(BuildingTypes type)
 
     auto buildingPointer = buildings.Find(type);
 
-    buildings.Remove(buildingPointer);
+    buildings.RemoveAt(buildingPointer);
 }
 
 void BuildingManager::ApplyModifiers(Settlement &settlement) const
@@ -157,6 +157,6 @@ void BuildingDamager::DamageBuildings(const disaster::Earthquake &earthquake, Bu
             continue;
         }
 
-        buildings.Remove(&building);
+        buildings.RemoveAt(&building);
     }
 }
