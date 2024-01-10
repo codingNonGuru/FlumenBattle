@@ -327,6 +327,9 @@ namespace world
         auto newPolity = FoundPolity(faction->GetLeader());
         for(auto &member : faction->GetMembers())
         {
+            if(member == faction->GetLeader())
+                continue;
+                
             newPolity->ExtendRealm(member);
         }
 

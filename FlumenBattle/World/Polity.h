@@ -93,6 +93,8 @@ namespace world::polity
 
         Integer GetDeathCount() const {return malariaDeathCount;}
 
+        const Pool <settlement::Settlement *> &GetSettlements() const {return settlements;}
+
         container::HexGrid <Interest> &GetInterestMap() {return interestMap;}
 
         bool HasDiscoveredTechnology(science::Technologies) const;

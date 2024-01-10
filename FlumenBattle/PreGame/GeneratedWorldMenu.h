@@ -10,6 +10,10 @@ namespace pregame
     {
         friend class PreGameState;
 
+        Element *backdrop;
+
+        Text *sizeLabel;
+
         Text *startGameLabel;
 
         Text *saveWorldLabel;

@@ -47,5 +47,9 @@ namespace world
         const container::Block <WorldTile *, 6> GetNearbyTiles(WorldTile*);
 
         const Array<WorldTile*> & GetTileRing(WorldTile*, Integer);
+
+        const int GetSize() const {return tiles.GetWidth();}
+
+        const int GetTileCount() const {return tiles.GetWidth() * tiles.GetHeight();}
     };
 }
