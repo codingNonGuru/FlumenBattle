@@ -9,6 +9,7 @@
 #include "SettlementLabel.h"
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Settlement/Path.h"
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Settlement/Affliction.h"
@@ -85,7 +86,7 @@ void SettlementLabel::HandleConfigure()
     populationLabel->Enable();
 
     hoverBackdrop = ElementFactory::BuildElement <Element>(
-        {Size(size_.x - 10, 160), drawOrder_, {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, this}, {"Sprite"}, Opacity(0.4f)}
+        {Size(size_.x - 10, 280), drawOrder_, {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, this}, {"Sprite"}, Opacity(0.4f)}
     );
     hoverBackdrop->Disable();
 
@@ -119,6 +120,15 @@ void SettlementLabel::HandleConfigure()
     industryLabel->SetAlignment(Text::Alignments::LEFT);
     industryLabel->AdjustSize();
     industryLabel->Enable();
+    basePosition.y += 20.0f;
+
+    tileLabel = ElementFactory::BuildText(
+        {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, hoverBackdrop}},
+        {{"JSLAncient", "Small"}, color, "Tiles: 20"}
+    );
+    tileLabel->SetAlignment(Text::Alignments::LEFT);
+    tileLabel->AdjustSize();
+    tileLabel->Enable();
     basePosition.y += 10.0f;
 
     storageLayout = ElementFactory::BuildElement <LayoutGroup>(
@@ -171,13 +181,29 @@ void SettlementLabel::HandleConfigure()
         {"SettingsBar", {20.0f, 8.0f}}
     );
     productionProgress->Enable();
+    basePosition.y += 15.0f;
 
-    tileLabel = ElementFactory::BuildText(
-        {Size(size_.x - 10, 150), drawOrder_ + 1, {Position2(0.0f, height + 100.0f), this}},
-        {{"JSLAncient", "Small"}, color, "Food: 20"}
+    pathLayout = ElementFactory::BuildElement <LayoutGroup>(
+        {Size(0, 0), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, hoverBackdrop}}
     );
-    tileLabel->SetAlignment(Text::Alignments::LEFT);
-    tileLabel->Disable();
+    pathLayout->Enable();
+    pathLayout->SetDistancing(1, -3.0f);
+    basePosition.y += 20.0f;
+
+    pathLabels.Initialize(8);
+    for(int i = 0; i < 8; ++i)
+    {
+        auto label = ElementFactory::BuildText(
+            {Size(100, 100), drawOrder_ + 1, {Position2(), pathLayout}},
+            {{"JSLAncient", "VerySmall"}, color, "Industry: 20"}
+        );
+        label->SetAlignment(Text::Alignments::LEFT);
+        label->AdjustSize();
+        pathLayout->AddChild(label);
+        label->Disable();
+
+        *pathLabels.Add() = label;
+    }
 
     healthLabel = ElementFactory::BuildText(
         {Size(size_.x - 10, 150), drawOrder_ + 1, {Position2(0.0f, height + 120.0f), this}},
@@ -264,6 +290,19 @@ void SettlementLabel::HandleUpdate()
         progress = 0.0f;
     }
     productionProgress->SetProgress(progress);
+
+    int i = 0;
+    for(auto &link : settlement->links)
+    {
+        auto label = pathLabels.Get(i);
+        text = "";
+        text << link.Path->Complexity << " to ";
+        text << link.Path->GetOther(settlement)->GetName();
+        (*label)->Setup(text);
+        (*label)->Enable();
+        i++;
+    }
+
 
     auto malaria = settlement->afflictions.Find(AfflictionTypes::MALARIA);
 

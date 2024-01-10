@@ -97,10 +97,10 @@ Color WorldTileModel::GetGlobalLightColor()
     Color color;
 
     Color nightColor = Color::BLUE * 0.4f + Color::BLACK * 0.6f;
-    nightColor.a_ = 0.8f;
+    nightColor.a_ = 1.0f;
 
     Color eveningColor = Color::BLUE * 0.4f + Color::BLACK * 0.6f;
-    eveningColor.a_ = 0.6f;
+    eveningColor.a_ = 0.7f;
 
     Color noonColor = Color::YELLOW;
     noonColor.a_ = 0.05f;
@@ -253,6 +253,9 @@ void WorldTileModel::Render()
                         continue;
 
                     if(neighbour->IsOwned() && secondaryNeighbour->GetOwner()->GetPolity() == neighbour->GetOwner()->GetPolity())
+                        continue;
+
+                    if(tile->GetOwner()->GetPolity() != secondaryNeighbour->GetOwner()->GetPolity())
                         continue;
 
                     auto position = (tile->Position + neighbour->Position + secondaryNeighbour->Position) / 3.0f;

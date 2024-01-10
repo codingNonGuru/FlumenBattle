@@ -48,6 +48,8 @@ namespace world::settlement
 
         container::SmartBlock <WorldTile *, 16> Tiles;
 
+        int Complexity;
+
         Path() {}
 
         Path(Settlement *to, Settlement *from) : To(to), From(from) {}

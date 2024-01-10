@@ -70,6 +70,10 @@ namespace world::settlement
 
         ProgressBar *productionProgress;
 
+        container::Array <Text *> pathLabels;
+
+        LayoutGroup *pathLayout;
+
         void HandleConfigure() override;
 
         void HandleUpdate() override;

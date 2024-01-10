@@ -232,39 +232,46 @@ void Settlement::GrowBorders()
     if(tiles.GetSize() == tiles.GetCapacity())
         return;
 
-    auto &tileRing = location->GetTileRing(2);
+    if(areNearbyTilesTaken == true)
+        return;
 
-    auto findNewTile = [this, tileRing] (world::WorldBiomes biomeType) -> WorldTile *
+    auto findNewTileInRing = [this] (int distance) -> WorldTile *
     {
-        for(auto tileIterator = tileRing.GetStart(); tileIterator != tileRing.GetEnd(); ++tileIterator)
+        auto &tileRing = location->GetTileRing(distance);
+
+        auto findNewTile = [this, tileRing] (world::WorldBiomes biomeType) -> WorldTile *
         {
-            auto tile = *tileIterator;
-            if(tile->IsOwned())
-                continue;
+            for(auto tileIterator = tileRing.GetStart(); tileIterator != tileRing.GetEnd(); ++tileIterator)
+            {
+                auto tile = *tileIterator;
+                if(tile->IsOwned())
+                    continue;
 
-            if(tile->Biome->Type != biomeType)
-                continue;
+                if(tile->Biome->Type != biomeType)
+                    continue;
 
-            return tile;
-        }    
-        return nullptr;
-    };
+                return tile;
+            }    
+            return nullptr;
+        };
 
-    auto newTile = findNewTile(world::WorldBiomes::STEPPE);
-    if(newTile == nullptr)
-    {
-        newTile = findNewTile(world::WorldBiomes::WOODS);
+        auto newTile = findNewTile(world::WorldBiomes::STEPPE);
         if(newTile == nullptr)
         {
-            newTile = findNewTile(world::WorldBiomes::DESERT);
+            newTile = findNewTile(world::WorldBiomes::WOODS);
             if(newTile == nullptr)
             {
-                newTile = findNewTile(world::WorldBiomes::MARINE);
+                newTile = findNewTile(world::WorldBiomes::DESERT);
+                if(newTile == nullptr)
+                {
+                    newTile = findNewTile(world::WorldBiomes::MARINE);
+                }
             }
         }
-    }
+    };
 
-    if(newTile)
+    auto newTile = findNewTileInRing(2);
+    if(newTile != nullptr)
     {
         auto tile = tiles.Add();
         tile->Tile = newTile;
@@ -272,6 +279,23 @@ void Settlement::GrowBorders()
         tile->IsBuilt = false;
 
         newTile->AssertOwnership(this);
+    }
+    else
+    {
+        newTile = findNewTileInRing(3);
+        if(newTile != nullptr)
+        {
+            auto tile = tiles.Add();
+            tile->Tile = newTile;
+            tile->IsWorked = false;
+            tile->IsBuilt = false;
+
+            newTile->AssertOwnership(this);
+        }
+        else
+        {
+            areNearbyTilesTaken = true;
+        }
     }
 }
 

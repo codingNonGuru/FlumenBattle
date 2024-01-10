@@ -93,6 +93,8 @@ namespace world::settlement
 
         Integer cultureGrowth;
 
+        bool areNearbyTilesTaken {false};
+
         Pool <SettlementTile> tiles;
 
         world::Polity *polity;

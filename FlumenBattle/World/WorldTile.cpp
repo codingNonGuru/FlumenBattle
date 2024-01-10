@@ -137,7 +137,7 @@ void WorldTile::AssertOwnership(settlement::Settlement *owner)
 {
     this->owner = owner;
 
-    auto &nearbyTiles = GetNearbyTiles(1);
+    auto &nearbyTiles = GetNearbyTiles(2);
     for(auto tile = nearbyTiles.GetStart(); tile != nearbyTiles.GetEnd(); ++tile)
     {
         (*tile)->isBorderingOwnedTile = true;

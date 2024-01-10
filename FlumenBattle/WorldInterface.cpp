@@ -193,7 +193,7 @@ void WorldInterface::Update()
 {
     auto camera = RenderManager::GetCamera(Cameras::WORLD);
 
-    if(camera->GetZoomFactor() > 1.7f)
+    if(camera->GetZoomFactor() > 1.0f)
     {
         for(auto label = settlementLabels.GetStart(); label != settlementLabels.GetEnd(); label++)
         {

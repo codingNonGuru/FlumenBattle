@@ -13,7 +13,7 @@
 #include "FlumenBattle/World/WorldGenerator.h"
 #include "FlumenBattle/World/Settlement/Resource.h"
 
-#define MAXIMUM_TILES_PER_SETTLEMENT 19
+#define MAXIMUM_TILES_PER_SETTLEMENT 37
 
 #define MAXIMUM_CONDITIONS_PER_SETTLEMENT 32
 

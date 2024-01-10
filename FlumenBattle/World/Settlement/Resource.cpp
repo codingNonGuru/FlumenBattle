@@ -29,6 +29,10 @@ int Resource::GetProduction(Settlement &settlement)
             continue;
 
         production += tile.Tile->GetResource(Type->Type);
+        /*if(Type->Type == ResourceTypes::METAL)
+        {
+            std::cout<<tile.Tile->GetResource(Type->Type)<<"\n";
+        }*/
 
         if(Type->DoesImprovementWorkAnywhere == true)
         {
@@ -39,7 +43,7 @@ int Resource::GetProduction(Settlement &settlement)
         }
         else
         {
-            if(production > 0 && tile.IsBuilt)
+            if(tile.Tile->GetResource(Type->Type) > 0 && tile.IsBuilt)
             {
                 production++;
             }

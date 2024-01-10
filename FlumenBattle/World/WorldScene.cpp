@@ -284,6 +284,8 @@ namespace world
 
             from->AddPath(path);
             to->AddPath(path);
+
+            path->Complexity = pathData.Complexity;
         }
     }
 
