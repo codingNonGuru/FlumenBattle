@@ -27,7 +27,7 @@ void TechnologyRoster::StartResearching(Technologies technology)
     researchTarget = &TechnologyFactory::Get()->Create(technology);
 }
 
-void TechnologyRoster::Update(const Polity &polity)
+void TechnologyRoster::Update(const polity::Polity &polity)
 {
     if(researchTarget == nullptr)
         return;

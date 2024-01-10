@@ -16,9 +16,17 @@ namespace world
     {
         class TechnologyRoster;
     }
+}
+
+namespace world::polity
+{
+    class Faction;
+    struct FactionDecision;
 
     class Polity
     {
+        friend class PolityAllocator;
+
         struct Interest : public core::hex::Tile
         {
             friend class Polity;
@@ -48,6 +56,8 @@ namespace world
 
         settlement::Settlement *ruler;
 
+        Pool <Faction> factions;
+
         Integer malariaDeathCount;
 
         science::TechnologyRoster *technologyRoster;
@@ -63,9 +73,13 @@ namespace world
 
         void RemoveSettlement(settlement::Settlement *);
 
+        void UndergoDivision(Faction *);
+
         void DecideResearch();
 
-        void Update();
+        container::Array <FactionDecision> &Update();
+
+        Faction *FindFaction(settlement::Settlement *);
         
         void ApplyTechnologyModifiers(settlement::Settlement *) const;
 

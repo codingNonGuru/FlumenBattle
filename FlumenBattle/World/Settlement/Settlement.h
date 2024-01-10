@@ -13,7 +13,12 @@ namespace world
 {
     class WorldTile;
     class WorldScene;
-    class Polity;
+
+    namespace polity
+    {
+        class Polity;
+        class Faction;
+    }
 
     namespace group
     {
@@ -57,7 +62,7 @@ namespace world::settlement
 
     class Settlement
     {
-        friend class world::Polity;
+        friend class polity::Polity;
 
         friend class world::WorldScene;
 
@@ -97,7 +102,7 @@ namespace world::settlement
 
         Pool <SettlementTile> tiles;
 
-        world::Polity *polity;
+        polity::Polity *polity;
 
         Pool <Affliction> afflictions;
 
@@ -122,6 +127,8 @@ namespace world::settlement
         Integer lastShipmentTime;
 
         Integer independenceDrive {0};
+
+        polity::Faction *faction {nullptr};
 
         struct PathData
         {
@@ -163,7 +170,7 @@ namespace world::settlement
 
         Integer GetWorkedTiles() const;
 
-        world::Polity *GetPolity() const {return polity;}
+        polity::Polity *GetPolity() const {return polity;}
 
         Settlement *GetRuler() const;
 
@@ -175,7 +182,9 @@ namespace world::settlement
 
         SettlementProduction *GetCurrentProduction() const {return currentProduction;}
 
-        void SetPolity(world::Polity *);
+        void SetPolity(polity::Polity *);
+
+        void SetFaction(polity::Faction *newFaction) {faction = newFaction;}
 
         void KillPopulation();
 

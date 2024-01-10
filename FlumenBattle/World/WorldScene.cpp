@@ -18,6 +18,8 @@
 #include "FlumenBattle/World/Settlement/SettlementFactory.h"
 #include "FlumenBattle/World/Settlement/SettlementAllocator.h"
 #include "FlumenBattle/World/Polity.h"
+#include "FlumenBattle/World/Faction.h"
+#include "FlumenBattle/World/PolityAllocator.h"
 #include "FlumenBattle/World/Group/Encounter.h"
 #include "FlumenBattle/Battle/BattleState.h"
 #include "FlumenBattle/Battle/BattleScene.h"
@@ -82,6 +84,8 @@ namespace world
 
         Refresh();
     }
+
+    static auto factionDecisions = container::Array <polity::FactionDecision> (64);
 
     void WorldScene::Refresh()
     {
@@ -167,9 +171,23 @@ namespace world
 
         auto refreshPolities = [this]
         {
-            for(auto &polity : polities)
+            factionDecisions.Reset();
+            for(auto &polity : *polities)
             {
-                polity.Update();
+                auto &decisions = polity.Update();
+
+                for(auto decision : decisions)
+                {
+                    *factionDecisions.Add() = decision;
+                }
+            }
+
+            for(auto &decision : factionDecisions)
+            {
+                if(decision.Decision == polity::FactionDecisions::DECLARE_INDEPENDENCE)
+                {
+                    SplitPolity(decision.Faction);
+                }
             }
         };
 
@@ -293,21 +311,28 @@ namespace world
         }
     }
 
-    Polity *WorldScene::FoundPolity(settlement::Settlement *ruler)
+    polity::Polity *WorldScene::FoundPolity(settlement::Settlement *ruler)
     {
-        auto polity = polities.Add();
+        auto polity = polity::PolityAllocator::Get()->AllocatePolity();
         polity->Initialize(ruler);
 
         return polity;
     }
 
-    Polity *WorldScene::SplitPolity(settlement::Settlement *secceder)
+    polity::Polity *WorldScene::SplitPolity(polity::Faction *faction)
     {
-        auto oldPolity = secceder->GetPolity();
-        oldPolity->RemoveSettlement(secceder);
+        auto polity = faction->GetPolity();
+        polity->UndergoDivision(faction);
 
-        auto polity = FoundPolity(secceder);
-        return polity;
+        auto newPolity = FoundPolity(faction->GetLeader());
+        for(auto &member : faction->GetMembers())
+        {
+            newPolity->ExtendRealm(member);
+        }
+
+        polity::PolityAllocator::Get()->FreeFaction(polity, faction);
+
+        return newPolity;
     }
 
     const settlement::Settlement *WorldScene::GetFoundedSettlement() const 

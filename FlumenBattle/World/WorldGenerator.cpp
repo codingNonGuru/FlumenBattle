@@ -12,6 +12,7 @@
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/PreGame/Types.h"
 #include "FlumenBattle/World/Settlement/Types.h"
+#include "FlumenBattle/World/PolityAllocator.h"
 
 using namespace world;
 
@@ -289,6 +290,9 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
     auto worldMap = scene.worldMap;
 
     WorldAllocator::Get()->AllocateSociety(data.Size);
+
+    auto polities = polity::PolityAllocator::Get()->GetPolities();
+    scene.polities = polities;
 
     auto settlements = settlement::SettlementAllocator::Get()->GetSettlements();
     scene.settlements = settlements;

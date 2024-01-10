@@ -16,7 +16,13 @@ namespace world
 {
     class WorldMap;
     class WorldTile;
-    class Polity;
+
+    namespace polity
+    {
+        class Polity;
+        class Faction;
+    }
+    
     namespace group
     {
         class Group;
@@ -49,7 +55,7 @@ namespace world
 
         Pool <settlement::Settlement> *settlements;
 
-        Pool <Polity> polities;
+        Pool <polity::Polity> *polities;
 
         Pool <settlement::Path> *paths;
 
@@ -115,7 +121,7 @@ namespace world
 
         Pool <group::Group> & GetGroups() {return *groups;}
 
-        Pool <Polity> & GetPolities() {return polities;}
+        Pool <polity::Polity> & GetPolities() {return *polities;}
 
         const WorldTime & GetTime() const {return time;}
 
@@ -139,8 +145,8 @@ namespace world
 
         settlement::Settlement * ForgePath(settlement::Settlement *, settlement::Settlement *, int = INT_MAX);
 
-        Polity *FoundPolity(settlement::Settlement *);
+        polity::Polity *FoundPolity(settlement::Settlement *);
 
-        Polity *SplitPolity(settlement::Settlement *);
+        polity::Polity *SplitPolity(polity::Faction *);
     };
 }

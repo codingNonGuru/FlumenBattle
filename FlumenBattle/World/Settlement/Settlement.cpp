@@ -6,6 +6,7 @@
 #include "FlumenBattle/World/WorldBiome.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Polity.h"
+#include "FlumenBattle/World/Faction.h"
 #include "FlumenBattle/World/Settlement/Affliction.h"
 #include "FlumenBattle/World/Settlement/SettlementEvent.h"
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
@@ -414,7 +415,7 @@ int Settlement::GetModifier(Modifiers modifier) const
     return modifierManager.GetAmount(modifier);
 }
 
-void Settlement::SetPolity(world::Polity *polity)
+void Settlement::SetPolity(polity::Polity *polity)
 {
     this->polity = polity;
 }
@@ -638,15 +639,19 @@ void Settlement::UpdatePolitics()
     if(polity->GetRuler() == this)
         return;
 
+    if(faction != nullptr)
+        return;
+
     auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathToSettlement(this, polity->GetRuler());
     if(pathData.Complexity > 15)
     {
-        independenceDrive++;
+        faction = polity->FindFaction(this);
+        /*independenceDrive++;
 
         if(independenceDrive > 100)
         {
             independenceDrive = 0;
             WorldScene::Get()->SplitPolity(this);
-        }
+        }*/
     }
 }

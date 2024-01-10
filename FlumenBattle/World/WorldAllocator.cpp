@@ -8,6 +8,7 @@
 #include "FlumenBattle/World/Settlement/SettlementAllocator.h"
 #include "FlumenBattle/World/GroupAllocator.h"
 #include "FlumenBattle/World/Character/CharacterAllocator.h"
+#include "FlumenBattle/World/PolityAllocator.h"
 
 using namespace world;
 
@@ -20,8 +21,7 @@ WorldAllocator::WorldAllocator()
 
     worldTileMemory = container::Grid <WorldTile>::PreallocateMemory(MAXIMUM_WORLD_SIZE * MAXIMUM_WORLD_SIZE);
 
-    auto polityCount = WorldGenerator::Get()->GetMaximumPolityCount(MAXIMUM_WORLD_SIZE);
-    polityMemory = container::Pool<Polity>::PreallocateMemory(polityCount);
+    polity::PolityAllocator::Get()->PreallocateMaximumMemory();
 
     settlement::SettlementAllocator::Get()->PreallocateMaximumMemory();
 
@@ -43,10 +43,7 @@ void WorldAllocator::AllocateMap(WorldMap &map, container::SmartBlock< container
 
 void WorldAllocator::AllocateSociety(int worldSize)
 {
-    auto scene = WorldScene::Get();
-
-    auto polityCount = WorldGenerator::Get()->GetMaximumPolityCount(worldSize);
-    scene->polities.Initialize(polityCount, polityMemory);
+    polity::PolityAllocator::Get()->AllocateWorldMemory(worldSize);
 
     settlement::SettlementAllocator::Get()->AllocateWorldMemory(worldSize);
 

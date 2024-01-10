@@ -9,7 +9,7 @@ namespace world::settlement
     class Settlement;
 }
 
-namespace world
+namespace world::polity
 {
     class Polity;
 }
@@ -71,7 +71,7 @@ namespace world::science
 
         void StartResearching(Technologies);
 
-        void Update(const Polity &);
+        void Update(const polity::Polity &);
 
         void ApplyModifiers(settlement::Settlement &);
     };

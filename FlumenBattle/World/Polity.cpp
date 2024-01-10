@@ -5,14 +5,16 @@
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
+#include "FlumenBattle/World/Faction.h"
+#include "FlumenBattle/World/PolityAllocator.h"
 
-using namespace world;
+using namespace world::polity;
 
 void Polity::Initialize(settlement::Settlement *ruler)
 {
     this->ruler = ruler;
 
-    this->settlements.Initialize(256);
+    //this->settlements.Initialize(256);
 
     malariaDeathCount = 0;
 
@@ -46,6 +48,8 @@ void Polity::RemoveSettlement(settlement::Settlement *settlement)
 {
     this->settlements.Remove(settlement);
 
+    settlement->SetPolity(nullptr);
+
     auto &interests = interestMap.GetTiles();
     for(auto interest = interests.GetStart(); interest != interests.GetEnd(); ++interest)
     {
@@ -62,6 +66,16 @@ void Polity::RemoveSettlement(settlement::Settlement *settlement)
             continue;
 
         MapInterest(other);
+    }
+}
+
+void Polity::UndergoDivision(Faction *faction)
+{
+    for(auto &member : faction->GetMembers())
+    {
+        RemoveSettlement(member);
+
+        member->SetFaction(nullptr);
     }
 }
 
@@ -120,6 +134,34 @@ void Polity::MapInterest(settlement::Settlement *domain)
             }
         }
     }
+}
+
+Faction *Polity::FindFaction(settlement::Settlement *settlement)
+{
+    bool hasFound = false;
+    for(auto &faction : factions)
+    {
+        for(auto &member : faction.GetMembers())
+        {
+            if(settlement->GetPathTo(member) != nullptr)
+            {
+                faction.AddMember(settlement);
+                hasFound = true;
+                return &faction;
+            }
+        }
+    }
+
+    if(hasFound == false)
+    {
+        auto faction = PolityAllocator::Get()->AllocateFaction(this);
+        faction->Initialize(this);
+        faction->AddMember(settlement);
+        faction->SetLeader(settlement);
+        return faction;
+    }
+
+    return nullptr;
 }
 
 void Polity::DecideResearch()
@@ -196,7 +238,9 @@ bool Polity::HasDiscoveredTechnology(science::Technologies technology) const
     return technologyRoster->HasDiscovered(technology);
 }
 
-void Polity::Update() 
+static container::Array <FactionDecision> decisions = container::Array <FactionDecision> (8);
+
+container::Array <FactionDecision> &Polity::Update() 
 {
     malariaDeathCount = 0;
 
@@ -214,4 +258,17 @@ void Polity::Update()
     DecideResearch();
 
     technologyRoster->Update(*this);
+
+    decisions.Reset();
+    for(auto &faction : factions)
+    {
+        auto decision = faction.Update();
+
+        if(decision.Decision == FactionDecisions::DECLARE_INDEPENDENCE)
+        {
+            *decisions.Add() = decision;
+        }
+    }
+
+    return decisions;
 }

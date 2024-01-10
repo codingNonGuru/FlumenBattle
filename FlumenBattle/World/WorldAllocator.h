@@ -41,8 +41,6 @@ namespace world
 
         container::Grid <WorldTile>::Memory worldTileMemory;
 
-        container::Pool <Polity>::Memory polityMemory;
-
         void AllocateMap(WorldMap &, container::SmartBlock< container::Array <WorldTilePointer>, 4> &, int);
 
         void AllocateSociety(int);
