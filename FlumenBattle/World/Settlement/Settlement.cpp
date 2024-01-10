@@ -643,7 +643,7 @@ void Settlement::UpdatePolitics()
         return;
 
     auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathToSettlement(this, polity->GetRuler());
-    if(pathData.Complexity > 15)
+    if(pathData.Complexity > 12)
     {
         faction = polity->FindFaction(this);
         /*independenceDrive++;

@@ -227,11 +227,11 @@ void WorldTileModel::Render()
             auto position = (tile->Position + neighbour->Position) / 2.0f;
             if(isHardBorder == true)
             {
-                position = (position + tile->Position * 0.2f) / 1.2f;
+                position = (position + tile->Position * 0.5f) / 1.5f;
             }
             squareShader->SetConstant(position, "hexPosition");
         
-            Scale2 scale = Scale2(WORLD_TILE_SIZE * 1.0f, isHardBorder ? 10.0f : 2.0f);
+            Scale2 scale = Scale2(WORLD_TILE_SIZE * 1.0f, isHardBorder ? 20.0f : 3.0f);
             squareShader->SetConstant(scale, "hexSize");
 
             auto orientation = tile->Position - neighbour->Position;
@@ -259,10 +259,10 @@ void WorldTileModel::Render()
                         continue;
 
                     auto position = (tile->Position + neighbour->Position + secondaryNeighbour->Position) / 3.0f;
-                    position = (position + tile->Position * 0.15f + secondaryNeighbour->Position * 0.15f) / 1.3f;
+                    position = (position + tile->Position * 0.36f + secondaryNeighbour->Position * 0.36f) / 1.72f;
                     squareShader->SetConstant(position, "hexPosition");
                 
-                    Scale2 scale = Scale2(WORLD_TILE_SIZE * 0.3f, 10.0f);
+                    Scale2 scale = Scale2(WORLD_TILE_SIZE * 0.57f, 20.0f);
                     squareShader->SetConstant(scale, "hexSize");
 
                     auto orientation = tile->Position - secondaryNeighbour->Position;
