@@ -403,6 +403,11 @@ Integer Settlement::GetWorkedTiles() const
     return tileCount;
 }
 
+Settlement *Settlement::GetRuler() const
+{
+    return polity->GetRuler();
+}
+
 int Settlement::GetModifier(Modifiers modifier) const
 {
     return modifierManager.GetAmount(modifier);

@@ -15,6 +15,7 @@
 #include "FlumenBattle/World/Settlement/Affliction.h"
 #include "FlumenBattle/World/Group/GroupDynamics.h"
 #include "FlumenBattle/World/WorldController.h"
+#include "FlumenBattle/Utility/Pathfinder.h"
 
 using namespace world::settlement;
 
@@ -303,6 +304,8 @@ void SettlementLabel::HandleUpdate()
         i++;
     }
 
+    //auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathToSettlement(settlement, settlement->GetRuler());
+    //std::cout<<pathData.Length<<" "<<pathData.Complexity<<"\n";
 
     auto malaria = settlement->afflictions.Find(AfflictionTypes::MALARIA);
 

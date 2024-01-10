@@ -121,6 +121,13 @@ namespace world::settlement
 
         Integer lastShipmentTime;
 
+        struct PathData
+        {
+            bool IsVisited = false;
+
+            bool IsToBeVisited = false;
+        } pathData;
+
         void Initialize(Word, Color, world::WorldTile *);
 
         world::WorldTile * FindColonySpot();
@@ -156,6 +163,8 @@ namespace world::settlement
 
         world::Polity *GetPolity() const {return polity;}
 
+        Settlement *GetRuler() const;
+
         int GetModifier(Modifiers) const;
 
         Resource *GetResource(ResourceTypes type) const {return resourceHandler.Get(type);}
@@ -189,5 +198,9 @@ namespace world::settlement
         void AddPath(Path *path);
 
         Path *GetPathTo(Settlement *settlement);
+
+        const Pool <Link> &GetLinks() {return links;}
+
+        PathData &GetPathData() {return pathData;}
     };
 }
