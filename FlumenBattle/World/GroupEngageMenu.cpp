@@ -19,7 +19,6 @@ void GroupEngageMenu::HandleConfigure()
         {Size(100, 100), drawOrder_ + 1, {Position2(5.0f, 5.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}},
         {{"JSLAncient", "Large"}, Color::RED * 0.5f, "You come across a band of travellers most merry..."}
     );
-    descriptionLabel->AdjustSize();
     descriptionLabel->SetAlignment(Text::Alignments::LEFT);
     descriptionLabel->Enable();
 
@@ -33,7 +32,6 @@ void GroupEngageMenu::HandleConfigure()
             {Size(100, 100), drawOrder_ + 1, {startPosition, ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}},
             {{"JSLAncient", "Medium"}, Color::RED * 0.5f, "[F] Do battle with these treacherous arseholes"}
         );
-        optionLabel->AdjustSize();
         optionLabel->SetAlignment(Text::Alignments::LEFT);
         optionLabel->Disable();
 

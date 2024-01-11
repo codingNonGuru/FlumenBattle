@@ -32,7 +32,16 @@ void TechnologyRoster::Update(const polity::Polity &polity)
     if(researchTarget == nullptr)
         return;
 
-    researchProgress += polity.GetScientificPower();
+    researchProgress += [&] () 
+    {
+        auto power = polity.GetScientificPower();
+        if(power < 5)
+            return 3;
+        else if(power < 15)
+            return 4;
+        else if(power < 30)
+            return 5;
+    } ();
 
     if(researchProgress >= researchTarget->ResearchDuration)
     {

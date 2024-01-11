@@ -40,7 +40,6 @@ void GeneratedWorldMenu::HandleConfigure()
         {{"JSLAncient", "Medium"}, Color::RED * 0.5f, "World size: 50"}
     );
     //sizeLabel->SetAlignment(Text::Alignments::LEFT);
-    //sizeLabel->AdjustSize();
     sizeLabel->Enable();
 }
 
@@ -61,8 +60,6 @@ void GeneratedWorldMenu::HandleEnable()
     text << "Polity limit: " << generator->GetMaximumPolityCount(map->GetSize()) << "\n";
     text << "Group limit: " << generator->GetMaximumGroupCount(map->GetSize()) << "\n";
     sizeLabel->Setup(text);
-
-    sizeLabel->AdjustSize();
 }
 
 void GeneratedWorldMenu::HandleDisable() 

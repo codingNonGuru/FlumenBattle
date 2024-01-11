@@ -15,6 +15,7 @@ namespace world
     namespace science
     {
         class TechnologyRoster;
+        struct TechnologyType;
     }
 }
 
@@ -98,6 +99,10 @@ namespace world::polity
         container::HexGrid <Interest> &GetInterestMap() {return interestMap;}
 
         const Pool <Faction> &GetFactions() {return factions;}
+
+        const science::TechnologyType *GetResearchTarget() const;
+
+        int GetResearchProgress() const;
 
         bool HasDiscoveredTechnology(science::Technologies) const;
     };

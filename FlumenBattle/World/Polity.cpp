@@ -14,8 +14,6 @@ void Polity::Initialize(settlement::Settlement *ruler)
 {
     this->ruler = ruler;
 
-    //this->settlements.Initialize(256);
-
     malariaDeathCount = 0;
 
     technologyRoster = new science::TechnologyRoster();
@@ -141,6 +139,9 @@ Faction *Polity::FindFaction(settlement::Settlement *settlement)
     bool hasFound = false;
     for(auto &faction : factions)
     {
+        if(faction.IsActive() == false)
+            continue;
+
         for(auto &member : faction.GetMembers())
         {
             if(settlement->GetPathTo(member) != nullptr)
@@ -154,6 +155,9 @@ Faction *Polity::FindFaction(settlement::Settlement *settlement)
 
     if(hasFound == false)
     {
+        /*if(factions.GetSize() == 1)
+            return;*/
+
         auto faction = PolityAllocator::Get()->AllocateFaction(this);
         faction->Initialize(this);
         faction->AddMember(settlement);
@@ -238,6 +242,16 @@ bool Polity::HasDiscoveredTechnology(science::Technologies technology) const
     return technologyRoster->HasDiscovered(technology);
 }
 
+const world::science::TechnologyType *Polity::GetResearchTarget() const
+{
+    return technologyRoster->GetTarget();
+}
+
+int Polity::GetResearchProgress() const
+{
+    return technologyRoster->GetProgress();
+}
+
 static container::Array <FactionDecision> decisions = container::Array <FactionDecision> (8);
 
 container::Array <FactionDecision> &Polity::Update() 
@@ -263,6 +277,9 @@ container::Array <FactionDecision> &Polity::Update()
     decisions.Reset();
     for(auto &faction : factions)
     {
+        if(faction.IsActive() == false)
+            continue;
+
         auto decision = faction.Update();
 
         if(decision.Decision == FactionDecisions::DECLARE_INDEPENDENCE)

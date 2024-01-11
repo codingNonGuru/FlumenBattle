@@ -3,20 +3,15 @@
 #include "FlumenEngine/Interface/Element.hpp"
 
 class Text;
+class ProgressBar;
 
 namespace world
 {
     class WorldHoverInfo : public Element
     {
-        Text * strengthLabel;
+        Text *infoLabel;
 
-        Text * diseaseLabel;
-
-        Text * industryLabel;
-
-        Text * scienceLabel;
-
-        Text * discoveryLabel;
+        ProgressBar *scienceProgress;
 
         void HandleConfigure() override;
 

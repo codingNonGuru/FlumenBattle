@@ -32,7 +32,6 @@ void HoverExtension::ResourceWidget::HandleConfigure()
         {{"JSLAncient", "Small"}, color, "20"}
     );
     Label->SetAlignment(Text::Alignments::LEFT);
-    Label->AdjustSize();
     Label->Enable();
 }
 
@@ -72,7 +71,6 @@ void SettlementLabel::HandleConfigure()
         {{"JSLAncient", "Medium"}, color, "Aloha"}
     );
     nameLabel->SetAlignment(Text::Alignments::LEFT);
-    nameLabel->AdjustSize();
     nameLabel->Enable();
 
     backdrop = ElementFactory::BuildElement <Element>(
@@ -103,8 +101,6 @@ void HoverExtension::HandleConfigure()
 {
     this->settlement = nullptr;
 
-    //this->SetSpriteColor(borderColor);
-
     border = ElementFactory::BuildElement <Element>(
         {size_, drawOrder_ + 1, {Position2(0.0f, 0.0f), this}, {"panel-border-007", "SlicedSprite"}, Opacity(0.8f)}
     );
@@ -118,7 +114,6 @@ void HoverExtension::HandleConfigure()
         {{"JSLAncient", "Small"}, color, "Growth "}
     );
     growthLabel->SetAlignment(Text::Alignments::LEFT);
-    growthLabel->AdjustSize();
     growthLabel->Enable();
     basePosition.y += 20.0f;
 
@@ -133,7 +128,6 @@ void HoverExtension::HandleConfigure()
         {{"JSLAncient", "Small"}, color, "Industry: 20"}
     );
     industryLabel->SetAlignment(Text::Alignments::LEFT);
-    industryLabel->AdjustSize();
     industryLabel->Enable();
     basePosition.y += 20.0f;
 
@@ -142,7 +136,6 @@ void HoverExtension::HandleConfigure()
         {{"JSLAncient", "Small"}, color, "Tiles: 20"}
     );
     tileLabel->SetAlignment(Text::Alignments::LEFT);
-    tileLabel->AdjustSize();
     tileLabel->Enable();
     basePosition.y += 10.0f;
 
@@ -185,7 +178,6 @@ void HoverExtension::HandleConfigure()
         {{"JSLAncient", "Small"}, color, "Industry: 20"}
     );
     productionLabel->SetAlignment(Text::Alignments::LEFT);
-    productionLabel->AdjustSize();
     productionLabel->Enable();
     basePosition.y += 20.0f;
 
@@ -211,7 +203,6 @@ void HoverExtension::HandleConfigure()
             {{"JSLAncient", "VerySmall"}, color, "Industry: 20"}
         );
         label->SetAlignment(Text::Alignments::LEFT);
-        label->AdjustSize();
         label->Disable();
 
         *pathLabels.Add() = label;

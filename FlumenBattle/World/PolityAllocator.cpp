@@ -7,7 +7,7 @@ using namespace world::polity;
 
 #define FACTION_MEMBERS_COUNT 16
 
-#define POLITY_FACTION_COUNT 8
+#define POLITY_FACTION_COUNT 16
 
 void PolityAllocator::PreallocateMaximumMemory()
 {
@@ -23,7 +23,7 @@ void PolityAllocator::PreallocateMaximumMemory()
 
     factionMemory = container::PoolAllocator <Faction>::PreallocateMemory(polityCount, POLITY_FACTION_COUNT);
 
-    factionSettlementMemory = container::PoolAllocator <settlement::Settlement *>::PreallocateMemory(polityCount, FACTION_MEMBERS_COUNT);
+    factionSettlementMemory = container::PoolAllocator <settlement::Settlement *>::PreallocateMemory(polityCount * POLITY_FACTION_COUNT, FACTION_MEMBERS_COUNT);
 }
 
 void PolityAllocator::AllocateWorldMemory(int worldSize)
@@ -40,7 +40,7 @@ void PolityAllocator::AllocateWorldMemory(int worldSize)
 
     factionAllocator = container::PoolAllocator <Faction> (polityCount, POLITY_FACTION_COUNT, factionMemory);
 
-    factionSettlementAllocator = container::PoolAllocator <settlement::Settlement *> (polityCount, FACTION_MEMBERS_COUNT, politySettlementMemory);
+    factionSettlementAllocator = container::PoolAllocator <settlement::Settlement *> (polityCount * POLITY_FACTION_COUNT, FACTION_MEMBERS_COUNT, politySettlementMemory);
 }
 
 Polity *PolityAllocator::AllocatePolity()

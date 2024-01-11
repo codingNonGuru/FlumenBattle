@@ -13,6 +13,8 @@ struct GlyphData
 	vec2 TextureOffset;
 
 	vec2 TextureScale;
+
+	ivec4 Padding;
 };
 
 // CONSTANT ATTRIBUTES

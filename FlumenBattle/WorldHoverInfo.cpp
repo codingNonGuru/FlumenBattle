@@ -1,52 +1,33 @@
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/Text.hpp"
+#include "FlumenEngine/Interface/Sprite.hpp"
+#include "FlumenEngine/Interface/ProgressBar.h"
 
 #include "WorldHoverInfo.h"
 #include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Polity.h"
+#include "FlumenBattle/World/Science/Technology.h"
 
 using namespace world;
 
 void WorldHoverInfo::HandleConfigure()
 {
-    auto color = Color::RED * 0.5f;
-    //auto height = -float(size_.y) / 2.0f + 20.0f;
-    strengthLabel = ElementFactory::BuildText(
-        {Size(size_.x - 10, 150), drawOrder_ + 1, {Position2(0.0f, 0.0f), this}},
+    static auto color = Color::RED * 0.5f;
+    infoLabel = ElementFactory::BuildText(
+        {Size(), drawOrder_ + 1, {Position2(5.0f, 5.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}},
         {{"JSLAncient", "Large"}, color, "Pop 1"}
     );
-    strengthLabel->SetAlignment(Text::Alignments::LEFT);
-    strengthLabel->Enable();
+    infoLabel->SetAlignment(Text::Alignments::LEFT);
+    infoLabel->LockWidth(size_.x - 10);
+    infoLabel->Enable();
 
-    diseaseLabel = ElementFactory::BuildText(
-        {Size(size_.x - 10, 150), drawOrder_ + 1, {Position2(0.0f, 35.0f), this}},
-        {{"JSLAncient", "Large"}, color, "Deaths 0"}
+    scienceProgress = ElementFactory::BuildProgressBar <ProgressBar>(
+        {Size(256, 16), drawOrder_ + 1, {Position2(0.0f, 0.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, infoLabel}, {"Settings", "SlicedSprite"}},
+        {"SettingsBar", {20.0f, 8.0f}}
     );
-    diseaseLabel->SetAlignment(Text::Alignments::LEFT);
-    diseaseLabel->Enable();
-
-    industryLabel = ElementFactory::BuildText(
-        {Size(size_.x - 10, 150), drawOrder_ + 1, {Position2(0.0f, 70.0f), this}},
-        {{"JSLAncient", "Large"}, color, "Industry 0"}
-    );
-    industryLabel->SetAlignment(Text::Alignments::LEFT);
-    industryLabel->Enable();
-
-    scienceLabel = ElementFactory::BuildText(
-        {Size(size_.x - 10, 150), drawOrder_ + 1, {Position2(0.0f, 105.0f), this}},
-        {{"JSLAncient", "Large"}, color, "Science "}
-    );
-    scienceLabel->SetAlignment(Text::Alignments::LEFT);
-    scienceLabel->Enable();
-
-    discoveryLabel = ElementFactory::BuildText(
-        {Size(size_.x - 10, 150), drawOrder_ + 1, {Position2(0.0f, 140.0f), this}},
-        {{"JSLAncient", "Large"}, color, "Techs "}
-    );
-    discoveryLabel->SetAlignment(Text::Alignments::LEFT);
-    discoveryLabel->Enable();
+    scienceProgress->Disable();
 }
 
 void WorldHoverInfo::HandleUpdate()
@@ -59,38 +40,25 @@ void WorldHoverInfo::HandleUpdate()
         return;
 
     auto polity = tile->GetSettlement()->GetPolity();
+    auto research = polity->GetResearchTarget();
 
-    Phrase text = "Pop "; 
-    text << polity->GetPopulation();
-    strengthLabel->Setup(text);
+    Phrase text;
+    text << polity->GetRuler()->GetName() << "\n";
+    text << "Size: " << polity->GetSettlements().GetSize() << "\n";
+    text << "Factions: " << polity->GetFactions().GetSize() << "\n";
+    text << "Population: " << polity->GetPopulation() << "\n";
+    text << "Deaths: " << polity->GetDeathCount() << "\n";
+    text << "Science: " << polity->GetScientificPower() << "\n";
+    text << "Researching: " << (research != nullptr ? research->Name : "none");
 
-    text = "Deaths "; 
-    text << polity->GetDeathCount();
-    diseaseLabel->Setup(text);
+    infoLabel->Setup(text);
 
-    text = "Industry "; 
-    text << polity->GetIndustrialPower();
-    industryLabel->Setup(text);
-
-    text = "Science "; 
-    text << polity->GetScientificPower();
-    scienceLabel->Setup(text);
-
-    text = "Techs:"; 
-    if(polity->HasDiscoveredTechnology(science::Technologies::MASONRY))
+    scienceProgress->Enable();
+    scienceProgress->SetProgress([&] 
     {
-        text <<" MS";
-    }
-    
-    if(polity->HasDiscoveredTechnology(science::Technologies::HAND_WASHING))
-    {
-        text <<", HW";
-    }
-
-    if(polity->HasDiscoveredTechnology(science::Technologies::TRAINED_SENTINELS))
-    {
-        text <<", TS";
-    }
-
-    discoveryLabel->Setup(text);
+        if(research != nullptr)
+            return float(polity->GetResearchProgress()) / float(research->ResearchDuration);
+        else
+            return 0.0f;
+    } ());
 }

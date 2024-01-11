@@ -79,14 +79,12 @@ void InventoryMenu::HandleConfigure()
         {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}}, 
         {{"JSLAncient", "Large"}, Color::RED * 0.5f, "Elric"}
     );
-    nameLabel->AdjustSize();
     nameLabel->Enable();
 
     classLabel = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, 25.0f), ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, nameLabel}}, 
         {{"JSLAncient", "Medium"}, Color::RED * 0.5f, "Cleric"}
     );
-    classLabel->AdjustSize();
     classLabel->Enable();
 
     Text **labels[] = {&healthLabel, &armorLabel, &attackLabel, &damageLabel};
@@ -98,7 +96,6 @@ void InventoryMenu::HandleConfigure()
             {{"JSLAncient", "Small"}, Color::RED * 0.5f, "Health: 10 / 10"}
         );
         (*label)->SetAlignment(Text::Alignments::LEFT);
-        (*label)->AdjustSize();
         (*label)->Enable();
 
         height += (*label)->GetFontHeight() - 5.0f;

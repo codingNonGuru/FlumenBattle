@@ -1,6 +1,7 @@
 #pragma once
 
 #include "FlumenCore/Singleton.h"
+#include "FlumenCore/Conventions.hpp"
 
 #include "FlumenBattle/World/Science/Types.h"
 
@@ -24,11 +25,14 @@ namespace world::science
 
         int ResearchDuration;
 
+        Word Name;
+
         void (*ApplyEffect) (settlement::Settlement &);
 
-        TechnologyType(Technologies type, int researchDuration, void (*applyEffect)(settlement::Settlement &)) : 
+        TechnologyType(Technologies type, int researchDuration, Word name, void (*applyEffect)(settlement::Settlement &)) : 
         Type(type), 
         ResearchDuration(researchDuration), 
+        Name(name),
         ApplyEffect(applyEffect) {}
 
         TechnologyType(const TechnologyType &) = delete;
@@ -74,6 +78,10 @@ namespace world::science
         void Update(const polity::Polity &);
 
         void ApplyModifiers(settlement::Settlement &);
+
+        const TechnologyType *GetTarget() const {return researchTarget;}
+
+        int GetProgress() const {return researchProgress;}
     };
 
     class TechnologyApplier
@@ -91,19 +99,19 @@ namespace world::science
     {
         const TechnologyType &BuildHandWashing()
         {
-            static const TechnologyType tech = {Technologies::HAND_WASHING, 500, &TechnologyApplier::ApplyHandWashing};
+            static const TechnologyType tech = {Technologies::HAND_WASHING, 10000, "Hand washing", &TechnologyApplier::ApplyHandWashing};
             return tech;
         }
 
         const TechnologyType &BuildTrainedSentinels()
         {
-            static const TechnologyType tech = {Technologies::TRAINED_SENTINELS, 700, &TechnologyApplier::ApplyTrainedSentinels};
+            static const TechnologyType tech = {Technologies::TRAINED_SENTINELS, 14000, "Trained sentinels", &TechnologyApplier::ApplyTrainedSentinels};
             return tech;
         }
 
         const TechnologyType &BuildMasonry()
         {
-            static const TechnologyType tech = {Technologies::MASONRY, 600, &TechnologyApplier::ApplyMasonry};
+            static const TechnologyType tech = {Technologies::MASONRY, 12000, "Masonry", &TechnologyApplier::ApplyMasonry};
             return tech;
         }
 

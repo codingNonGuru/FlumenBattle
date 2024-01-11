@@ -40,6 +40,8 @@ namespace world::polity
 
         int independenceDrive {0};
 
+        bool isActive {true};
+
     public:
         const container::Pool <settlement::Settlement *> &GetMembers() const {return members;}
 
@@ -52,6 +54,8 @@ namespace world::polity
             independenceDrive = 0;
 
             polity = newPolity;
+
+            isActive = true;
         }
 
         void AddMember(settlement::Settlement *);
@@ -59,5 +63,9 @@ namespace world::polity
         void SetLeader(settlement::Settlement *settlement);
 
         FactionDecision Update();
+
+        void Stop() {isActive = false;}
+
+        bool IsActive() {return isActive;}
     };
 }
