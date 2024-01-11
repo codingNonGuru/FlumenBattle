@@ -50,6 +50,16 @@ void HoverExtension::ResourceWidget::HandleUpdate()
     Label->Setup(text);
 }
 
+void HoverExtension::HandleEnable() 
+{
+    UpdatePosition();
+    
+    for(auto label : pathLabels)
+    {
+        label->Disable();
+    }
+}
+
 void SettlementLabel::HandleConfigure() 
 {
     this->settlement = nullptr;

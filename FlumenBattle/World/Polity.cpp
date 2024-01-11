@@ -259,6 +259,7 @@ container::Array <FactionDecision> &Polity::Update()
 
     technologyRoster->Update(*this);
 
+    
     decisions.Reset();
     for(auto &faction : factions)
     {

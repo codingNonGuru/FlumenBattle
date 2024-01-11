@@ -60,7 +60,7 @@ WorldInterface::WorldInterface()
     );
     inventoryMenu->Disable();
 
-    settlementLabels.Initialize(64);
+    settlementLabels.Initialize(128);
     for(int i = 0; i < settlementLabels.GetCapacity(); i++)
     {
         auto settlementLabel = ElementFactory::BuildElement <settlement::SettlementLabel>(

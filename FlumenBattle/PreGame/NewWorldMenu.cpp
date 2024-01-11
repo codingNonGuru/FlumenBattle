@@ -11,7 +11,7 @@ using namespace pregame;
 
 void NewWorldMenu::HandleConfigure() 
 {
-    sizeParameterValue = DEFAULT_WORLD_SIZE;
+    sizeParameterValue = 75;//DEFAULT_WORLD_SIZE;
 
     Phrase text = "Size: "; 
     text << sizeParameterValue;

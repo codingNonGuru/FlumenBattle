@@ -646,12 +646,5 @@ void Settlement::UpdatePolitics()
     if(pathData.Complexity > 12)
     {
         faction = polity->FindFaction(this);
-        /*independenceDrive++;
-
-        if(independenceDrive > 100)
-        {
-            independenceDrive = 0;
-            WorldScene::Get()->SplitPolity(this);
-        }*/
     }
 }

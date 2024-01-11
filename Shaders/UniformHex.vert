@@ -4,13 +4,16 @@
 
 layout (location = 0) uniform mat4 viewMatrix;
 
-layout (location = 1) uniform vec2 hexPosition;
-
 layout (location = 2) uniform float hexSize;
 
 layout (location = 4) uniform float depth;  
 
 // DATA BUFFERS
+
+layout (std430, binding = 0) buffer POSITIONS
+{
+	vec2 positions[];	
+};
 
 // TEXTURES
 
@@ -37,9 +40,10 @@ void main()
 		0, 6, 1
 	);
 	
-	uint vertexIndex = uint(indices[gl_VertexID]);
+	uint vertexIndex = uint(indices[gl_VertexID % 18]);
+	uint objectIndex = uint(gl_VertexID / 18);
 
-	vec2 position = vertices[vertexIndex] * hexSize + hexPosition;
+	vec2 position = vertices[vertexIndex] * hexSize + positions[objectIndex];
 
 	gl_Position = viewMatrix * vec4(position.x, position.y, depth, 1.0f);
 }

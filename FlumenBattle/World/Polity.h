@@ -97,6 +97,8 @@ namespace world::polity
 
         container::HexGrid <Interest> &GetInterestMap() {return interestMap;}
 
+        const Pool <Faction> &GetFactions() {return factions;}
+
         bool HasDiscoveredTechnology(science::Technologies) const;
     };
 }

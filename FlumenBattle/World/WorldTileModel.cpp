@@ -10,6 +10,7 @@
 #include "FlumenEngine/Interface/Sprite.hpp"
 #include "FlumenEngine/Core/Engine.hpp"
 #include "FlumenEngine/Render/TextureManager.hpp"
+#include "FlumenEngine/Render/DataBuffer.hpp"
 
 #include "FlumenBattle/World/WorldTileModel.h"
 #include "FlumenBattle/World/WorldScene.h"
@@ -166,10 +167,7 @@ void WorldTileModel::RenderTiles()
     {
         shader->SetConstant(tile->Position, "hexPosition");
 
-        shader->SetConstant(WORLD_TILE_SIZE, "hexSize");
-
         shader->SetConstant(tile->GetShade(), "color");
-        //shader->SetConstant(tile->Shade, "color");
 
         glDrawArrays(GL_TRIANGLES, 0, 18);
     }
@@ -319,7 +317,6 @@ void WorldTileModel::RenderPoliticalOverlay()
         shader->SetConstant(WORLD_TILE_SIZE, "hexSize");
 
         shader->SetConstant(tile->GetOwner()->GetRulerBanner(), "color");
-        //shader->SetConstant(tile->Shade, "color");
 
         glDrawArrays(GL_TRIANGLES, 0, 18);
     }
@@ -390,9 +387,13 @@ void WorldTileModel::RenderSettlements()
     shader->Unbind();
 }
 
+DataBuffer *positionBuffer = nullptr;
+
+DataBuffer *colorBuffer = nullptr;
+
 void WorldTileModel::RenderGlobalLight()
 {
-    shader->Bind();
+    /*shader->Bind();
 
     shader->SetConstant(camera->GetMatrix(), "viewMatrix");
 
@@ -409,22 +410,84 @@ void WorldTileModel::RenderGlobalLight()
         shader->SetConstant(WORLD_TILE_SIZE, "hexSize");
 
         shader->SetConstant(lightColor, "color");
-        //shader->SetConstant(tile->Shade, "color");
 
         glDrawArrays(GL_TRIANGLES, 0, 18);
     }
 
-    shader->Unbind();
+    shader->Unbind();*/
+    
+    auto map = worldScene->GetWorldMap();
+
+    auto hexShader = ShaderManager::GetShader("UniformHex");
+
+    hexShader->Bind();
+
+    hexShader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	hexShader->SetConstant(0.0f, "depth");
+
+    hexShader->SetConstant(0.8f, "opacity");
+
+    auto lightColor = GetGlobalLightColor();
+    hexShader->SetConstant(lightColor, "color");
+
+    hexShader->SetConstant(WORLD_TILE_SIZE, "hexSize");
+
+    positionBuffer->Bind(0);
+
+    glDrawArrays(GL_TRIANGLES, 0, 18 * map->GetTileCount());
+
+    hexShader->Unbind();
 }
 
 void WorldTileModel::RenderTilesAdvanced()
 {
+    auto map = worldScene->GetWorldMap();
 
+    auto newHexShader = ShaderManager::GetShader("BetterHex");
+
+    newHexShader->Bind();
+
+    newHexShader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	newHexShader->SetConstant(0.0f, "depth");
+
+    newHexShader->SetConstant(1.0f, "opacity");
+
+    newHexShader->SetConstant(WORLD_TILE_SIZE, "hexSize");
+
+    positionBuffer->Bind(0);
+
+    colorBuffer->Bind(1);
+
+    glDrawArrays(GL_TRIANGLES, 0, 18 * map->GetTileCount());
+
+    newHexShader->Unbind();
 }
 
 void WorldTileModel::Render() 
 {
-	RenderTiles();
+    auto map = worldScene->GetWorldMap();
+
+    if(positionBuffer == nullptr)
+    {
+        static auto positions = container::Array <Position2> (map->GetTileCount());
+
+        static auto colors = container::Array <Color> (map->GetTileCount());
+
+        for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
+        {
+            *positions.Add() = tile->Position;
+
+            *colors.Add() = tile->GetShade();
+        }
+
+        positionBuffer = new DataBuffer(positions.GetMemorySize(), positions.GetStart());
+
+        colorBuffer = new DataBuffer(colors.GetMemorySize(), colors.GetStart());
+    }
+
+    RenderTilesAdvanced();
 
     RenderPaths();
 

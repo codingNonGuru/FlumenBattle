@@ -82,7 +82,10 @@ namespace world
 
         AWAIT(time.GetStep())
 
-        Refresh();
+        for(int i = 0; i < 1; ++i)
+        {
+            Refresh();
+        }
     }
 
     static auto factionDecisions = container::Array <polity::FactionDecision> (64);
@@ -171,6 +174,17 @@ namespace world
 
         auto refreshPolities = [this]
         {
+            /*for(auto &polity : *polities)
+            {
+                std::cout<<&polity<<" "<<polity.GetRuler()->GetName()<<" "<<polity.GetSettlements().GetSize()<<"\n";
+                for(auto settlement : polity.GetSettlements())
+                {
+                    std::cout<<settlement->GetName()<<" ";
+                }
+                std::cout<<"\n-----\n";
+            }
+            std::cout<<"\n";*/
+
             factionDecisions.Reset();
             for(auto &polity : *polities)
             {
@@ -322,6 +336,22 @@ namespace world
     polity::Polity *WorldScene::SplitPolity(polity::Faction *faction)
     {
         auto polity = faction->GetPolity();
+
+        std::cout<<"Faction "<<faction->GetLeader()->GetName()<<" "<<faction->GetMembers().GetSize()<<"\n";
+        for(auto settlement : faction->GetMembers())
+        {
+            std::cout<<settlement->GetName()<<" ";
+        }
+        std::cout<<"\n-----\n";
+
+        std::cout<<polity<<" "<<polity->GetRuler()->GetName()<<" "<<polity->GetSettlements().GetSize()<<"\n";
+        std::cout<<"Faction count "<<polity->GetFactions().GetSize()<<"\n";
+        for(auto settlement : polity->GetSettlements())
+        {
+            std::cout<<settlement->GetName()<<" ";
+        }
+        std::cout<<"\n-----\n";
+
         polity->UndergoDivision(faction);
 
         auto newPolity = FoundPolity(faction->GetLeader());
@@ -333,7 +363,33 @@ namespace world
             newPolity->ExtendRealm(member);
         }
 
+        std::cout<<newPolity<<" "<<newPolity->GetRuler()->GetName()<<" "<<newPolity->GetSettlements().GetSize()<<"\n";
+        std::cout<<"Faction count "<<newPolity->GetFactions().GetSize()<<"\n";
+        for(auto settlement : newPolity->GetSettlements())
+        {
+            std::cout<<settlement->GetName()<<" ";
+        }
+        std::cout<<"\n-----\n";
+
+        std::cout<<polity<<" "<<polity->GetRuler()->GetName()<<" "<<polity->GetSettlements().GetSize()<<"\n";
+        std::cout<<"Faction count "<<polity->GetFactions().GetSize()<<"\n";
+        for(auto settlement : polity->GetSettlements())
+        {
+            std::cout<<settlement->GetName()<<" ";
+        }
+        std::cout<<"\n-----\n";
+
         polity::PolityAllocator::Get()->FreeFaction(polity, faction);
+
+        std::cout<<polity<<" "<<polity->GetRuler()->GetName()<<" "<<polity->GetSettlements().GetSize()<<"\n";
+        std::cout<<"Faction count "<<polity->GetFactions().GetSize()<<"\n";
+        for(auto settlement : polity->GetSettlements())
+        {
+            std::cout<<settlement->GetName()<<" ";
+        }
+        std::cout<<"\n-----\n";
+
+        std::cout<<"\n";
 
         return newPolity;
     }

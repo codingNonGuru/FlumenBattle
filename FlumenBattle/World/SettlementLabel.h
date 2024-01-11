@@ -67,6 +67,8 @@ namespace world::settlement
 
         void HandleUpdate() override;
 
+        void HandleEnable() override;
+
     public:
         void SetSettlement(Settlement *settlement) {this->settlement = settlement;}
     };
