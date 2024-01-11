@@ -17,6 +17,7 @@
 #include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 #include "FlumenBattle/World/Polity.h"
+#include "FlumenBattle/WorldInterface.h"
 
 using namespace world::settlement;
 
@@ -24,7 +25,7 @@ auto color = Color::RED * 0.5f;
 
 auto borderColor = Color::RED * 0.25f;
 
-void SettlementLabel::ResourceWidget::HandleConfigure()
+void HoverExtension::ResourceWidget::HandleConfigure()
 {
     Label = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {Position2(), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, this}},
@@ -35,7 +36,7 @@ void SettlementLabel::ResourceWidget::HandleConfigure()
     Label->Enable();
 }
 
-void SettlementLabel::ResourceWidget::HandleUpdate()
+void HoverExtension::ResourceWidget::HandleUpdate()
 {
     Phrase text;
     if(IsTrackingProduction == true)
@@ -65,12 +66,12 @@ void SettlementLabel::HandleConfigure()
     nameLabel->Enable();
 
     backdrop = ElementFactory::BuildElement <Element>(
-        {size_, drawOrder_ - 1, {Position2(0.0f, 0.0f), this}, {"Sprite"}, Opacity(0.5f)}
+        {size_, drawOrder_ - 1, {Position2(0.0f, 0.0f), this}, {"Sprite"}, Opacity(0.6f)}
     );
     backdrop->Enable();
 
     populationBackdrop = ElementFactory::BuildElement <Element>(
-        {Size(50, 50), drawOrder_ + 1, {Position2(-15.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}, {"Sprite"}, Opacity(0.5f)}
+        {Size(50, 50), drawOrder_ + 1, {Position2(-15.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}, {"Sprite"}, Opacity(0.6f)}
     );
     populationBackdrop->Enable();
 
@@ -86,22 +87,24 @@ void SettlementLabel::HandleConfigure()
     );
     populationLabel->SetAlignment(Text::Alignments::CENTER);
     populationLabel->Enable();
+}
 
-    hoverBackdrop = ElementFactory::BuildElement <Element>(
-        {Size(size_.x - 10, 280), drawOrder_, {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, this}, {"Sprite"}, Opacity(0.4f)}
-    );
-    hoverBackdrop->Disable();
+void HoverExtension::HandleConfigure() 
+{
+    this->settlement = nullptr;
 
-    hoverBorder = ElementFactory::BuildElement <Element>(
-        {hoverBackdrop->GetSize(), drawOrder_ + 1, {Position2(0.0f, 0.0f), hoverBackdrop}, {"panel-border-007", "SlicedSprite"}, Opacity(0.8f)}
+    //this->SetSpriteColor(borderColor);
+
+    border = ElementFactory::BuildElement <Element>(
+        {size_, drawOrder_ + 1, {Position2(0.0f, 0.0f), this}, {"panel-border-007", "SlicedSprite"}, Opacity(0.8f)}
     );
-    hoverBorder->SetSpriteColor(borderColor);
-    hoverBorder->Enable();
+    border->SetSpriteColor(borderColor);
+    border->Enable();
 
     auto basePosition = Position2(8.0f, 23.0f);
 
     growthLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, hoverBackdrop}},
+        {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
         {{"JSLAncient", "Small"}, color, "Growth "}
     );
     growthLabel->SetAlignment(Text::Alignments::LEFT);
@@ -116,7 +119,7 @@ void SettlementLabel::HandleConfigure()
     growthProgress->Enable();
 
     industryLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, hoverBackdrop}},
+        {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
         {{"JSLAncient", "Small"}, color, "Industry: 20"}
     );
     industryLabel->SetAlignment(Text::Alignments::LEFT);
@@ -125,7 +128,7 @@ void SettlementLabel::HandleConfigure()
     basePosition.y += 20.0f;
 
     tileLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, hoverBackdrop}},
+        {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
         {{"JSLAncient", "Small"}, color, "Tiles: 20"}
     );
     tileLabel->SetAlignment(Text::Alignments::LEFT);
@@ -134,7 +137,7 @@ void SettlementLabel::HandleConfigure()
     basePosition.y += 10.0f;
 
     storageLayout = ElementFactory::BuildElement <LayoutGroup>(
-        {Size(0, 0), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, hoverBackdrop}}
+        {Size(0, 0), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}}
     );
     storageLayout->Enable();
     storageLayout->SetDistancing(3, 30.0f, -5.0f);
@@ -164,13 +167,11 @@ void SettlementLabel::HandleConfigure()
         (*resource.Widget)->Parent = this;
         (*resource.Widget)->IsTrackingProduction = resource.IsTrackingProduction;
         (*resource.Widget)->Enable();
-
-        storageLayout->AddChild(*resource.Widget);
     }
     basePosition.y += 70.0f;
 
     productionLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, hoverBackdrop}},
+        {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
         {{"JSLAncient", "Small"}, color, "Industry: 20"}
     );
     productionLabel->SetAlignment(Text::Alignments::LEFT);
@@ -179,14 +180,14 @@ void SettlementLabel::HandleConfigure()
     basePosition.y += 20.0f;
 
     productionProgress = ElementFactory::BuildProgressBar <ProgressBar>(
-        {Size(192, 16), drawOrder_ + 1, {Position2(0.0f, basePosition.y), ElementAnchors::UPPER_CENTER, ElementPivots::MIDDLE_CENTER, hoverBackdrop}, {"Settings", "SlicedSprite"}},
+        {Size(192, 16), drawOrder_ + 1, {Position2(0.0f, basePosition.y), ElementAnchors::UPPER_CENTER, ElementPivots::MIDDLE_CENTER, this}, {"Settings", "SlicedSprite"}},
         {"SettingsBar", {20.0f, 8.0f}}
     );
     productionProgress->Enable();
     basePosition.y += 15.0f;
 
     pathLayout = ElementFactory::BuildElement <LayoutGroup>(
-        {Size(0, 0), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, hoverBackdrop}}
+        {Size(0, 0), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}}
     );
     pathLayout->Enable();
     pathLayout->SetDistancing(1, -3.0f);
@@ -201,25 +202,10 @@ void SettlementLabel::HandleConfigure()
         );
         label->SetAlignment(Text::Alignments::LEFT);
         label->AdjustSize();
-        pathLayout->AddChild(label);
         label->Disable();
 
         *pathLabels.Add() = label;
     }
-
-    healthLabel = ElementFactory::BuildText(
-        {Size(size_.x - 10, 150), drawOrder_ + 1, {Position2(0.0f, height + 120.0f), this}},
-        {{"JSLAncient", "Small"}, color, "Food: 20"}
-    );
-    healthLabel->SetAlignment(Text::Alignments::LEFT);
-    healthLabel->Disable();
-
-    groupLabel = ElementFactory::BuildText(
-        {Size(size_.x - 10, 150), drawOrder_ + 1, {Position2(0.0f, height + 140.0f), this}},
-        {{"JSLAncient", "Small"}, color, "Food: 20"}
-    );
-    groupLabel->SetAlignment(Text::Alignments::LEFT);
-    groupLabel->Disable();
 }
 
 void SettlementLabel::SetSettlement(Settlement *settlement)
@@ -243,11 +229,15 @@ void SettlementLabel::HandleUpdate()
 
     if(IsSettlementHovered() == true)
     {
-        hoverBackdrop->Enable();
+        auto extension = WorldInterface::Get()->GetHoverExtension();
+        extension->SetDynamicParent(this);
+        extension->SetSettlement(settlement);
+        extension->Enable();
     }
     else
     {
-        hoverBackdrop->Disable();
+        auto extension = WorldInterface::Get()->GetHoverExtension();
+        extension->Disable();
     }
 
     auto camera = RenderManager::GetCamera(Cameras::WORLD);
@@ -267,7 +257,14 @@ void SettlementLabel::HandleUpdate()
     text = "";
     text << settlement->GetPopulation();
     populationLabel->Setup(text);
+}
 
+void HoverExtension::HandleUpdate() 
+{
+    if(this->settlement == nullptr)
+        return;
+
+    Phrase text;
     text = "Growth ";
     //text << settlement->GetGrowth();
     growthLabel->Setup(text);
@@ -294,7 +291,7 @@ void SettlementLabel::HandleUpdate()
     productionProgress->SetProgress(progress);
 
     int i = 0;
-    for(auto &link : settlement->links)
+    for(auto &link : settlement->GetLinks())
     {
         auto label = pathLabels.Get(i);
         text = "";
@@ -308,7 +305,7 @@ void SettlementLabel::HandleUpdate()
     //auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathToSettlement(settlement, settlement->GetRuler());
     //std::cout<<pathData.Length<<" "<<pathData.Complexity<<"\n";
 
-    auto malaria = settlement->afflictions.Find(AfflictionTypes::MALARIA);
+    /*auto malaria = settlement->afflictions.Find(AfflictionTypes::MALARIA);
 
     text = "Malaria? ";
     text << (malaria != nullptr ? "Yes" : "No");
@@ -321,5 +318,5 @@ void SettlementLabel::HandleUpdate()
 
     text = "Groups   ";
     text << settlement->groupDynamics->patrolStrength << " / " << settlement->groupDynamics->banditStrength << " / " <<settlement->groupDynamics->merchantStrength;
-    groupLabel->Setup(text);
+    groupLabel->Setup(text);*/
 }

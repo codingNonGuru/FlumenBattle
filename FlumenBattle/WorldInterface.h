@@ -20,11 +20,14 @@ namespace world
     namespace settlement
     {
         class SettlementLabel;
+        class HoverExtension;
     }
     
     class WorldInterface : public core::Singleton <WorldInterface>
     {
         friend class WorldState;
+
+        friend class core::Singleton <WorldInterface>;
 
         Element *canvas;
 
@@ -44,6 +47,8 @@ namespace world
 
         Array <PathLabel *> pathLabels;
 
+        settlement::HoverExtension *hoverExtension;
+
         void Update();
 
         void HandlePlayerEncounter();
@@ -60,13 +65,15 @@ namespace world
 
         void HandleCharacterSelected();
 
-    public:
         WorldInterface();
 
+    public:
         void Initialize();
 
         void Enable();
 
         void Disable();    
+
+        settlement::HoverExtension *GetHoverExtension() {return hoverExtension;}
     };
 }

@@ -149,9 +149,9 @@ Color WorldTileModel::GetGlobalLightColor()
     return color;
 }
 
-void WorldTileModel::Render() 
+void WorldTileModel::RenderTiles()
 {
-	shader->Bind();
+    shader->Bind();
 
 	shader->SetConstant(camera->GetMatrix(), "viewMatrix");
 
@@ -175,7 +175,10 @@ void WorldTileModel::Render()
     }
 
     shader->Unbind();
+}
 
+void WorldTileModel::RenderPaths()
+{
     auto squareShader = ShaderManager::GetShader("Square");
     squareShader->Bind();
 
@@ -211,6 +214,21 @@ void WorldTileModel::Render()
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
+    squareShader->Unbind();
+}
+
+void WorldTileModel::RenderBorders()
+{
+    auto squareShader = ShaderManager::GetShader("Square");
+    squareShader->Bind();
+
+    squareShader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	squareShader->SetConstant(1.0f, "opacity");
+
+	squareShader->SetConstant(0.0f, "depth");
+
+    auto map = worldScene->GetWorldMap();
     for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
     {
         if(tile->IsOwned() == false)
@@ -278,7 +296,10 @@ void WorldTileModel::Render()
     }
 
 	squareShader->Unbind();
+}
 
+void WorldTileModel::RenderPoliticalOverlay()
+{
     shader->Bind();
 
     shader->SetConstant(camera->GetMatrix(), "viewMatrix");
@@ -287,7 +308,7 @@ void WorldTileModel::Render()
 
 	shader->SetConstant(0.0f, "depth");
 
-    map = worldScene->GetWorldMap();
+    auto map = worldScene->GetWorldMap();
     for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
     {
         if(tile->IsOwned() == false)
@@ -300,10 +321,24 @@ void WorldTileModel::Render()
         shader->SetConstant(tile->GetOwner()->GetRulerBanner(), "color");
         //shader->SetConstant(tile->Shade, "color");
 
-        //glDrawArrays(GL_TRIANGLES, 0, 18);
+        glDrawArrays(GL_TRIANGLES, 0, 18);
     }
 
-    /*auto polity = worldScene->polities.Get(0);
+    shader->Unbind();
+}
+
+void WorldTileModel::RenderInterestMap()
+{
+    shader->Bind();
+
+    shader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	shader->SetConstant(0.4f, "opacity");
+
+	shader->SetConstant(0.0f, "depth");
+
+    auto map = worldScene->GetWorldMap();
+    auto polity = worldScene->polities->Get(0);
     auto &interestTiles = polity->GetInterestMap().GetTiles();
     for(auto tile = interestTiles.GetStart(); tile != interestTiles.GetEnd(); ++tile)
     {
@@ -317,7 +352,18 @@ void WorldTileModel::Render()
         shader->SetConstant(tile->GetOwner()->GetBanner(), "color");
 
         glDrawArrays(GL_TRIANGLES, 0, 18);
-    }*/
+    }
+
+    shader->Unbind();
+}
+
+void WorldTileModel::RenderSettlements()
+{
+    shader->Bind();
+
+    shader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	shader->SetConstant(0.0f, "depth");
 
     shader->SetConstant(1.0f, "opacity");
 
@@ -341,8 +387,20 @@ void WorldTileModel::Render()
         glDrawArrays(GL_TRIANGLES, 0, 18);
     }
 
+    shader->Unbind();
+}
+
+void WorldTileModel::RenderGlobalLight()
+{
+    shader->Bind();
+
+    shader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	shader->SetConstant(0.0f, "depth");
+
     shader->SetConstant(0.8f, "opacity");
 
+    auto map = worldScene->GetWorldMap();
     auto lightColor = GetGlobalLightColor();
     for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
     {
@@ -357,10 +415,32 @@ void WorldTileModel::Render()
     }
 
     shader->Unbind();
+}
+
+void WorldTileModel::RenderTilesAdvanced()
+{
+
+}
+
+void WorldTileModel::Render() 
+{
+	RenderTiles();
+
+    RenderPaths();
+
+    RenderBorders();
+
+    //RenderPoliticalOverlay();
+
+    //RenderInterestMap();
+
+    RenderSettlements();
+
+    RenderGlobalLight();
 
     if(WorldController::Get()->ShouldDisplayResources() == true)
     {
-        map = worldScene->GetWorldMap();
+        auto map = worldScene->GetWorldMap();
         for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
         {
             if(tile->GetResource(settlement::ResourceTypes::METAL) == 0)
@@ -403,12 +483,4 @@ void WorldTileModel::Render()
             dotSprite->Draw(camera, {position, Scale2(0.15f, 0.15f), Opacity(1.0f), DrawOrder(-2)});
         }
     }
-
-    /*for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
-    {
-        if(tile->GetGroup() == nullptr)
-            continue;
-
-        groupSprite->Draw(camera, {tile->Position + Position2(0, -10), Scale2(30, 50), Opacity(1.0f), DrawOrder(-1)});
-    }*/
 }

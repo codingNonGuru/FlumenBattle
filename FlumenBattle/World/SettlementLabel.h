@@ -10,18 +10,19 @@ namespace world::settlement
 {
     class Settlement;
     enum class ResourceTypes;
+    class SettlementLabel;
 
-    class SettlementLabel : public Element
+    class HoverExtension : public Element
     {
         struct ResourceWidget : public Element
         {
-            friend class SettlementLabel;
+            friend class HoverExtension;
 
             //Element *Icon;
 
             Text *Label;
 
-            SettlementLabel *Parent;
+            HoverExtension *Parent;
 
             ResourceTypes Resource;
 
@@ -32,19 +33,7 @@ namespace world::settlement
             void HandleUpdate() override;
         };
 
-        Text *nameLabel;
-
-        Element *backdrop;
-
-        Text *populationLabel;
-
-        Element *populationBackdrop;
-
-        Element *populationBorder;
-
-        Element *hoverBackdrop;
-
-        Element *hoverBorder;
+        Element *border;
 
         Text *growthLabel;
 
@@ -73,6 +62,28 @@ namespace world::settlement
         container::Array <Text *> pathLabels;
 
         LayoutGroup *pathLayout;
+
+        void HandleConfigure() override;
+
+        void HandleUpdate() override;
+
+    public:
+        void SetSettlement(Settlement *settlement) {this->settlement = settlement;}
+    };
+
+    class SettlementLabel : public Element
+    {
+        Settlement *settlement;
+
+        Text *nameLabel;
+
+        Element *backdrop;
+
+        Text *populationLabel;
+
+        Element *populationBackdrop;
+
+        Element *populationBorder;
 
         void HandleConfigure() override;
 

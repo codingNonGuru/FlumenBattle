@@ -53,7 +53,7 @@ namespace world
         {
             switch(FlowSpeed)
             {
-                case 5: return 0.01f;
+                case 5: return 0.001f;
                 case 4: return 0.1f;
                 case 3: return 0.2f;
                 case 2: return 0.5f;

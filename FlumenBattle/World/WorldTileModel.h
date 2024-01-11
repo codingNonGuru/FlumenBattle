@@ -23,6 +23,22 @@ namespace world
 
         WorldTileModel();
 
+        void RenderTiles();
+
+        void RenderPaths();
+
+        void RenderBorders();
+
+        void RenderPoliticalOverlay();
+
+        void RenderInterestMap();
+
+        void RenderSettlements();
+
+        void RenderGlobalLight();
+
+        void RenderTilesAdvanced();
+
     public:
         void Initialize() override;
 

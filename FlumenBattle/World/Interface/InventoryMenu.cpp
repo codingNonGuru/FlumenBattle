@@ -151,8 +151,6 @@ void InventoryMenu::HandleConfigure()
         slot->Enable();
 
         *inventorySlots.Add() = slot;
-
-        slotLayout->AddChild(slot);
     }
 
     struct SlotData

@@ -1,4 +1,5 @@
 #include "FlumenCore/Observer.h"
+#include "FlumenCore/Time.hpp"
 
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Render/RenderManager.hpp"
@@ -59,7 +60,7 @@ WorldInterface::WorldInterface()
     );
     inventoryMenu->Disable();
 
-    settlementLabels.Initialize(256);
+    settlementLabels.Initialize(64);
     for(int i = 0; i < settlementLabels.GetCapacity(); i++)
     {
         auto settlementLabel = ElementFactory::BuildElement <settlement::SettlementLabel>(
@@ -69,7 +70,12 @@ WorldInterface::WorldInterface()
         *settlementLabels.Add() = settlementLabel;
     }
 
-    pathLabels.Initialize(1024);
+    hoverExtension = ElementFactory::BuildElement <settlement::HoverExtension>(
+        {Size(200, 280), DrawOrder(3), {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, nullptr}, {"Sprite"}, Opacity(0.6f)}
+    );
+    hoverExtension->Disable();
+
+    /*pathLabels.Initialize(1024);
     for(int i = 0; i < 1024; i++)
     {
         auto label = ElementFactory::BuildElement<PathLabel>(
@@ -77,7 +83,7 @@ WorldInterface::WorldInterface()
         );
         label->Disable();
         *pathLabels.Add() = label;
-    }
+    }*/
 }
 
 void WorldInterface::Initialize()
@@ -219,10 +225,10 @@ void WorldInterface::Update()
         }
     }
 
-    for(auto &label : pathLabels)
+    /*for(auto &label : pathLabels)
     {
         label->Disable();
-    }
+    }*/
 
     auto worldMap = WorldScene::Get()->GetWorldMap();
     auto polity = WorldScene::Get()->GetPolities().Get(0);
