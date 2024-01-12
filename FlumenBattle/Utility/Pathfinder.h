@@ -7,6 +7,7 @@
 #include "FlumenCore/Container/Graph.h"
 
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/WorldMap.h"
 #include "FlumenBattle/Types.hpp"
 
 namespace utility
@@ -24,6 +25,8 @@ namespace utility
     template <class TileType> requires CanBeTravelled <TileType>
     class Pathfinder : public core::Singleton <Pathfinder <TileType>>
     {
+        friend class core::Singleton <Pathfinder <TileType>>;
+
         struct TileData
         {
             TileType *Tile;
@@ -87,7 +90,13 @@ namespace utility
 
         SettlementGraph settlementPaths;
 
-    public:
+        struct TileNodeData : public core::hex::Tile
+        {
+            TileGraph::Node *Node;
+        };
+
+        container::HexGrid <TileNodeData> nodeMap;
+
         Pathfinder()
         {
             visitedTiles = Array <TileData>(1024);
@@ -96,8 +105,12 @@ namespace utility
 
             visitedSettlements = Array <SettlementData>(256);
             settlementPaths = SettlementGraph(4096);
+
+            auto map = world::WorldScene::Get()->GetWorldMap();
+            nodeMap.Initialize(map->GetSize(), map->GetSize());
         }
 
+    public:
         int GetPenalty(TileType *tile)
         {
             auto penalties = tile->GetTravelPenalty();
@@ -304,7 +317,17 @@ namespace utility
             visitedTiles.Reset();
             *visitedTiles.Add() = startTile;
 
+            auto middleNode = nodeMap.GetTile(middleTile->HexCoordinates);
+            auto &nearbyNodes = nodeMap.GetNearbyTiles(middleNode, range);
+            for(auto &node : nearbyNodes)
+            {
+                node->Node = nullptr;
+            }
+
             typename TileGraph::Node *championPath = tilePaths.StartGraph({startTile, 0});
+
+            auto startNode = nodeMap.GetTile(startTile->HexCoordinates);
+            startNode->Node = championPath;
 
             int searches = 0;
             while(true)
@@ -315,7 +338,6 @@ namespace utility
                 
                 for(auto &tile : visitedTiles)
                 {
-                    searches++;
                     if(tile.Tile->PathData.IsVisited == true)
                     {
                         auto &nearbyTiles = tile.Tile->GetNearbyTiles();
@@ -326,6 +348,7 @@ namespace utility
                                 auto &nodes = tilePaths.GetNodes();
                                 for(auto &node : nodes)
                                 {
+                                    searches++;
                                     if(node.Content.Tile->GetDistanceTo(**nearbyTile) == 1)
                                     {
                                         auto penalty = getPenalty(*nearbyTile) + getPenalty(node.Content.Tile);
@@ -352,6 +375,7 @@ namespace utility
                     break;
                 }
             }
+            std::cout<<"searches "<<searches<<"\n";
 
             auto complexity = championPath->Content.Distance;
             visitedTiles.Reset();

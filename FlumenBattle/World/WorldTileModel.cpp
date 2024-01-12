@@ -24,6 +24,7 @@
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Polity.h"
+#include "FlumenBattle/Utility/Pathfinder.h"
 
 #define WORLD_TILE_SIZE 34.6666f
 
@@ -536,7 +537,29 @@ void WorldTileModel::Render()
             );
     }
 
-    auto destination = worldScene->GetPlayerGroup()->GetDestination();
+    auto currentTile = worldScene->GetPlayerGroup()->GetTile();
+    hoveredTile = worldController->GetHoveredTile();
+    if(hoveredTile != nullptr && hoveredTile != currentTile && currentTile->GetDistanceTo(*hoveredTile) < 15)
+    {
+        auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(currentTile, hoveredTile, 15);
+
+        for(auto &tile : pathData.Tiles)
+        {
+            if(&tile == pathData.Tiles.GetEnd() - 1)
+                break;
+
+            auto nextTile = &tile + 1;
+
+            float factor = 0.0f;
+            for(int i = 0; i <= 10; i++, factor += 0.1f)
+            {
+                auto position = tile.Tile->Position * factor + nextTile->Tile->Position * (1.0f - factor);
+                dotSprite->Draw(camera, {position, Scale2(0.25f, 0.25f), Opacity(0.6f), DrawOrder(-2)});
+            }
+        }
+    }
+
+    /*auto destination = worldScene->GetPlayerGroup()->GetDestination();
     if(destination)
     {
         float factor = 0.0f;
@@ -545,5 +568,5 @@ void WorldTileModel::Render()
             auto position = destination->Position * factor + worldScene->GetPlayerGroup()->GetTile()->Position * (1.0f - factor);
             dotSprite->Draw(camera, {position, Scale2(0.15f, 0.15f), Opacity(1.0f), DrawOrder(-2)});
         }
-    }
+    }*/
 }
