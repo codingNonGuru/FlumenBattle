@@ -96,8 +96,16 @@ AfflictionResult AfflictionPerformer::PerformMalaria(Settlement &settlement, Aff
     if(affliction.Stage == affliction.Type->StageCount)
     {
         settlement.KillPopulation();
+        if(settlement.GetPopulation() > 7)
+        {
+            settlement.KillPopulation();
+            if(settlement.GetPopulation() > 20)
+            {
+                settlement.KillPopulation();
+            }
+        }
+
         result = AfflictionResultTypes::DEATH;
-        //std::cout<<"death! "<<settlement.GetName()<<"\n";
     }
 
     affliction.TimeLapsed++;

@@ -95,7 +95,7 @@ namespace world::settlement
 
         Integer growth;
 
-        Integer growthThreshold {1000};
+        Integer growthThreshold {5000};
 
         Integer cultureGrowth;
 
