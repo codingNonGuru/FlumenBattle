@@ -108,6 +108,12 @@ namespace utility
 
             auto map = world::WorldScene::Get()->GetWorldMap();
             nodeMap.Initialize(map->GetSize(), map->GetSize());
+
+            auto &worldTiles = map->GetTiles();
+            for(auto tile = worldTiles.GetStart(); tile != worldTiles.GetEnd(); ++tile)
+            {
+                nodeMap.GetTile(tile->HexCoordinates)->Coordinates = tile->HexCoordinates;
+            }
         }
 
     public:
@@ -309,6 +315,7 @@ namespace utility
             {
                 tile->PathData.IsVisited = false;
                 tile->PathData.IsToBeVisited = true;
+                tile->PathData.Node = nullptr;
             }
 
             startTile->PathData.IsVisited = true;
@@ -345,19 +352,25 @@ namespace utility
                         {
                             if((*nearbyTile)->PathData.IsVisited == false && (*nearbyTile)->PathData.IsToBeVisited == true)
                             {
-                                auto &nodes = tilePaths.GetNodes();
-                                for(auto &node : nodes)
+                                auto nearbyTileNode = nodeMap.GetTile((*nearbyTile)->HexCoordinates);
+                                auto &nearbyNodeMappings = nodeMap.GetNearbyTiles(nearbyTileNode, 1);
+                                //auto &nodes = tilePaths.GetNodes();
+                                //for(auto &node : nodes)
+                                for(auto &nearbyNodeMapping : nearbyNodeMappings)
                                 {
+                                    if(nearbyNodeMapping == nearbyTileNode)
+                                        continue;
+
+                                    if(nearbyNodeMapping->Node == nullptr)
+                                        continue;
+
                                     searches++;
-                                    if(node.Content.Tile->GetDistanceTo(**nearbyTile) == 1)
+                                    auto penalty = getPenalty(*nearbyTile) + getPenalty(nearbyNodeMapping->Node->Content.Tile);
+                                    if(nearbyNodeMapping->Node->Content.Distance + penalty < bestComplexity)
                                     {
-                                        auto penalty = getPenalty(*nearbyTile) + getPenalty(node.Content.Tile);
-                                        if(node.Content.Distance + penalty < bestComplexity)
-                                        {
-                                            bestComplexity = node.Content.Distance + penalty;
-                                            bestNode = &node;
-                                            bestTile = *nearbyTile;
-                                        }
+                                        bestComplexity = nearbyNodeMapping->Node->Content.Distance + penalty;
+                                        bestNode = nearbyNodeMapping->Node;
+                                        bestTile = *nearbyTile;
                                     }
                                 }
                             }
@@ -369,6 +382,7 @@ namespace utility
                 championPath = newNode;
                 bestTile->PathData.IsVisited = true;
                 *visitedTiles.Add() = bestTile;
+                nodeMap.GetTile(bestTile->HexCoordinates)->Node = newNode;
 
                 if(championPath->Content.Tile == endTile)
                 {

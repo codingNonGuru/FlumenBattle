@@ -67,6 +67,8 @@ namespace world
             bool IsToBeVisited = false;
 
             Integer Passes[2];
+
+            void *Node;
         } PathData;
 
         Position2 Position;

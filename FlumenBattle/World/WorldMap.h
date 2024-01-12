@@ -51,5 +51,7 @@ namespace world
         const int GetSize() const {return tiles.GetWidth();}
 
         const int GetTileCount() const {return tiles.GetWidth() * tiles.GetHeight();}
+
+        const Grid <WorldTile> &GetTiles() const {return tiles;}
     };
 }
