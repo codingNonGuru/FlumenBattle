@@ -53,6 +53,13 @@ namespace world::polity
             settlement::Settlement *GetOwner() const {return Owner;}
         };
 
+        struct FusionData
+        {
+            Faction *First {nullptr};
+
+            Faction *Second {nullptr};
+        };
+
         Pool <settlement::Settlement *> settlements;
 
         settlement::Settlement *ruler;
@@ -66,6 +73,10 @@ namespace world::polity
         container::HexGrid <Interest> interestMap;
 
         void MapInterest(settlement::Settlement *);
+
+        FusionData CheckFactionMergers();
+
+        void MergeFactions(FusionData);
 
     public:
         void Initialize(settlement::Settlement *);

@@ -273,8 +273,16 @@ container::Array <FactionDecision> &Polity::Update()
 
     technologyRoster->Update(*this);
 
-    
     decisions.Reset();
+
+    auto fusionData = CheckFactionMergers();
+    if(fusionData.First != nullptr)
+    {
+        MergeFactions(fusionData);
+
+        return decisions;
+    }
+
     for(auto &faction : factions)
     {
         if(faction.IsActive() == false)
@@ -289,4 +297,39 @@ container::Array <FactionDecision> &Polity::Update()
     }
 
     return decisions;
+}
+
+Polity::FusionData Polity::CheckFactionMergers()
+{
+    for(auto &faction : factions)
+    {
+        if(faction.IsActive() == false)
+            continue;
+
+        for(auto &member : faction.GetMembers())
+        {
+            for(auto link : member->GetLinks())
+            {
+                auto other = link.Path->GetOther(member);
+
+                if(other->GetFaction() != nullptr && other->GetFaction() != &faction && other->GetPolity() == this)
+                {
+                    return {&faction, other->GetFaction()};
+                }
+            }
+        }
+    }
+
+    return {};
+}
+
+void Polity::MergeFactions(Polity::FusionData fusionData)
+{
+    for(auto &member : fusionData.Second->GetMembers())
+    {
+        fusionData.First->AddMember(member);
+        member->SetFaction(fusionData.First);
+    }
+
+    PolityAllocator::Get()->FreeFaction(this, fusionData.Second);
 }

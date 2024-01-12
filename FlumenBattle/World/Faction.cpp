@@ -1,6 +1,7 @@
 #include "Faction.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/Utility/Utility.h"
+#include "FlumenBattle/World/Polity.h"
 
 using namespace world::polity;
 
@@ -26,7 +27,9 @@ FactionDecision Faction::Update()
         return {FactionDecisions::NONE};
     }
 
-    auto revoltCheck = utility::RollD20Dice(15);
+    auto bonus = members.GetSize() * 3 >= polity->GetSettlements().GetSize() ? 3 : 0;
+
+    auto revoltCheck = utility::RollD20Dice(15, bonus);
     if(revoltCheck.IsAnyFailure() == true)
     {
         independenceDrive = 0;

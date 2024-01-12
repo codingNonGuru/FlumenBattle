@@ -182,6 +182,8 @@ namespace world::settlement
 
         SettlementProduction *GetCurrentProduction() const {return currentProduction;}
 
+        polity::Faction *GetFaction() {return faction;}
+
         void SetPolity(polity::Polity *);
 
         void SetFaction(polity::Faction *newFaction) {faction = newFaction;}

@@ -25,7 +25,7 @@ namespace world::polity
     {
         FactionDecisions Decision;
 
-        Faction *Faction {nullptr};
+        polity::Faction *Faction {nullptr};
     };
 
     class Faction
