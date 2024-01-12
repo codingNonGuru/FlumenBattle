@@ -53,6 +53,8 @@ namespace utility
 
         bool IsCriticalSuccess() const {return Type == SuccessTypes::CRITICAL_SUCCESS;}
 
+        bool IsCriticalFailure() const {return Type == SuccessTypes::CRITICAL_FAILURE;}
+
         //bool operator ==(const Success &other) {return other.Type == Type;}
 
         bool operator ==(const SuccessTypes &other) const {return other == Type;}

@@ -8,6 +8,17 @@ namespace world::settlement
 {
     class Settlement;
 
+    struct ModifierResult
+    {
+        int Value;
+
+        bool IsValid {true};
+
+        bool operator==(bool isValid) const {return IsValid == isValid;}
+
+        operator int() const {return Value;}
+    };
+
     struct Modifier
     {
         Modifiers Type;
@@ -35,7 +46,7 @@ namespace world::settlement
 
         void ClearModifiers();
 
-        int GetAmount(Modifiers);
+        ModifierResult GetAmount(Modifiers);
     };
 
     class ModifierAllocator

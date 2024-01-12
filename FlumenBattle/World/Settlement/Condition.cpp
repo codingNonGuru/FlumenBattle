@@ -59,6 +59,11 @@ void ConditionFactory::OnApplySickened(Settlement &settlement)
     settlement.AddModifier({Modifiers::ALL_DICE_ROLLS, -1});
 }
 
+void ConditionFactory::OnApplyRepressed(Settlement &settlement)
+{
+    settlement.AddModifier({Modifiers::FACTION_JOIN_INTERDICTION, 1});
+}
+
 Condition ConditionFactory::Create(ConditionData conditionData)
 {
     auto &type = BuildType(conditionData.Type);
@@ -73,6 +78,8 @@ const ConditionType &ConditionFactory::BuildType(Conditions condition)
         return BuildMalariaImmunity();
     case Conditions::SICKENED:
         return BuildSickened();
+    case Conditions::REPRESSED:
+        return BuildRepressed();
     }
 }
 
@@ -85,5 +92,11 @@ const ConditionType &ConditionFactory::BuildMalariaImmunity()
 const ConditionType &ConditionFactory::BuildSickened()
 {
     static const ConditionType &type = {Conditions::SICKENED, &ConditionFactory::OnApplySickened};
+    return type;
+}
+
+const ConditionType &ConditionFactory::BuildRepressed()
+{
+    static const ConditionType &type = {Conditions::REPRESSED, &ConditionFactory::OnApplyRepressed};
     return type;
 }

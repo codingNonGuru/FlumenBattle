@@ -462,6 +462,8 @@ void Settlement::Update()
 
     auto updateModifiers = [this]
     {
+        conditionManager->Update();
+
         modifierManager.ClearModifiers();
 
         polity->ApplyTechnologyModifiers(this);
@@ -640,6 +642,10 @@ void Settlement::UpdatePolitics()
         return;
 
     if(faction != nullptr)
+        return;
+
+    auto modifier = modifierManager.GetAmount(Modifiers::FACTION_JOIN_INTERDICTION);
+    if(modifier.IsValid == true)
         return;
 
     auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathToSettlement(this, polity->GetRuler());

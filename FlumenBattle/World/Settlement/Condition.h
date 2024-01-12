@@ -89,11 +89,15 @@ namespace world::settlement
 
         static void OnApplySickened(Settlement &);
 
+        static void OnApplyRepressed(Settlement &);
+
         const ConditionType &BuildType(Conditions);
 
         const ConditionType &BuildMalariaImmunity();
 
         const ConditionType &BuildSickened();
+
+        const ConditionType &BuildRepressed();
 
     public:
         Condition Create(ConditionData);

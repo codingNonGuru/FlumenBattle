@@ -43,6 +43,8 @@ namespace world::settlement
 
         Text * tileLabel;
 
+        Text * factionLabel;
+
         Text * healthLabel;
 
         Text * groupLabel;

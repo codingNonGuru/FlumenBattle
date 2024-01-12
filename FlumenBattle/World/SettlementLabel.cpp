@@ -17,6 +17,7 @@
 #include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 #include "FlumenBattle/World/Polity.h"
+#include "FlumenBattle/World/Faction.h"
 #include "FlumenBattle/WorldInterface.h"
 
 using namespace world::settlement;
@@ -137,6 +138,14 @@ void HoverExtension::HandleConfigure()
     );
     tileLabel->SetAlignment(Text::Alignments::LEFT);
     tileLabel->Enable();
+    basePosition.y += 20.0f;
+
+    factionLabel = ElementFactory::BuildText(
+        {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
+        {{"JSLAncient", "Small"}, color, "Faction: 20"}
+    );
+    factionLabel->SetAlignment(Text::Alignments::LEFT);
+    factionLabel->Enable();
     basePosition.y += 10.0f;
 
     storageLayout = ElementFactory::BuildElement <LayoutGroup>(
@@ -279,6 +288,17 @@ void HoverExtension::HandleUpdate()
     text = "Tiles: ";
     text << settlement->GetWorkedTiles();
     tileLabel->Setup(text);
+
+    text = "Faction: ";
+    if(settlement->GetFaction() != nullptr)
+    {
+        text << settlement->GetFaction()->GetLeader()->GetName() << " (" << settlement->GetFaction()->GetMembers().GetSize() << ")";
+    }
+    else
+    {
+        text << "-";
+    }
+    factionLabel->Setup(text);
 
     text = "Building: ";
     text << settlement->GetCurrentProduction()->GetName();

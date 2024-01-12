@@ -12,17 +12,19 @@ void ModifierManager::ClearModifiers()
     modifiers.Reset();
 }
 
-int ModifierManager::GetAmount(Modifiers type)
+ModifierResult ModifierManager::GetAmount(Modifiers type)
 {
     auto amount = 0;
 
+    bool hasFound = false;
     for(auto modifier : modifiers)
     {
         if(modifier.Type == type)
         {
             amount += modifier.Amount;
+            hasFound = true;
         }
     }
 
-    return amount;
+    return {amount, hasFound};
 }

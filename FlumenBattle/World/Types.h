@@ -82,7 +82,8 @@ namespace world
         enum class Conditions
         {
             SICKENED,
-            IMMUNITY_AGAINST_MALARIA
+            IMMUNITY_AGAINST_MALARIA,
+            REPRESSED
         };
     }
 }

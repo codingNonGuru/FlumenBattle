@@ -35,7 +35,8 @@ namespace world::settlement
         SCIENCE_PRODUCTION,
         ALL_DICE_ROLLS,
         MALARIA_EMERGENCE_DIFFICULTY,
-        SAVING_THROWS_AGAINST_MALARIA
+        SAVING_THROWS_AGAINST_MALARIA,
+        FACTION_JOIN_INTERDICTION
     };
 
     enum class RoadTypes
