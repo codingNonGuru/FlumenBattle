@@ -13,6 +13,7 @@
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Settlement/Affliction.h"
+#include "FlumenBattle/World/Settlement/Condition.h"
 #include "FlumenBattle/World/Group/GroupDynamics.h"
 #include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
@@ -48,6 +49,30 @@ void HoverExtension::ResourceWidget::HandleUpdate()
         text << Parent->settlement->GetResource(Resource)->Storage;
     }
     Label->Setup(text);
+}
+
+void HoverExtension::ConditionWidget::HandleConfigure()
+{
+    Progress = ElementFactory::BuildProgressBar <ProgressBar>(
+        {Size(48, 16), drawOrder_ + 1, {Position2(0.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, this}, {"BaseBar", "SlicedSprite"}},
+        {"BaseFillerRed", {6.0f, 8.0f}}
+    );
+    Progress->Enable();
+}
+
+void HoverExtension::ConditionWidget::HandleUpdate()
+{
+    if(Condition->Type == nullptr)
+    {
+        Disable();
+        return;
+    }
+
+    Phrase text;
+    text << Condition->Type->Name;
+    Setup(text);
+
+    Progress->SetProgress((float)Condition->HoursElapsed / (float)Condition->Duration);
 }
 
 void HoverExtension::HandleEnable() 
@@ -98,6 +123,8 @@ void SettlementLabel::HandleConfigure()
     populationLabel->Enable();
 }
 
+static Text *separator;
+
 void HoverExtension::HandleConfigure() 
 {
     this->settlement = nullptr;
@@ -119,8 +146,8 @@ void HoverExtension::HandleConfigure()
     basePosition.y += 20.0f;
 
     growthProgress = ElementFactory::BuildProgressBar <ProgressBar>(
-        {Size(96, 16), drawOrder_ + 1, {Position2(), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, growthLabel}, {"Settings", "SlicedSprite"}},
-        {"SettingsBar", {20.0f, 8.0f}}
+        {Size(96, 16), drawOrder_ + 1, {Position2(), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, growthLabel}, {"BaseBar", "SlicedSprite"}},
+        {"BaseFillerRed", {6.0f, 8.0f}}
     );
     growthProgress->Enable();
 
@@ -149,7 +176,7 @@ void HoverExtension::HandleConfigure()
     basePosition.y += 10.0f;
 
     storageLayout = ElementFactory::BuildElement <LayoutGroup>(
-        {Size(0, 0), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}}
+        {Size(), drawOrder_, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}}
     );
     storageLayout->Enable();
     storageLayout->SetDistancing(3, 30.0f, -5.0f);
@@ -173,7 +200,7 @@ void HoverExtension::HandleConfigure()
     for(auto resource : resources)
     {
         *resource.Widget = ElementFactory::BuildElement <ResourceWidget>(
-            {Size(32, 32), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, storageLayout}, {resource.Texture, "Sprite"}, Opacity(1.0f)}
+            {Size(32, 32), drawOrder_ + 1, {Position2(), storageLayout}, {resource.Texture, "Sprite"}, Opacity(1.0f)}
         );
         (*resource.Widget)->Resource = resource.Type;
         (*resource.Widget)->Parent = this;
@@ -191,14 +218,14 @@ void HoverExtension::HandleConfigure()
     basePosition.y += 20.0f;
 
     productionProgress = ElementFactory::BuildProgressBar <ProgressBar>(
-        {Size(192, 16), drawOrder_ + 1, {Position2(0.0f, basePosition.y), ElementAnchors::UPPER_CENTER, ElementPivots::MIDDLE_CENTER, this}, {"Settings", "SlicedSprite"}},
-        {"SettingsBar", {20.0f, 8.0f}}
+        {Size(160, 16), drawOrder_ + 1, {Position2(0.0f, basePosition.y), ElementAnchors::UPPER_CENTER, ElementPivots::MIDDLE_CENTER, this}, {"BaseBar", "SlicedSprite"}},
+        {"BaseFillerRed", {6.0f, 8.0f}}
     );
     productionProgress->Enable();
     basePosition.y += 15.0f;
 
     pathLayout = ElementFactory::BuildElement <LayoutGroup>(
-        {Size(0, 0), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}}
+        {Size(10, 10), drawOrder_ + 1, {Position2(0.0f, 15.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, productionProgress}}
     );
     pathLayout->Enable();
     pathLayout->SetDistancing(1, -3.0f);
@@ -215,6 +242,34 @@ void HoverExtension::HandleConfigure()
         label->Disable();
 
         *pathLabels.Add() = label;
+    }
+
+    separator = ElementFactory::BuildText(
+        {Size(100, 100), drawOrder_ + 1, {Position2(), pathLayout}},
+        {{"JSLAncient", "VerySmall"}, color, "----------"}
+    );
+    separator->SetAlignment(Text::Alignments::LEFT);
+    separator->Enable();
+
+    conditionLayout = ElementFactory::BuildElement <LayoutGroup>(
+        {Size(100, 100), drawOrder_ + 1, {Position2(), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, nullptr}}
+    );
+    conditionLayout->SetDynamicParent(pathLayout);
+    conditionLayout->Enable();
+    conditionLayout->SetDistancing(1, 0.0f);
+    //basePosition.y += 20.0f;
+
+    conditionLabels.Initialize(8);
+    for(int i = 0; i < 8; ++i)
+    {
+        auto label = ElementFactory::BuildText <ConditionWidget>(
+            {Size(100, 100), drawOrder_ + 1, {Position2(), conditionLayout}},
+            {{"JSLAncient", "VerySmall"}, color, "Industry: 20"}
+        );
+        label->SetAlignment(Text::Alignments::LEFT);
+        label->Disable();
+
+        *conditionLabels.Add() = label;
     }
 }
 
@@ -322,6 +377,47 @@ void HoverExtension::HandleUpdate()
         (*label)->Enable();
         i++;
     }
+
+    for(auto &label : conditionLabels)
+    {
+        label->Condition = nullptr;
+        label->Disable();
+    }
+
+    auto label = conditionLabels.GetStart();
+    for(auto &condition : settlement->GetConditions())
+    {
+        (*label)->Condition = &condition;
+        (*label)->Enable();
+
+        label++;
+    }
+
+    /*for(auto &condition : settlement->GetConditions())
+    {
+        bool hasFound = false;
+        for(auto &label : conditionLabels)
+        {
+            if(label->Condition != nullptr && label->Condition == condition)
+            {
+                hasFound = true;
+                break;
+            }
+        }
+
+        if(hasFound == true)
+            continue;
+
+        for(auto &label : conditionLabels)
+        {
+            if(label->Condition == nullptr || label->Condition == nullptr)
+            {
+                label->Condition = &condition;
+                label->Enable();
+                break;
+            }
+        }
+    }*/
 
     //auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathToSettlement(settlement, settlement->GetRuler());
     //std::cout<<pathData.Length<<" "<<pathData.Complexity<<"\n";

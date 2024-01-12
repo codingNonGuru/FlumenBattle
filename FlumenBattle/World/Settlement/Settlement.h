@@ -41,6 +41,7 @@ namespace world::settlement
     struct ConditionData;
     class BuildingManager;
     class Path;
+    struct Condition;
 
     struct SettlementTile
     {
@@ -217,5 +218,7 @@ namespace world::settlement
         const Pool <Link> &GetLinks() {return links;}
 
         PathData &GetPathData() {return pathData;}
+
+        const Pool <Condition> &GetConditions() const;
     };
 }

@@ -415,6 +415,11 @@ int Settlement::GetModifier(Modifiers modifier) const
     return modifierManager.GetAmount(modifier);
 }
 
+const Pool <Condition> &Settlement::GetConditions() const
+{
+    return conditionManager->GetConditions();
+}
+
 void Settlement::SetPolity(polity::Polity *polity)
 {
     this->polity = polity;

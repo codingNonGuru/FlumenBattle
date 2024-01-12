@@ -8,7 +8,7 @@ using namespace world::settlement;
 
 void ConditionManager::AddCondition(ConditionData conditionData)
 {
-    auto result = conditionSet.Get().Find(conditionData.Type);
+    auto result = conditionSet.conditions.Find(conditionData.Type);
     if(result != nullptr)
     {
         result->Duration += conditionData.Duration;
@@ -19,13 +19,13 @@ void ConditionManager::AddCondition(ConditionData conditionData)
     }
     else
     {
-        *conditionSet.Get().Add() = ConditionFactory::Get()->Create(conditionData);
+        *conditionSet.conditions.Add() = ConditionFactory::Get()->Create(conditionData);
     }
 }
 
 void ConditionManager::ApplyModifiers(Settlement &settlement)
 {
-    for(auto &condition : conditionSet.Get())
+    for(auto &condition : conditionSet.conditions)
     {
         condition.Apply(settlement);
     }
@@ -34,7 +34,7 @@ void ConditionManager::ApplyModifiers(Settlement &settlement)
 void ConditionManager::Update()
 {
     auto &time = WorldScene::Get()->GetTime();
-    for(auto &condition : conditionSet.Get())
+    for(auto &condition : conditionSet.conditions)
     {
         if(time.MinuteCount == 0)
         {
@@ -42,6 +42,7 @@ void ConditionManager::Update()
 
             if(condition.HoursElapsed >= condition.Duration)
             {
+                condition.Type = nullptr;
                 conditionSet.Get().RemoveAt(&condition);
             }
         }
@@ -85,18 +86,18 @@ const ConditionType &ConditionFactory::BuildType(Conditions condition)
 
 const ConditionType &ConditionFactory::BuildMalariaImmunity()
 {
-    static const ConditionType &type = {Conditions::IMMUNITY_AGAINST_MALARIA, &ConditionFactory::OnApplyMalariaImmunity};
+    static const ConditionType &type = {Conditions::IMMUNITY_AGAINST_MALARIA, "Malaria immunity", &ConditionFactory::OnApplyMalariaImmunity};
     return type;
 }
 
 const ConditionType &ConditionFactory::BuildSickened()
 {
-    static const ConditionType &type = {Conditions::SICKENED, &ConditionFactory::OnApplySickened};
+    static const ConditionType &type = {Conditions::SICKENED, "Sickened", &ConditionFactory::OnApplySickened};
     return type;
 }
 
 const ConditionType &ConditionFactory::BuildRepressed()
 {
-    static const ConditionType &type = {Conditions::REPRESSED, &ConditionFactory::OnApplyRepressed};
+    static const ConditionType &type = {Conditions::REPRESSED, "Repressed", &ConditionFactory::OnApplyRepressed};
     return type;
 }

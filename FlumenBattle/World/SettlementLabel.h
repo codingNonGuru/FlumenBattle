@@ -1,6 +1,7 @@
 #pragma once
 
 #include "FlumenEngine/Interface/Element.hpp"
+#include "FlumenEngine/Interface/Text.hpp"
 
 class Text;
 class LayoutGroup;
@@ -11,6 +12,7 @@ namespace world::settlement
     class Settlement;
     enum class ResourceTypes;
     class SettlementLabel;
+    class Condition;
 
     class HoverExtension : public Element
     {
@@ -27,6 +29,25 @@ namespace world::settlement
             ResourceTypes Resource;
 
             bool IsTrackingProduction;
+
+            void HandleConfigure() override;
+
+            void HandleUpdate() override;
+        };
+
+        struct ConditionWidget : public Text
+        {
+            friend class HoverExtension;
+
+            using Text::Text;
+
+            ProgressBar *Progress;
+
+            HoverExtension *Parent;
+
+            Condition *Condition {nullptr};
+
+            //bool IsTrackingProduction;
 
             void HandleConfigure() override;
 
@@ -64,6 +85,10 @@ namespace world::settlement
         container::Array <Text *> pathLabels;
 
         LayoutGroup *pathLayout;
+
+        container::Array <ConditionWidget *> conditionLabels;
+
+        LayoutGroup *conditionLayout;
 
         void HandleConfigure() override;
 

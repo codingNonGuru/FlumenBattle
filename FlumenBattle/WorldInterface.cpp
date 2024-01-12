@@ -64,14 +64,14 @@ WorldInterface::WorldInterface()
     for(int i = 0; i < settlementLabels.GetCapacity(); i++)
     {
         auto settlementLabel = ElementFactory::BuildElement <settlement::SettlementLabel>(
-            {Size(210, 40), DrawOrder(3), {Position2(0.0f, 0.0f), canvas}, {"panel-border-005", "SlicedSprite"}, Opacity(0.8f)}
+            {Size(220, 40), DrawOrder(3), {Position2(0.0f, 0.0f), canvas}, {"panel-border-005", "SlicedSprite"}, Opacity(0.8f)}
         );
         settlementLabel->Disable();
         *settlementLabels.Add() = settlementLabel;
     }
 
     hoverExtension = ElementFactory::BuildElement <settlement::HoverExtension>(
-        {Size(200, 280), DrawOrder(3), {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, nullptr}, {"Sprite"}, Opacity(0.6f)}
+        {Size(210, 320), DrawOrder(3), {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, nullptr}, {"Sprite"}, Opacity(0.6f)}
     );
     hoverExtension->Disable();
 

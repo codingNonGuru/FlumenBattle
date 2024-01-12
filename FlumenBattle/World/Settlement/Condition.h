@@ -2,6 +2,7 @@
 
 #include "FlumenCore/Container/Pool.hpp"
 #include "FlumenCore/Container/PoolAllocator.h"
+#include "FlumenCore/Conventions.hpp"
 
 #include "FlumenCore/Singleton.h"
 
@@ -24,12 +25,14 @@ namespace world::settlement
     {
         Conditions Type;
 
+        Word Name;
+
         void (*OnApply) (Settlement &);
     };
 
     struct Condition
     {
-        const ConditionType *Type;
+        const ConditionType *Type {nullptr};
 
         int Strength;
 
@@ -55,7 +58,7 @@ namespace world::settlement
 
         ConditionSet& operator=(const ConditionSet &) = delete;
 
-        container::Pool <Condition> &Get() {return &conditions;}
+        const container::Pool <Condition> &Get() const {return &conditions;}
     };
 
     class ConditionManager
@@ -71,6 +74,8 @@ namespace world::settlement
         void ApplyModifiers(Settlement &);
 
         void Update();
+
+        const Pool <Condition> &GetConditions() const {return conditionSet.Get();}
     };
 
     class ConditionAllocator
