@@ -53,9 +53,6 @@ namespace world
 
     void WorldScene::Initialize()
     {
-        playerGroup = group::GroupFactory::Create({group::GroupTypes::PLAYER, RaceTypes::HUMAN});
-        playerGroup->SetTile(worldMap->GetCenterTile());
-
         time = WorldTime(230, 63, 14);
 
         battle::BattleScene::Get()->OnRoundEnded += {this, &WorldScene::HandleBattleRoundEnded};

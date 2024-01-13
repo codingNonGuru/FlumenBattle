@@ -15,6 +15,11 @@ namespace battle
     struct BattleTile;
 }
 
+namespace world::settlement
+{
+    class Settlement;
+}
+
 namespace world::group
 {
     class Group;
@@ -24,6 +29,8 @@ namespace world::group
         GroupTypes Type;
 
         RaceTypes Race;
+
+        settlement::Settlement *Home;
     };
 
     class GroupFactory

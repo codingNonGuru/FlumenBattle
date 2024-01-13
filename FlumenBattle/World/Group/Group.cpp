@@ -44,6 +44,7 @@ namespace world::group
         action = nullptr;
         encounter = nullptr;
         tile = nullptr;
+        home = nullptr;
 
         for(int i = 0; i < size; ++i)
         {
@@ -245,14 +246,16 @@ namespace world::group
 
     void Group::SetTile(WorldTile *tile)
     {
-        if(this->tile != nullptr)
+        this->tile = tile;
+
+        /*if(this->tile != nullptr)
         {
             this->tile->group = nullptr;
         }
 
         this->tile = tile;
 
-        this->tile->group = this;
+        this->tile->group = this;*/
     }
 
     float Group::GetActionProgress() const

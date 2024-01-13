@@ -339,7 +339,10 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
     auto battles = group::GroupAllocator::Get()->GetBattles();
     scene.battles = battles;
 
-    group::GroupFactory::Create({group::GroupTypes::COMPUTER, RaceTypes::ORC})->SetTile(worldMap->GetEmptyRandomTile());
+    scene.playerGroup = group::GroupFactory::Create({group::GroupTypes::PLAYER, RaceTypes::HUMAN, scene.settlements->GetRandom()});
+
+    auto randomSettlement = scene.settlements->GetRandom();
+    auto testGroup = group::GroupFactory::Create({group::GroupTypes::COMPUTER, RaceTypes::ORC, randomSettlement});
 }
 
 int WorldGenerator::GetMaximumPolityCount(int worldSize) const

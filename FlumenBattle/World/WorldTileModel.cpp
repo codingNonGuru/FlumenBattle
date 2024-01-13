@@ -535,6 +535,12 @@ void WorldTileModel::Render()
             camera, 
             {position, Scale2(18, 30), Opacity(1.0f), DrawOrder(-1)}
             );
+
+        for(int i = 0; i < group.travelActionData.PlannedDestinationCount; ++i)
+        {
+            auto tile = group.travelActionData.Route[i];
+            dotSprite->Draw(camera, {tile->Position, Scale2(0.75f, 0.75f), Opacity(0.6f), DrawOrder(-2)});
+        }
     }
 
     auto currentTile = worldScene->GetPlayerGroup()->GetTile();
@@ -558,6 +564,17 @@ void WorldTileModel::Render()
             }
         }
     }
+
+    /*auto group = [&] ()
+    {
+        while(true)
+        {
+            auto randomGroup = worldScene->GetGroups()->GetRandom();
+            if(randomGroup != worldScene->GetPlayerGroup())
+                return randomGroup;
+        }
+    } ();*/
+
 
     /*auto destination = worldScene->GetPlayerGroup()->GetDestination();
     if(destination)

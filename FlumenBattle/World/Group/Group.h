@@ -20,11 +20,17 @@ namespace world
     class WorldScene;
     class WorldTile;
     class WorldDecisionMenu;
+    class WorldTileModel;
 
     namespace character
     {
         class Character;
         class Item;
+    }
+
+    namespace settlement
+    {
+        class Settlement;
     }
 }
 
@@ -37,6 +43,7 @@ namespace world::group
     class GroupActionPerformer;
     class GroupActionValidator;
     class Encounter;
+    class MachineMind;
 
     class Group
     {
@@ -58,6 +65,10 @@ namespace world::group
 
         friend class GroupAllocator;
 
+        friend class MachineMind;
+
+        friend class world::WorldTileModel;
+
         Word name;
 
         const GroupType *type;
@@ -78,6 +89,12 @@ namespace world::group
 
             bool IsLost {false};
 
+            WorldTile *Route[8];
+
+            bool IsOnRoute {false};
+
+            int PlannedDestinationCount {0};
+
             ActionIntensities Intensity {ActionIntensities::NORMAL};
         } travelActionData;
 
@@ -94,6 +111,8 @@ namespace world::group
         bool hasAttemptedPersuasion;
 
         WorldTile *tile;
+
+        settlement::Settlement *home;
 
         Color color;
 
@@ -155,6 +174,8 @@ namespace world::group
         WorldTile *GetDestination() const {return travelActionData.Destination;}
 
         void SetTile(WorldTile *tile);
+
+        void SetHome(settlement::Settlement *newHome) {home = newHome;}
 
         float GetActionProgress() const;
 

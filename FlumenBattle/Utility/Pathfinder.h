@@ -143,6 +143,8 @@ namespace utility
 
         const Array <TileData> &MapArea(TileType *centerTile, Integer range = 7)
         {
+            auto start = high_resolution_clock::now();
+
             auto &tiles = centerTile->GetNearbyTiles(range);
             for(auto &tile : tiles)
             {
@@ -191,6 +193,80 @@ namespace utility
                     break;
                 }
             }
+
+            auto stop = high_resolution_clock::now();
+            auto duration = duration_cast<microseconds>(stop - start);
+            std::cout <<"map area duration " << duration.count() << "\n";
+
+            return visitedTiles;
+        }
+
+        const Array <TileData> &MapAreaImproved(TileType *centerTile, Integer range = 7)
+        {
+            auto start = high_resolution_clock::now();
+
+            auto &tiles = centerTile->GetNearbyTiles(range);
+            for(auto &tile : tiles)
+            {
+                tile->PathData.IsVisited = false;
+                tile->PathData.IsToBeVisited = true;
+            }
+
+            centerTile->PathData.IsVisited = true;
+            centerTile->PathData.IsToBeVisited = true;
+
+            visitedTiles.Reset();
+            *visitedTiles.Add() = {centerTile, 0};
+
+            int searches = 0;
+            TileData championTile = {centerTile, 0};
+            while(true)
+            {
+                auto bestComplexity = INT_MAX;
+                TileData bestTile = {nullptr, 0};
+                
+                for(auto &tile : visitedTiles)
+                {
+                    searches++;
+                    if(tile.Tile->PathData.IsVisited == false)
+                        continue;
+
+                    auto &nearbyTiles = tile.Tile->GetNearbyTiles();
+                    for(auto nearbyTile = nearbyTiles.GetStart(); nearbyTile != nearbyTiles.GetEnd(); ++nearbyTile)
+                    {
+                        if((*nearbyTile)->PathData.IsVisited == false && (*nearbyTile)->PathData.IsToBeVisited == true)
+                        {
+                            auto penalty = GetPenalty(*nearbyTile);
+                            if(tile.Distance + penalty < bestComplexity)
+                            {
+                                bestComplexity = tile.Distance + penalty;
+                                bestTile.Tile = *nearbyTile;
+
+                                if(penalty == 1 && championTile.Distance + 1 == bestComplexity)
+                                {
+                                    goto hasFoundShortcut;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                hasFoundShortcut:
+
+                bestTile.Tile->PathData.IsVisited = true;
+                *visitedTiles.Add() = {bestTile.Tile, bestComplexity};
+
+                championTile = {bestTile.Tile, bestComplexity};
+
+                if(tiles.GetSize() == visitedTiles.GetSize())
+                {
+                    break;
+                }
+            }
+
+            auto stop = high_resolution_clock::now();
+            auto duration = duration_cast<microseconds>(stop - start);
+            std::cout <<"map area duration " << duration.count() << "\n";
 
             return visitedTiles;
         }
@@ -415,7 +491,7 @@ namespace utility
             //std::cout<<"length "<<startTile->GetDistanceTo(*endTile)<<"\n";
             auto stop = high_resolution_clock::now();
             auto duration = duration_cast<microseconds>(stop - start);
-            std::cout <<"duration " << duration.count() << "\n\n";
+            std::cout <<"duration " << duration.count() << "\n";
 
             auto complexity = championPath->Content.Distance;
             visitedTiles.Reset();
@@ -555,7 +631,7 @@ namespace utility
             //std::cout<<"length "<<startTile->GetDistanceTo(*endTile)<<"\n";
             auto stop = high_resolution_clock::now();
             auto duration = duration_cast<microseconds>(stop - start);
-            std::cout <<"duration " << duration.count() << "\n\n";
+            //std::cout <<"duration " << duration.count() << "\n";
 
             auto complexity = championPath->Content.Distance;
             visitedTiles.Reset();

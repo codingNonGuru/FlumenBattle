@@ -24,3 +24,31 @@ void Path::AddTile(WorldTile *tile)
 
     tile->AddLink(previousTile, segment);
 }
+
+const container::SmartBlock <world::WorldTile *, 16> Path::GetTilesTo(Settlement *settlement) const
+{
+    container::SmartBlock <world::WorldTile *, 16> tiles;
+
+    bool isForward = true;
+
+    auto firstTile = *Tiles.Get(0);
+    if(firstTile->GetSettlement() == settlement)
+    {
+        isForward = false;
+    }
+
+    auto i = isForward ? 0 : Tiles.GetSize() - 1;
+    while(true)
+    {
+        *tiles.Add() = *Tiles.Get(i);
+
+        i += isForward ? 1 : -1;
+        bool willBreak = isForward ? i == Tiles.GetSize() : i == -1;
+        if(willBreak)
+        {
+            break;
+        }
+    }
+
+    return tiles;
+}

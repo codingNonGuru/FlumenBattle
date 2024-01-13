@@ -6,6 +6,7 @@
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/GroupType.h"
 #include "FlumenBattle/World/GroupAllocator.h"
+#include "FlumenBattle/World/Settlement/Settlement.h"
 
 Array <Color> colors = {Color::RED, Color::GREEN, Color::CYAN, Color::RED * 0.5f, Color::GREEN * 0.5f, Color::GREEN, Color::BLUE};
 
@@ -38,6 +39,10 @@ namespace world::group
         auto color = GetColor();
 
         group->Initialize(*names.Get(nameIndex), type, size, color, buildData.Race);
+
+        group->SetHome(buildData.Home);
+
+        group->SetTile(buildData.Home->GetLocation());
 
         nameIndex++;
 

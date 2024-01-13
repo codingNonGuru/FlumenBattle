@@ -320,6 +320,18 @@ namespace world::group
         group.SetTile(group.travelActionData.Destination);
         group.travelActionData.Destination = nullptr;
         group.travelActionData.Source = nullptr;
+        group.travelActionData.PlannedDestinationCount--;
+        if(group.travelActionData.PlannedDestinationCount == 0)
+        {
+            group.travelActionData.IsOnRoute = false;
+        }
+        else
+        {
+            for(int i = 0; i < group.travelActionData.PlannedDestinationCount; ++i)
+            {
+                group.travelActionData.Route[i] = group.travelActionData.Route[i + 1];
+            }
+        }
 
         group.CancelAction();
     }
