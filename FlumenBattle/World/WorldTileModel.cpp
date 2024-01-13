@@ -539,7 +539,7 @@ void WorldTileModel::Render()
 
     auto currentTile = worldScene->GetPlayerGroup()->GetTile();
     hoveredTile = worldController->GetHoveredTile();
-    if(hoveredTile != nullptr && hoveredTile != currentTile && currentTile->GetDistanceTo(*hoveredTile) < 7)
+    if(hoveredTile != nullptr && hoveredTile != currentTile && currentTile->GetDistanceTo(*hoveredTile) < 8)
     {
         auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(currentTile, hoveredTile, 5);
 

@@ -302,7 +302,7 @@ namespace world
 
     settlement::Settlement * WorldScene::ForgePath(settlement::Settlement *from, settlement::Settlement *to, int complexityLimit = INT_MAX)
     {
-        auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(from->GetLocation(), to->GetLocation());
+        auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(from->GetLocation(), to->GetLocation(), MAXIMUM_COLONIZATION_RANGE - 2);
         
         if(pathData.Complexity > complexityLimit)
             return;

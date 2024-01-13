@@ -42,6 +42,8 @@ void Polity::ExtendRealm(settlement::Settlement *domain)
     MapInterest(domain);
 }
 
+static auto neighboursToRemoved = container::Array <world::settlement::Settlement *> (256);
+
 void Polity::RemoveSettlement(settlement::Settlement *settlement)
 {
     this->settlements.Remove(settlement);
@@ -63,17 +65,37 @@ void Polity::RemoveSettlement(settlement::Settlement *settlement)
         if(other->GetPolity() != this)
             continue;
 
-        MapInterest(other);
+        bool hasFound = false;
+        for(auto &neighbour : neighboursToRemoved)
+        {
+            if(neighbour == other)
+            {
+                hasFound = true;
+                break;
+            }
+        }
+
+        if(hasFound == false)
+        {
+            *neighboursToRemoved.Add() = other;
+        }
     }
 }
 
 void Polity::UndergoDivision(Faction *faction)
 {
+    neighboursToRemoved.Reset();
+
     for(auto &member : faction->GetMembers())
     {
         RemoveSettlement(member);
 
         member->SetFaction(nullptr);
+    }
+
+    for(auto &neighbour : neighboursToRemoved)
+    {
+        MapInterest(neighbour);
     }
 }
 

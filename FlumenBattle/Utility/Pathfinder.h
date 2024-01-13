@@ -285,6 +285,152 @@ namespace utility
             }
         }
 
+        PathData FindPathDjikstraNew(TileType *startTile, TileType *endTile, Integer range = 7)
+        {
+            auto getPenalty = [] (TileType *tile)
+            {
+                auto penalties = tile->GetTravelPenalty();
+                if(penalties.Penalties.Find(TravelPenaltyTypes::SEA) != nullptr)
+                {
+                    return 10;
+                }
+                else if(penalties.Penalties.Find(TravelPenaltyTypes::MOUNTAINS) != nullptr)
+                {
+                    return 5;
+                }
+                else if(penalties.Penalties.Find(TravelPenaltyTypes::WOODS) != nullptr)
+                {
+                    return 3;
+                }
+                else
+                {
+                    return 1;
+                }
+            };
+
+            auto start = high_resolution_clock::now();
+
+            tilePaths.Clear();
+
+            auto coordinates = (startTile->SquareCoordinates + endTile->SquareCoordinates) / 2;
+            auto middleTile = world::WorldScene::Get()->GetTiles().Get(coordinates.x, coordinates.y);
+
+            auto &tiles = middleTile->GetNearbyTiles(range);
+            for(auto &tile : tiles)
+            {
+                tile->PathData.IsVisited = false;
+                tile->PathData.IsToBeVisited = true;
+                tile->PathData.Node = nullptr;
+            }
+
+            startTile->PathData.IsVisited = true;
+            startTile->PathData.IsToBeVisited = true;
+
+            visitedTiles.Reset();
+            *visitedTiles.Add() = startTile;
+
+            auto middleNode = nodeMap.GetTile(middleTile->HexCoordinates);
+            auto &nearbyNodes = nodeMap.GetNearbyTiles(middleNode, range + 1);
+            for(auto &node : nearbyNodes)
+            {
+                node->Node = nullptr;
+            }
+
+            typename TileGraph::Node *championPath = tilePaths.StartGraph({startTile, 0});
+
+            auto startNode = nodeMap.GetTile(startTile->HexCoordinates);
+            startNode->Node = championPath;
+            //startTile->PathData.Node = (void *)championPath;
+
+            int searches = 0;
+            while(true)
+            {
+                auto bestComplexity = INT_MAX;
+                typename TileGraph::Node *bestNode = nullptr;
+                TileType *bestTile = nullptr;
+
+                auto aloha = startTile->GetNearbyTiles();
+                
+                for(auto &tile : visitedTiles)
+                {
+                    if(tile.Tile->PathData.IsVisited == true)
+                    {
+                        auto &nearbyTiles = tile.Tile->GetNearbyTiles();
+                        aloha = nearbyTiles;
+                        for(auto nearbyTile = nearbyTiles.GetStart(); nearbyTile != nearbyTiles.GetEnd(); ++nearbyTile)
+                        {
+                            if((*nearbyTile)->PathData.IsVisited == false && (*nearbyTile)->PathData.IsToBeVisited == true)
+                            {                                
+                                auto nearbyTileNode = nodeMap.GetTile((*nearbyTile)->HexCoordinates);
+                                auto &nearbyNodeMappings = nodeMap.GetNearbyTiles(nearbyTileNode, 1);
+                                for(auto &nearbyNodeMapping : nearbyNodeMappings)
+                                {
+                                    if(nearbyNodeMapping == nearbyTileNode)
+                                        continue;
+
+                                    if(nearbyNodeMapping->Node == nullptr)
+                                        continue;
+
+                                    if(nearbyNodeMapping->Node->Content.Tile->PathData.IsToBeVisited == false)
+                                        continue;
+
+                                    //if(nearbyNodeMapping->Node->Content.Tile->PathData.IsVisited == false)
+                                        //continue;
+
+                                    searches++;
+                                    auto penalty = getPenalty(*nearbyTile) + getPenalty(nearbyNodeMapping->Node->Content.Tile);
+
+                                    if(nearbyNodeMapping->Node->Content.Distance + penalty < bestComplexity)
+                                    {
+                                        bestComplexity = nearbyNodeMapping->Node->Content.Distance + penalty;
+                                        bestNode = nearbyNodeMapping->Node;
+                                        bestTile = *nearbyTile;
+
+                                        if(penalty == 2 && bestComplexity == championPath->Content.Distance + 2)
+                                        {
+                                            goto hasFoundShortcut;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                hasFoundShortcut:
+
+                auto newNode = bestNode->AddNode({bestTile, bestComplexity});
+                championPath = newNode;
+                bestTile->PathData.IsVisited = true;
+                *visitedTiles.Add() = bestTile;
+                nodeMap.GetTile(bestTile->HexCoordinates)->Node = newNode;
+                //bestTile->PathData.Node = newNode;
+
+                if(championPath->Content.Tile == endTile)
+                {
+                    break;
+                }
+            }
+            //std::cout<<"searches "<<searches<<"\n";
+            //std::cout<<"length "<<startTile->GetDistanceTo(*endTile)<<"\n";
+            auto stop = high_resolution_clock::now();
+            auto duration = duration_cast<microseconds>(stop - start);
+            std::cout <<"duration " << duration.count() << "\n\n";
+
+            auto complexity = championPath->Content.Distance;
+            visitedTiles.Reset();
+            while(true)
+            {
+                *visitedTiles.Add() = championPath->Content.Tile;
+
+                championPath = championPath->GetPrevious();
+                if(championPath == nullptr)
+                {
+                    return {visitedTiles, complexity / 2, visitedTiles.GetSize()};
+                }
+            }
+        }
+
         PathData FindPathDjikstra(TileType *startTile, TileType *endTile, Integer range = 7)
         {
             auto getPenalty = [] (TileType *tile)
@@ -361,31 +507,9 @@ namespace utility
                         for(auto nearbyTile = nearbyTiles.GetStart(); nearbyTile != nearbyTiles.GetEnd(); ++nearbyTile)
                         {
                             if((*nearbyTile)->PathData.IsVisited == false && (*nearbyTile)->PathData.IsToBeVisited == true)
-                            {
-                                /*auto neighbours = (*nearbyTile)->GetNearbyTiles();
-                                for(auto &neighbour : neighbours)
-                                {
-                                    if(neighbour->PathData.Node == nullptr)
-                                        continue;
-
-                                    if(neighbour->PathData.IsToBeVisited == false)
-                                        continue;
-
-                                    searches++;
-                                    auto node = (typename TileGraph::Node *)neighbour->PathData.Node;
-                                    auto penalty = getPenalty(*nearbyTile) + getPenalty(node->Content.Tile);
-                                    if(node->Content.Distance + penalty < bestComplexity)
-                                    {
-                                        bestComplexity = node->Content.Distance + penalty;
-                                        bestNode = node;
-                                        bestTile = *nearbyTile;
-                                    }
-                                }*/
-                                
+                            {                               
                                 auto nearbyTileNode = nodeMap.GetTile((*nearbyTile)->HexCoordinates);
                                 auto &nearbyNodeMappings = nodeMap.GetNearbyTiles(nearbyTileNode, 1);
-                                //auto &nodes = tilePaths.GetNodes();
-                                //for(auto &node : nodes)
                                 for(auto &nearbyNodeMapping : nearbyNodeMappings)
                                 {
                                     if(nearbyNodeMapping == nearbyTileNode)
@@ -414,14 +538,6 @@ namespace utility
                     }
                 }
 
-                /*auto distance = bestTile->GetDistanceTo(*bestNode->Content.Tile);
-                auto distance2 = bestTile->GetDistanceTo(*middleTile);
-                auto distance3 = bestTile->GetDistanceTo(*startTile);
-                auto distance4 = startTile->GetDistanceTo(*middleTile);
-                auto distance5 = middleTile->GetDistanceTo(*bestNode->Content.Tile);
-                auto distance6 = startTile->GetDistanceTo(*bestNode->Content.Tile);
-                auto distance7 = startTile->GetDistanceTo(*endTile);*/
-
                 auto newNode = bestNode->AddNode({bestTile, bestComplexity});
                 championPath = newNode;
                 bestTile->PathData.IsVisited = true;
@@ -434,10 +550,123 @@ namespace utility
                     break;
                 }
             }
-            std::cout<<"searches "<<searches<<"\n";
-            std::cout<<"length "<<startTile->GetDistanceTo(*endTile)<<"\n";
+
+            //std::cout<<"searches "<<searches<<"\n";
+            //std::cout<<"length "<<startTile->GetDistanceTo(*endTile)<<"\n";
             auto stop = high_resolution_clock::now();
-            auto duration = duration_cast<milliseconds>(stop - start);
+            auto duration = duration_cast<microseconds>(stop - start);
+            std::cout <<"duration " << duration.count() << "\n\n";
+
+            auto complexity = championPath->Content.Distance;
+            visitedTiles.Reset();
+            while(true)
+            {
+                *visitedTiles.Add() = championPath->Content.Tile;
+
+                championPath = championPath->GetPrevious();
+                if(championPath == nullptr)
+                {
+                    return {visitedTiles, complexity / 2, visitedTiles.GetSize()};
+                }
+            }
+        }
+    
+        PathData FindPathDjikstraOld(TileType *startTile, TileType *endTile, Integer range = 7)
+        {
+            auto getPenalty = [] (TileType *tile)
+            {
+                auto penalties = tile->GetTravelPenalty();
+                if(penalties.Penalties.Find(TravelPenaltyTypes::SEA) != nullptr)
+                {
+                    return 10;
+                }
+                else if(penalties.Penalties.Find(TravelPenaltyTypes::MOUNTAINS) != nullptr)
+                {
+                    return 5;
+                }
+                else if(penalties.Penalties.Find(TravelPenaltyTypes::WOODS) != nullptr)
+                {
+                    return 3;
+                }
+                else
+                {
+                    return 1;
+                }
+            };
+            
+            auto start = high_resolution_clock::now();
+
+            tilePaths.Clear();
+
+            auto coordinates = (startTile->SquareCoordinates + endTile->SquareCoordinates) / 2;
+            auto middleTile = world::WorldScene::Get()->GetTiles().Get(coordinates.x, coordinates.y);
+
+            auto &tiles = middleTile->GetNearbyTiles(range);
+            for(auto &tile : tiles)
+            {
+                tile->PathData.IsVisited = false;
+                tile->PathData.IsToBeVisited = true;
+            }
+
+            startTile->PathData.IsVisited = true;
+            startTile->PathData.IsToBeVisited = true;
+
+            visitedTiles.Reset();
+            *visitedTiles.Add() = startTile;
+
+            typename TileGraph::Node *championPath = tilePaths.StartGraph({startTile, 0});
+
+            int searches = 0;
+            while(true)
+            {
+                auto bestComplexity = INT_MAX;
+                typename TileGraph::Node *bestNode = nullptr;
+                TileType *bestTile = nullptr;
+                
+                for(auto &tile : visitedTiles)
+                {
+                    searches++;
+                    if(tile.Tile->PathData.IsVisited == true)
+                    {
+                        auto &nearbyTiles = tile.Tile->GetNearbyTiles();
+                        for(auto nearbyTile = nearbyTiles.GetStart(); nearbyTile != nearbyTiles.GetEnd(); ++nearbyTile)
+                        {
+                            if((*nearbyTile)->PathData.IsVisited == false && (*nearbyTile)->PathData.IsToBeVisited == true)
+                            {
+                                auto &nodes = tilePaths.GetNodes();
+                                for(auto &node : nodes)
+                                {
+                                    if(node.Content.Tile->GetDistanceTo(**nearbyTile) == 1)
+                                    {
+                                        auto penalty = getPenalty(*nearbyTile) + getPenalty(node.Content.Tile);
+                                        if(node.Content.Distance + penalty < bestComplexity)
+                                        {
+                                            bestComplexity = node.Content.Distance + penalty;
+                                            bestNode = &node;
+                                            bestTile = *nearbyTile;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                auto newNode = bestNode->AddNode({bestTile, bestComplexity});
+                championPath = newNode;
+                bestTile->PathData.IsVisited = true;
+                *visitedTiles.Add() = bestTile;
+
+                if(championPath->Content.Tile == endTile)
+                {
+                    break;
+                }
+            }
+
+            //std::cout<<"searches "<<searches<<"\n";
+            //std::cout<<"length "<<startTile->GetDistanceTo(*endTile)<<"\n";
+            auto stop = high_resolution_clock::now();
+            auto duration = duration_cast<microseconds>(stop - start);
             std::cout <<"duration " << duration.count() << "\n\n";
 
             auto complexity = championPath->Content.Distance;
