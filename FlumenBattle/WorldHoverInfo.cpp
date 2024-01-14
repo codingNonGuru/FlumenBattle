@@ -6,6 +6,7 @@
 #include "WorldHoverInfo.h"
 #include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Polity.h"
 #include "FlumenBattle/World/Science/Technology.h"
@@ -34,10 +35,16 @@ void WorldHoverInfo::HandleUpdate()
 {
     auto tile = WorldController::Get()->GetHoveredTile();
     if(tile == nullptr)
+    {
+        DisplayWorldInfo();
         return;
+    }
 
     if(tile->GetSettlement() == nullptr)
+    {
+        DisplayWorldInfo();
         return;
+    }
 
     auto polity = tile->GetSettlement()->GetPolity();
     auto research = polity->GetResearchTarget();
@@ -61,4 +68,18 @@ void WorldHoverInfo::HandleUpdate()
         else
             return 0.0f;
     } ());
+}
+
+void WorldHoverInfo::DisplayWorldInfo()
+{
+    auto world = WorldScene::Get();
+
+    Phrase text;
+    text << "Settlements: " << world->GetSettlements().GetSize() << "\n";
+    text << "Polities: " << world->GetPolities().GetSize() << "\n";
+    text << "Groups: " << world->GetGroups().GetSize();
+
+    infoLabel->Setup(text);
+
+    scienceProgress->Disable();
 }

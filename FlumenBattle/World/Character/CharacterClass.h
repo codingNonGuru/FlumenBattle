@@ -16,6 +16,8 @@ namespace world::character
 
         Array <CharacterAction> Actions;
 
+        Array <Spell> Spells;
+
         bool IsClass(CharacterClasses _class) const {return Class == _class;}
     };
 }

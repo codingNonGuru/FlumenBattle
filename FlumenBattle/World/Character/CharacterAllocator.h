@@ -30,12 +30,6 @@ namespace world
             container::ArrayAllocator <Modifier>::Memory modifierMemory;
 
 
-            container::PoolAllocator <Weapon> weaponAllocator;
-
-            container::PoolAllocator <Spell> spellAllocator;
-
-            container::PoolAllocator <SpellSlot> spellSlotAllocator;
-
             container::PoolAllocator <Condition> conditionAllocator;
 
             container::ArrayAllocator <Modifier> modifierAllocator;
@@ -46,6 +40,8 @@ namespace world
             void PreallocateMaximumMemory();
 
             Character *Allocate(group::Group &);
+
+            void Free(Character *);
         };
     }
 }

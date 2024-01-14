@@ -67,8 +67,8 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
         *character->actions.Allocate() = {CharacterActions::DODGE};
         *character->actions.Allocate() = {CharacterActions::DASH};*/
 
-        character->AddWeapon(WeaponFactory::BuildGreatSword());
-        character->AddWeapon(WeaponFactory::BuildHatchet());
+        //character->AddWeapon(WeaponFactory::BuildGreatSword());
+        //character->AddWeapon(WeaponFactory::BuildHatchet());
 
         character->AddProficiency(ProficiencyFactory::BuildPerceptionProficiency(ProficiencyLevels::APPRENTICE));
 
@@ -94,8 +94,8 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
         *character->actions.Allocate() = {CharacterActions::DODGE};
         *character->actions.Allocate() = {CharacterActions::DASH};*/
 
-        character->AddWeapon(WeaponFactory::BuildLongBow());
-        character->AddWeapon(WeaponFactory::BuildShortSword());
+        //character->AddWeapon(WeaponFactory::BuildLongBow());
+        //character->AddWeapon(WeaponFactory::BuildShortSword());
 
         character->AddProficiency(ProficiencyFactory::BuildPerceptionProficiency(ProficiencyLevels::TRAINED));
 
@@ -126,11 +126,7 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
         *character->actions.Allocate() = {CharacterActions::DASH};
         *character->actions.Allocate() = {CharacterActions::HELP};*/
 
-        character->AddWeapon(WeaponFactory::BuildMace());
-
-        character->AddSpell(SpellFactory::BuildCureWounds());
-        character->AddSpell(SpellFactory::BuildSacredFlame());
-        character->AddSpell(SpellFactory::BuildHealingWord());
+        //character->AddWeapon(WeaponFactory::BuildMace());
 
         character->AddProficiency(ProficiencyFactory::BuildPerceptionProficiency(ProficiencyLevels::APPRENTICE));
 
@@ -159,12 +155,7 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
         *character->actions.Allocate() = {CharacterActions::DODGE};
         *character->actions.Allocate() = {CharacterActions::DASH};*/
 
-        character->AddWeapon(WeaponFactory::BuildStaff());
-
-        character->AddSpell(SpellFactory::BuildFrostRay());
-        character->AddSpell(SpellFactory::BuildShockingGrasp());
-        character->AddSpell(SpellFactory::BuildFireBolt());
-        character->AddSpell(SpellFactory::BuildMagicMissile());
+        //character->AddWeapon(WeaponFactory::BuildStaff());
 
         character->AddProficiency(ProficiencyFactory::BuildPerceptionProficiency(ProficiencyLevels::APPRENTICE));
 

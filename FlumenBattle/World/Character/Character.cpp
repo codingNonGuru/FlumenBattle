@@ -27,10 +27,12 @@ namespace world::character
         currentHitPoints = maximumHitPoints / 2;
 
         selectedAction = type->Actions.GetStart();
-        selectedWeapon = nullptr;//weapons.GetStart();
         selectedSpell = nullptr;//spells.GetStart();
+        spellUseCount = 3;
 
-        *spellSlots.Add() = {2};
+        //*spellSlots.Add() = {2};
+
+        items = container::Block <Item *, (int)ItemPositions::COUNT> {nullptr};
 
         //isFatigued = false;
     }
@@ -38,18 +40,6 @@ namespace world::character
     bool Character::IsAlive() const
     {
         return currentHitPoints > 0;
-    }
-
-    void Character::AddWeapon(Weapon weapon)
-    {
-        selectedWeapon = weapons.Add(); 
-        *selectedWeapon = weapon;
-    }
-
-    void Character::AddSpell(Spell spell)
-    {
-        selectedSpell = spells.Add();// = spell;
-        *selectedSpell = spell;
     }
 
     void Character::AddProficiency(Proficiency proficiency)
@@ -63,7 +53,13 @@ namespace world::character
         {
             if(selectedAction->Type == CharacterActions::ATTACK)
             {
-                return selectedWeapon->Range;
+                auto mainHandItem = GetItem(ItemPositions::MAIN_HAND);
+                if(mainHandItem == nullptr)
+                    return 1;
+                else if(mainHandItem->IsRangedWeapon() == true)
+                    return 6;
+                else
+                    return 1;
             }
             else if(selectedAction->Type == CharacterActions::CAST_SPELL)
             {
@@ -108,6 +104,11 @@ namespace world::character
     const Array <world::character::CharacterAction> &Character::GetActions() 
     {
         return type->Actions;
+    }
+
+    const Array <Spell> &Character::GetSpells() const
+    {
+        return type->Spells;
     }
 
     Integer Character::GetArmorClass() const
@@ -210,22 +211,19 @@ namespace world::character
         switch(selectedAction->Type)
         {
             case CharacterActions::ATTACK:
-                if(index >= weapons.GetSize())
+                /*if(index >= weapons.GetSize())
                     return false;
 
-                selectedWeapon = weapons.Get(index);
+                selectedWeapon = weapons.Get(index);*/
                 return true;
-                break;
             case CharacterActions::CAST_SPELL:
-                if(index >= spells.GetSize())
+                if(index >= type->Spells.GetSize())
                     return false;
 
-                selectedSpell = spells.Get(index);
+                selectedSpell = type->Spells.Get(index);
                 return true;
-                break;
             default:
                 return false;
-                break;
         }
     }
 
@@ -234,18 +232,6 @@ namespace world::character
         selectedAction = type->Actions.Find(action);
 
         return true;
-    }
-
-    bool Character::SelectWeapon(Weapon *weapon)
-    {
-        selectedWeapon = weapon;
-
-        return true;
-    }
-
-    bool Character::SelectWeapon(WeaponTypes type)
-    {
-        selectedWeapon = weapons.Find(type);
     }
 
     bool Character::SelectSpell(Spell *spell)
@@ -257,7 +243,7 @@ namespace world::character
 
     bool Character::SelectSpell(SpellTypes type)
     {
-        selectedSpell = spells.Find(type);
+        selectedSpell = this->type->Spells.Find(type);
 
         return true;
     }
@@ -272,9 +258,9 @@ namespace world::character
         switch(selectedAction->Type)
         {
             case CharacterActions::ATTACK:
-                return weapons.GetIndex(selectedWeapon);//  selectedWeapon - weapons.GetStart();
+                return 0;//weapons.GetIndex(selectedWeapon);//  selectedWeapon - weapons.GetStart();
             case CharacterActions::CAST_SPELL:
-                return spells.GetIndex(selectedSpell);// - spells.GetStart();
+                return selectedSpell - type->Spells.GetStart();
             default:
                 return 0;
         }

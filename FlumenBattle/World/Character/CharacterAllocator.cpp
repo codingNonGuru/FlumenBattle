@@ -34,13 +34,7 @@ namespace world::character
 
         auto groupCount = worldGenerator->GetMaximumGroupCount(worldSize);
 
-        weaponAllocator = container::PoolAllocator <Weapon> (MAXIMUM_CHARACTERS_PER_GROUP * groupCount, 4);
-
-        spellAllocator = container::PoolAllocator <Spell> (MAXIMUM_CHARACTERS_PER_GROUP * groupCount, 8);
-
-        spellSlotAllocator = container::PoolAllocator <SpellSlot> (MAXIMUM_CHARACTERS_PER_GROUP * groupCount, 8);
-
-        //actionAllocator = container::ArrayAllocator <character::CharacterAction> (MAXIMUM_CHARACTERS_PER_GROUP * MAXIMUM_GROUPS_PER_WORLD, 8);
+        //spellSlotAllocator = container::PoolAllocator <SpellSlot> (MAXIMUM_CHARACTERS_PER_GROUP * groupCount, 8);
 
         conditionAllocator = container::PoolAllocator <Condition> (MAXIMUM_CHARACTERS_PER_GROUP * groupCount, CONDITIONS_PER_CHARACTER);
 
@@ -51,14 +45,19 @@ namespace world::character
     {
         auto &characters = group.GetCharacters();
         auto character = characters.Add(); 
-        character->weapons.Initialize(weaponAllocator);
-        character->spells.Initialize(spellAllocator);
-        character->spellSlots.Initialize(spellSlotAllocator);
+        //character->spellSlots.Initialize(spellSlotAllocator);
 
         ConditionAllocator::Allocate(conditionAllocator, character->conditions);
 
         ModifierAllocator::Allocate(modifierAllocator, character->modifiers);
         
         return character;
+    }
+
+    void CharacterAllocator::Free(Character *character)
+    {
+        ConditionAllocator::Free(conditionAllocator, character->conditions);
+
+        ModifierAllocator::Free(modifierAllocator, character->modifiers);
     }
 }

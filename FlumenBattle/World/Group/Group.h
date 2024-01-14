@@ -124,6 +124,10 @@ namespace world::group
 
         void Initialize(Word, const GroupType *, Integer, Color, RaceTypes);
 
+        void *operator new(size_t);
+
+        void operator delete(void *);
+
     public:
         Group();
         

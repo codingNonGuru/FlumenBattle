@@ -2,6 +2,7 @@
 
 #include "FlumenBattle/World/Character/CharacterClass.h"
 #include "FlumenBattle/World/Character/CharacterAction.h"
+#include "FlumenBattle/World/Character/Spell.h"
 
 namespace world::character
 {
@@ -37,13 +38,27 @@ namespace world::character
 
         static const CharacterClass & BuildClericClass()
         {
-            static CharacterClass clericClass = {CharacterClasses::CLERIC, "Cleric", 8, 12, {CharacterActions::ATTACK, CharacterActions::DODGE, CharacterActions::DASH, CharacterActions::CAST_SPELL}};
+            static CharacterClass clericClass = {
+                CharacterClasses::CLERIC, 
+                "Cleric", 
+                8, 
+                12, 
+                {CharacterActions::ATTACK, CharacterActions::DODGE, CharacterActions::DASH, CharacterActions::CAST_SPELL},
+                {SpellFactory::BuildCureWounds(), SpellFactory::BuildSacredFlame(), SpellFactory::BuildHealingWord()}
+                };
             return clericClass;
         }
 
         static const CharacterClass & BuildWizardClass()
         {
-            static CharacterClass wizardClass = {CharacterClasses::WIZARD, "Wizard", 6, 10, {CharacterActions::ATTACK, CharacterActions::DODGE, CharacterActions::DASH, CharacterActions::HELP}};
+            static CharacterClass wizardClass = {
+                CharacterClasses::WIZARD, 
+                "Wizard", 
+                6, 
+                10, 
+                {CharacterActions::ATTACK, CharacterActions::DODGE, CharacterActions::DASH, CharacterActions::HELP},
+                {SpellFactory::BuildFrostRay(), SpellFactory::BuildShockingGrasp(), SpellFactory::BuildFireBolt(), SpellFactory::BuildMagicMissile()}
+                };
             return wizardClass;
         }
     };

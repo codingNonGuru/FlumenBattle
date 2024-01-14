@@ -11,6 +11,7 @@
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/GroupActionFactory.h"
 #include "FlumenBattle/World/Group/GroupMind.h"
+#include "FlumenBattle/World/GroupAllocator.h"
 
 using namespace world::character;
 
@@ -28,6 +29,16 @@ Array <world::character::CharacterClasses> classMakeup; /*= {
 namespace world::group
 {
     Group::Group() {}
+
+    void *Group::operator new(size_t size)
+    {
+        return GroupAllocator::Get()->Allocate();
+    }
+
+    void Group::operator delete(void *object)
+    {
+        GroupAllocator::Get()->Free((Group *)object);
+    }
 
     void Group::Initialize(Word name, const GroupType *type, Integer size, Color color, RaceTypes raceType)
     {

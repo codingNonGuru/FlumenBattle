@@ -26,7 +26,7 @@ namespace world::group
     {
         friend class world::WorldScene;
 
-        friend class GroupFactory;
+        friend class Group;
 
         container::Pool <Group>::Memory groupMemory;
 
@@ -48,6 +48,8 @@ namespace world::group
         void PerformCleanup();
 
         Group *Allocate();
+
+        void Free(Group *);
 
         container::PoolAllocator <character::Character> &GetCharacterAllocator() {return characterAllocator;}
 

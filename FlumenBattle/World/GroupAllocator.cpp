@@ -5,6 +5,7 @@
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldGenerator.h"
 #include "FlumenBattle/World/Character/Character.h"
+#include "FlumenBattle/World/Character/CharacterAllocator.h"
 #include "FlumenBattle/World/Group/Encounter.h"
 
 #define CHARACTERS_PER_GROUP 16
@@ -41,11 +42,25 @@ namespace world::group
     {
         auto group = groups.Add();
 
-        group->GetCharacters().Initialize(characterAllocator);
+        group->characters.Initialize(characterAllocator);
 
         character::ItemAllocator::Allocate(itemAllocator, group->items);
 
         return group;
+    }
+
+    void GroupAllocator::Free(Group *group)
+    {
+        for(auto &character : group->characters)
+        {
+            character::CharacterAllocator::Get()->Free(&character);
+        }
+
+        group->characters.Terminate(characterAllocator);
+
+        character::ItemAllocator::Free(itemAllocator, group->items);
+
+        groups.RemoveAt(group);
     }
 
     void GroupAllocator::PerformCleanup()

@@ -110,17 +110,13 @@ namespace world::character
 
         Integer defaultSpeed; //Combatant
 
-        world::character::CharacterAction *selectedAction;
-
-        Pool <Weapon> weapons;
-
-        Weapon *selectedWeapon; //Combatant 
-
-        Pool <Spell> spells;
+        world::character::CharacterAction *selectedAction; 
 
         Spell *selectedSpell; //Combatant
 
-        Pool <SpellSlot> spellSlots;
+        int spellUseCount;
+
+        //container::Block <SpellSlot, 6> spellsSlots;
 
         battle::Combatant *combatant;
 
@@ -133,10 +129,6 @@ namespace world::character
         void Initialize();
 
         Integer GetActionRange() const;
-
-        void AddWeapon(Weapon);
-
-        void AddSpell(Spell);
 
         void AddProficiency(Proficiency);
 
@@ -187,9 +179,7 @@ namespace world::character
 
         const Array <world::character::CharacterAction> &GetActions();
 
-        const Pool <Weapon> & GetWeapons() {return weapons;}
-
-        const Pool <Spell> & GetSpells() {return spells;}
+        const Array <Spell> &GetSpells() const;
 
         Integer GetArmorClass() const;
 
@@ -218,8 +208,6 @@ namespace world::character
         Index GetSelectedSubactionIndex() const;
 
         world::character::CharacterAction* GetSelectedAction() const;
-
-        Weapon* GetSelectedWeapon() const {return selectedWeapon;}
 
         Spell* GetSelectedSpell() const {return selectedSpell;}
 

@@ -16,5 +16,7 @@ namespace world
         void HandleConfigure() override;
 
         void HandleUpdate() override;
+
+        void DisplayWorldInfo();
     };
 }

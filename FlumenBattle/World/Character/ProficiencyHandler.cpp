@@ -20,10 +20,11 @@ Integer ProficiencyHandler::GetPerceptionBonus(const Character &character)
 
 Integer ProficiencyHandler::GetWeaponBonus(const Character &character)
 {
-    auto weapon = character.GetSelectedWeapon();
-    auto bonus = GetWeaponBonus(character, weapon->Class);
+    //auto weapon = character.GetSelectedWeapon();
+    //auto bonus = GetWeaponBonus(character, weapon->Class);
 
-    return bonus;
+    //return bonus;
+    return 0;
 }
 
 Integer ProficiencyHandler::GetWeaponBonus(const Character &character, WeaponClasses weaponClass)
