@@ -23,6 +23,7 @@ namespace world
     namespace group
     {
         class GroupDynamics;
+        class Group;
     }
 
     namespace disaster
@@ -184,6 +185,8 @@ namespace world::settlement
         SettlementProduction *GetCurrentProduction() const {return currentProduction;}
 
         polity::Faction *GetFaction() {return faction;}
+
+        void RemoveGroup(const group::Group &);
 
         void SetPolity(polity::Polity *);
 

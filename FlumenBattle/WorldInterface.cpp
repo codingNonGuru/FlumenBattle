@@ -10,7 +10,7 @@
 #include "FlumenBattle/WorldDecisionMenu.h"
 #include "FlumenBattle/WorldInfoPanel.h"
 #include "FlumenBattle/WorldHoverInfo.h"
-#include "FlumenBattle/World/GroupEngageMenu.h"
+#include "FlumenBattle/World/Group/GroupEngageMenu.h"
 #include "FlumenBattle/World/SettlementLabel.h"
 #include "FlumenBattle/World/PathLabel.h"
 #include "FlumenBattle/World/WorldScene.h"

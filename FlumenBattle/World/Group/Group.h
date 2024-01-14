@@ -44,6 +44,7 @@ namespace world::group
     class GroupActionValidator;
     class Encounter;
     class MachineMind;
+    enum class GroupClasses;
 
     class Group
     {
@@ -106,7 +107,7 @@ namespace world::group
 
         int timeSinceLongRest;
 
-        bool hasAccomplishedObjective {false};
+        bool hasAchievedObjective {false};
 
         Encounter *encounter;
 
@@ -123,6 +124,8 @@ namespace world::group
         Pool <character::Character> characters;
 
         character::ItemManager items;
+        
+        int money;
 
         character::Character *leader;
 
@@ -158,6 +161,8 @@ namespace world::group
         character::Character *GetLeader() const {return leader;}
 
         Group *GetOther();
+
+        GroupClasses GetClass() const;
 
         void CheckFatigue();
 

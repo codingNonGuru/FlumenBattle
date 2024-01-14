@@ -545,6 +545,13 @@ namespace utility
                 tile->PathData.Node = nullptr;
             }
 
+            auto &ring = middleTile->GetTileRing(range + 1);
+            for(auto &tile : ring)
+            {
+                tile->PathData.IsVisited = true;
+                tile->PathData.IsToBeVisited = true;
+            }
+
             startTile->PathData.IsVisited = true;
             startTile->PathData.IsToBeVisited = true;
 
@@ -585,7 +592,7 @@ namespace utility
                             if((*nearbyTile)->PathData.IsVisited == false && (*nearbyTile)->PathData.IsToBeVisited == true)
                             {                               
                                 auto nearbyTileNode = nodeMap.GetTile((*nearbyTile)->HexCoordinates);
-                                auto &nearbyNodeMappings = nodeMap.GetNearbyTiles(nearbyTileNode, 1);
+                                auto &nearbyNodeMappings = nodeMap.GetNearbyTiles(nearbyTileNode);
                                 for(auto &nearbyNodeMapping : nearbyNodeMappings)
                                 {
                                     if(nearbyNodeMapping == nearbyTileNode)
@@ -607,12 +614,19 @@ namespace utility
                                         bestComplexity = nearbyNodeMapping->Node->Content.Distance + penalty;
                                         bestNode = nearbyNodeMapping->Node;
                                         bestTile = *nearbyTile;
+
+                                        if(penalty == 2 && bestComplexity == championPath->Content.Distance)
+                                        {
+                                            goto hasFoundShortcut;
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
+
+                hasFoundShortcut:
 
                 auto newNode = bestNode->AddNode({bestTile, bestComplexity});
                 championPath = newNode;

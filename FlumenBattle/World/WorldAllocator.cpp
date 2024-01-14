@@ -6,7 +6,7 @@
 #include "FlumenBattle/World/Polity.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/SettlementAllocator.h"
-#include "FlumenBattle/World/GroupAllocator.h"
+#include "FlumenBattle/World/Group/GroupAllocator.h"
 #include "FlumenBattle/World/Character/CharacterAllocator.h"
 #include "FlumenBattle/World/PolityAllocator.h"
 

@@ -6,8 +6,6 @@ namespace world
     {
         enum class GroupTypes {PLAYER, COMPUTER};
 
-        enum class GroupClasses {PLAYER, MERCHANT, BANDIT, ADVENTURER, TRAVELLING_COURT};
-
         enum class GroupActions
         {
             TAKE_SHORT_REST, TAKE_LONG_REST, SEARCH, ENGAGE, FIGHT, DISENGAGE, TRAVEL, PERSUADE, NONE
@@ -88,4 +86,10 @@ namespace world
             REPRESSED
         };
     }
+
+    enum class SimulationLevels
+    {
+        BASIC,
+        ADVANCED
+    };
 }

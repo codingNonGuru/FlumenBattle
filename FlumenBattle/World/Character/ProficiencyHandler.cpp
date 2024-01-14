@@ -5,6 +5,17 @@
 
 using namespace world::character;
 
+void ProficiencyHandler::Initialize()
+{
+    savingThrows.Clear();
+
+    weaponClasses.Clear();
+
+    armorClasses.Clear();
+
+    skills.Clear();
+}
+
 Integer ProficiencyHandler::GetLevelModifier(Proficiency proficiency)
 {
     return (int)proficiency.Level;

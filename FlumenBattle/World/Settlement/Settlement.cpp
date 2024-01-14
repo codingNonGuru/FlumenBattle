@@ -37,6 +37,8 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
 
     this->resourceHandler.Initialize();
 
+    this->groupDynamics->Initialize();
+
     this->name = name;
 
     this->banner = banner;
@@ -418,6 +420,11 @@ int Settlement::GetModifier(Modifiers modifier) const
 const Pool <Condition> &Settlement::GetConditions() const
 {
     return conditionManager->GetConditions();
+}
+
+void Settlement::RemoveGroup(const group::Group &group)
+{
+    groupDynamics->RemoveGroup(group);
 }
 
 void Settlement::SetPolity(polity::Polity *polity)

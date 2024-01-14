@@ -13,6 +13,7 @@ namespace world
     namespace group
     {
         class GroupDynamics;
+        struct GroupEssence;
     }
 }
 
@@ -76,6 +77,8 @@ namespace world::settlement
 
         container::ArrayAllocator <Resource>::Memory resourceMemory;
 
+        container::PoolAllocator <group::GroupEssence>::Memory adventurerMemory;
+
 
         container::Pool <Settlement> settlements;
 
@@ -106,6 +109,8 @@ namespace world::settlement
         container::ArrayAllocator <Modifier> modifierAllocator;
 
         container::ArrayAllocator <Resource> resourceAllocator;
+
+        container::PoolAllocator <group::GroupEssence> adventurerAllocator;
 
 
         void PerformCleanup();

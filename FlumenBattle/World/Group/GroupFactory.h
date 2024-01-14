@@ -23,6 +23,7 @@ namespace world::settlement
 namespace world::group
 {
     class Group;
+    enum class GroupClasses;
 
     struct GroupBuildData
     {

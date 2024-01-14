@@ -1,13 +1,27 @@
 #include "GroupDynamics.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Group/GroupFactory.h"
+#include "FlumenBattle/World/Group/GroupEssence.h"
+#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/Types.h"
+#include "FlumenBattle/World/WorldTime.h"
+#include "FlumenBattle/World/WorldScene.h"
 
 using namespace world;
 using namespace world::group;
 
 #define ARMOR_CLASS 15
 
-GroupDynamics::GroupDynamics()
+#define ADVENTURER_CAP 2
+
+#define ADVENTURER_SPAWN_TIME 12
+
+GroupDynamics::GroupDynamics() {}
+
+void GroupDynamics::Initialize()
 {
+    lastSpawnTime = -1;
+
     banditStrength = 5;
 
     patrolStrength = 5;
@@ -46,6 +60,8 @@ void GroupDynamics::Update(settlement::Settlement &settlement)
             banditStrength = 10;
         }
     }
+
+    AddAdventurer(settlement);
 }
 
 void GroupDynamics::StrengthenPatrol()
@@ -55,4 +71,44 @@ void GroupDynamics::StrengthenPatrol()
     {
         patrolStrength = 10;
     }
+}
+
+void GroupDynamics::AddAdventurer(settlement::Settlement &settlement)
+{
+    if(GetAdventurerStrength() > ADVENTURER_CAP)
+    {
+        return;
+    }
+
+    auto time = world::WorldScene::Get()->GetTime().TotalHourCount;
+    if(time - lastSpawnTime < ADVENTURER_SPAWN_TIME)
+    {
+        return;
+    }
+
+    lastSpawnTime = time;
+
+    auto simulationLevel = SimulationLevels::ADVANCED;
+    if(simulationLevel == SimulationLevels::BASIC)
+    {
+        *adventurers.Add() = {nullptr};
+    }
+    else
+    {
+        auto adventurer = group::GroupFactory::Create({group::GroupClasses::ADVENTURER, RaceTypes::ORC, &settlement});
+        *adventurers.Add() = {adventurer};
+    }
+}
+
+void GroupDynamics::RemoveGroup(const group::Group &group)
+{
+    if(group.GetClass() == group::GroupClasses::ADVENTURER)
+    {
+        adventurers.Remove(&group);
+    }
+}
+
+int GroupDynamics::GetAdventurerStrength()
+{
+    return adventurers.GetSize();
 }

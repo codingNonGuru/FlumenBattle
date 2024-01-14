@@ -25,6 +25,8 @@ namespace world::character
         static Integer GetLevelModifier(Proficiency);
 
     public:
+        void Initialize();
+
         Integer GetPerceptionBonus(const Character &);
 
         Integer GetSaveBonus(const Character &, SavingThrows);

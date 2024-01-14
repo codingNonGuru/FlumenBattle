@@ -11,7 +11,8 @@
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/GroupActionFactory.h"
 #include "FlumenBattle/World/Group/GroupMind.h"
-#include "FlumenBattle/World/GroupAllocator.h"
+#include "FlumenBattle/World/Group/GroupAllocator.h"
+#include "FlumenBattle/World/Group/Types.h"
 
 using namespace world::character;
 
@@ -49,7 +50,9 @@ namespace world::group
         this->color = color;
 
         this->isAlive = true;
-        this->hasAccomplishedObjective = false;
+        this->hasAchievedObjective = false;
+
+        this->money = 0;
 
         actionProgress = 0;
 
@@ -345,5 +348,10 @@ namespace world::group
     world::character::Item *Group::GetItem(int index)
     {
         return items.GetItem(index);
+    }
+
+    GroupClasses Group::GetClass() const
+    {
+        return type->Class;
     }
 }

@@ -34,6 +34,8 @@ namespace world::character
 
         items = container::Block <Item *, (int)ItemPositions::COUNT> {nullptr};
 
+        proficiencies.Initialize();
+
         //isFatigued = false;
     }
 

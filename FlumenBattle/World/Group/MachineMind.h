@@ -10,6 +10,10 @@ namespace world::group
     {
         void DetermineAction(Group &) const override;
 
+        void DetermineActionAsMerchant(Group &) const;
+
+        void DetermineActionAsAdventurer(Group &) const;
+
         void RegisterActionPerformance(Group &, GroupActionResult) const override;
     };
 }

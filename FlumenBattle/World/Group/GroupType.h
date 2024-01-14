@@ -1,6 +1,7 @@
 #pragma once
 
 #include "FlumenBattle/World/Types.h"
+#include "FlumenBattle/World/Group/Types.h"
 
 namespace world::group
 {

@@ -9,6 +9,7 @@
 #include "FlumenBattle/World/Settlement/Building.h"
 #include "FlumenBattle/World/Settlement/Path.h"
 #include "FlumenBattle/World/Group/GroupDynamics.h"
+#include "FlumenBattle/World/Group/GroupEssence.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldGenerator.h"
 #include "FlumenBattle/World/Settlement/Resource.h"
@@ -28,6 +29,8 @@
 #define AVERAGE_SEGMENTS_PER_PATH 4
 
 #define MODIFIERS_PER_SETTLEMENT 32
+
+#define ADVENTURERS_PER_SETTLEMENT 8
 
 using namespace world::settlement;
 
@@ -66,6 +69,8 @@ void SettlementAllocator::PreallocateMaximumMemory()
     modifierMemory = container::ArrayAllocator <Modifier>::PreallocateMemory (settlementCount, MODIFIERS_PER_SETTLEMENT);
 
     resourceMemory = container::ArrayAllocator <Resource>::PreallocateMemory (settlementCount, GOODS_TYPES_COUNT);
+
+    adventurerMemory = container::PoolAllocator <group::GroupEssence>::PreallocateMemory (settlementCount, ADVENTURERS_PER_SETTLEMENT);
 }
 
 void SettlementAllocator::AllocateWorldMemory(int worldSize)
@@ -103,6 +108,8 @@ void SettlementAllocator::AllocateWorldMemory(int worldSize)
     modifierAllocator = container::ArrayAllocator <Modifier> (settlementCount, MODIFIERS_PER_SETTLEMENT, modifierMemory);
 
     resourceAllocator = container::ArrayAllocator <Resource> (settlementCount, GOODS_TYPES_COUNT, resourceMemory);
+
+    adventurerAllocator = container::PoolAllocator <group::GroupEssence> (settlementCount, ADVENTURERS_PER_SETTLEMENT, adventurerMemory);
 }
 
 Settlement * SettlementAllocator::Allocate()
@@ -110,6 +117,8 @@ Settlement * SettlementAllocator::Allocate()
     auto settlement = settlements.Add();
 
     settlement->groupDynamics = groupDynamics.Add();
+
+    settlement->groupDynamics->adventurers.Initialize(adventurerAllocator);
 
     auto &tiles = settlement->GetTiles();
     tiles.Initialize(tileAllocator);

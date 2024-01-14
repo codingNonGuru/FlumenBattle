@@ -7,9 +7,10 @@
 #include "FlumenBattle/World/WorldAllocator.h"
 #include "FlumenBattle/World/Settlement/SettlementAllocator.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
-#include "FlumenBattle/World/GroupAllocator.h"
+#include "FlumenBattle/World/Group/GroupAllocator.h"
 #include "FlumenBattle/World/Group/GroupFactory.h"
 #include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/Types.h"
 #include "FlumenBattle/PreGame/Types.h"
 #include "FlumenBattle/World/Settlement/Types.h"
 #include "FlumenBattle/World/PolityAllocator.h"
@@ -340,9 +341,6 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
     scene.battles = battles;
 
     scene.playerGroup = group::GroupFactory::Create({group::GroupClasses::PLAYER, RaceTypes::HUMAN, scene.settlements->GetRandom()});
-
-    auto randomSettlement = scene.settlements->GetRandom();
-    auto testGroup = group::GroupFactory::Create({group::GroupClasses::ADVENTURER, RaceTypes::ORC, randomSettlement});
 }
 
 int WorldGenerator::GetMaximumPolityCount(int worldSize) const
@@ -357,5 +355,5 @@ int WorldGenerator::GetMaximumSettlementCount(int worldSize) const
 
 int WorldGenerator::GetMaximumGroupCount(int worldSize) const
 {
-    return (worldSize * worldSize) / 25;
+    return (worldSize * worldSize) / 20;
 }

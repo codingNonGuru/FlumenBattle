@@ -1,12 +1,13 @@
 #include "FlumenCore/Container/Array.hpp"
 
-#include "FlumenBattle/World/GroupAllocator.h"
+#include "FlumenBattle/World/Group/GroupAllocator.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldGenerator.h"
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/World/Character/CharacterAllocator.h"
 #include "FlumenBattle/World/Group/Encounter.h"
+#include "FlumenBattle/World/Settlement/Settlement.h"
 
 #define CHARACTERS_PER_GROUP 16
 
@@ -75,8 +76,13 @@ namespace world::group
             *finishedGroups.Allocate() = &group;
         }
 
-        for(auto group : finishedGroups)
+        for(auto &group : finishedGroups)
         {
+            if(group->home != nullptr)
+            {
+                group->home->RemoveGroup(*group);
+            }
+
             groups.RemoveAt(group);
 
             group->GetCharacters().Terminate(characterAllocator);
