@@ -1,9 +1,11 @@
 #include "FlumenBattle/World/Group/MachineMind.h"
 #include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupType.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Character/Character.h"
 
 namespace world::group
 {
@@ -16,51 +18,131 @@ namespace world::group
 
         group.SelectAction(GroupActions::SEARCH);*/
 
-        if(group.travelActionData.IsOnRoute)
+        if(group.type->Class == GroupClasses::MERCHANT)
         {
-            if(group.GetDestination() == nullptr)
+            if(group.travelActionData.IsOnRoute)
             {
-                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+                if(group.GetDestination() == nullptr)
+                {
+                    group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+                }
+            }
+            else
+            {
+                if(group.timeSinceLongRest > 96)
+                {
+                    group.SelectAction(GroupActions::TAKE_LONG_REST);
+                }
+                else
+                {
+                    auto path = [&] () -> settlement::Path *
+                    {
+                        if(group.tile == group.home->GetLocation())
+                        {
+                            auto link = group.home->GetLinks().GetRandom();
+                            if(link != nullptr)
+                            {
+                                return link->Path;
+                            }
+                            else
+                            {
+                                return nullptr;
+                            }
+                        }
+                        else
+                        {
+                            return group.tile->GetSettlement()->GetPathTo(group.home);
+                        }
+                    } ();
+
+                    if(path != nullptr)
+                    {
+                        auto destination = group.tile == group.home->GetLocation() ? path->GetOther(group.home) : group.home;
+                        const auto route = path->GetTilesTo(destination);
+
+                        group.travelActionData.PlannedDestinationCount = route.GetSize() - 1;
+                        for(int i = 1; i < route.GetSize(); ++i)
+                        {
+                            group.travelActionData.Route[i - 1] = *route[i];
+                        }
+                        group.travelActionData.IsOnRoute = true;
+
+                        group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+                    }
+                }
+                //auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra();
             }
         }
-        else
+        else if(group.type->Class == GroupClasses::ADVENTURER)
         {
-            auto path = [&] () -> settlement::Path *
+            if(group.travelActionData.IsOnRoute)
             {
-                if(group.tile == group.home->GetLocation())
+                if(group.GetDestination() == nullptr)
                 {
-                    auto link = group.home->GetLinks().GetRandom();
-                    if(link != nullptr)
+                    group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+                }
+            }
+            else
+            {
+                if(group.tile != group.home->GetLocation())
+                {
+                    if(group.hasAccomplishedObjective == false)
                     {
-                        return link->Path;
-                    }
-                    else
-                    {
-                        return nullptr;
+                        auto fightAttempt = utility::RollD20Dice(15);
+                        if(fightAttempt.IsAnySuccess())
+                        {
+                            group.hasAccomplishedObjective = true;
+                        }
+                        else
+                        {
+                            group.isAlive = false;
+                            group.CancelAction();
+                            return;
+                        }
                     }
                 }
                 else
                 {
-                    return group.tile->GetSettlement()->GetPathTo(group.home);
+                    group.hasAccomplishedObjective = false;
                 }
-            } ();
 
-            if(path != nullptr)
-            {
-                auto destination = group.tile == group.home->GetLocation() ? path->GetOther(group.home) : group.home;
-                const auto route = path->GetTilesTo(destination);
-
-                group.travelActionData.PlannedDestinationCount = route.GetSize() - 1;
-                for(int i = 1; i < route.GetSize(); ++i)
+                if(group.timeSinceLongRest > 96)
                 {
-                    group.travelActionData.Route[i - 1] = *route[i];
+                    group.SelectAction(GroupActions::TAKE_LONG_REST);
                 }
-                group.travelActionData.IsOnRoute = true;
+                else
+                {
+                    auto destination = [&] () -> WorldTile *
+                    {
+                        if(group.tile == group.home->GetLocation())
+                        {
+                            auto &nearbyTiles = group.tile->GetTileRing(3);
+                            while(true)
+                            {
+                                auto randomTile = *nearbyTiles.GetRandom();
+                                if(randomTile->HasRelief(world::WorldReliefs::SEA) == false)
+                                    return randomTile;
+                            }
+                        }
+                        else
+                        {
+                            return group.home->GetLocation();
+                        }
+                    } ();
 
-                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+                    auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(destination, group.tile, 4);
+
+                    group.travelActionData.PlannedDestinationCount = pathData.Tiles.GetSize() - 1;
+                    for(int i = 1; i < pathData.Tiles.GetSize(); ++i)
+                    {
+                        group.travelActionData.Route[i - 1] = pathData.Tiles.Get(i)->Tile;
+                    }
+                    group.travelActionData.IsOnRoute = true;
+
+                    group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+                }
+                
             }
-            
-            //auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra();
         }
 
         /*if(group.GetDestination() == nullptr)

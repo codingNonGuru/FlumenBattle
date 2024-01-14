@@ -77,6 +77,8 @@ namespace world::group
 
         const GroupAction *action;
 
+        bool isAlive;
+
         struct TravelActionData
         {
             WorldTile *Source {nullptr};
@@ -103,6 +105,8 @@ namespace world::group
         utility::Success actionSuccess;
 
         int timeSinceLongRest;
+
+        bool hasAccomplishedObjective {false};
 
         Encounter *encounter;
 

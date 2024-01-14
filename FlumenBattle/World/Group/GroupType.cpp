@@ -6,24 +6,24 @@ namespace world::group
 {
     const GroupType * GroupTypeFactory::BuildPlayerGroupType()
     {
-        static GroupType type = {GroupTypes::PLAYER, HumanMind::Get(), 5};
+        static GroupType type = {GroupTypes::PLAYER, GroupClasses::PLAYER, HumanMind::Get(), 5};
         return &type;
     }
 
-    const GroupType * GroupTypeFactory::BuildComputerGroupType()
+    const GroupType * GroupTypeFactory::BuildComputerGroupType(GroupClasses groupClass)
     {
-        static GroupType type = {GroupTypes::COMPUTER, MachineMind::Get(), 1};
+        static GroupType type = {GroupTypes::COMPUTER, groupClass, MachineMind::Get(), 1};
         return &type;
     }
 
-    const GroupType * GroupTypeFactory::BuildGroupType(GroupTypes type)
+    const GroupType * GroupTypeFactory::BuildGroupType(GroupClasses groupClass)
     {
-        switch(type)
+        switch(groupClass)
         {
-            case GroupTypes::PLAYER:
+            case GroupClasses::PLAYER:
                 return BuildPlayerGroupType();
-            case GroupTypes::COMPUTER:
-                return BuildComputerGroupType();
+            default:
+                return BuildComputerGroupType(groupClass);
         }
     }
 }

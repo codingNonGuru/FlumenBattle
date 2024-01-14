@@ -6,7 +6,7 @@ namespace world
     {
         enum class GroupTypes {PLAYER, COMPUTER};
 
-        enum class GroupClasses {MERCHANT, BANDIT, ADVENTURER, TRAVELLING_COURT};
+        enum class GroupClasses {PLAYER, MERCHANT, BANDIT, ADVENTURER, TRAVELLING_COURT};
 
         enum class GroupActions
         {

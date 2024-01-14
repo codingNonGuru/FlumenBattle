@@ -26,7 +26,7 @@ namespace world::group
 
     struct GroupBuildData
     {
-        GroupTypes Type;
+        GroupClasses Type;
 
         RaceTypes Race;
 

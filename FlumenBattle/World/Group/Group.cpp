@@ -48,6 +48,9 @@ namespace world::group
         this->name = name;
         this->color = color;
 
+        this->isAlive = true;
+        this->hasAccomplishedObjective = false;
+
         actionProgress = 0;
 
         timeSinceLongRest = 0;
@@ -118,6 +121,9 @@ namespace world::group
 
     bool Group::IsAlive()
     {
+        if(isAlive == false)
+            return false;
+
         for(auto &character : characters)
         {
             if(character.IsAlive())

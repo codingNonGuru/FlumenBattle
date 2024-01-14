@@ -10,6 +10,8 @@ namespace world::group
     {
         GroupTypes Type;
 
+        GroupClasses Class;
+
         const GroupMind *Controller;
 
         int Size;
@@ -19,9 +21,9 @@ namespace world::group
     {
         static const GroupType * BuildPlayerGroupType();
 
-        static const GroupType * BuildComputerGroupType();
+        static const GroupType * BuildComputerGroupType(GroupClasses);
 
     public:
-        static const GroupType * BuildGroupType(GroupTypes);
+        static const GroupType * BuildGroupType(GroupClasses);
     };
 }

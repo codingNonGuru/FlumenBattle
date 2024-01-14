@@ -294,14 +294,16 @@ namespace world::group
             difficultyClass += group.travelActionData.Source->GetTravelPenalty().Value;
             difficultyClass += group.travelActionData.Destination->GetTravelPenalty().Value;
 
-            int modifier = -100;
+            int survivalBonus = -100;
             for(auto &character : group.characters)
             {
-                if(character.GetSkillProficiency(SkillTypes::SURVIVAL) > modifier)
-                    modifier = character.GetSkillProficiency(SkillTypes::SURVIVAL);
+                if(character.GetSkillProficiency(SkillTypes::SURVIVAL) > survivalBonus)
+                    survivalBonus = character.GetSkillProficiency(SkillTypes::SURVIVAL);
             }
 
-            auto success = utility::RollD20Dice(difficultyClass, modifier);
+            auto roadBonus = group.travelActionData.Source->IsLinkedTo(group.travelActionData.Destination) ? 4 : 0;
+
+            auto success = utility::RollD20Dice(difficultyClass, survivalBonus + roadBonus);
             if(success.IsAnyFailure() == true)
             {
                 group.travelActionData.IsLost = true;
