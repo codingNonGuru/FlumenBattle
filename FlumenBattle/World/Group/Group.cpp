@@ -41,10 +41,10 @@ namespace world::group
         GroupAllocator::Get()->Free((Group *)object);
     }
 
-    void Group::Initialize(Word name, const GroupType *type, Integer size, Color color, RaceTypes raceType)
+    void Group::Initialize(Word name, const GroupType *groupType, Integer size, Color color, RaceTypes raceType)
     {
-        this->type = type;
-        this->controller = type->Controller;
+        this->type = groupType;
+        this->controller = groupType->Controller;
 
         this->name = name;
         this->color = color;
@@ -91,11 +91,11 @@ namespace world::group
             }
 
             auto dice = utility::GetRandom(0, classMakeup.GetSize() - 1);
-            CharacterClasses type = *classMakeup.Get(dice);
+            CharacterClasses characterClass = *classMakeup.Get(dice);
 
             auto race = RaceFactory::BuildRace(raceType);
 
-            CharacterFactory::Create(race, &ClassFactory::BuildClass(type), *this);
+            CharacterFactory::Create(race, &ClassFactory::BuildClass(characterClass), *this);
         }
 
         leader = nullptr;

@@ -13,6 +13,7 @@ namespace world
     class WorldTile;
     class WorldMap;
     class Polity;
+    struct SimulationDomain;
 
     namespace settlement
     {
@@ -40,6 +41,8 @@ namespace world
         container::Array <WorldTilePointer>::Memory nearbyTileMemories[4];
 
         container::Grid <WorldTile>::Memory worldTileMemory;
+
+        container::Grid <SimulationDomain>::Memory simulationMemory;
 
         void AllocateMap(WorldMap &, container::SmartBlock< container::Array <WorldTilePointer>, 4> &, int);
 

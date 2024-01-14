@@ -32,6 +32,8 @@
 
 #define ADVENTURERS_PER_SETTLEMENT 8
 
+#define MERCHANTS_PER_SETTLEMENT 8
+
 using namespace world::settlement;
 
 void SettlementAllocator::PreallocateMaximumMemory()
@@ -71,6 +73,8 @@ void SettlementAllocator::PreallocateMaximumMemory()
     resourceMemory = container::ArrayAllocator <Resource>::PreallocateMemory (settlementCount, GOODS_TYPES_COUNT);
 
     adventurerMemory = container::PoolAllocator <group::GroupEssence>::PreallocateMemory (settlementCount, ADVENTURERS_PER_SETTLEMENT);
+
+    merchantMemory = container::PoolAllocator <group::GroupEssence>::PreallocateMemory (settlementCount, MERCHANTS_PER_SETTLEMENT);
 }
 
 void SettlementAllocator::AllocateWorldMemory(int worldSize)
@@ -110,6 +114,8 @@ void SettlementAllocator::AllocateWorldMemory(int worldSize)
     resourceAllocator = container::ArrayAllocator <Resource> (settlementCount, GOODS_TYPES_COUNT, resourceMemory);
 
     adventurerAllocator = container::PoolAllocator <group::GroupEssence> (settlementCount, ADVENTURERS_PER_SETTLEMENT, adventurerMemory);
+
+    merchantAllocator = container::PoolAllocator <group::GroupEssence> (settlementCount, MERCHANTS_PER_SETTLEMENT, merchantMemory);
 }
 
 Settlement * SettlementAllocator::Allocate()
@@ -119,6 +125,8 @@ Settlement * SettlementAllocator::Allocate()
     settlement->groupDynamics = groupDynamics.Add();
 
     settlement->groupDynamics->adventurers.Initialize(adventurerAllocator);
+
+    settlement->groupDynamics->merchants.Initialize(merchantAllocator);
 
     auto &tiles = settlement->GetTiles();
     tiles.Initialize(tileAllocator);

@@ -9,6 +9,8 @@
 #include "FlumenBattle/World/Group/GroupAllocator.h"
 #include "FlumenBattle/World/Character/CharacterAllocator.h"
 #include "FlumenBattle/World/PolityAllocator.h"
+#include "FlumenBattle/World/SimulationMap.h"
+#include "FlumenBattle/World/SimulationDomain.h"
 
 using namespace world;
 
@@ -20,6 +22,9 @@ WorldAllocator::WorldAllocator()
     }
 
     worldTileMemory = container::Grid <WorldTile>::PreallocateMemory(MAXIMUM_WORLD_SIZE * MAXIMUM_WORLD_SIZE);
+
+    auto size = MAXIMUM_WORLD_SIZE / TILES_PER_SIMULATION_DOMAIN;
+    simulationMemory = container::Grid <SimulationDomain>::PreallocateMemory(size * size);
 
     polity::PolityAllocator::Get()->PreallocateMaximumMemory();
 
@@ -39,6 +44,9 @@ void WorldAllocator::AllocateMap(WorldMap &map, container::SmartBlock< container
 
     auto height = size;
     map.tiles.Initialize(size, height, worldTileMemory);
+
+    auto simulationSize = size / TILES_PER_SIMULATION_DOMAIN;
+    SimulationMap::Get()->domains.Initialize(simulationSize, simulationSize, simulationMemory);
 }
 
 void WorldAllocator::AllocateSociety(int worldSize)

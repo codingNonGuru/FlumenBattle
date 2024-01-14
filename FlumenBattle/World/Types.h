@@ -90,6 +90,7 @@ namespace world
     enum class SimulationLevels
     {
         BASIC,
+        MEDIUM,
         ADVANCED
     };
 }

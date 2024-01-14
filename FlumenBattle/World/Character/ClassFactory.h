@@ -26,13 +26,27 @@ namespace world::character
 
         static const CharacterClass & BuildFighterClass()
         {
-            static CharacterClass fighterClass = {CharacterClasses::FIGHTER, "Fighter", 10, 16, Array <CharacterAction>({{CharacterActions::ATTACK}, {CharacterActions::DODGE}, {CharacterActions::DASH}})};
+            static CharacterClass fighterClass = 
+            {
+                CharacterClasses::FIGHTER, 
+                "Fighter", 
+                10, 
+                16, 
+                {{CharacterActions::ATTACK}, {CharacterActions::DODGE}, {CharacterActions::DASH}}
+            };
             return fighterClass;
         }
     
         static const CharacterClass & BuildRangerClass()
         {
-            static CharacterClass rangerClass = {CharacterClasses::RANGER, "Ranger", 10, 14, {CharacterActions::ATTACK, CharacterActions::DODGE, CharacterActions::DASH}};
+            static CharacterClass rangerClass = 
+            {
+                CharacterClasses::RANGER, 
+                "Ranger", 
+                10, 
+                14, 
+                {CharacterActions::ATTACK, CharacterActions::DODGE, CharacterActions::DASH}
+            };
             return rangerClass;
         }
 

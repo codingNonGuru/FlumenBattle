@@ -281,6 +281,8 @@ namespace utility
                 return {visitedSettlements, 0, visitedSettlements.GetSize()};
             }
 
+            auto startClock = high_resolution_clock::now();
+
             settlementPaths.Clear();
 
             auto &settlements = world::WorldScene::Get()->GetSettlements();
@@ -346,6 +348,10 @@ namespace utility
                     break;
                 }
             }
+
+            auto stop = high_resolution_clock::now();
+            auto duration = duration_cast<microseconds>(stop - startClock);
+            //std::cout <<"settlement path find duration " << duration.count() << "\n";
 
             auto complexity = championPath->Content.Distance;
             visitedSettlements.Reset();
@@ -603,9 +609,6 @@ namespace utility
 
                                     if(nearbyNodeMapping->Node->Content.Tile->PathData.IsToBeVisited == false)
                                         continue;
-
-                                    //if(nearbyNodeMapping->Node->Content.Tile->PathData.IsVisited == false)
-                                        //continue;
 
                                     searches++;
                                     auto penalty = getPenalty(*nearbyTile) + getPenalty(nearbyNodeMapping->Node->Content.Tile);

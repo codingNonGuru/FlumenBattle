@@ -30,7 +30,7 @@ namespace world::group
 
     Group* GroupFactory::Create(GroupBuildData buildData)
     {
-        auto group = new Group(); //GroupAllocator::Get()->Allocate();
+        auto group = new Group(); 
 
         auto type = GroupTypeFactory::BuildGroupType(buildData.Type);
 

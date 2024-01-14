@@ -145,6 +145,14 @@ void HoverExtension::HandleConfigure()
     growthLabel->Enable();
     basePosition.y += 20.0f;
 
+    simulationLabel = ElementFactory::BuildText(
+        {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
+        {{"JSLAncient", "Small"}, color, "Growth "}
+    );
+    simulationLabel->SetAlignment(Text::Alignments::LEFT);
+    simulationLabel->Enable();
+    basePosition.y += 20.0f;
+
     growthProgress = ElementFactory::BuildProgressBar <ProgressBar>(
         {Size(96, 16), drawOrder_ + 1, {Position2(), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, growthLabel}, {"BaseBar", "SlicedSprite"}},
         {"BaseFillerRed", {6.0f, 8.0f}}
@@ -335,6 +343,10 @@ void HoverExtension::HandleUpdate()
     growthLabel->Setup(text);
 
     growthProgress->SetProgress(settlement->GetGrowthRatio());
+
+    text = "Simulation: ";
+    text << (int)settlement->GetSimulationLevel();
+    simulationLabel->Setup(text);
 
     text = "Industry: ";
     text << settlement->GetIndustrialProduction();

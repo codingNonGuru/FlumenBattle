@@ -14,7 +14,11 @@ using namespace world::group;
 
 #define ADVENTURER_CAP 2
 
-#define ADVENTURER_SPAWN_TIME 12
+#define ADVENTURER_SPAWN_TIME 8
+
+#define MERCHANT_CAP 1
+
+#define MERCHANT_SPAWN_TIME 4
 
 GroupDynamics::GroupDynamics() {}
 
@@ -62,6 +66,8 @@ void GroupDynamics::Update(settlement::Settlement &settlement)
     }
 
     AddAdventurer(settlement);
+
+    AddMerchant(settlement);
 }
 
 void GroupDynamics::StrengthenPatrol()
@@ -75,7 +81,7 @@ void GroupDynamics::StrengthenPatrol()
 
 void GroupDynamics::AddAdventurer(settlement::Settlement &settlement)
 {
-    if(GetAdventurerStrength() > ADVENTURER_CAP)
+    if(GetAdventurerStrength() == ADVENTURER_CAP)
     {
         return;
     }
@@ -88,8 +94,8 @@ void GroupDynamics::AddAdventurer(settlement::Settlement &settlement)
 
     lastSpawnTime = time;
 
-    auto simulationLevel = SimulationLevels::ADVANCED;
-    if(simulationLevel == SimulationLevels::BASIC)
+    auto simulationLevel = settlement.GetSimulationLevel();
+    if(simulationLevel == SimulationLevels::BASIC || simulationLevel == SimulationLevels::MEDIUM)
     {
         *adventurers.Add() = {nullptr};
     }
@@ -100,15 +106,51 @@ void GroupDynamics::AddAdventurer(settlement::Settlement &settlement)
     }
 }
 
+void GroupDynamics::AddMerchant(settlement::Settlement &settlement)
+{
+    if(GetMerchantStrength() == MERCHANT_CAP)
+    {
+        return;
+    }
+
+    auto time = world::WorldScene::Get()->GetTime().TotalHourCount;
+    if(time - lastSpawnTime < MERCHANT_SPAWN_TIME)
+    {
+        return;
+    }
+
+    lastSpawnTime = time;
+
+    auto simulationLevel = settlement.GetSimulationLevel();
+    if(simulationLevel == SimulationLevels::BASIC)
+    {
+        *merchants.Add() = {nullptr};
+    }
+    else
+    {
+        auto merchant = group::GroupFactory::Create({group::GroupClasses::MERCHANT, RaceTypes::ORC, &settlement});
+        *merchants.Add() = {merchant};
+    }
+}
+
 void GroupDynamics::RemoveGroup(const group::Group &group)
 {
     if(group.GetClass() == group::GroupClasses::ADVENTURER)
     {
         adventurers.Remove(&group);
     }
+    else if(group.GetClass() == group::GroupClasses::MERCHANT)
+    {
+        merchants.Remove(&group);
+    }
 }
 
 int GroupDynamics::GetAdventurerStrength()
 {
     return adventurers.GetSize();
+}
+
+int GroupDynamics::GetMerchantStrength()
+{
+    return merchants.GetSize();
 }

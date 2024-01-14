@@ -112,6 +112,8 @@ namespace world
 
     void WorldController::CheckTileSelection()
     {
+        return; 
+        
         auto mesh = MeshManager::GetMesh("Hex"); 
 
         auto map = WorldScene::Get()->GetWorldMap();

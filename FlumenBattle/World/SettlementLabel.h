@@ -56,6 +56,8 @@ namespace world::settlement
 
         Element *border;
 
+        Text *simulationLabel;
+
         Text *growthLabel;
 
         ProgressBar *growthProgress;

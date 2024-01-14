@@ -14,6 +14,8 @@
 #include "FlumenBattle/World/Settlement/Building.h"
 #include "FlumenBattle/World/Group/GroupDynamics.h"
 #include "FlumenBattle/World/Settlement/Path.h"
+#include "FlumenBattle/World/SimulationMap.h"
+#include "FlumenBattle/World/SimulationDomain.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 
 using namespace world::settlement;
@@ -44,6 +46,8 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
     this->banner = banner;
 
     this->location = location;
+
+    this->simulationDomain = world::SimulationMap::Get()->GetDomain(location);
 
     this->population = 1;
 
@@ -420,6 +424,11 @@ int Settlement::GetModifier(Modifiers modifier) const
 const Pool <Condition> &Settlement::GetConditions() const
 {
     return conditionManager->GetConditions();
+}
+
+world::SimulationLevels Settlement::GetSimulationLevel() const
+{
+    return simulationDomain->Level;
 }
 
 void Settlement::RemoveGroup(const group::Group &group)

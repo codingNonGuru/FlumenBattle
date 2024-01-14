@@ -14,6 +14,7 @@
 #include "FlumenBattle/PreGame/Types.h"
 #include "FlumenBattle/World/Settlement/Types.h"
 #include "FlumenBattle/World/PolityAllocator.h"
+#include "FlumenBattle/World/SimulationMap.h"
 
 using namespace world;
 
@@ -21,6 +22,8 @@ using namespace world;
 
 int WorldGenerator::GenerateWorld(pregame::NewWorldData data)
 {
+    assert((data.Size % TILES_PER_SIMULATION_DOMAIN == 0) && "World generation size incompatible with simulation standard.\n");
+
     std::cout<<"World has started generating\n";
 
     auto &scene = *WorldScene::Get();
@@ -341,6 +344,8 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
     scene.battles = battles;
 
     scene.playerGroup = group::GroupFactory::Create({group::GroupClasses::PLAYER, RaceTypes::HUMAN, scene.settlements->GetRandom()});
+
+    SimulationMap::Get()->Initialize();
 }
 
 int WorldGenerator::GetMaximumPolityCount(int worldSize) const

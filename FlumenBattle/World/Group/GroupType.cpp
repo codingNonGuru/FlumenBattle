@@ -12,8 +12,19 @@ namespace world::group
 
     const GroupType * GroupTypeFactory::BuildComputerGroupType(GroupClasses groupClass)
     {
-        static GroupType type = {GroupTypes::COMPUTER, groupClass, MachineMind::Get(), 1};
-        return &type;
+        switch(groupClass)
+        {
+        case GroupClasses::ADVENTURER:
+            {
+                static const GroupType type = {GroupTypes::COMPUTER, groupClass, MachineMind::Get(), 1};
+                return &type;
+            }
+        case GroupClasses::MERCHANT:
+            {
+                static const GroupType type = {GroupTypes::COMPUTER, groupClass, MachineMind::Get(), 1};
+                return &type;
+            }
+        }
     }
 
     const GroupType * GroupTypeFactory::BuildGroupType(GroupClasses groupClass)

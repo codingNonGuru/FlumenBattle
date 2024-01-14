@@ -13,6 +13,8 @@ namespace world
 {
     class WorldTile;
     class WorldScene;
+    struct SimulationDomain;
+    enum class SimulationLevels;
 
     namespace polity
     {
@@ -89,6 +91,8 @@ namespace world::settlement
         Color banner;
 
         world::WorldTile *location;
+
+        world::SimulationDomain *simulationDomain;
 
         Integer population;
 
@@ -185,6 +189,8 @@ namespace world::settlement
         SettlementProduction *GetCurrentProduction() const {return currentProduction;}
 
         polity::Faction *GetFaction() {return faction;}
+
+        world::SimulationLevels GetSimulationLevel() const;
 
         void RemoveGroup(const group::Group &);
 

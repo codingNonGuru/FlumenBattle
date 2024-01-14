@@ -25,6 +25,7 @@
 #include "FlumenBattle/Battle/BattleScene.h"
 #include "FlumenBattle/Utility/Utility.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
+#include "FlumenBattle/World/SimulationMap.h"
 
 #define AWAIT(length) \
     static float timer = 0.0f;\
@@ -117,6 +118,8 @@ namespace world
 
         auto refreshGroups = [this] 
         {
+            auto startClock = high_resolution_clock::now();
+            
             group::GroupAllocator::Get()->PerformCleanup();
 
             for(auto &group : *groups)
@@ -128,6 +131,10 @@ namespace world
             {
                 group.PerformAction();
             }
+
+            auto stop = high_resolution_clock::now();
+            auto duration = duration_cast<microseconds>(stop - startClock);
+            std::cout <<"group refresh duration " << duration.count() << "\n";
         };
 
         refreshGroups();
@@ -136,6 +143,8 @@ namespace world
         {
             //if(time.MinuteCount != 0)
                 //return;
+
+            auto startClock = high_resolution_clock::now();
 
             for(auto &settlement : *settlements)
             {
@@ -156,6 +165,10 @@ namespace world
             {
                 settlement.UpdatePolitics();
             }
+
+            auto stop = high_resolution_clock::now();
+            auto duration = duration_cast<microseconds>(stop - startClock);
+            std::cout <<"settlement refresh duration " << duration.count() << "\n";
         };
 
         refreshSettlements();
@@ -171,16 +184,7 @@ namespace world
 
         auto refreshPolities = [this]
         {
-            /*for(auto &polity : *polities)
-            {
-                std::cout<<&polity<<" "<<polity.GetRuler()->GetName()<<" "<<polity.GetSettlements().GetSize()<<"\n";
-                for(auto settlement : polity.GetSettlements())
-                {
-                    std::cout<<settlement->GetName()<<" ";
-                }
-                std::cout<<"\n-----\n";
-            }
-            std::cout<<"\n";*/
+            auto startClock = high_resolution_clock::now();
 
             factionDecisions.Reset();
             for(auto &polity : *polities)
@@ -200,9 +204,15 @@ namespace world
                     SplitPolity(decision.Faction);
                 }
             }
+
+            auto stop = high_resolution_clock::now();
+            auto duration = duration_cast<microseconds>(stop - startClock);
+            std::cout <<"polity refresh duration " << duration.count() << "\n";
         };
 
         refreshPolities();
+
+        SimulationMap::Get()->Update();
     }
 
     void WorldScene::InitiateEncounter(group::Group *first, group::Group *second)

@@ -32,11 +32,15 @@ namespace world::group
 
         container::Pool <GroupEssence> adventurers;
 
+        container::Pool <GroupEssence> merchants;
+
         void Update(settlement::Settlement &);
 
         void StrengthenPatrol();
 
         void AddAdventurer(settlement::Settlement &);
+
+        void AddMerchant(settlement::Settlement &);
 
         void RemoveGroup(const group::Group &);
 
@@ -46,5 +50,7 @@ namespace world::group
         void Initialize();
 
         int GetAdventurerStrength();
+
+        int GetMerchantStrength();
     };
 }

@@ -34,8 +34,6 @@ namespace world::character
 
         auto groupCount = worldGenerator->GetMaximumGroupCount(worldSize);
 
-        //spellSlotAllocator = container::PoolAllocator <SpellSlot> (MAXIMUM_CHARACTERS_PER_GROUP * groupCount, 8);
-
         conditionAllocator = container::PoolAllocator <Condition> (MAXIMUM_CHARACTERS_PER_GROUP * groupCount, CONDITIONS_PER_CHARACTER);
 
         modifierAllocator = container::ArrayAllocator <Modifier> (MAXIMUM_CHARACTERS_PER_GROUP * groupCount, MODIFIERS_PER_CHARACTER);
@@ -45,7 +43,6 @@ namespace world::character
     {
         auto &characters = group.GetCharacters();
         auto character = characters.Add(); 
-        //character->spellSlots.Initialize(spellSlotAllocator);
 
         ConditionAllocator::Allocate(conditionAllocator, character->conditions);
 
