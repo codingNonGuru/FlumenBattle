@@ -32,7 +32,13 @@ namespace world
     public:
         static constexpr Float TILE_DISTANCING = 60.0f; 
 
+        static constexpr Float WORLD_TILE_SIZE = 34.6666f;
+
         WorldTile* GetTile(Integer3);
+
+        WorldTile* GetTile(Integer2);
+
+        WorldTile* GetTile(Float2);
 
         WorldTile* GetRandomLandTile();
 

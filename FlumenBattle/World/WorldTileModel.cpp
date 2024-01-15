@@ -26,7 +26,7 @@
 #include "FlumenBattle/World/Polity.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 
-#define WORLD_TILE_SIZE 34.6666f
+#define WORLD_TILE_SIZE WorldMap::WORLD_TILE_SIZE
 
 const Float CAMERA_SHIFT_DURATION = 0.5f;
 

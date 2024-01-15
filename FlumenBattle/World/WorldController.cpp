@@ -112,22 +112,33 @@ namespace world
 
     void WorldController::CheckTileSelection()
     {
-        return; 
-        
-        auto mesh = MeshManager::GetMesh("Hex"); 
-
         auto map = WorldScene::Get()->GetWorldMap();
-        for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile) 
+
+        auto camera = RenderManager::GetCamera(Cameras::WORLD);
+
+        auto mousePosition = InputHandler::GetMousePosition();
+        auto worldPosition = camera->GetWorldPosition(mousePosition);
+
+        auto tile = map->GetTile(worldPosition);
+        if(tile == nullptr)
         {
-            bool isMouseOverTile = PickHandler::CheckCollision(camera, mesh, Position3(tile->Position, 0.0f), 33.0f); 
-            if(isMouseOverTile)
+            hoveredTile = nullptr;
+        }
+        else
+        {
+            auto &nearbyTiles = tile->GetNearbyTiles(1);
+
+            auto mesh = MeshManager::GetMesh("Hex"); 
+            for(auto &nearbyTile : nearbyTiles)
             {
-                hoveredTile = tile;
-                return;
+                bool isMouseOverTile = PickHandler::CheckCollision(camera, mesh, Position3(nearbyTile->Position, 0.0f), WorldMap::WORLD_TILE_SIZE); 
+                if(isMouseOverTile)
+                {
+                    hoveredTile = nearbyTile;
+                    return;
+                }   
             }
         }
-
-        hoveredTile = nullptr;
     }
 
     void WorldController::HandleSceneUpdate()

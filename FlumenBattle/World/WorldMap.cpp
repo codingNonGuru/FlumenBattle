@@ -120,6 +120,24 @@ WorldTile* WorldMap::GetTile(Integer3 position)
     return tiles.Get(position.x + position.z / 2, position.z);
 }
 
+WorldTile* WorldMap::GetTile(Integer2 position)
+{
+    return tiles.Get(position.x, position.y);
+}
+
+WorldTile* WorldMap::GetTile(Float2 position)
+{
+    position /= TILE_DISTANCING;
+    position.y /= 0.8666f;
+        
+    if((int)position.y % 2 == 1)
+    {
+        position.x -= 0.5f;
+    }
+
+    return tiles.Get((int)position.x, (int)position.y);
+}
+
 WorldTile* WorldMap::GetRandomTile()
 {
     auto i = utility::GetRandom(0, tiles.GetWidth() - 1);
