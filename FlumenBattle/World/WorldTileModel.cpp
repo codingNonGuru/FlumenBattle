@@ -520,12 +520,12 @@ void WorldTileModel::Render()
         }
     }
 
-    auto hoveredTile = worldController->GetHoveredTile();
+    /*auto hoveredTile = worldController->GetHoveredTile();
     bool canPlayerTravel = worldScene->GetPlayerGroup()->ValidateAction(group::GroupActions::TRAVEL, {hoveredTile});
     if(hoveredTile != nullptr && canPlayerTravel)
     {
         bootSprite->Draw(camera, {hoveredTile->Position, Scale2(0.3f, 0.3f), Opacity(1.0f), DrawOrder(-2)});
-    }
+    }*/
 
     for(auto &group : *worldScene->groups)
     {
@@ -576,7 +576,7 @@ void WorldTileModel::Render()
 
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - startClock);
-    std::cout <<"world render duration " << duration.count() << "\n";
+    //std::cout <<"world render duration " << duration.count() << "\n";
 
     /*auto group = [&] ()
     {

@@ -317,7 +317,7 @@ namespace world::group
         }
 
         if(group.travelActionData.Progress < group.action->GetDuration(group))
-            return;
+            return {};
 
         group.SetTile(group.travelActionData.Destination);
         group.travelActionData.Destination = nullptr;
@@ -336,6 +336,8 @@ namespace world::group
         }
 
         group.CancelAction();
+
+        return {};
     }
 
     GroupActionResult GroupActionPerformer::Persuade(Group& group)
