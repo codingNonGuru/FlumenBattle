@@ -1,6 +1,7 @@
 #pragma once
 
 #include <concepts>
+#include <chrono>
 
 #include "FlumenCore/Singleton.h"
 #include "FlumenCore/Container/HexGrid.h"
@@ -10,8 +11,12 @@
 #include "FlumenBattle/World/WorldMap.h"
 #include "FlumenBattle/Types.hpp"
 
-#include <chrono>
 using namespace std::chrono;
+
+namespace world
+{
+    class WorldTile;
+}
 
 namespace utility
 {
@@ -30,6 +35,7 @@ namespace utility
     {
         friend class core::Singleton <Pathfinder <TileType>>;
 
+    public:
         struct TileData
         {
             TileType *Tile;
@@ -82,6 +88,7 @@ namespace utility
             Integer Length;
         };
 
+    private:
         typedef container::Graph <TileData, 6> TileGraph;
         typedef container::Graph <SettlementData, 8> SettlementGraph;
 
@@ -663,117 +670,18 @@ namespace utility
                 }
             }
         }
-    
-        PathData FindPathDjikstraOld(TileType *startTile, TileType *endTile, Integer range = 7)
-        {
-            auto getPenalty = [] (TileType *tile)
-            {
-                auto penalties = tile->GetTravelPenalty();
-                if(penalties.Penalties.Find(TravelPenaltyTypes::SEA) != nullptr)
-                {
-                    return 10;
-                }
-                else if(penalties.Penalties.Find(TravelPenaltyTypes::MOUNTAINS) != nullptr)
-                {
-                    return 5;
-                }
-                else if(penalties.Penalties.Find(TravelPenaltyTypes::WOODS) != nullptr)
-                {
-                    return 3;
-                }
-                else
-                {
-                    return 1;
-                }
-            };
-            
-            auto start = high_resolution_clock::now();
+    };
 
-            tilePaths.Clear();
+    struct WorldPathData
+    {
+        container::SmartBlock <world::WorldTile *, 32> Tiles;
 
-            auto coordinates = (startTile->SquareCoordinates + endTile->SquareCoordinates) / 2;
-            auto middleTile = world::WorldScene::Get()->GetTiles().Get(coordinates.x, coordinates.y);
+        Integer Complexity;
 
-            auto &tiles = middleTile->GetNearbyTiles(range);
-            for(auto &tile : tiles)
-            {
-                tile->PathData.IsVisited = false;
-                tile->PathData.IsToBeVisited = true;
-            }
+        Integer Length;
 
-            startTile->PathData.IsVisited = true;
-            startTile->PathData.IsToBeVisited = true;
+        WorldPathData() {}
 
-            visitedTiles.Reset();
-            *visitedTiles.Add() = startTile;
-
-            typename TileGraph::Node *championPath = tilePaths.StartGraph({startTile, 0});
-
-            int searches = 0;
-            while(true)
-            {
-                auto bestComplexity = INT_MAX;
-                typename TileGraph::Node *bestNode = nullptr;
-                TileType *bestTile = nullptr;
-                
-                for(auto &tile : visitedTiles)
-                {
-                    searches++;
-                    if(tile.Tile->PathData.IsVisited == true)
-                    {
-                        auto &nearbyTiles = tile.Tile->GetNearbyTiles();
-                        for(auto nearbyTile = nearbyTiles.GetStart(); nearbyTile != nearbyTiles.GetEnd(); ++nearbyTile)
-                        {
-                            if((*nearbyTile)->PathData.IsVisited == false && (*nearbyTile)->PathData.IsToBeVisited == true)
-                            {
-                                auto &nodes = tilePaths.GetNodes();
-                                for(auto &node : nodes)
-                                {
-                                    if(node.Content.Tile->GetDistanceTo(**nearbyTile) == 1)
-                                    {
-                                        auto penalty = getPenalty(*nearbyTile) + getPenalty(node.Content.Tile);
-                                        if(node.Content.Distance + penalty < bestComplexity)
-                                        {
-                                            bestComplexity = node.Content.Distance + penalty;
-                                            bestNode = &node;
-                                            bestTile = *nearbyTile;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                auto newNode = bestNode->AddNode({bestTile, bestComplexity});
-                championPath = newNode;
-                bestTile->PathData.IsVisited = true;
-                *visitedTiles.Add() = bestTile;
-
-                if(championPath->Content.Tile == endTile)
-                {
-                    break;
-                }
-            }
-
-            //std::cout<<"searches "<<searches<<"\n";
-            //std::cout<<"length "<<startTile->GetDistanceTo(*endTile)<<"\n";
-            auto stop = high_resolution_clock::now();
-            auto duration = duration_cast<microseconds>(stop - start);
-            std::cout <<"duration " << duration.count() << "\n\n";
-
-            auto complexity = championPath->Content.Distance;
-            visitedTiles.Reset();
-            while(true)
-            {
-                *visitedTiles.Add() = championPath->Content.Tile;
-
-                championPath = championPath->GetPrevious();
-                if(championPath == nullptr)
-                {
-                    return {visitedTiles, complexity / 2, visitedTiles.GetSize()};
-                }
-            }
-        }
+        WorldPathData(const utility::Pathfinder <world::WorldTile>::PathData &);
     };
 }

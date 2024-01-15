@@ -3,10 +3,12 @@
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldController.h"
+#include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/GroupActionFactory.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/GroupActionData.h"
+#include "FlumenBattle/Utility/Pathfinder.h"
 
 using namespace world::group;
 
@@ -37,7 +39,19 @@ HumanMind::HumanMind()
     OnSkillCheckRolled = new Delegate();
 }
 
-void HumanMind::DetermineAction(Group &group) const {}
+void HumanMind::DetermineAction(Group &group) const 
+{
+    if(group.travelActionData.IsOnRoute)
+    {
+        if(group.GetDestination() == nullptr)
+        {
+            group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+        }
+    }
+    else
+    {
+    }
+}
 
 void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result) const
 {
@@ -125,14 +139,25 @@ void HumanMind::HandleTakeLongRest()
 
 void HumanMind::HandleTravel()
 {
-    auto tile = WorldController::Get()->GetHoveredTile();
-    if(tile == nullptr)
+    auto plannedPath = WorldController::Get()->GetPlannedPath();
+    if(plannedPath.Tiles.GetSize() == 0)
         return;
 
     auto playerGroup = WorldScene::Get()->GetPlayerGroup();
-    if(playerGroup->ValidateAction(GroupActions::TRAVEL, {tile}))
+    playerGroup->travelActionData.IsOnRoute = true;
+
+    playerGroup->travelActionData.PlannedDestinationCount = plannedPath.Tiles.GetSize() - 1;
+    for(int i = 1; i < plannedPath.Tiles.GetSize(); ++i)
     {
-        playerGroup->SelectAction(GroupActions::TRAVEL, {tile});
+        playerGroup->travelActionData.Route[i - 1] = *plannedPath.Tiles[i];
+    }
+    playerGroup->travelActionData.IsOnRoute = true;
+
+    playerGroup->SelectAction(GroupActions::TRAVEL, {playerGroup->travelActionData.Route[0]});
+
+    //if(playerGroup->ValidateAction(GroupActions::TRAVEL, {tile}))
+    {
+        //playerGroup->SelectAction(GroupActions::TRAVEL, {tile});
         //selectedActionResult = playerGroup->SelectAction(GroupActions::TRAVEL, {tile});
 
         //OnActionSelected->Invoke();

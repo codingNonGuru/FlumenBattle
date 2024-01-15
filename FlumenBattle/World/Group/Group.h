@@ -44,6 +44,7 @@ namespace world::group
     class GroupActionValidator;
     class Encounter;
     class MachineMind;
+    class HumanMind;
     enum class GroupClasses;
 
     class Group
@@ -67,6 +68,8 @@ namespace world::group
         friend class GroupAllocator;
 
         friend class MachineMind;
+
+        friend class HumanMind;
 
         friend class world::WorldTileModel;
 
@@ -185,6 +188,8 @@ namespace world::group
         void ExitBattle();
 
         WorldTile *GetDestination() const {return travelActionData.Destination;}
+
+        WorldTile *GetFinalDestination() const;
 
         void SetTile(WorldTile *tile);
 

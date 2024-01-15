@@ -42,6 +42,8 @@ static Sprite *metalSprite = nullptr;
 
 static Sprite *dotSprite = nullptr;
 
+static Sprite *xSprite = nullptr;
+
 using namespace world;
 
 static WorldController * worldController = nullptr;
@@ -62,6 +64,8 @@ WorldTileModel::WorldTileModel()
     metalSprite = new Sprite(groupShader, render::TextureManager::GetTexture("Metal"));
 
     dotSprite = new Sprite(groupShader, render::TextureManager::GetTexture("Dot")); 
+
+    xSprite = new Sprite(groupShader, render::TextureManager::GetTexture("X")); 
 
     worldScene = WorldScene::Get();
 
@@ -545,26 +549,29 @@ void WorldTileModel::Render()
         }
     }
 
-    auto currentTile = worldScene->GetPlayerGroup()->GetTile();
-    hoveredTile = worldController->GetHoveredTile();
-    if(hoveredTile != nullptr && hoveredTile != currentTile && currentTile->GetDistanceTo(*hoveredTile) < 8)
+    auto pathData = WorldController::Get()->GetPlannedPath();
+
+    for(auto &tile : pathData.Tiles)
     {
-        auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(currentTile, hoveredTile, 5);
+        if(&tile == pathData.Tiles.GetLast() - 1)
+            break;
 
-        for(auto &tile : pathData.Tiles)
+        auto nextTile = &tile + 1;
+
+        float factor = 0.0f;
+        for(int i = 0; i <= 5; i++, factor += 0.2f)
         {
-            if(&tile == pathData.Tiles.GetEnd() - 1)
-                break;
-
-            auto nextTile = &tile + 1;
-
-            float factor = 0.0f;
-            for(int i = 0; i <= 10; i++, factor += 0.1f)
-            {
-                auto position = tile.Tile->Position * factor + nextTile->Tile->Position * (1.0f - factor);
-                dotSprite->Draw(camera, {position, Scale2(0.25f, 0.25f), Opacity(0.6f), DrawOrder(-2)});
-            }
+            auto position = tile->Position * factor + (*nextTile)->Position * (1.0f - factor);
+            dotSprite->Draw(camera, {position, Scale2(0.3f, 0.3f), Opacity(0.6f), DrawOrder(-2)});
         }
+    }
+
+    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    auto finalDestination = playerGroup->GetFinalDestination();
+    if(finalDestination != nullptr)
+    {
+        auto position = finalDestination->Position;
+        xSprite->Draw(camera, {position, Scale2(1.0f, 1.0f), Opacity(1.0f), DrawOrder(-2)});
     }
 
     auto stop = high_resolution_clock::now();

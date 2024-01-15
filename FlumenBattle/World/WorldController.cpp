@@ -18,6 +18,7 @@
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/Utility/Pathfinder.h"
 
 static const Float CAMERA_PAN_SPEED = 800.0f;
 
@@ -148,6 +149,8 @@ namespace world
         }
     }
 
+    static utility::WorldPathData plannedPath;
+
     void WorldController::HandleSceneUpdate()
     {
         CheckTileSelection();
@@ -162,6 +165,17 @@ namespace world
         {
             camera->Zoom(1.0f + zoomSpeed);
         }
+
+        if(hoveredTile == nullptr)
+            return;
+
+        auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+        auto playerLocation = playerGroup->GetTile();
+
+        if(hoveredTile == playerLocation || playerLocation->GetDistanceTo(*hoveredTile) >= 8)
+            return;
+
+        plannedPath = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(hoveredTile, playerLocation, 5);
 
         /*auto scene = WorldScene::Get();
 
@@ -326,5 +340,10 @@ namespace world
     group::Encounter * WorldController::GetPlayerBattle() const 
     {
         return WorldScene::Get()->GetPlayerGroup()->GetEncounter();
+    }
+
+    utility::WorldPathData WorldController::GetPlannedPath() const
+    {
+        return plannedPath;
     }
 }

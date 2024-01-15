@@ -354,4 +354,9 @@ namespace world::group
     {
         return type->Class;
     }
+
+    WorldTile *Group::GetFinalDestination() const
+    {
+        return travelActionData.IsOnRoute == true ? travelActionData.Route[travelActionData.PlannedDestinationCount - 1] : nullptr;
+    }
 }

@@ -4,6 +4,11 @@
 
 class Delegate;
 
+namespace utility
+{
+    struct WorldPathData;
+}
+
 namespace world
 {
     namespace group
@@ -93,5 +98,7 @@ namespace world
         bool ShouldDisplayResources() const {return isResourceDisplayActive;}
 
         bool CanColonize() const {return canColonize;}
+
+        utility::WorldPathData GetPlannedPath() const;
     };
 }
