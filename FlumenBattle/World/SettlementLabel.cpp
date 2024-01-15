@@ -344,8 +344,8 @@ void HoverExtension::HandleUpdate()
 
     growthProgress->SetProgress(settlement->GetGrowthRatio());
 
-    text = "Simulation: ";
-    text << (int)settlement->GetSimulationLevel();
+    text = "Sim: ";
+    text << (int)settlement->GetSimulationLevel() << ", " << (int)settlement->HasAvailableColonySpots();
     simulationLabel->Setup(text);
 
     text = "Industry: ";

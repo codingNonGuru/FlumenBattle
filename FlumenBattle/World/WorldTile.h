@@ -153,6 +153,8 @@ namespace world
 
         ResourceAmount GetResource(settlement::ResourceTypes type) {return *resources[(int)type];}
 
+        const WorldMap *GetMap() const {return map;}
+
         void SetResource(settlement::ResourceTypes type, ResourceAmount amount) {*resources[(int)type] = amount;}
     };
 }

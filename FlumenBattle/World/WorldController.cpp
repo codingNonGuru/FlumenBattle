@@ -68,7 +68,14 @@ namespace world
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_6, {this, &WorldController::HandleCharacterSelected});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_I, {this, &WorldController::HandleInventoryPressed});
 
+        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_C, {this, &WorldController::HandleColonizationSwitch});
+
         camera = RenderManager::GetCamera(Cameras::WORLD);
+    }
+
+    void WorldController::HandleColonizationSwitch()
+    {
+        canColonize = canColonize ? false : true;
     }
 
     void WorldController::HandlePlayerEncounterInitiated()

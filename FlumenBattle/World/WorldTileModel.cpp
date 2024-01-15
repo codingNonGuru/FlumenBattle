@@ -468,6 +468,8 @@ void WorldTileModel::RenderTilesAdvanced()
 
 void WorldTileModel::Render() 
 {
+    auto startClock = high_resolution_clock::now();
+
     auto map = worldScene->GetWorldMap();
 
     if(positionBuffer == nullptr)
@@ -564,6 +566,10 @@ void WorldTileModel::Render()
             }
         }
     }
+
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - startClock);
+    std::cout <<"world render duration " << duration.count() << "\n";
 
     /*auto group = [&] ()
     {

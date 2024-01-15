@@ -31,6 +31,8 @@ void Polity::Initialize(settlement::Settlement *ruler)
     }
 
     ExtendRealm(ruler);
+
+    ruler->UpdateColonialMap();
 }
 
 void Polity::ExtendRealm(settlement::Settlement *domain)
@@ -40,9 +42,19 @@ void Polity::ExtendRealm(settlement::Settlement *domain)
     domain->SetPolity(this);
 
     MapInterest(domain);
+
+    /*for(auto &neighbour : neighboursToRemoved)
+    {
+        MapInterest(neighbour);
+    }*/
 }
 
 static auto neighboursToRemoved = container::Array <world::settlement::Settlement *> (256);
+
+const container::Array <world::settlement::Settlement *> &Polity::GetSecederNeighbours() const
+{
+    return neighboursToRemoved;
+}
 
 void Polity::RemoveSettlement(settlement::Settlement *settlement)
 {

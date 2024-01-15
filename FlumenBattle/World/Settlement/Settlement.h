@@ -59,6 +59,8 @@ namespace world::settlement
     {
         Path *Path;
 
+        Settlement *Other;
+
         bool HasShipped {false};
 
         bool operator== (const settlement::Path &path) const;
@@ -106,9 +108,13 @@ namespace world::settlement
 
         bool areNearbyTilesTaken {false};
 
+        bool hasAvailableColonySpots;
+
         Pool <SettlementTile> tiles;
 
         polity::Polity *polity;
+
+        int distanceToCapital;
 
         Pool <Affliction> afflictions;
 
@@ -145,7 +151,7 @@ namespace world::settlement
 
         void Initialize(Word, Color, world::WorldTile *);
 
-        world::WorldTile * FindColonySpot();
+        world::WorldTile *FindColonySpot();
 
         void WorkNewTile();
 
@@ -214,6 +220,8 @@ namespace world::settlement
 
         void UpdatePolitics();
 
+        void UpdateDistanceToCapital();
+
         void PrepareTransport();
 
         void SendTransport();
@@ -222,6 +230,8 @@ namespace world::settlement
 
         void AddPath(Path *path);
 
+        void UpdateColonialMap();
+
         Path *GetPathTo(Settlement *settlement);
 
         const Pool <Link> &GetLinks() {return links;}
@@ -229,5 +239,7 @@ namespace world::settlement
         PathData &GetPathData() {return pathData;}
 
         const Pool <Condition> &GetConditions() const;
+
+        bool HasAvailableColonySpots() const {return hasAvailableColonySpots;}
     };
 }

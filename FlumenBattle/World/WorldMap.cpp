@@ -115,17 +115,17 @@ const container::Block <WorldTile *, 6> WorldMap::GetNearbyTiles(WorldTile* tile
     return nearbyTiles;
 }
 
-WorldTile* WorldMap::GetTile(Integer3 position)
+WorldTile* WorldMap::GetTile(Integer3 position) const
 {
     return tiles.Get(position.x + position.z / 2, position.z);
 }
 
-WorldTile* WorldMap::GetTile(Integer2 position)
+WorldTile* WorldMap::GetTile(Integer2 position) const
 {
     return tiles.Get(position.x, position.y);
 }
 
-WorldTile* WorldMap::GetTile(Float2 position)
+WorldTile* WorldMap::GetTile(Float2 position) const
 {
     position /= TILE_DISTANCING;
     position.y /= 0.8666f;

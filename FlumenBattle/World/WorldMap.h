@@ -34,11 +34,11 @@ namespace world
 
         static constexpr Float WORLD_TILE_SIZE = 34.6666f;
 
-        WorldTile* GetTile(Integer3);
+        WorldTile* GetTile(Integer3) const;
 
-        WorldTile* GetTile(Integer2);
+        WorldTile* GetTile(Integer2) const;
 
-        WorldTile* GetTile(Float2);
+        WorldTile* GetTile(Float2) const;
 
         WorldTile* GetRandomLandTile();
 

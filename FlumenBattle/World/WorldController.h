@@ -14,8 +14,10 @@ namespace world
     class WorldTile;
     class WorldInterface;
 
-    class WorldController : public core::Singleton<WorldController>
+    class WorldController : public core::Singleton <WorldController>
     {
+        friend class core::Singleton <WorldController>;
+
         friend class WorldInterface;
 
         WorldTile *hoveredTile;
@@ -23,6 +25,8 @@ namespace world
         bool isInEncounterMode {false};
 
         bool isResourceDisplayActive {false};
+
+        bool canColonize {true};
 
         struct CharacterSelection
         {
@@ -34,6 +38,8 @@ namespace world
         Delegate *onInventoryPressed;
 
         Delegate *onCharacterSelected;
+
+        WorldController();
 
         void HandleSceneUpdate();
 
@@ -63,6 +69,8 @@ namespace world
 
         void HandleInventoryPressed();
 
+        void HandleColonizationSwitch();
+
         void EnableHardInput();
 
         void DisableHardInput();
@@ -70,8 +78,6 @@ namespace world
         CharacterSelection GetSelectionData() const {return characterSelection;}
 
     public:
-        WorldController();
-
         void Enable();
 
         void Disable();
@@ -85,5 +91,7 @@ namespace world
         void DisableEncounterMode();
 
         bool ShouldDisplayResources() const {return isResourceDisplayActive;}
+
+        bool CanColonize() const {return canColonize;}
     };
 }

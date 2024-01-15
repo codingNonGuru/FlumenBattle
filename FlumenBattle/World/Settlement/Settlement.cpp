@@ -5,6 +5,8 @@
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/WorldBiome.h"
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/WorldMap.h"
+#include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/World/Polity.h"
 #include "FlumenBattle/World/Faction.h"
 #include "FlumenBattle/World/Settlement/Affliction.h"
@@ -82,7 +84,32 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
 
 void Settlement::AddPath(Path *path) 
 {
-    *links.Add() = {path};
+    *links.Add() = {path, path->GetOther(this)};
+}
+
+void Settlement::UpdateColonialMap()
+{
+    auto &interestMap = polity->GetInterestMap();
+    auto centerMapping = interestMap.GetTile(location->HexCoordinates);
+
+    for(int i = MINIMUM_COLONIZATION_RANGE; i <= MAXIMUM_COLONIZATION_RANGE; ++i)
+    {
+        auto &mappingRing = interestMap.GetTileRing(centerMapping, i);
+        for(auto &mapping : mappingRing)
+        {
+            if(mapping->GetOwner() != this)
+                continue;
+
+            auto tile = location->GetMap()->GetTile(mapping->Coordinates);
+            if(tile->HasBiome(WorldBiomes::STEPPE) == true && tile->IsBorderingOwnedTile() == false)
+            {
+                hasAvailableColonySpots = true;
+                return;
+            }
+        }
+    }
+
+    hasAvailableColonySpots = false;
 }
 
 Path *Settlement::GetPathTo(Settlement *settlement) 
@@ -313,7 +340,7 @@ void Settlement::DecideProduction()
     {
         *currentProduction = SettlementProductionFactory::Get()->Create(SettlementProductionOptions::PATROL);
     }
-    else if(population >= 3)
+    else if(population >= 3 && hasAvailableColonySpots == true)
     {
         auto colonySpot = FindColonySpot();
         if(colonySpot != nullptr)
@@ -669,9 +696,20 @@ void Settlement::UpdatePolitics()
     if(modifier.IsValid == true)
         return;
 
-    auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathToSettlement(this, polity->GetRuler());
-    if(pathData.Complexity > 12)
+    if(distanceToCapital > 12)
     {
         faction = polity->FindFaction(this);
     }
+}
+
+void Settlement::UpdateDistanceToCapital()
+{
+    if(polity->GetRuler() == this)
+    {
+        distanceToCapital = 0;
+        return;
+    }
+
+    auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathToSettlement(this, polity->GetRuler());
+    distanceToCapital = pathData.Complexity;
 }

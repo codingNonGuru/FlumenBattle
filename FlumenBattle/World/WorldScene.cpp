@@ -303,6 +303,20 @@ namespace world
             ForgePath(settlement, other, MAXIMUM_COLONIZATION_RANGE);                        
         }
 
+        settlement->UpdateColonialMap();
+        settlement->UpdateDistanceToCapital();
+
+        auto &links = settlement->GetLinks();
+        for(auto &link : links)
+        {
+            auto other = link.Other;
+            if(other->GetPolity() == polity)
+            {
+                other->UpdateColonialMap();
+                other->UpdateDistanceToCapital();
+            }
+        }
+
         foundedSettlement = settlement;
         OnSettlementFounded->Invoke();
     }
@@ -353,6 +367,19 @@ namespace world
                 continue;
                 
             newPolity->ExtendRealm(member);
+        }
+
+        for(auto &member : faction->GetMembers())
+        {
+            member->UpdateDistanceToCapital();
+            member->UpdateColonialMap();
+        }
+
+        auto &neighbours = polity->GetSecederNeighbours();
+        for(auto &neighbour : neighbours)
+        {
+            neighbour->UpdateDistanceToCapital();
+            neighbour->UpdateColonialMap();
         }
 
         polity::PolityAllocator::Get()->FreeFaction(polity, faction);

@@ -116,5 +116,7 @@ namespace world::polity
         int GetResearchProgress() const;
 
         bool HasDiscoveredTechnology(science::Technologies) const;
+
+        const container::Array <world::settlement::Settlement *> &GetSecederNeighbours() const;
     };
 }
