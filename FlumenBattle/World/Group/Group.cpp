@@ -286,8 +286,13 @@ namespace world::group
         }
         else
         {
-            return (float)travelActionData.Progress / (float)action->GetDuration(*this);   
+            return (float)travelActionData.Progress / (float)travelActionData.Duration;   
         }
+    }
+
+    float Group::GetTravelProgress() const
+    {
+        return (float)travelActionData.Progress / (float)travelActionData.Duration;//->GetDuration(*this);   
     }
 
     int Group::GetRemainingActionDuration() const

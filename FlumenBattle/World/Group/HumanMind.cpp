@@ -144,24 +144,30 @@ void HumanMind::HandleTravel()
         return;
 
     auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    if(playerGroup->ValidateAction(GroupActions::TRAVEL, {*plannedPath.Tiles[1]}) == false)
+        return;
+
+    if(playerGroup->travelActionData.IsOnRoute && playerGroup->GetTravelProgress() < 0.5f)
+    {
+        playerGroup->CancelAction();
+    }
+
+    auto routeIndexDisplace = 0;
+    if(playerGroup->travelActionData.IsOnRoute && playerGroup->GetTravelProgress() >= 0.5f)
+    {
+        routeIndexDisplace = 1;
+    }
+
     playerGroup->travelActionData.IsOnRoute = true;
 
-    playerGroup->travelActionData.PlannedDestinationCount = plannedPath.Tiles.GetSize() - 1;
+    playerGroup->travelActionData.PlannedDestinationCount = routeIndexDisplace + plannedPath.Tiles.GetSize() - 1;
     for(int i = 1; i < plannedPath.Tiles.GetSize(); ++i)
     {
-        playerGroup->travelActionData.Route[i - 1] = *plannedPath.Tiles[i];
+        playerGroup->travelActionData.Route[routeIndexDisplace + i - 1] = *plannedPath.Tiles[i];
     }
     playerGroup->travelActionData.IsOnRoute = true;
 
     playerGroup->SelectAction(GroupActions::TRAVEL, {playerGroup->travelActionData.Route[0]});
-
-    //if(playerGroup->ValidateAction(GroupActions::TRAVEL, {tile}))
-    {
-        //playerGroup->SelectAction(GroupActions::TRAVEL, {tile});
-        //selectedActionResult = playerGroup->SelectAction(GroupActions::TRAVEL, {tile});
-
-        //OnActionSelected->Invoke();
-    }
 }
 
 void HumanMind::HandleSlackenAction()

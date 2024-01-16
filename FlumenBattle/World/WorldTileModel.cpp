@@ -529,12 +529,22 @@ void WorldTileModel::Render()
 
     for(auto &group : *worldScene->groups)
     {
-        auto position = group.GetTile()->Position;
-        if(group.GetAction() != nullptr && group.GetAction()->Type == group::GroupActions::TRAVEL)
-        {
-            auto progress = group.GetActionProgress();
-            position = position * (1.0f - progress) + group.GetDestination()->Position * progress;
-        }
+        auto position = [&] ()
+        { 
+            if(group.GetDestination() != nullptr)
+            {   
+                auto progress = group.GetTravelProgress();
+
+                auto startPosition = group.GetDestination()->Position;
+                auto endPosition = group.GetTravelStartPoint()->Position;
+                return endPosition * (1.0f - progress) + startPosition * progress;
+            }
+            else
+            {
+                return group.GetTile()->Position;
+            }
+        } ();
+
         position += Position2(0, -15);
 
         groupSprite->Draw(

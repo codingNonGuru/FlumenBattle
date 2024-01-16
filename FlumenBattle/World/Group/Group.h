@@ -93,6 +93,8 @@ namespace world::group
 
             Integer ProgressSinceCheck {0};
 
+            Integer Duration {0};
+
             bool IsLost {false};
 
             WorldTile *Route[8];
@@ -190,6 +192,10 @@ namespace world::group
         WorldTile *GetDestination() const {return travelActionData.Destination;}
 
         WorldTile *GetFinalDestination() const;
+
+        WorldTile *GetTravelStartPoint() const {return travelActionData.Source;}
+
+        float GetTravelProgress() const;
 
         void SetTile(WorldTile *tile);
 

@@ -140,6 +140,8 @@ namespace world::group
 
             group.travelActionData.Destination = actionData.TravelDestination;
             group.travelActionData.Source = group.GetTile();
+
+            group.travelActionData.Duration = group.action->GetDuration(group);
         }
 
         /*auto difficultyClass = 15;
@@ -173,7 +175,7 @@ namespace world::group
     {
         auto durationModifier = 0;
 
-        durationModifier += group.tile->GetTravelPenalty().Value;
+        durationModifier += group.travelActionData.Source->GetTravelPenalty().Value;
         durationModifier += group.travelActionData.Destination->GetTravelPenalty().Value;
 
         return group.action->BaseDuration + durationModifier * 6 * GroupAction::ACTION_PROGRESS_RATE;
@@ -306,7 +308,7 @@ namespace world::group
             auto success = utility::RollD20Dice(difficultyClass, survivalBonus + roadBonus);
             if(success.IsAnyFailure() == true)
             {
-                group.travelActionData.IsLost = true;
+                group.travelActionData.IsLost = false;//true;
             }
             else
             {
@@ -316,10 +318,15 @@ namespace world::group
             return {success, SkillTypes::SURVIVAL};
         }
 
-        if(group.travelActionData.Progress < group.action->GetDuration(group))
+        if(group.travelActionData.Progress < group.action->GetDuration(group) / 2)
             return {};
 
         group.SetTile(group.travelActionData.Destination);
+
+        if(group.travelActionData.Progress < group.action->GetDuration(group))
+            return {};
+
+        //group.SetTile(group.travelActionData.Destination);
         group.travelActionData.Destination = nullptr;
         group.travelActionData.Source = nullptr;
         group.travelActionData.PlannedDestinationCount--;
@@ -399,11 +406,14 @@ namespace world::group
 
     bool GroupActionValidator::CanTravel(Group &group, const GroupActionData &data)
     {
-        if((group.travelActionData.Destination == nullptr && data.TravelDestination == nullptr) ||
-        (group.travelActionData.Destination != nullptr && data.TravelDestination != group.travelActionData.Destination))
-            return false;
+        //if(group.travelActionData.Destination != nullptr && group.GetTravelProgress() > 0.5f)
+            //return false;
 
-        if(data.TravelDestination->Type == WorldTiles::SEA || data.TravelDestination->GetGroup() != nullptr)
+        /*if((group.travelActionData.Destination == nullptr && data.TravelDestination == nullptr) ||
+        (group.travelActionData.Destination != nullptr && data.TravelDestination != group.travelActionData.Destination))
+            return false;*/
+
+        if(data.TravelDestination->Type == WorldTiles::SEA)
             return false;
 
         if(data.TravelDestination->GetDistanceTo(*group.tile) != 1)
