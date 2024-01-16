@@ -28,6 +28,10 @@ GroupActionResult selectedActionResult;
 
 GroupActionResult performedActionResult;
 
+utility::WorldPathData extendedPath;
+
+int extendedPathIndex = 0;
+
 HumanMind::HumanMind()
 {
     OnActionSelected = new Delegate();
@@ -42,10 +46,21 @@ HumanMind::HumanMind()
 void HumanMind::DetermineAction(Group &group) const 
 {
     if(group.travelActionData.IsOnRoute)
-    {
+    {    
         if(group.GetDestination() == nullptr)
         {
             group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+
+            if(extendedPath.Tiles.GetSize() != 0)
+            {
+                group.travelActionData.Route[TILES_PER_GROUP_ROUTE - 1] = *extendedPath.Tiles[extendedPathIndex];
+                group.travelActionData.PlannedDestinationCount++;
+                extendedPathIndex++;
+                if(extendedPathIndex == extendedPath.Tiles.GetSize())
+                {
+                    extendedPath.Tiles.Clear();
+                }
+            }
         }
     }
     else
@@ -147,6 +162,9 @@ void HumanMind::HandleTravel()
     if(playerGroup->ValidateAction(GroupActions::TRAVEL, {*plannedPath.Tiles[1]}) == false)
         return;
 
+    extendedPath.Tiles.Clear();
+    extendedPathIndex = 0;
+
     if(playerGroup->travelActionData.IsOnRoute && playerGroup->GetTravelProgress() < 0.5f)
     {
         playerGroup->CancelAction();
@@ -160,12 +178,26 @@ void HumanMind::HandleTravel()
 
     playerGroup->travelActionData.IsOnRoute = true;
 
-    playerGroup->travelActionData.PlannedDestinationCount = routeIndexDisplace + plannedPath.Tiles.GetSize() - 1;
-    for(int i = 1; i < plannedPath.Tiles.GetSize(); ++i)
+    auto pathSize = routeIndexDisplace + plannedPath.Tiles.GetSize() - 1;
+    playerGroup->travelActionData.PlannedDestinationCount = pathSize <= TILES_PER_GROUP_ROUTE ? pathSize : TILES_PER_GROUP_ROUTE;
+    for(int i = 1; i < (plannedPath.Tiles.GetSize() <= TILES_PER_GROUP_ROUTE + 1 ? plannedPath.Tiles.GetSize() : TILES_PER_GROUP_ROUTE + 1); ++i)
     {
-        playerGroup->travelActionData.Route[routeIndexDisplace + i - 1] = *plannedPath.Tiles[i];
+        auto index = routeIndexDisplace + i - 1;
+        if(index >= TILES_PER_GROUP_ROUTE)
+            continue;
+
+        playerGroup->travelActionData.Route[index] = *plannedPath.Tiles[i];
     }
     playerGroup->travelActionData.IsOnRoute = true;
+
+    if(pathSize > TILES_PER_GROUP_ROUTE)
+    {
+        for(int i = TILES_PER_GROUP_ROUTE + 1; i < plannedPath.Tiles.GetSize() + routeIndexDisplace; ++i)
+        {
+            *extendedPath.Tiles.Add() = *plannedPath.Tiles[i - routeIndexDisplace];
+        }
+        extendedPathIndex = 0;
+    }
 
     playerGroup->SelectAction(GroupActions::TRAVEL, {playerGroup->travelActionData.Route[0]});
 }

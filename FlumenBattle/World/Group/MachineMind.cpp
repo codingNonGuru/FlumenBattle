@@ -63,7 +63,7 @@ namespace world::group
                     }
                 } ();
 
-                if(path != nullptr && path->Tiles.GetSize() < 8)
+                if(path != nullptr && path->Tiles.GetSize() < TILES_PER_GROUP_ROUTE)
                 {
                     auto destination = group.tile == group.home->GetLocation() ? path->GetOther(group.home) : group.home;
                     const auto route = path->GetTilesTo(destination);
@@ -76,11 +76,6 @@ namespace world::group
                     group.travelActionData.IsOnRoute = true;
 
                     group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
-
-                    if(group.travelActionData.PlannedDestinationCount > 10000)
-                    {
-                        std::cout<<"\n";
-                    }
                 }
             }
         }

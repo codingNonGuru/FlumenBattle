@@ -28,6 +28,8 @@ static const Float TRANSITION_TO_BATTLE_DELAY = 0.5f;
 
 static Camera *camera = nullptr;
 
+const int PLANNED_PATH_MAXIMUM_SIZE = 12;
+
 namespace world
 {
     WorldController::WorldController()
@@ -172,10 +174,10 @@ namespace world
         auto playerGroup = WorldScene::Get()->GetPlayerGroup();
         auto playerLocation = playerGroup->GetTile();
 
-        if(hoveredTile == playerLocation || playerLocation->GetDistanceTo(*hoveredTile) >= 8)
+        if(hoveredTile == playerLocation || playerLocation->GetDistanceTo(*hoveredTile) >= PLANNED_PATH_MAXIMUM_SIZE)
             return;
 
-        plannedPath = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(hoveredTile, playerLocation, 5);
+        plannedPath = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(hoveredTile, playerLocation, PLANNED_PATH_MAXIMUM_SIZE - 4);
 
         /*auto scene = WorldScene::Get();
 

@@ -4,6 +4,7 @@
 
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/World/Types.h"
+#include "FlumenBattle/World/Group/Types.h"
 #include "FlumenBattle/World/Group/GroupActionData.h"
 #include "FlumenBattle/Utility/Utility.h"
 #include "FlumenBattle/World/Character/Item.h"
@@ -97,7 +98,7 @@ namespace world::group
 
             bool IsLost {false};
 
-            WorldTile *Route[8];
+            WorldTile *Route[TILES_PER_GROUP_ROUTE];
 
             bool IsOnRoute {false};
 
