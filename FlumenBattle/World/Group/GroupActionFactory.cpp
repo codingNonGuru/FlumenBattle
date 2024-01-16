@@ -184,7 +184,7 @@ namespace world::group
     GroupActionResult GroupActionPerformer::TakeShortRest(Group& group)
     {
         if(group.actionProgress != group.action->BaseDuration)
-            return;
+            return {};
         
         auto &characters = group.GetCharacters();
         for(auto &character : characters)

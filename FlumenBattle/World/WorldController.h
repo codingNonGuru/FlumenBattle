@@ -31,6 +31,8 @@ namespace world
 
         bool isResourceDisplayActive {false};
 
+        bool isTravelPlanActive {false};
+
         bool canColonize {true};
 
         struct CharacterSelection
@@ -76,6 +78,8 @@ namespace world
 
         void HandleColonizationSwitch();
 
+        void HandleTravelModeToggle();
+
         void EnableHardInput();
 
         void DisableHardInput();
@@ -98,6 +102,8 @@ namespace world
         bool ShouldDisplayResources() const {return isResourceDisplayActive;}
 
         bool CanColonize() const {return canColonize;}
+
+        bool IsTravelPlanActive() const {return isTravelPlanActive;}
 
         utility::WorldPathData GetPlannedPath() const;
     };

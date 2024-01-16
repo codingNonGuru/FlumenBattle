@@ -71,7 +71,8 @@ namespace world
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_6, {this, &WorldController::HandleCharacterSelected});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_I, {this, &WorldController::HandleInventoryPressed});
 
-        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_C, {this, &WorldController::HandleColonizationSwitch});
+        //InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_C, {this, &WorldController::HandleColonizationSwitch});
+        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_T, {this, &WorldController::HandleTravelModeToggle});
 
         camera = RenderManager::GetCamera(Cameras::WORLD);
     }
@@ -79,6 +80,11 @@ namespace world
     void WorldController::HandleColonizationSwitch()
     {
         canColonize = canColonize ? false : true;
+    }
+
+    void WorldController::HandleTravelModeToggle()
+    {
+        isTravelPlanActive = isTravelPlanActive ? false : true;
     }
 
     void WorldController::HandlePlayerEncounterInitiated()
@@ -174,7 +180,7 @@ namespace world
         auto playerGroup = WorldScene::Get()->GetPlayerGroup();
         auto playerLocation = playerGroup->GetTile();
 
-        if(hoveredTile == playerLocation || playerLocation->GetDistanceTo(*hoveredTile) >= PLANNED_PATH_MAXIMUM_SIZE)
+        if(hoveredTile == playerLocation || playerLocation->GetDistanceTo(*hoveredTile) >= PLANNED_PATH_MAXIMUM_SIZE || isTravelPlanActive == false)
             return;
 
         plannedPath = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(hoveredTile, playerLocation, PLANNED_PATH_MAXIMUM_SIZE - 4);
@@ -337,6 +343,7 @@ namespace world
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_5, {this, &WorldController::HandleCharacterSelected});
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_6, {this, &WorldController::HandleCharacterSelected});
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_I, {this, &WorldController::HandleInventoryPressed});
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_T, {this, &WorldController::HandleTravelModeToggle});
     }
 
     group::Encounter * WorldController::GetPlayerBattle() const 

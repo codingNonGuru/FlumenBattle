@@ -1,4 +1,5 @@
 #include "FlumenEngine/Core/InputHandler.hpp"
+#include "FlumenEngine/Interface/Element.hpp"
 
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/WorldScene.h"
@@ -9,6 +10,7 @@
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/GroupActionData.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
+#include "FlumenBattle/WorldInterface.h"
 
 using namespace world::group;
 
@@ -17,8 +19,6 @@ static const SDL_Scancode searchInputKey = SDL_Scancode::SDL_SCANCODE_S;
 static const SDL_Scancode takeShortRestInputKey = SDL_Scancode::SDL_SCANCODE_R;
 
 static const SDL_Scancode takeLongRestInputKey = SDL_Scancode::SDL_SCANCODE_L;
-
-static const SDL_Scancode travelInputKey = SDL_Scancode::SDL_SCANCODE_T;
 
 static const SDL_Scancode slackenActionKey = SDL_Scancode::SDL_SCANCODE_LEFTBRACKET;
 
@@ -93,11 +93,12 @@ void HumanMind::EnableInput()
 
     InputHandler::RegisterEvent(takeLongRestInputKey, {this, &HumanMind::HandleTakeLongRest});
 
-    InputHandler::RegisterEvent(travelInputKey, {this, &HumanMind::HandleTravel});
-
     InputHandler::RegisterEvent(slackenActionKey, {this, &HumanMind::HandleSlackenAction});
 
     InputHandler::RegisterEvent(intensifyActionKey, {this, &HumanMind::HandleIntensifyAction});
+
+    auto canvas = WorldInterface::Get()->GetCanvas();
+    canvas->GetLeftClickEvents() += {this, &HumanMind::HandleTravel};
 }
 
 void HumanMind::DisableInput()
@@ -108,11 +109,12 @@ void HumanMind::DisableInput()
 
     InputHandler::UnregisterEvent(takeLongRestInputKey, {this, &HumanMind::HandleTakeLongRest});
 
-    InputHandler::UnregisterEvent(travelInputKey, {this, &HumanMind::HandleTravel});
-
     InputHandler::UnregisterEvent(slackenActionKey, {this, &HumanMind::HandleSlackenAction});
 
     InputHandler::UnregisterEvent(intensifyActionKey, {this, &HumanMind::HandleIntensifyAction});
+
+    auto canvas = WorldInterface::Get()->GetCanvas();
+    canvas->GetLeftClickEvents() -= {this, &HumanMind::HandleTravel};
 }
 
 const GroupActionResult & HumanMind::GetSelectedActionResult()
@@ -212,4 +214,39 @@ void HumanMind::HandleIntensifyAction()
 {
     auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     playerGroup->IntensifyAction();
+}
+
+const utility::WorldPathData HumanMind::GetFullPathData()
+{
+    utility::WorldPathData pathData;
+
+    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+    for(int i = 0; i < playerGroup->travelActionData.PlannedDestinationCount; ++i)
+    {
+        *pathData.Tiles.Add() = playerGroup->travelActionData.Route[i];
+    }
+
+    if(extendedPath.Tiles.GetSize() == 0)
+        return pathData;
+
+    for(int i = extendedPathIndex; i < extendedPath.Tiles.GetSize(); ++i)
+    {
+        *pathData.Tiles.Add() = *extendedPath.Tiles[i];
+    }
+
+    return pathData;
+}
+
+world::WorldTile *HumanMind::GetFinalDestination() const
+{
+    if(extendedPath.Tiles.GetSize() == 0)
+    {
+        auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+        return playerGroup->GetFinalDestination();
+    }
+    else
+    {
+        return *(extendedPath.Tiles.GetLast() - 1);
+    }
 }

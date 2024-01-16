@@ -4,6 +4,7 @@
 
 class WorldInfoPanel;
 class Element;
+class Text;
 
 namespace world
 {
@@ -49,6 +50,8 @@ namespace world
 
         settlement::HoverExtension *hoverExtension;
 
+        Text *travelLabel;
+
         void Update();
 
         void HandlePlayerEncounter();
@@ -75,5 +78,7 @@ namespace world
         void Disable();    
 
         settlement::HoverExtension *GetHoverExtension() {return hoverExtension;}
+
+        Element *GetCanvas() const {return canvas;}
     };
 }

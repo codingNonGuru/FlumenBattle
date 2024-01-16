@@ -6,12 +6,26 @@
 
 class Delegate;
 
+namespace world
+{
+    class WorldTile;
+}
+
+namespace utility
+{
+    class WorldPathData;
+}
+
 namespace world::group
 {
     struct GroupActionResult;
 
     class HumanMind : public GroupMind, public core::Singleton <HumanMind>
     {
+        friend class core::Singleton <HumanMind>;
+
+        HumanMind();
+
         void DetermineAction(Group &) const override;
 
         void RegisterActionPerformance(Group &, GroupActionResult) const override;
@@ -39,8 +53,6 @@ namespace world::group
 
         Delegate *OnSkillCheckRolled;
 
-        HumanMind();
-
         void EnableInput();
 
         void DisableInput();
@@ -48,5 +60,9 @@ namespace world::group
         const GroupActionResult & GetSelectedActionResult();
 
         const GroupActionResult & GetPerformedActionResult();
+
+        const utility::WorldPathData GetFullPathData();
+
+        world::WorldTile *GetFinalDestination() const;
     };  
 };

@@ -134,7 +134,7 @@ namespace world
 
             auto stop = high_resolution_clock::now();
             auto duration = duration_cast<microseconds>(stop - startClock);
-            std::cout <<"group refresh duration " << duration.count() << "\n";
+            //std::cout <<"group refresh duration " << duration.count() << "\n";
         };
 
         refreshGroups();
@@ -168,7 +168,7 @@ namespace world
 
             auto stop = high_resolution_clock::now();
             auto duration = duration_cast<microseconds>(stop - startClock);
-            std::cout <<"settlement refresh duration " << duration.count() << "\n";
+            //std::cout <<"settlement refresh duration " << duration.count() << "\n";
         };
 
         refreshSettlements();
@@ -207,7 +207,7 @@ namespace world
 
             auto stop = high_resolution_clock::now();
             auto duration = duration_cast<microseconds>(stop - startClock);
-            std::cout <<"polity refresh duration " << duration.count() << "\n";
+            //std::cout <<"polity refresh duration " << duration.count() << "\n";
         };
 
         refreshPolities();

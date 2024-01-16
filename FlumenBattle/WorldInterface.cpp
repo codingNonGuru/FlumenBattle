@@ -24,9 +24,12 @@
 
 using namespace world;
 
+WorldController *controller = nullptr;
+
 WorldInterface::WorldInterface()
 {
     canvas = ElementFactory::BuildCanvas();
+    canvas->SetInteractivity(true);
 
     decisionMenu = ElementFactory::BuildElement<WorldDecisionMenu>(
         {Size(1080, 220), DrawOrder(6), {Position2(0.0f, 420.0f), canvas}, {"Sprite"}, Opacity(0.75f)}
@@ -75,6 +78,11 @@ WorldInterface::WorldInterface()
     );
     hoverExtension->Disable();
 
+    travelLabel = ElementFactory::BuildText(
+        {Size(200, 50), DrawOrder(3), {Position2(), ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, canvas}},
+        {{"JSLAncient", "Medium"}, Color::RED * 0.5f, "Plan your travel"}
+    );
+
     /*pathLabels.Initialize(1024);
     for(int i = 0; i < 1024; i++)
     {
@@ -108,9 +116,11 @@ void WorldInterface::Initialize()
 
     *WorldScene::Get()->OnSettlementFounded += {this, &WorldInterface::HandleSettlementFounded};
 
-    *WorldController::Get()->onInventoryPressed += {this, &WorldInterface::HandleInventoryPressed};
+    controller = WorldController::Get();
 
-    *WorldController::Get()->onCharacterSelected += {this, &WorldInterface::HandleCharacterSelected};
+    *controller->onInventoryPressed += {this, &WorldInterface::HandleInventoryPressed};
+
+    *controller->onCharacterSelected += {this, &WorldInterface::HandleCharacterSelected};
 }
 
 void WorldInterface::Enable()
@@ -223,6 +233,15 @@ void WorldInterface::Update()
 
             label->Enable();
         }
+    }
+
+    if(controller->IsTravelPlanActive() == true)
+    {
+        travelLabel->Enable();
+    }
+    else
+    {
+        travelLabel->Disable();
     }
 
     /*for(auto &label : pathLabels)

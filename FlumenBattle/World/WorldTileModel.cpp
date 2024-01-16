@@ -25,6 +25,7 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Polity.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
+#include "FlumenBattle/World/Group/HumanMind.h"
 
 #define WORLD_TILE_SIZE WorldMap::WORLD_TILE_SIZE
 
@@ -470,6 +471,42 @@ void WorldTileModel::RenderTilesAdvanced()
     newHexShader->Unbind();
 }
 
+void WorldTileModel::RenderPlayerPath()
+{
+    if(WorldController::Get()->IsTravelPlanActive() == true)
+    {
+        auto pathData = WorldController::Get()->GetPlannedPath();
+
+        for(auto &tile : pathData.Tiles)
+        {
+            if(&tile == pathData.Tiles.GetLast() - 1)
+                break;
+
+            auto nextTile = &tile + 1;
+
+            float factor = 0.0f;
+            for(int i = 0; i <= 5; i++, factor += 0.2f)
+            {
+                auto position = tile->Position * factor + (*nextTile)->Position * (1.0f - factor);
+                dotSprite->Draw(camera, {position, Scale2(0.3f, 0.3f), Opacity(0.6f), DrawOrder(-2)});
+            }
+        }
+    }
+
+    const auto fullPathData = group::HumanMind::Get()->GetFullPathData();
+    for(auto &tile : fullPathData.Tiles)
+    {
+        dotSprite->Draw(camera, {tile->Position, Scale2(0.75f, 0.75f), Opacity(0.6f), DrawOrder(-2)});
+    }
+
+    auto finalDestination = group::HumanMind::Get()->GetFinalDestination();
+    if(finalDestination != nullptr)
+    {
+        auto position = finalDestination->Position;
+        xSprite->Draw(camera, {position, Scale2(1.0f, 1.0f), Opacity(1.0f), DrawOrder(-2)});
+    }
+}
+
 void WorldTileModel::Render() 
 {
     auto startClock = high_resolution_clock::now();
@@ -520,12 +557,7 @@ void WorldTileModel::Render()
         }
     }
 
-    /*auto hoveredTile = worldController->GetHoveredTile();
-    bool canPlayerTravel = worldScene->GetPlayerGroup()->ValidateAction(group::GroupActions::TRAVEL, {hoveredTile});
-    if(hoveredTile != nullptr && canPlayerTravel)
-    {
-        bootSprite->Draw(camera, {hoveredTile->Position, Scale2(0.3f, 0.3f), Opacity(1.0f), DrawOrder(-2)});
-    }*/
+    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
 
     for(auto &group : *worldScene->groups)
     {
@@ -552,6 +584,9 @@ void WorldTileModel::Render()
             {position, Scale2(18, 30), Opacity(1.0f), DrawOrder(-1)}
             );
 
+        if(&group == playerGroup)
+            continue;
+
         for(int i = 0; i < group.travelActionData.PlannedDestinationCount; ++i)
         {
             auto tile = group.travelActionData.Route[i];
@@ -559,54 +594,9 @@ void WorldTileModel::Render()
         }
     }
 
-    auto pathData = WorldController::Get()->GetPlannedPath();
-
-    for(auto &tile : pathData.Tiles)
-    {
-        if(&tile == pathData.Tiles.GetLast() - 1)
-            break;
-
-        auto nextTile = &tile + 1;
-
-        float factor = 0.0f;
-        for(int i = 0; i <= 5; i++, factor += 0.2f)
-        {
-            auto position = tile->Position * factor + (*nextTile)->Position * (1.0f - factor);
-            dotSprite->Draw(camera, {position, Scale2(0.3f, 0.3f), Opacity(0.6f), DrawOrder(-2)});
-        }
-    }
-
-    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
-    auto finalDestination = playerGroup->GetFinalDestination();
-    if(finalDestination != nullptr)
-    {
-        auto position = finalDestination->Position;
-        xSprite->Draw(camera, {position, Scale2(1.0f, 1.0f), Opacity(1.0f), DrawOrder(-2)});
-    }
+    RenderPlayerPath();
 
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - startClock);
     //std::cout <<"world render duration " << duration.count() << "\n";
-
-    /*auto group = [&] ()
-    {
-        while(true)
-        {
-            auto randomGroup = worldScene->GetGroups()->GetRandom();
-            if(randomGroup != worldScene->GetPlayerGroup())
-                return randomGroup;
-        }
-    } ();*/
-
-
-    /*auto destination = worldScene->GetPlayerGroup()->GetDestination();
-    if(destination)
-    {
-        float factor = 0.0f;
-        for(int i = 0; i <= 10; i++, factor += 0.1f)
-        {
-            auto position = destination->Position * factor + worldScene->GetPlayerGroup()->GetTile()->Position * (1.0f - factor);
-            dotSprite->Draw(camera, {position, Scale2(0.15f, 0.15f), Opacity(1.0f), DrawOrder(-2)});
-        }
-    }*/
 }

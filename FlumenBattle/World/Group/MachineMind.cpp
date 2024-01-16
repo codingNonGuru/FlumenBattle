@@ -155,11 +155,6 @@ namespace world::group
                 group.travelActionData.IsOnRoute = true;
 
                 group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
-
-                if(group.travelActionData.PlannedDestinationCount > 10000)
-                {
-                    std::cout<<"\n";
-                }
             }
             
         }

@@ -676,9 +676,9 @@ namespace utility
     {
         container::SmartBlock <world::WorldTile *, 32> Tiles;
 
-        Integer Complexity;
+        Integer Complexity {0};
 
-        Integer Length;
+        Integer Length {0};
 
         WorldPathData() {}
 

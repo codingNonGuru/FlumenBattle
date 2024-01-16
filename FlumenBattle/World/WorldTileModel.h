@@ -39,6 +39,8 @@ namespace world
 
         void RenderTilesAdvanced();
 
+        void RenderPlayerPath();
+
     public:
         void Initialize() override;
 
