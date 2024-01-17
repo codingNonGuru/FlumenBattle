@@ -113,10 +113,6 @@ void Polity::UndergoDivision(Faction *faction)
 
 void Polity::MapInterest(settlement::Settlement *domain)
 {
-    auto &mappedTiles3 = utility::Pathfinder <WorldTile>::Get()->MapAreaImproved(domain->GetLocation(), MAXIMUM_COLONIZATION_RANGE - 3);
-
-    auto &mappedTiles4 = utility::Pathfinder <WorldTile>::Get()->MapArea(domain->GetLocation(), MAXIMUM_COLONIZATION_RANGE - 3);
-
     auto &mappedTiles2 = utility::Pathfinder <WorldTile>::Get()->MapAreaImproved(domain->GetLocation(), MAXIMUM_COLONIZATION_RANGE);
 
     auto &mappedTiles = utility::Pathfinder <WorldTile>::Get()->MapArea(domain->GetLocation(), MAXIMUM_COLONIZATION_RANGE);

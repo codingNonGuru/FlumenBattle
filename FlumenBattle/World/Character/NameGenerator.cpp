@@ -2,12 +2,12 @@
 
 using namespace world::character;
 
-container::Array <Word> particles = {
+static container::Array <Word> particles = {
     "nab", "leh", "tok", "pur", "dom", "dal", "mil", "neb", "sep", "fam", "fon", 
     "lim", "fek", "shar", "gash", "zesh", "zam", "shib", "saf", "jol", "dur", "rod", "nor", "rand", "bar"
     };
 
-container::Array <Word> startParticles = {
+static container::Array <Word> startParticles = {
     "maeri", "rae", "gaeli", "ziu", "sha", "tra", "brai", "belo", "teo", "clio", "lama", "doro", "rana", "gama", "vala", "dava", "blaya", "fae", 
     "asa", "oro", "isa", "ula", "ara", "ama", "ela", "eno", "oni", "iba", "zara", "noli", "zefi", "kena", "awa", "aya", "halda", "ere", "alra", "efra"
     };

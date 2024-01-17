@@ -3,6 +3,7 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/SettlementAllocator.h"
 #include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Settlement/NameGenerator.h"
 
 using namespace world::settlement;
 
@@ -36,11 +37,7 @@ Array <Color> banners = {
     Color::BLUE * 0.75f + Color::CYAN * 0.25f,
     };
 
-static Array <Word> names = {"Safehaven", "Ironforge", "Grimwood", "Frostmane", "Billham", "Stoneground", "Hallmark"};
-
 Integer lastBannerIndex = 0;
-
-Integer lastNameIndex = 0;
 
 Settlement* SettlementFactory::Create(SettlementBuildData buildData)
 {
@@ -48,19 +45,14 @@ Settlement* SettlementFactory::Create(SettlementBuildData buildData)
 
     auto banner = banners.Get(lastBannerIndex++);
 
-    auto name = names.Get(lastNameIndex++);
+    auto name = NameGenerator::Get()->GenerateName();
 
     if(lastBannerIndex == banners.GetCapacity())
     {
         lastBannerIndex = 0;
     }
 
-    if(lastNameIndex == names.GetCapacity())
-    {
-        lastNameIndex = 0;
-    }
-
-    settlement->Initialize(*name, *banner, buildData.Location);
+    settlement->Initialize(name, *banner, buildData.Location);
 
     buildData.Location->Settle(settlement);
 
