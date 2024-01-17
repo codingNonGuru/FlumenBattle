@@ -19,7 +19,7 @@ utility::Result utility::RollD100Dice()
     return utility::GetRandom(1, 100);
 }
 
-utility::Success utility::RollD20Dice(DifficultyClass difficultyClass, Bonus bonus = 0)
+utility::Success utility::RollD20Dice(DifficultyClass difficultyClass, Bonus bonus)
 {
     auto diceRoll = utility::RollD20Dice();
     auto compoundedRoll = diceRoll + bonus;

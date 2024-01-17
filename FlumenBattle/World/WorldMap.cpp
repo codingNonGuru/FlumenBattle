@@ -61,7 +61,7 @@ const Array<WorldTile*> & WorldMap::GetTileRing(WorldTile* tile, Integer range)
     return *nearbyTileBuffers[0];
 }
 
-const Array<WorldTile*> & WorldMap::GetNearbyTiles(WorldTile* tile, Integer range, int bufferIndex = 0)
+const Array<WorldTile*> & WorldMap::GetNearbyTiles(WorldTile* tile, Integer range, int bufferIndex)
 {
     auto *nearbyTiles = nearbyTileBuffers[bufferIndex];
 
@@ -159,7 +159,7 @@ WorldTile* WorldMap::GetRandomLandTile()
     return nullptr;
 }
 
-WorldTile* WorldMap::GetEmptyRandomTile(bool isLand = true)
+WorldTile* WorldMap::GetEmptyRandomTile(bool isLand)
 {
     while(true)
     {

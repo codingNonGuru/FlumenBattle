@@ -321,12 +321,12 @@ namespace world
         OnSettlementFounded->Invoke();
     }
 
-    settlement::Settlement * WorldScene::ForgePath(settlement::Settlement *from, settlement::Settlement *to, int complexityLimit = INT_MAX)
+    settlement::Settlement *WorldScene::ForgePath(settlement::Settlement *from, settlement::Settlement *to, int complexityLimit)
     {
         auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(from->GetLocation(), to->GetLocation(), MAXIMUM_COLONIZATION_RANGE - 2);
         
         if(pathData.Complexity > complexityLimit)
-            return;
+            return nullptr;
 
         auto &tileDatas = pathData.Tiles; 
         if(tileDatas.GetSize() > 0)

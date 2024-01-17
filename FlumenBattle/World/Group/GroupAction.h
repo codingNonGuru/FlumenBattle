@@ -44,9 +44,9 @@ namespace world::group
 
         bool HasVaryingIntensity;
 
-        bool CanPerform(Group &group, const GroupActionData &data = GroupActionData());
+        bool CanPerform(Group &group, const GroupActionData &data = GroupActionData()) const;
 
-        GroupActionResult Initiate(Group &group, const GroupActionData &data = GroupActionData())
+        GroupActionResult Initiate(Group &group, const GroupActionData &data = GroupActionData()) const
         {
             if(onInitiate)
             {

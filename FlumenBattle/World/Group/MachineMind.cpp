@@ -66,7 +66,7 @@ namespace world::group
                 if(path != nullptr && path->Tiles.GetSize() < TILES_PER_GROUP_ROUTE)
                 {
                     auto destination = group.tile == group.home->GetLocation() ? path->GetOther(group.home) : group.home;
-                    const auto route = path->GetTilesTo(destination);
+                    auto route = path->GetTilesTo(destination);
 
                     group.travelActionData.PlannedDestinationCount = route.GetSize() - 1;
                     for(int i = 1; i < route.GetSize(); ++i)

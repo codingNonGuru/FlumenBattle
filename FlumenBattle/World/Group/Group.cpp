@@ -178,7 +178,7 @@ namespace world::group
     GroupActionResult Group::SelectAction(GroupActions actionType, const GroupActionData &actionData)
     {
         if(action && action->Type == actionType)
-            return;
+            return {};
 
         action = GroupActionFactory::Get()->BuildAction(actionType);
 

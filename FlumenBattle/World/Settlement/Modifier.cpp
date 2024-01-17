@@ -12,7 +12,7 @@ void ModifierManager::ClearModifiers()
     modifiers.Reset();
 }
 
-ModifierResult ModifierManager::GetAmount(Modifiers type)
+ModifierResult ModifierManager::GetAmount(Modifiers type) const
 {
     auto amount = 0;
 

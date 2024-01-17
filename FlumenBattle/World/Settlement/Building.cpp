@@ -11,7 +11,7 @@ namespace world::settlement
     {
         using BuildingType::BuildingType; 
 
-        void HandleApplyEffect(Settlement &settlement) override
+        void HandleApplyEffect(Settlement &settlement) const override
         {
             settlement.AddModifier({Modifiers::SCIENCE_PRODUCTION, 1});
         }
@@ -21,7 +21,7 @@ namespace world::settlement
     {
         using BuildingType::BuildingType; 
 
-        void HandleApplyEffect(Settlement &settlement) override
+        void HandleApplyEffect(Settlement &settlement) const override
         {
             settlement.AddModifier({Modifiers::SAVING_THROWS_AGAINST_DISEASE, 1});
         }
@@ -31,7 +31,7 @@ namespace world::settlement
     {
         using BuildingType::BuildingType; 
 
-        void HandleApplyEffect(Settlement &settlement) override
+        void HandleApplyEffect(Settlement &settlement) const override
         {
             settlement.AddModifier({Modifiers::FOOD_PRODUCTION_ON_DESERT_TILES, 1});
         }
@@ -85,18 +85,16 @@ void BuildingManager::AddBuilding(BuildingTypes type)
 {
     const auto &building = BuildingFactory::Get()->Create(type);
 
-    auto buildingPointer = buildingSet.Get().Add();
+    auto buildingPointer = buildingSet.buildings.Add();
 
     *buildingPointer = building;
 }
 
 void BuildingManager::RemoveBuilding(BuildingTypes type)
 {
-    auto &buildings = buildingSet.Get();
+    auto buildingPointer = buildingSet.buildings.Find(type);
 
-    auto buildingPointer = buildings.Find(type);
-
-    buildings.RemoveAt(buildingPointer);
+    buildingSet.buildings.RemoveAt(buildingPointer);
 }
 
 void BuildingManager::ApplyModifiers(Settlement &settlement) const
@@ -146,7 +144,7 @@ void BuildingDamager::DamageBuildings(const disaster::Earthquake &earthquake, Bu
     
     auto settlementModifier = buildingManager.settlement->GetModifier(settlement::Modifiers::BUILDING_SAVING_THROWS_AGAINST_EARTHQUAKES);
 
-    auto &buildings = buildingManager.buildingSet.Get();
+    auto &buildings = buildingManager.buildingSet.buildings;
     for(auto &building : buildings)
     {
         auto heightBonus = building.IsTall() ? 0 : 1;

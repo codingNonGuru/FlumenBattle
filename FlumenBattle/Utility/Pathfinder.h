@@ -10,12 +10,18 @@
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldMap.h"
 #include "FlumenBattle/Types.hpp"
+#include "FlumenBattle/World/Settlement/Settlement.h"
 
 using namespace std::chrono;
 
 namespace world
 {
     class WorldTile;
+
+    namespace settlement
+    {
+        class Settlement;
+    }
 }
 
 namespace utility
@@ -178,15 +184,15 @@ namespace utility
                         continue;
 
                     auto &nearbyTiles = tile.Tile->GetNearbyTiles();
-                    for(auto nearbyTile = nearbyTiles.GetStart(); nearbyTile != nearbyTiles.GetEnd(); ++nearbyTile)
+                    for(auto &nearbyTile : nearbyTiles)
                     {
-                        if((*nearbyTile)->PathData.IsVisited == false && (*nearbyTile)->PathData.IsToBeVisited == true)
+                        if(nearbyTile->PathData.IsVisited == false && nearbyTile->PathData.IsToBeVisited == true)
                         {
-                            auto penalty = GetPenalty(*nearbyTile);
+                            auto penalty = GetPenalty(nearbyTile);
                             if(tile.Distance + penalty < bestComplexity)
                             {
                                 bestComplexity = tile.Distance + penalty;
-                                bestTile.Tile = *nearbyTile;
+                                bestTile.Tile = nearbyTile;
                             }
                         }
                     }
@@ -239,17 +245,17 @@ namespace utility
                         continue;
 
                     auto &nearbyTiles = tile.Tile->GetNearbyTiles();
-                    for(auto nearbyTile = nearbyTiles.GetStart(); nearbyTile != nearbyTiles.GetEnd(); ++nearbyTile)
+                    for(auto &nearbyTile : nearbyTiles)
                     {
-                        if((*nearbyTile)->PathData.IsVisited == false && (*nearbyTile)->PathData.IsToBeVisited == true)
+                        if(nearbyTile->PathData.IsVisited == false && nearbyTile->PathData.IsToBeVisited == true)
                         {
-                            auto penalty = GetPenalty(*nearbyTile);
+                            auto penalty = GetPenalty(nearbyTile);
                             if(tile.Distance + penalty < bestComplexity)
                             {
                                 bestComplexity = tile.Distance + penalty;
-                                bestTile.Tile = *nearbyTile;
+                                bestTile.Tile = nearbyTile;
 
-                                if(penalty == 1 && championTile.Distance + 1 == bestComplexity)
+                                if(penalty == 1 && championTile.Distance == bestComplexity)
                                 {
                                     goto hasFoundShortcut;
                                 }
@@ -600,11 +606,11 @@ namespace utility
                     {
                         auto &nearbyTiles = tile.Tile->GetNearbyTiles();
                         aloha = nearbyTiles;
-                        for(auto nearbyTile = nearbyTiles.GetStart(); nearbyTile != nearbyTiles.GetEnd(); ++nearbyTile)
+                        for(auto &nearbyTile : nearbyTiles)
                         {
-                            if((*nearbyTile)->PathData.IsVisited == false && (*nearbyTile)->PathData.IsToBeVisited == true)
+                            if(nearbyTile->PathData.IsVisited == false && nearbyTile->PathData.IsToBeVisited == true)
                             {                               
-                                auto nearbyTileNode = nodeMap.GetTile((*nearbyTile)->HexCoordinates);
+                                auto nearbyTileNode = nodeMap.GetTile(nearbyTile->HexCoordinates);
                                 auto &nearbyNodeMappings = nodeMap.GetNearbyTiles(nearbyTileNode);
                                 for(auto &nearbyNodeMapping : nearbyNodeMappings)
                                 {
@@ -618,12 +624,12 @@ namespace utility
                                         continue;
 
                                     searches++;
-                                    auto penalty = getPenalty(*nearbyTile) + getPenalty(nearbyNodeMapping->Node->Content.Tile);
+                                    auto penalty = getPenalty(nearbyTile) + getPenalty(nearbyNodeMapping->Node->Content.Tile);
                                     if(nearbyNodeMapping->Node->Content.Distance + penalty < bestComplexity)
                                     {
                                         bestComplexity = nearbyNodeMapping->Node->Content.Distance + penalty;
                                         bestNode = nearbyNodeMapping->Node;
-                                        bestTile = *nearbyTile;
+                                        bestTile = nearbyTile;
 
                                         if(penalty == 2 && bestComplexity == championPath->Content.Distance)
                                         {
@@ -643,7 +649,6 @@ namespace utility
                 bestTile->PathData.IsVisited = true;
                 *visitedTiles.Add() = bestTile;
                 nodeMap.GetTile(bestTile->HexCoordinates)->Node = newNode;
-                //bestTile->PathData.Node = newNode;
 
                 if(championPath->Content.Tile == endTile)
                 {

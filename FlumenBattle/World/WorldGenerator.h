@@ -13,7 +13,7 @@ namespace world
 {
     class WorldScene;
 
-    class WorldGenerator : public core::Singleton<WorldGenerator>
+    class WorldGenerator : public core::Singleton <WorldGenerator>
     {
         friend class WorldScene;
 
@@ -32,6 +32,6 @@ namespace world
 
         bool HasFinishedGenerating() const {return hasFinishedGenerating;}
 
-        void ResetGenerationProcess() const {hasFinishedGenerating = false;}
+        void ResetGenerationProcess() {hasFinishedGenerating = false;}
     };
 }

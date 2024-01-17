@@ -61,7 +61,7 @@ namespace world
             }
         }
 
-        WorldTime& operator++()
+        WorldTime& operator++(int)
         {
             IsNewHour = false;
             IsNewDay = false;

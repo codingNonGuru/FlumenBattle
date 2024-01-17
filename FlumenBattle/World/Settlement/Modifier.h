@@ -46,7 +46,7 @@ namespace world::settlement
 
         void ClearModifiers();
 
-        ModifierResult GetAmount(Modifiers);
+        ModifierResult GetAmount(Modifiers) const;
     };
 
     class ModifierAllocator

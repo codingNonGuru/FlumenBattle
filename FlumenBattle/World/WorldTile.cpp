@@ -60,7 +60,7 @@ void WorldTile::Initialize()
     Shade = color;
 }
 
-const Array <WorldTile*> & WorldTile::GetNearbyTiles(Integer range, int bufferIndex = 0)
+const Array <WorldTile*> & WorldTile::GetNearbyTiles(Integer range, int bufferIndex)
 {
     return map->GetNearbyTiles(this, range, bufferIndex);
 }

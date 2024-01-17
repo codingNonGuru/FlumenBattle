@@ -58,7 +58,7 @@ namespace world::settlement
 
         ConditionSet& operator=(const ConditionSet &) = delete;
 
-        const container::Pool <Condition> &Get() const {return &conditions;}
+        const container::Pool <Condition> &Get() const {return conditions;}
     };
 
     class ConditionManager

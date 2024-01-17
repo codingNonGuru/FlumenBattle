@@ -198,7 +198,7 @@ namespace world::group
     GroupActionResult GroupActionPerformer::TakeLongRest(Group& group)
     {
         if(group.actionProgress != group.action->BaseDuration)
-            return;
+            return {};
 
         auto &characters = group.GetCharacters();
         for(auto &character : group.characters)
@@ -209,6 +209,8 @@ namespace world::group
         group.timeSinceLongRest = 0;
 
         group.CancelAction();
+
+        return {};
     }
 
     GroupActionResult GroupActionPerformer::Search(Group& group)
@@ -217,10 +219,10 @@ namespace world::group
         auto other = groups.GetRandom();
 
         if(other == &group)
-            return;
+            return {};
 
         if(other->GetAction() && (other->GetAction()->Type == GroupActions::ENGAGE || other->GetAction()->Type == GroupActions::FIGHT))
-            return;
+            return {};
 
         auto perceptionBonus = -50;
         for(auto &character : group.characters)
@@ -242,14 +244,16 @@ namespace world::group
 
         auto perceptionCheck = utility::RollD20Dice(GROUP_SEARCH_DC, modifier);
         if(perceptionCheck.IsAnyFailure() == true)
-            return;
+            return {};
 
         if(group.actionProgress < group.action->BaseDuration)
-            return;
+            return {};
 
         group.CancelAction();
 
         WorldScene::Get()->InitiateEncounter(&group, other);
+
+        return {};
     }
 
     GroupActionResult GroupActionPerformer::Fight(Group& group)

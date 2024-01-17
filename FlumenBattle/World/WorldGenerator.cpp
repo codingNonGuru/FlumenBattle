@@ -208,21 +208,23 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data)
                 }
                 else
                 {
-                    auto nearbyMountainCount = 0;
-                    auto &nearbyTiles = tile->GetNearbyTiles(1);
-                    for(auto nearbyTileIterator = nearbyTiles.GetStart(); nearbyTileIterator != nearbyTiles.GetEnd(); ++nearbyTileIterator)
+                    auto nearbyMountainCount = [&] ()
                     {
-                        auto nearbyTile = *nearbyTileIterator;
-                        if(nearbyTile->HasRelief(WorldReliefs::MOUNTAINS))
-                            nearbyMountainCount++;
-                    }
+                        auto count = 0;
+                        auto &nearbyTiles = tile->GetNearbyTiles(1);
+                        for(auto &tile : nearbyTiles)
+                        {
+                            if(tile->HasRelief(WorldReliefs::MOUNTAINS))
+                                count++;
+                        }
+                        return count;
+                    } ();
 
                     auto farawayMountainCount = 0;
-                    nearbyTiles = tile->GetNearbyTiles(2);
-                    for(auto nearbyTileIterator = nearbyTiles.GetStart(); nearbyTileIterator != nearbyTiles.GetEnd(); ++nearbyTileIterator)
+                    auto &nearbyTiles = tile->GetNearbyTiles(2);
+                    for(auto &tile : nearbyTiles)
                     {
-                        auto nearbyTile = *nearbyTileIterator;
-                        if(nearbyTile->HasRelief(WorldReliefs::MOUNTAINS))
+                        if(tile->HasRelief(WorldReliefs::MOUNTAINS))
                             farawayMountainCount++;
                     }
 

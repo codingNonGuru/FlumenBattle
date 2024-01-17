@@ -43,7 +43,7 @@ void ConditionManager::Update()
             if(condition.HoursElapsed >= condition.Duration)
             {
                 condition.Type = nullptr;
-                conditionSet.Get().RemoveAt(&condition);
+                conditionSet.conditions.RemoveAt(&condition);
             }
         }
     }

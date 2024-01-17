@@ -23,7 +23,7 @@ namespace world::settlement
 
         explicit BuildingType(BuildingTypes type, int cost) : Type(type), Cost(cost) {}
 
-        virtual void HandleApplyEffect(Settlement &) = 0;
+        virtual void HandleApplyEffect(Settlement &) const = 0;
     };
 
     class Building
@@ -63,7 +63,7 @@ namespace world::settlement
 
         BuildingSet& operator=(const BuildingSet &) = delete;
 
-        container::Pool <Building> &Get() {return &buildings;}
+        const container::Pool <Building> &Get() const {return buildings;}
     };
 
     class BuildingManager

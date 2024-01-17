@@ -114,7 +114,7 @@ namespace world::character
 
         ConditionSet& operator=(const ConditionSet &) = delete;
 
-        container::Pool <Condition> &Get() const {return &conditions;}
+        const container::Pool <Condition> &Get() const {return conditions;}
     };
 
     class ConditionManager
