@@ -154,7 +154,7 @@ namespace utility
             }
         };
 
-        const Array <TileData> &MapArea(TileType *centerTile, Integer range = 7)
+        const Array <TileData> &MapAreaOld(TileType *centerTile, Integer range = 7)
         {
             auto start = steady_clock::now();
 
@@ -285,6 +285,91 @@ namespace utility
             return visitedTiles;
         }
 
+        const Array <TileData> &MapArea(TileType *centerTile, Integer range = 7)
+        {
+            auto start = high_resolution_clock::now();
+
+            auto &tiles = centerTile->GetNearbyTiles(range);
+            for(auto &tile : tiles)
+            {
+                tile->PathData.IsVisited = false;
+                tile->PathData.IsToBeVisited = true;
+                tile->PathData.IsTotallyVisited = false;
+            }
+
+            centerTile->PathData.IsVisited = true;
+            centerTile->PathData.IsToBeVisited = true;
+
+            visitedTiles.Reset();
+            *visitedTiles.Add() = {centerTile, 0};
+
+            int searches = 0;
+            TileData championTile = {centerTile, 0};
+            while(true)
+            {
+                auto bestComplexity = INT_MAX;
+                TileData bestTile = {nullptr, 0};
+                
+                for(auto &tile : visitedTiles)
+                {
+                    searches++;
+                    if(tile.Tile->PathData.IsVisited == false)
+                        continue;
+
+                    if(tile.Tile->PathData.IsTotallyVisited == true)
+                        continue;
+
+                    auto visitedNeighbourCount = 0;
+
+                    auto &nearbyTiles = tile.Tile->GetNearbyTiles();
+                    for(auto &nearbyTile : nearbyTiles)
+                    {
+                        if(nearbyTile->PathData.IsVisited == false && nearbyTile->PathData.IsToBeVisited == true)
+                        {
+                            auto penalty = GetPenalty(nearbyTile);
+                            if(tile.Distance + penalty < bestComplexity)
+                            {
+                                bestComplexity = tile.Distance + penalty;
+                                bestTile.Tile = nearbyTile;
+
+                                if(penalty == 1 && championTile.Distance == bestComplexity)
+                                {
+                                    goto hasFoundShortcut;
+                                }
+                            }
+                        }
+                        else if(nearbyTile->PathData.IsVisited == true && nearbyTile->PathData.IsToBeVisited == true)
+                        {
+                            visitedNeighbourCount++;
+                        }
+                    }
+
+                    if(visitedNeighbourCount == 6)
+                    {
+                        tile.Tile->PathData.IsTotallyVisited = true;
+                    }
+                }
+
+                hasFoundShortcut:
+
+                bestTile.Tile->PathData.IsVisited = true;
+                *visitedTiles.Add() = {bestTile.Tile, bestComplexity};
+
+                championTile = {bestTile.Tile, bestComplexity};
+
+                if(tiles.GetSize() == visitedTiles.GetSize())
+                {
+                    break;
+                }
+            }
+
+            auto stop = high_resolution_clock::now();
+            auto duration = duration_cast<microseconds>(stop - start);
+            std::cout <<"map area duration " << duration.count() << "\n";
+
+            return visitedTiles;
+        }
+
         SettlementPathData FindPathToSettlement(world::settlement::Settlement *start, world::settlement::Settlement *end)
         {
             if(start == end)
@@ -381,7 +466,7 @@ namespace utility
             }
         }
 
-        PathData FindPathDjikstraNew(TileType *startTile, TileType *endTile, Integer range = 7)
+        PathData FindPathDjikstra(TileType *startTile, TileType *endTile, Integer range = 7)
         {
             auto getPenalty = [] (TileType *tile)
             {
@@ -416,7 +501,14 @@ namespace utility
             {
                 tile->PathData.IsVisited = false;
                 tile->PathData.IsToBeVisited = true;
-                tile->PathData.Node = nullptr;
+                tile->PathData.IsTotallyVisited = false;
+            }
+
+            auto &ring = middleTile->GetTileRing(range + 1);
+            for(auto &tile : ring)
+            {
+                tile->PathData.IsVisited = true;
+                tile->PathData.IsToBeVisited = true;
             }
 
             startTile->PathData.IsVisited = true;
@@ -449,47 +541,57 @@ namespace utility
                 
                 for(auto &tile : visitedTiles)
                 {
-                    if(tile.Tile->PathData.IsVisited == true)
+                    if(tile.Tile->PathData.IsVisited == false)
+                        continue;
+
+                    if(tile.Tile->PathData.IsTotallyVisited == true)
+                        continue;
+
+                    auto visitedNeighbourCount = 0;
+
+                    auto &nearbyTiles = tile.Tile->GetNearbyTiles();
+                    aloha = nearbyTiles;
+                    for(auto &nearbyTile : nearbyTiles)
                     {
-                        auto &nearbyTiles = tile.Tile->GetNearbyTiles();
-                        aloha = nearbyTiles;
-                        for(auto nearbyTile = nearbyTiles.GetStart(); nearbyTile != nearbyTiles.GetEnd(); ++nearbyTile)
-                        {
-                            if((*nearbyTile)->PathData.IsVisited == false && (*nearbyTile)->PathData.IsToBeVisited == true)
-                            {                                
-                                auto nearbyTileNode = nodeMap.GetTile((*nearbyTile)->HexCoordinates);
-                                auto &nearbyNodeMappings = nodeMap.GetNearbyTiles(nearbyTileNode, 1);
-                                for(auto &nearbyNodeMapping : nearbyNodeMappings)
+                        if(nearbyTile->PathData.IsVisited == false && nearbyTile->PathData.IsToBeVisited == true)
+                        {                               
+                            auto nearbyTileNode = nodeMap.GetTile(nearbyTile->HexCoordinates);
+                            auto &nearbyNodeMappings = nodeMap.GetNearbyTiles(nearbyTileNode);
+                            for(auto &nearbyNodeMapping : nearbyNodeMappings)
+                            {
+                                if(nearbyNodeMapping == nearbyTileNode)
+                                    continue;
+
+                                if(nearbyNodeMapping->Node == nullptr)
+                                    continue;
+
+                                if(nearbyNodeMapping->Node->Content.Tile->PathData.IsToBeVisited == false)
+                                    continue;
+
+                                searches++;
+                                auto penalty = getPenalty(nearbyTile) + getPenalty(nearbyNodeMapping->Node->Content.Tile);
+                                if(nearbyNodeMapping->Node->Content.Distance + penalty < bestComplexity)
                                 {
-                                    if(nearbyNodeMapping == nearbyTileNode)
-                                        continue;
+                                    bestComplexity = nearbyNodeMapping->Node->Content.Distance + penalty;
+                                    bestNode = nearbyNodeMapping->Node;
+                                    bestTile = nearbyTile;
 
-                                    if(nearbyNodeMapping->Node == nullptr)
-                                        continue;
-
-                                    if(nearbyNodeMapping->Node->Content.Tile->PathData.IsToBeVisited == false)
-                                        continue;
-
-                                    //if(nearbyNodeMapping->Node->Content.Tile->PathData.IsVisited == false)
-                                        //continue;
-
-                                    searches++;
-                                    auto penalty = getPenalty(*nearbyTile) + getPenalty(nearbyNodeMapping->Node->Content.Tile);
-
-                                    if(nearbyNodeMapping->Node->Content.Distance + penalty < bestComplexity)
+                                    if(penalty == 2 && bestComplexity == championPath->Content.Distance)
                                     {
-                                        bestComplexity = nearbyNodeMapping->Node->Content.Distance + penalty;
-                                        bestNode = nearbyNodeMapping->Node;
-                                        bestTile = *nearbyTile;
-
-                                        if(penalty == 2 && bestComplexity == championPath->Content.Distance + 2)
-                                        {
-                                            goto hasFoundShortcut;
-                                        }
+                                        goto hasFoundShortcut;
                                     }
                                 }
                             }
                         }
+                        else if(nearbyTile->PathData.IsVisited == true && nearbyTile->PathData.IsToBeVisited == true)
+                        {
+                            visitedNeighbourCount++;
+                        }
+                    }
+
+                    if(visitedNeighbourCount == 6)
+                    {
+                        tile.Tile->PathData.IsTotallyVisited = true;
                     }
                 }
 
@@ -500,13 +602,13 @@ namespace utility
                 bestTile->PathData.IsVisited = true;
                 *visitedTiles.Add() = bestTile;
                 nodeMap.GetTile(bestTile->HexCoordinates)->Node = newNode;
-                //bestTile->PathData.Node = newNode;
 
                 if(championPath->Content.Tile == endTile)
                 {
                     break;
                 }
             }
+
             //std::cout<<"searches "<<searches<<"\n";
             //std::cout<<"length "<<startTile->GetDistanceTo(*endTile)<<"\n";
             auto stop = high_resolution_clock::now();
@@ -527,7 +629,7 @@ namespace utility
             }
         }
 
-        PathData FindPathDjikstra(TileType *startTile, TileType *endTile, Integer range = 7)
+        PathData FindPathDjikstraOld(TileType *startTile, TileType *endTile, Integer range = 7)
         {
             auto getPenalty = [] (TileType *tile)
             {
@@ -580,7 +682,6 @@ namespace utility
             auto middleNode = nodeMap.GetTile(middleTile->HexCoordinates);
             auto &nearbyNodes = nodeMap.GetNearbyTiles(middleNode, range + 1);
             for(auto &node : nearbyNodes)
-            //for(auto &node : nearbyNodes)
             {
                 node->Node = nullptr;
             }
@@ -589,7 +690,6 @@ namespace utility
 
             auto startNode = nodeMap.GetTile(startTile->HexCoordinates);
             startNode->Node = championPath;
-            //startTile->PathData.Node = (void *)championPath;
 
             int searches = 0;
             while(true)
@@ -660,7 +760,7 @@ namespace utility
             //std::cout<<"length "<<startTile->GetDistanceTo(*endTile)<<"\n";
             auto stop = high_resolution_clock::now();
             auto duration = duration_cast<microseconds>(stop - start);
-            //std::cout <<"duration " << duration.count() << "\n";
+            std::cout <<"duration " << duration.count() << "\n";
 
             auto complexity = championPath->Content.Distance;
             visitedTiles.Reset();

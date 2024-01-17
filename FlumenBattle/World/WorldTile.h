@@ -60,7 +60,7 @@ namespace world
         {
             bool IsVisited = false;
 
-            bool IsFreshlyVisited;
+            bool IsTotallyVisited;
 
             bool IsFringe;
 
