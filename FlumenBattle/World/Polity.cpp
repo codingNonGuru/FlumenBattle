@@ -113,8 +113,6 @@ void Polity::UndergoDivision(Faction *faction)
 
 void Polity::MapInterest(settlement::Settlement *domain)
 {
-    auto &mappedTiles2 = utility::Pathfinder <WorldTile>::Get()->MapAreaImproved(domain->GetLocation(), MAXIMUM_COLONIZATION_RANGE);
-
     auto &mappedTiles = utility::Pathfinder <WorldTile>::Get()->MapArea(domain->GetLocation(), MAXIMUM_COLONIZATION_RANGE);
     std::cout<<"-----------\n";
 

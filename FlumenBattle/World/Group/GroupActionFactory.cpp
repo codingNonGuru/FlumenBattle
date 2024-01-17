@@ -143,22 +143,6 @@ namespace world::group
 
             group.travelActionData.Duration = group.action->GetDuration(group);
         }
-
-        /*auto difficultyClass = 15;
-
-        difficultyClass += group.tile->Biome->TravelPenalty;
-        difficultyClass += group.travelActionData.Destination->Biome->TravelPenalty;
-
-        int modifier = -100;
-        for(auto &character : group.characters)
-        {
-            if(character.GetSkillProficiency(SkillTypes::SURVIVAL) > modifier)
-                modifier = character.GetSkillProficiency(SkillTypes::SURVIVAL);
-        }
-
-        group.actionSuccess = utility::RollD20Dice(difficultyClass, modifier);
-
-        return {group.actionSuccess.GetRollValue(), modifier, difficultyClass, SkillTypes::SURVIVAL};*/
     }
 
     GroupActionResult GroupActionPerformer::InitiateEngage(Group &group, const GroupActionData &data)
@@ -224,7 +208,7 @@ namespace world::group
         if(other->GetAction() && (other->GetAction()->Type == GroupActions::ENGAGE || other->GetAction()->Type == GroupActions::FIGHT))
             return {};
 
-        auto perceptionBonus = -50;
+        auto perceptionBonus = INT_MIN;
         for(auto &character : group.characters)
         {
             auto bonus = character.GetPerceptionProficiencyBonus();
@@ -232,7 +216,7 @@ namespace world::group
                 perceptionBonus = bonus;
         }
 
-        auto stealthBonus = 50;
+        auto stealthBonus = INT_MAX;
         for(auto &character : group.characters)
         {
             auto bonus = character.GetAbility(AbilityTypes::DEXTERITY).Modifier;
@@ -251,7 +235,7 @@ namespace world::group
 
         group.CancelAction();
 
-        WorldScene::Get()->InitiateEncounter(&group, other);
+        //WorldScene::Get()->InitiateEncounter(&group, other);
 
         return {};
     }
@@ -312,7 +296,7 @@ namespace world::group
             auto success = utility::RollD20Dice(difficultyClass, survivalBonus + roadBonus);
             if(success.IsAnyFailure() == true)
             {
-                group.travelActionData.IsLost = false;//true;
+                group.travelActionData.IsLost = true;
             }
             else
             {

@@ -30,6 +30,8 @@ static Camera *camera = nullptr;
 
 const int PLANNED_PATH_MAXIMUM_SIZE = 12;
 
+static const SDL_Scancode travelModeInputKey = SDL_Scancode::SDL_SCANCODE_T;
+
 namespace world
 {
     WorldController::WorldController()
@@ -72,7 +74,6 @@ namespace world
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_I, {this, &WorldController::HandleInventoryPressed});
 
         //InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_C, {this, &WorldController::HandleColonizationSwitch});
-        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_T, {this, &WorldController::HandleTravelModeToggle});
 
         camera = RenderManager::GetCamera(Cameras::WORLD);
     }
@@ -80,11 +81,6 @@ namespace world
     void WorldController::HandleColonizationSwitch()
     {
         canColonize = canColonize ? false : true;
-    }
-
-    void WorldController::HandleTravelModeToggle()
-    {
-        isTravelPlanActive = isTravelPlanActive ? false : true;
     }
 
     void WorldController::HandlePlayerEncounterInitiated()
@@ -174,6 +170,15 @@ namespace world
             camera->Zoom(1.0f + zoomSpeed);
         }
 
+        if(InputHandler::IsPressed(travelModeInputKey) == true)
+        {
+            isTravelPlanActive = true;
+        }
+        else
+        {
+            isTravelPlanActive = false;
+        }
+
         if(hoveredTile == nullptr)
             return;
 
@@ -184,26 +189,6 @@ namespace world
             return;
 
         plannedPath = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(hoveredTile, playerLocation, PLANNED_PATH_MAXIMUM_SIZE - 4);
-
-        /*auto scene = WorldScene::Get();
-
-        for(auto &battle : scene->GetBattles())
-        {
-            std::cout<<"aloha\n";
-            if(battle.GetFirst() != scene->GetPlayerGroup() && battle.GetSecond() != scene->GetPlayerGroup())
-                continue;
-
-            if(!battle.IsOngoing())
-                continue;
-
-            playerBattle = &battle;
-            break;
-        }
-
-        if(playerBattle == nullptr)
-            return;
-
-        StartBattle();*/
     }
 
     void WorldController::HandleBattleStarted()
@@ -343,7 +328,6 @@ namespace world
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_5, {this, &WorldController::HandleCharacterSelected});
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_6, {this, &WorldController::HandleCharacterSelected});
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_I, {this, &WorldController::HandleInventoryPressed});
-        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_T, {this, &WorldController::HandleTravelModeToggle});
     }
 
     group::Encounter * WorldController::GetPlayerBattle() const 

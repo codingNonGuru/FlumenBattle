@@ -156,7 +156,7 @@ namespace utility
 
         const Array <TileData> &MapArea(TileType *centerTile, Integer range = 7)
         {
-            auto start = high_resolution_clock::now();
+            auto start = steady_clock::now();
 
             auto &tiles = centerTile->GetNearbyTiles(range);
             for(auto &tile : tiles)
@@ -207,9 +207,10 @@ namespace utility
                 }
             }
 
-            auto stop = high_resolution_clock::now();
+            auto stop = steady_clock::now();
             auto duration = duration_cast<microseconds>(stop - start);
-            std::cout <<"map area duration " << duration.count() << "\n";
+            std::cout << "searches " << searches << "\n";
+            std::cout << "map area duration " << duration.count() << "\n";
 
             return visitedTiles;
         }
@@ -561,7 +562,6 @@ namespace utility
             {
                 tile->PathData.IsVisited = false;
                 tile->PathData.IsToBeVisited = true;
-                tile->PathData.Node = nullptr;
             }
 
             auto &ring = middleTile->GetTileRing(range + 1);

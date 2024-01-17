@@ -16,9 +16,13 @@ using namespace world::group;
 
 static const SDL_Scancode searchInputKey = SDL_Scancode::SDL_SCANCODE_S;
 
-static const SDL_Scancode takeShortRestInputKey = SDL_Scancode::SDL_SCANCODE_R;
+static const SDL_Scancode takeQuickRestInputKey = SDL_Scancode::SDL_SCANCODE_Q;
 
 static const SDL_Scancode takeLongRestInputKey = SDL_Scancode::SDL_SCANCODE_L;
+
+static const SDL_Scancode resumeTravelInputKey = SDL_Scancode::SDL_SCANCODE_R;
+
+static const SDL_Scancode cancelTravelInputKey = SDL_Scancode::SDL_SCANCODE_C;
 
 static const SDL_Scancode slackenActionKey = SDL_Scancode::SDL_SCANCODE_LEFTBRACKET;
 
@@ -89,9 +93,13 @@ void HumanMind::EnableInput()
 {
     InputHandler::RegisterEvent(searchInputKey, {this, &HumanMind::HandleSearch});
 
-    InputHandler::RegisterEvent(takeShortRestInputKey, {this, &HumanMind::HandleTakeShortRest});
+    InputHandler::RegisterEvent(takeQuickRestInputKey, {this, &HumanMind::HandleTakeQuickRest});
 
     InputHandler::RegisterEvent(takeLongRestInputKey, {this, &HumanMind::HandleTakeLongRest});
+
+    InputHandler::RegisterEvent(resumeTravelInputKey, {this, &HumanMind::HandleResumeTravel});
+
+    InputHandler::RegisterEvent(cancelTravelInputKey, {this, &HumanMind::HandleCancelTravel});
 
     InputHandler::RegisterEvent(slackenActionKey, {this, &HumanMind::HandleSlackenAction});
 
@@ -105,9 +113,13 @@ void HumanMind::DisableInput()
 {
     InputHandler::UnregisterEvent(searchInputKey, {this, &HumanMind::HandleSearch});
 
-    InputHandler::UnregisterEvent(takeShortRestInputKey, {this, &HumanMind::HandleTakeShortRest});
+    InputHandler::UnregisterEvent(takeQuickRestInputKey, {this, &HumanMind::HandleTakeQuickRest});
 
     InputHandler::UnregisterEvent(takeLongRestInputKey, {this, &HumanMind::HandleTakeLongRest});
+
+    InputHandler::UnregisterEvent(resumeTravelInputKey, {this, &HumanMind::HandleResumeTravel});
+
+    InputHandler::UnregisterEvent(cancelTravelInputKey, {this, &HumanMind::HandleCancelTravel});
 
     InputHandler::UnregisterEvent(slackenActionKey, {this, &HumanMind::HandleSlackenAction});
 
@@ -136,7 +148,7 @@ void HumanMind::HandleSearch()
     }
 }
 
-void HumanMind::HandleTakeShortRest()
+void HumanMind::HandleTakeQuickRest()
 {
     auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     if(playerGroup->ValidateAction(GroupActions::TAKE_SHORT_REST))
@@ -202,6 +214,35 @@ void HumanMind::HandleTravel()
     }
 
     playerGroup->SelectAction(GroupActions::TRAVEL, {playerGroup->travelActionData.Route[0]});
+}
+
+void HumanMind::HandleResumeTravel()
+{
+    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+    if(playerGroup->travelActionData.IsOnRoute == false)
+        return;
+
+    playerGroup->SelectAction(GroupActions::TRAVEL, {playerGroup->travelActionData.Route[0]});
+}
+
+void HumanMind::HandleCancelTravel()
+{
+    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    if(playerGroup->travelActionData.IsOnRoute && playerGroup->GetTravelProgress() >= 0.5f)
+        return;
+
+    if(playerGroup->IsDoing(GroupActions::TRAVEL) == true)
+    {
+        playerGroup->CancelAction();
+    }
+
+    playerGroup->travelActionData.IsOnRoute = false;
+    playerGroup->travelActionData.Progress = 0;
+    playerGroup->travelActionData.PlannedDestinationCount = 0;
+
+    extendedPath.Tiles.Clear();
+    extendedPathIndex = 0;
 }
 
 void HumanMind::HandleSlackenAction()

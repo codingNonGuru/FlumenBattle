@@ -34,11 +34,15 @@ namespace world::group
 
         void HandleSearch();
 
-        void HandleTakeShortRest();
+        void HandleTakeQuickRest();
 
         void HandleTakeLongRest();
 
         void HandleTravel();
+
+        void HandleResumeTravel();
+
+        void HandleCancelTravel();
 
         void HandleSlackenAction();
 

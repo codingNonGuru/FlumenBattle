@@ -9,7 +9,7 @@ static container::Array <Word> startParticles =
     "groan", "grass", "old", "new", "near", "far", "great", "bright", "dire", "wild", "fair", "mill", "scrub", "flow", "silt", "kindle", "brave",
     "dread", "hard", "tame", "dawn", "dusk", "mourn", "cheer", "bloom", "brine", "bold", "flood", "cliff", "home", "hair", "head", "gold",
     "ferry", "merry", "sorrow", "song", "yarn", "chill", "shield", "yard", "breast", "fleck", "ice", "lone", "sage", "heart", "keen", "bale", "grim",
-    "shade", "wall", "blade", "spoke", "wise", "proud"
+    "shade", "wall", "blade", "spoke", "wise", "proud", "mouth", "neck", "oak", "ash", "pine", "car", "kin", "bryn"
 };
 
 static container::Array <Word> endParticles = 
@@ -18,8 +18,8 @@ static container::Array <Word> endParticles =
     "ground", "haven", "wood", "mark", "ham", "mane", "hall", "rock", "hill", "dam", "lane", "creek", "stone", "lake", "dale", "vale", "weald",
     "hurst", "meadow", "brook", "root", "spring", "plane", "bite", "shaft", "pit", "well", "field", "way", "road", "crack", "camp", "watch", "fort",
     "bridge", "rim", "wind", "ridge", "pass", "rift", "pond", "lands", "water", "more", "cradle", "cliff", "head", "glade", "fen", "moor", "marsh",
-    "bog", "tip", "song", "yard", "path", "heart", "deep"
-    //"reef", "sea", "isle", "harbor", "dock", "tide", "flood", "coast", "beach", "wave"
+    "bog", "tip", "song", "yard", "path", "heart", "deep", "mere", "mead", "wast", "cher", "gard", "gate", "combe", "fold", "keld", "keth", "stead", "garth"
+    //"reef", "sea", "isle", "harbor", "dock", "tide", "flood", "coast", "beach", "wave", "bay", "vic"
 };
 
 Word NameGenerator::GenerateName()
