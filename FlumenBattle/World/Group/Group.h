@@ -209,5 +209,7 @@ namespace world::group
         int GetProgressRate() const;
 
         world::character::Item *GetItem(int);
+
+        const int &GetMoney() const {return money;}
     };
 }

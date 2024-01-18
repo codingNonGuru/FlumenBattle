@@ -10,6 +10,11 @@ namespace world::character
     class Character;
 }
 
+namespace world::interface
+{
+    class ResourceCounter;
+}
+
 class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
 {
     friend class CharacterItem;
@@ -47,6 +52,8 @@ class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
     Text *timeLabel;
 
     Text *speedLabel;
+
+    world::interface::ResourceCounter *moneyCounter;
 
     Array <CharacterItem> items;
 

@@ -7,6 +7,7 @@
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/World/Character/CharacterClass.h"
+#include "FlumenBattle/World/Interface/ResourceCounter.h"
 
 void * WorldInfoPanel::CharacterItem::operator new(size_t size)
 {
@@ -121,6 +122,13 @@ void WorldInfoPanel::HandleConfigure()
         {{"JSLAncient", "Large"}, Color::RED * 0.65f}
     );
     speedLabel->Enable();
+
+    moneyCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
+        {Size(), drawOrder_ + 1, {Position2(), this}}
+    );
+    auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
+    moneyCounter->Setup("Coin", &playerGroup->GetMoney());
+    moneyCounter->Enable();
 }
 
 void WorldInfoPanel::SelectCharacter(int index, bool isInInventoryMode)
