@@ -23,13 +23,31 @@ void ResourceCounter::HandleConfigure()
 
 void ResourceCounter::HandleUpdate()
 {
-    Phrase text(*value);
+    Phrase text;
+    if(valuePointer)
+    {
+        text << *valuePointer;
+    }
+    else
+    {
+        text << valueFetcher();
+    }
+
     label->Setup(text);
 }
 
 void ResourceCounter::Setup(Word name, const int *newValue, Word fontType, Word fontSize)
 {
-    value = newValue;
+    valuePointer = newValue;
+
+    icon->GetSprite()->SetTexture(name);
+
+    label->SetFont({fontType, fontSize});
+}
+
+void ResourceCounter::Setup(Word name, std::function <int(void)> newFetcher, Word fontType, Word fontSize)
+{
+    valueFetcher = newFetcher;
 
     icon->GetSprite()->SetTexture(name);
 

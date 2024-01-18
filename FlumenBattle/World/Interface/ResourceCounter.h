@@ -16,7 +16,9 @@ namespace world::interface
 
         Text *label;
 
-        const int *value;
+        const int *valuePointer {nullptr};
+
+        std::function <int(void)> valueFetcher;
 
         void HandleConfigure() override;    
 
@@ -24,5 +26,7 @@ namespace world::interface
 
     public:
         void Setup(Word, const int *, Word = DEFAULT_FONT_TYPE, Word = DEFAULT_FONT_SIZE);
+
+        void Setup(Word, std::function <int(void)>, Word = DEFAULT_FONT_TYPE, Word = DEFAULT_FONT_SIZE);
     };
 }

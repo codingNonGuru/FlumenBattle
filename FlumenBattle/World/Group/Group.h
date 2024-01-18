@@ -212,6 +212,8 @@ namespace world::group
 
         world::character::Item *GetItem(int);
 
+        int GetItemAmount(character::ItemTypes);
+
         const container::Pool <character::Item> &GetItems() const;
 
         const int &GetMoney() const {return money;}

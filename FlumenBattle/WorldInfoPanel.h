@@ -55,6 +55,8 @@ class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
 
     world::interface::ResourceCounter *moneyCounter;
 
+    world::interface::ResourceCounter *foodCounter;
+
     Array <CharacterItem> items;
 
     int selectionIndex {-1};

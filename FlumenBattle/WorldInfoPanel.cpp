@@ -129,6 +129,16 @@ void WorldInfoPanel::HandleConfigure()
     auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
     moneyCounter->Setup("Coin", &playerGroup->GetMoney());
     moneyCounter->Enable();
+
+    foodCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
+        {Size(), drawOrder_ + 1, {Position2(70.0f, 0.0f), this}}
+    );
+    foodCounter->Setup("Radish", [] -> int {
+        auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
+
+        return playerGroup->GetItemAmount(world::character::ItemTypes::FOOD);
+    });
+    foodCounter->Enable();
 }
 
 void WorldInfoPanel::SelectCharacter(int index, bool isInInventoryMode)

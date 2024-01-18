@@ -351,6 +351,11 @@ namespace world::group
         return items.GetItem(index);
     }
 
+    int Group::GetItemAmount(ItemTypes type)
+    {
+        return items.GetAmount(type);
+    }
+
     const container::Pool <character::Item> &Group::GetItems() const
     {
         return items.GetItems();
