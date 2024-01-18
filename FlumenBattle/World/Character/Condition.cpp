@@ -168,44 +168,40 @@ void Condition::ApplyEffect(Character &character) const
     Type->HandleApplyEffect(character);
 }
 
-Condition ConditionFactory::Create(Conditions type)
+Condition ConditionFactory::Create(ConditionData data)
 {
-    switch(type)
+    switch(data.Type)
     {
     case Conditions::PARALYZED:
         return 
         {
-            [&] {static const auto conditionType = Paralyzed(type, false); return &conditionType;} (), 
-            false,
-            true
+            [&] {static const auto conditionType = Paralyzed(data.Type, false); return &conditionType;} (), 
+            1
         };
     case Conditions::FRIGHTENED:
         return 
         {
-            [&] {static const auto conditionType = Frightened(type, false); return &conditionType;} (), 
-            false,
-            false
+            [&] {static const auto conditionType = Frightened(data.Type, false); return &conditionType;} (), 
+            1
         };
     case Conditions::SICKENED:
         return 
         {
-            [&] {static const auto conditionType = Sickened(type, false); return &conditionType;} (), 
-            false,
-            false
+            [&] {static const auto conditionType = Sickened(data.Type, false); return &conditionType;} (), 
+            1
         };
     case Conditions::FATIGUE:
         return 
         {
-            [&] {static const auto conditionType = Fatigue(type, false); return &conditionType;} (), 
-            false,
-            false
+            [&] {static const auto conditionType = Fatigue(data.Type, false); return &conditionType;} (), 
+            1
         };
     case Conditions::NOURISHED:
         return 
         {
-            [&] {static const auto conditionType = Nourished(type, true); return &conditionType;} (), 
-            false,
-            false
+            [&] {static const auto conditionType = Nourished(data.Type, true); return &conditionType;} (), 
+            1,
+            data.Duration
         };
     }
 }
@@ -220,7 +216,7 @@ void ConditionManager::AddCondition(ConditionData data)
     if(HasCondition(data.Type) == true)
         return;
 
-    const auto &condition = ConditionFactory::Get()->Create(data.Type);
+    const auto &condition = ConditionFactory::Get()->Create(data);
 
     auto conditionPointer = conditionSet.conditions.Add();
 

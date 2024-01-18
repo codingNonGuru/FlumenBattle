@@ -72,9 +72,9 @@ namespace world::character
     {
         Conditions Type;
 
-        int Strength;
-
         int Duration;
+
+        int Strength {1};
     };
 
     struct ConditionType
@@ -92,17 +92,23 @@ namespace world::character
 
     struct Condition
     {
-        const ConditionType *Type;
+        const ConditionType *Type {nullptr};
 
         int Strength;
 
-        int Duration;
+        int Duration {0};
 
-        int TimeElapsed;
+        int TimeElapsed {0};
 
         void ApplyEffect(Character &character) const;
 
         bool operator ==(Conditions condition) {return Type->Type == condition;}
+
+        Condition() {}
+
+        Condition(const ConditionType *type, int strength) : Type(type), Strength(strength) {}
+
+        Condition(const ConditionType *type, int strength, int duration) : Type(type), Strength(strength), Duration(duration) {}
     };
 
     struct ConditionSet
@@ -159,6 +165,6 @@ namespace world::character
     {
         friend class ConditionManager;
 
-        Condition Create(Conditions);
+        Condition Create(ConditionData);
     };
 }

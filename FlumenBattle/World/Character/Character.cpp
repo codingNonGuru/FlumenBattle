@@ -183,10 +183,7 @@ namespace world::character
             }
         } ();
 
-        if(bonus < 0)
-        {
-            bonus = 0;
-        }
+        bonus += modifiers.GetAmount(Modifiers::DAMAGE_BONUS);
 
         auto mainHandItem = GetItem(ItemPositions::MAIN_HAND);
         if(mainHandItem != nullptr)
