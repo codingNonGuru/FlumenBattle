@@ -284,8 +284,6 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data)
 
     GenerateSociety(data);
 
-    hasFinishedGenerating = true;
-
     std::cout<<"World has finished generating\n";
 }
 

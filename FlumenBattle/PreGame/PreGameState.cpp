@@ -64,19 +64,17 @@ namespace pregame
     {
         generatorPopup->Enable();
 
-        engine::ThreadManager::Get()->LaunchThread(&world::WorldGenerator::GenerateWorld, world::WorldGenerator::Get(), data);
+        engine::ThreadManager::Get()->LaunchAsyncThread(
+            {this, &PreGameState::FinishWorldGeneration}, 
+            &world::WorldGenerator::GenerateWorld, world::WorldGenerator::Get(), 
+            data);
     }
 
     void PreGameState::FinishWorldGeneration()
     {
-        if(world::WorldGenerator::Get()->HasFinishedGenerating())
-        {
-            generatorPopup->Disable();
+        generatorPopup->Disable();
 
-            generatedWorldMenu->Enable();
-
-            world::WorldGenerator::Get()->ResetGenerationProcess();
-        }
+        generatedWorldMenu->Enable();
     }
 
     void PreGameState::StartGame()

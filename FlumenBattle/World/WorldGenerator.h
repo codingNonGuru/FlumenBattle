@@ -19,8 +19,6 @@ namespace world
 
         void GenerateSociety(pregame::NewWorldData);
 
-        std::atomic <bool> hasFinishedGenerating {false};
-
     public:
         int GenerateWorld(pregame::NewWorldData);
 
@@ -29,9 +27,5 @@ namespace world
         int GetMaximumSettlementCount(int) const;
 
         int GetMaximumGroupCount(int) const;
-
-        bool HasFinishedGenerating() const {return hasFinishedGenerating;}
-
-        void ResetGenerationProcess() {hasFinishedGenerating = false;}
     };
 }

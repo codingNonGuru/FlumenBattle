@@ -28,11 +28,6 @@ void GeneratorPopup::HandleUpdate()
     }
 
     loadingLabel->Setup(x < 10 ? "Loading" : (x < 20 ? "Loading." : (x < 30 ? "Loading.." : "Loading...")));
-
-    if(world::WorldGenerator::Get()->HasFinishedGenerating())
-    {
-        PreGameState::Get()->FinishWorldGeneration();
-    }
 }
 
 void GeneratorPopup::HandleEnable()
@@ -48,15 +43,3 @@ void GeneratorPopup::HandleDisable()
 
     InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_X, {this, &MainMenu::OnExitPressed});*/
 }
-
-/*void MainMenu::HandleNewGamePressed()
-{
-    this->Disable();
-
-    PreGameState::Get()->OpenNewGameMenu();
-}
-
-void MainMenu::OnExitPressed()
-{
-    this->Disable();
-}*/
