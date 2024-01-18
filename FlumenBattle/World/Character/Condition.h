@@ -81,7 +81,11 @@ namespace world::character
     {
         Conditions Type;
 
+        bool IsTimeDependent;
+
         explicit ConditionType(Conditions type) : Type(type) {}
+
+        explicit ConditionType(Conditions type, bool isTimeDependent) : Type(type), IsTimeDependent(isTimeDependent) {}
 
         virtual void HandleApplyEffect(Character &) const = 0;
     };
@@ -94,7 +98,7 @@ namespace world::character
 
         int Duration;
 
-        int HoursElapsed;
+        int TimeElapsed;
 
         void ApplyEffect(Character &character) const;
 

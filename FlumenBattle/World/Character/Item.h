@@ -69,6 +69,8 @@ namespace world::character
 
         void Remove(Item *);
 
+        void RemoveAmount(ItemTypes, int);
+
         int GetAmount(ItemTypes);
 
         Item *GetItem(ItemTypes);

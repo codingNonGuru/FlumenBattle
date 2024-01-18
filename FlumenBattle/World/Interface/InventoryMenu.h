@@ -87,6 +87,8 @@ namespace world::interface
 
         void HandleUpdate() override;
 
+        void HandleEnable() override;
+
         void SelectSlot(InventorySlot *slot);
 
         void GrabItem(InventorySlot *slot);

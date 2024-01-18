@@ -173,6 +173,40 @@ void ItemManager::Remove(Item *item)
     items.RemoveAt(item);
 }
 
+static auto itemsToBeRemoved = container::Array <Item *> (64);
+
+void ItemManager::RemoveAmount(ItemTypes type, int amount)
+{
+    itemsToBeRemoved.Reset();
+
+    auto amountLeftToRemove = amount;
+
+    for(auto &item : items)
+    {
+        if(item.Type->Type == type)
+        {
+            if(amountLeftToRemove >= item.Amount)
+            {
+                amountLeftToRemove -= item.Amount;
+                item.Amount = 0;
+
+                *itemsToBeRemoved.Add() = &item;
+            }
+            else
+            {
+                item.Amount -= amountLeftToRemove;
+                amountLeftToRemove = 0;
+                break;
+            }
+        }
+    }
+
+    for(auto &item : itemsToBeRemoved)
+    {
+        items.RemoveAt(item);
+    }
+}
+
 int ItemManager::GetAmount(ItemTypes type)
 {
     auto amount = 0;

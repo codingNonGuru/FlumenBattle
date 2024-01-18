@@ -138,6 +138,14 @@ namespace world::group
         return false;
     }
 
+    void Group::Update()
+    {
+        for(auto &character : characters)
+        {
+            character.Update();
+        }
+    }
+
     void Group::CheckFatigue()
     {
         timeSinceLongRest += 1;
@@ -272,6 +280,11 @@ namespace world::group
     void Group::AddItem(character::ItemTypes type, int amount)
     {
         items.Add(type, amount);
+    }
+
+    void Group::RemoveItemAmount(character::ItemTypes type, int amount)
+    {
+        items.RemoveAmount(type, amount);
     }
 
     float Group::GetActionProgress() const

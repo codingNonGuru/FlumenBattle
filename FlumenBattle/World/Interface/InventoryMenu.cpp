@@ -242,6 +242,24 @@ void InventoryMenu::SelectSlot(InventorySlot *slot)
     character->RefreshModifiers();
 }
 
+void InventoryMenu::HandleEnable()
+{
+    for(auto &slot : inventorySlots)
+    {
+        if(slot->item == nullptr)
+            continue;
+
+        if(slot->item->Amount == 0)
+        {
+            slot->SetItem(nullptr);
+        }
+        else
+        {
+            slot->SetItem(slot->item);
+        }
+    }
+}
+
 void InventoryMenu::DropItem()
 {
     selectedSlot->Deselect();

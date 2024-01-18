@@ -170,6 +170,8 @@ namespace world::group
 
         GroupClasses GetClass() const;
 
+        void Update();
+
         void CheckFatigue();
 
         void DetermineAction();
@@ -191,6 +193,8 @@ namespace world::group
         void ExitBattle();
 
         void AddItem(character::ItemTypes, int = 1);
+
+        void RemoveItemAmount(character::ItemTypes, int);
 
         WorldTile *GetDestination() const {return travelActionData.Destination;}
 

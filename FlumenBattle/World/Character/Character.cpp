@@ -304,6 +304,8 @@ namespace world::character
 
     void Character::Update()
     {
+        conditions.Update();
+
         RefreshModifiers();
     }
 

@@ -124,6 +124,11 @@ namespace world
 
             for(auto &group : *groups)
             {
+                group.Update();
+            }
+
+            for(auto &group : *groups)
+            {
                 group.DetermineAction();
             }
 

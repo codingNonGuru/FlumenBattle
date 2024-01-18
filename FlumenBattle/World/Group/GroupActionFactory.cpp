@@ -10,6 +10,8 @@
 
 #define GROUP_SEARCH_DC 32
 
+static const auto NOURISHED_DURATION = 16 * 6;
+
 namespace world::group
 {
     const GroupAction * GroupActionFactory::BuildAction(GroupActions actionType)
@@ -191,6 +193,18 @@ namespace world::group
         }
 
         group.timeSinceLongRest = 0;
+
+        auto foodNeeded = group.characters.GetSize();
+        auto foodAvailable = group.GetItemAmount(character::ItemTypes::FOOD);
+        
+        if(foodAvailable >= foodNeeded)
+        {
+            group.RemoveItemAmount(character::ItemTypes::FOOD, foodNeeded);
+            for(auto &character : group.characters)
+            {
+                character.AddCondition({character::Conditions::NOURISHED, NOURISHED_DURATION});
+            }
+        }
 
         group.CancelAction();
 

@@ -150,6 +150,17 @@ namespace world::character
             ModifierAccessor::AddModifier(character, {Modifiers::ALL_ROLLS_PENALTY, 1});
         }
     };
+
+    class Nourished : public ConditionType
+    {
+        using ConditionType::ConditionType; 
+
+        void HandleApplyEffect(Character &character) const override
+        {
+            ModifierAccessor::AddModifier(character, {Modifiers::DAMAGE_BONUS, 1});
+            ModifierAccessor::AddModifier(character, {Modifiers::FORTITUDE_BONUS, 1});
+        }
+    };
 }
 
 void Condition::ApplyEffect(Character &character) const
@@ -164,28 +175,35 @@ Condition ConditionFactory::Create(Conditions type)
     case Conditions::PARALYZED:
         return 
         {
-            [&] {static const auto conditionType = Paralyzed(type); return &conditionType;} (), 
+            [&] {static const auto conditionType = Paralyzed(type, false); return &conditionType;} (), 
             false,
             true
         };
     case Conditions::FRIGHTENED:
         return 
         {
-            [&] {static const auto conditionType = Frightened(type); return &conditionType;} (), 
+            [&] {static const auto conditionType = Frightened(type, false); return &conditionType;} (), 
             false,
             false
         };
     case Conditions::SICKENED:
         return 
         {
-            [&] {static const auto conditionType = Sickened(type); return &conditionType;} (), 
+            [&] {static const auto conditionType = Sickened(type, false); return &conditionType;} (), 
             false,
             false
         };
     case Conditions::FATIGUE:
         return 
         {
-            [&] {static const auto conditionType = Fatigue(type); return &conditionType;} (), 
+            [&] {static const auto conditionType = Fatigue(type, false); return &conditionType;} (), 
+            false,
+            false
+        };
+    case Conditions::NOURISHED:
+        return 
+        {
+            [&] {static const auto conditionType = Nourished(type, true); return &conditionType;} (), 
             false,
             false
         };
@@ -228,5 +246,15 @@ void ConditionManager::ApplyModifiers(Character &character) const
 
 void ConditionManager::Update()
 {
+    for(auto &condition : conditionSet.conditions)
+    {
+        if(condition.Type->IsTimeDependent == false)
+            continue;
 
+        condition.TimeElapsed++;
+        if(condition.TimeElapsed > condition.Duration)
+        {
+            conditionSet.conditions.RemoveAt(&condition);
+        }
+    }
 }
