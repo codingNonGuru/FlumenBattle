@@ -16,6 +16,7 @@ namespace world::character
 namespace world::interface
 {
     class InventoryMenu;
+    class Counter;
 
     class InventorySlot : public Element
     {
@@ -34,6 +35,8 @@ namespace world::interface
         bool isCharacterItem {false};
 
         world::character::ItemPositions itemPosition;
+
+        Counter *counter;
 
         void HandleConfigure() override;
 

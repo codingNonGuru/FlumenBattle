@@ -171,12 +171,10 @@ namespace world
         if(InputHandler::GetMouse().ScrollUp_)
         {
             camera->ZoomDynamically(zoomSpeed);
-            //camera->Zoom(1.0f - zoomSpeed);
         }
         else if(InputHandler::GetMouse().ScrollDown_)
         {
             camera->ZoomDynamically(-zoomSpeed);
-            //camera->Zoom(1.0f + zoomSpeed);
         }
 
         if(InputHandler::IsPressed(travelModeInputKey) == true)

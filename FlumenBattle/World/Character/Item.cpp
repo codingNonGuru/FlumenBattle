@@ -149,7 +149,7 @@ Item ItemFactory::Create(ItemTypes type)
     case ItemTypes::BOW:
         return {[&] {static const auto itemType = Bow(type, "BowT1", ItemUses::WEAPON); return &itemType;} ()};
     case ItemTypes::FOOD:
-        return {[&] {static const auto itemType = Food(type, "Carrot", ItemUses::OTHER); return &itemType;} ()};
+        return {[&] {static const auto itemType = Food(type, "Radish", ItemUses::OTHER); return &itemType;} ()};
     }
 }
 

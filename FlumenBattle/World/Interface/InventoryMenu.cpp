@@ -12,6 +12,7 @@
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
+#include "FlumenBattle/World/Interface/Counter.h"
 
 using namespace world::interface;
 
@@ -25,16 +26,19 @@ void InventorySlot::HandleConfigure()
 {
     icon = ElementFactory::BuildElement <Element>
     (
-        {size_, drawOrder_ + 1, {Position2(0.0f, 0.0f), ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, this}, {"SwordT1", "Sprite"}}
+        {size_, drawOrder_ + 1, {Position2(), this}, {"SwordT1", "Sprite"}}
     );
-    icon->Disable();
 
     border = ElementFactory::BuildElement <Element>
     (
-        {size_, drawOrder_ + 1, {Position2(0.0f, 0.0f), this}, {"panel-border-007", "SlicedSprite"}, Opacity(0.5f)}
+        {size_, drawOrder_ + 1, {Position2(), this}, {"panel-border-007", "SlicedSprite"}, Opacity(0.5f)}
     );
     border->GetSprite()->SetColor(&color);
-    border->Disable();
+
+    counter = ElementFactory::BuildElement <Counter>
+    (
+        {Size(), drawOrder_ + 1, {Position2(-8.0f, -8.0f), ElementAnchors::LOWER_RIGHT, ElementPivots::LOWER_RIGHT, this}, {"WhiteDotBackdrop", "Sprite"}}
+    );
 }
 
 void InventorySlot::HandleLeftClick()
@@ -68,10 +72,17 @@ void InventorySlot::SetItem(world::character::Item *newItem)
     {
         icon->GetSprite()->SetTexture(item->Type->TextureName);
         icon->Enable();
+
+        if(item->Amount > 1)
+        {
+            counter->Setup(&item->Amount);
+            counter->Enable();
+        }
     }
     else
     {
         icon->Disable();
+        counter->Disable();
     }
 }
 
