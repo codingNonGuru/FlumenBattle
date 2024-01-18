@@ -34,6 +34,10 @@ static constexpr auto DEFAULT_FOOD_PRICE = 7;
 
 static const auto coinSounds = container::Array {"Coin", "Coin2", "Coin3"};
 
+static const auto DICE_ROLL_SOUND = "DiceRoll";
+
+static const auto DICE_SOUND_INTERVAL = 1000;
+
 GroupActionResult selectedActionResult;
 
 GroupActionResult performedActionResult;
@@ -41,6 +45,8 @@ GroupActionResult performedActionResult;
 utility::WorldPathData extendedPath;
 
 int extendedPathIndex = 0;
+
+auto diceSoundClock = steady_clock::now();
 
 HumanMind::HumanMind()
 {
@@ -86,6 +92,14 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
 
     if(result.HasRolled == true)
     {
+        auto clock = std::chrono::steady_clock::now();
+        auto timeSinceLastDiceSound = std::chrono::duration_cast<milliseconds>(clock - diceSoundClock);
+        if(timeSinceLastDiceSound > std::chrono::milliseconds(DICE_SOUND_INTERVAL))
+        {
+            engine::SoundManager::Get()->PlaySound(DICE_ROLL_SOUND);
+            diceSoundClock = clock;
+        }
+
         OnSkillCheckRolled->Invoke();
     }
 
