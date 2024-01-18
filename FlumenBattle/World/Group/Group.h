@@ -211,5 +211,7 @@ namespace world::group
         world::character::Item *GetItem(int);
 
         const int &GetMoney() const {return money;}
+
+        settlement::Settlement *GetCurrentSettlement();
     };
 }

@@ -20,6 +20,7 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Polity.h"
 #include "FlumenBattle/World/Interface/InventoryMenu.h"
+#include "FlumenBattle/World/Interface/SettlementMenu.h"
 #include "FlumenBattle/World/Group/Group.h"
 
 using namespace world;
@@ -62,6 +63,18 @@ WorldInterface::WorldInterface()
         }
     );
     inventoryMenu->Disable();
+
+    settlementMenu = ElementFactory::BuildElement <interface::SettlementMenu>
+    (
+        {
+            Size(320, 400), 
+            DrawOrder(6), 
+            {Position2(5.0f, -5.0f), ElementAnchors::LOWER_LEFT, ElementPivots::LOWER_LEFT, canvas}, 
+            {"Sprite"}, 
+            Opacity(0.9f)
+        }
+    );
+    settlementMenu->Disable();
 
     settlementLabels.Initialize(128);
     for(int i = 0; i < settlementLabels.GetCapacity(); i++)
@@ -242,6 +255,18 @@ void WorldInterface::Update()
     else
     {
         travelLabel->Disable();
+    }
+
+    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    auto currentSettlement = playerGroup->GetCurrentSettlement();
+    if(currentSettlement == nullptr)
+    {
+        settlementMenu->Disable();
+    }
+    else
+    {
+        settlementMenu->Setup(currentSettlement);
+        settlementMenu->Enable();
     }
 
     /*for(auto &label : pathLabels)

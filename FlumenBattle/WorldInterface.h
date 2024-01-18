@@ -16,6 +16,7 @@ namespace world
     namespace interface
     {
         class InventoryMenu;
+        class SettlementMenu;
     }
 
     namespace settlement
@@ -43,6 +44,8 @@ namespace world
         interface::InventoryMenu *inventoryMenu;
 
         bool isInInventoryMode {false};
+
+        interface::SettlementMenu *settlementMenu;
 
         Array <settlement::SettlementLabel *> settlementLabels;
 

@@ -364,4 +364,12 @@ namespace world::group
     {
         return travelActionData.IsOnRoute == true ? travelActionData.Route[travelActionData.PlannedDestinationCount - 1] : nullptr;
     }
+
+    settlement::Settlement *Group::GetCurrentSettlement()
+    {
+        if(IsDoing(GroupActions::TRAVEL))
+            return nullptr;
+
+        return tile->GetSettlement();
+    }
 }
