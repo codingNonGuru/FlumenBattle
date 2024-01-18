@@ -22,11 +22,11 @@
 
 static const Float CAMERA_PAN_SPEED = 800.0f;
 
-static const Float CAMERA_ZOOM_SPEED = 3.0f;
+static const Float CAMERA_ZOOM_SPEED = 2.0f;
 
 static const Float TRANSITION_TO_BATTLE_DELAY = 0.5f;
 
-static const Float CAMERA_PAN_SENSITIVITY = 1.5f;
+static const Float CAMERA_GRAB_SENSITIVITY = 1.7f;
 
 static Camera *camera = nullptr;
 
@@ -82,6 +82,7 @@ namespace world
         //InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_C, {this, &WorldController::HandleColonizationSwitch});
 
         camera = RenderManager::GetCamera(Cameras::WORLD);
+        camera->EnableDynamicZooming();
     }
 
     void WorldController::HandleColonizationSwitch()
@@ -169,11 +170,13 @@ namespace world
 
         if(InputHandler::GetMouse().ScrollUp_)
         {
-            camera->Zoom(1.0f - zoomSpeed);
+            camera->ZoomDynamically(zoomSpeed);
+            //camera->Zoom(1.0f - zoomSpeed);
         }
         else if(InputHandler::GetMouse().ScrollDown_)
         {
-            camera->Zoom(1.0f + zoomSpeed);
+            camera->ZoomDynamically(-zoomSpeed);
+            //camera->Zoom(1.0f + zoomSpeed);
         }
 
         if(InputHandler::IsPressed(travelModeInputKey) == true)
@@ -191,7 +194,7 @@ namespace world
 
             auto mouseDelta = InputHandler::GetMousePosition() - grabStartPosition;
             
-            mouseDelta *= CAMERA_PAN_SENSITIVITY;
+            mouseDelta *= CAMERA_GRAB_SENSITIVITY;
 
             mouseDelta *= camera->GetZoomFactor();
 
