@@ -94,6 +94,8 @@ namespace world::interface
 
         void DropItem();
 
+        void HandleItemAdded();
+
     public:
         void SelectCharacter(character::Character *);
     };

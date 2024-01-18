@@ -1,8 +1,13 @@
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/Text.hpp"
+#include "FlumenEngine/Interface/LayoutGroup.h"
 
 #include "SettlementMenu.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Interface/SettlementMenuOption.h"
+#include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/HumanMind.h"
 
 using namespace world::interface;
 
@@ -13,6 +18,8 @@ static const auto BORDER_INNER_OFFSET = Size(4, 4);
 static constexpr auto DEFAULT_FONT_SIZE = "Medium";
 
 static constexpr auto DEFAULT_FONT_TYPE = "JSLAncient";
+
+static constexpr auto OPTION_ITEM_SIZE = Size(200, 35);
 
 void SettlementMenu::HandleConfigure()
 {
@@ -43,6 +50,26 @@ void SettlementMenu::HandleConfigure()
         }
     );
     nameLabel->Enable();
+
+    optionLayout = ElementFactory::BuildElement <LayoutGroup> 
+    (
+        {Size(), drawOrder_, {Position2(10.0f, 70.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}}
+    );
+    optionLayout->Enable();
+
+    auto optionItem = ElementFactory::BuildElement <SettlementMenuOption>
+    (
+        {
+            OPTION_ITEM_SIZE, 
+            drawOrder_ + 1, 
+            {Position2(), optionLayout}, 
+            {"panel-border-001", "SlicedSprite"}
+        }
+    );
+    optionItem->SetSpriteColor(BORDER_COLOR);
+    optionItem->SetInteractivity(true);
+    optionItem->Setup(this);
+    optionItem->Enable();
 }
 
 void SettlementMenu::HandleUpdate() 
@@ -55,4 +82,13 @@ void SettlementMenu::HandleUpdate()
 void SettlementMenu::Setup(settlement::Settlement *newSettlement)
 {
     currentSettlement = newSettlement;
+}
+
+void SettlementMenu::ProcessOptionInput()
+{
+    group::HumanMind::Get()->BuyFood();
+
+    /*auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+    auto money = playerGroup->GetMoney();*/
 }

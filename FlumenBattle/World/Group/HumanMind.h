@@ -57,9 +57,13 @@ namespace world::group
 
         Delegate *OnSkillCheckRolled;
 
+        Delegate *OnItemAdded;
+
         void EnableInput();
 
         void DisableInput();
+
+        void BuyFood();
 
         const GroupActionResult & GetSelectedActionResult();
 

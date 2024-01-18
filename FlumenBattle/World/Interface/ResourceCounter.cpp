@@ -14,7 +14,7 @@ void ResourceCounter::HandleConfigure()
     icon->Enable();
 
     label = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {Position2(), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, icon}},
+        {Size(), drawOrder_ + 1, {Position2(), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, icon}},
         {{DEFAULT_FONT_TYPE, DEFAULT_FONT_SIZE}, Color::RED * 0.5f, "20"}
     );
     label->SetAlignment(Text::Alignments::LEFT);

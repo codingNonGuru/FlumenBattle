@@ -52,7 +52,7 @@ namespace world::group
         this->isAlive = true;
         this->hasAchievedObjective = false;
 
-        this->money = 0;
+        this->money = 50;
 
         actionProgress = 0;
 
@@ -267,15 +267,11 @@ namespace world::group
     void Group::SetTile(WorldTile *tile)
     {
         this->tile = tile;
+    }
 
-        /*if(this->tile != nullptr)
-        {
-            this->tile->group = nullptr;
-        }
-
-        this->tile = tile;
-
-        this->tile->group = this;*/
+    void Group::AddItem(character::ItemTypes type, int amount)
+    {
+        items.Add(type, amount);
     }
 
     float Group::GetActionProgress() const
@@ -353,6 +349,11 @@ namespace world::group
     world::character::Item *Group::GetItem(int index)
     {
         return items.GetItem(index);
+    }
+
+    const container::Pool <character::Item> &Group::GetItems() const
+    {
+        return items.GetItems();
     }
 
     GroupClasses Group::GetClass() const

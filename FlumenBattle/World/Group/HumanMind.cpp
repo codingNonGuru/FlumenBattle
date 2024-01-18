@@ -11,6 +11,7 @@
 #include "FlumenBattle/World/Group/GroupActionData.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 #include "FlumenBattle/WorldInterface.h"
+#include "FlumenBattle/World/Character/Types.h"
 
 using namespace world::group;
 
@@ -27,6 +28,8 @@ static const SDL_Scancode cancelTravelInputKey = SDL_Scancode::SDL_SCANCODE_C;
 static const SDL_Scancode slackenActionKey = SDL_Scancode::SDL_SCANCODE_LEFTBRACKET;
 
 static const SDL_Scancode intensifyActionKey = SDL_Scancode::SDL_SCANCODE_RIGHTBRACKET;
+
+static constexpr auto DEFAULT_FOOD_PRICE = 7;
 
 GroupActionResult selectedActionResult;
 
@@ -45,6 +48,8 @@ HumanMind::HumanMind()
     OnActionInitiated = new Delegate();
 
     OnSkillCheckRolled = new Delegate();
+
+    OnItemAdded = new Delegate();
 }
 
 void HumanMind::DetermineAction(Group &group) const 
@@ -255,6 +260,18 @@ void HumanMind::HandleIntensifyAction()
 {
     auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     playerGroup->IntensifyAction();
+}
+
+void HumanMind::BuyFood()
+{
+    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    if(playerGroup->money < DEFAULT_FOOD_PRICE)
+        return;
+
+    playerGroup->money -= DEFAULT_FOOD_PRICE;
+    playerGroup->AddItem(character::ItemTypes::FOOD, 10);
+
+    OnItemAdded->Invoke();
 }
 
 const utility::WorldPathData HumanMind::GetFullPathData()

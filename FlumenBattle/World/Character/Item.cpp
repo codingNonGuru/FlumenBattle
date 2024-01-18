@@ -96,6 +96,11 @@ class Bow : public ItemType
     }
 };
 
+class Food : public ItemType
+{
+    using ItemType::ItemType; 
+};
+
 bool Item::CanFitInto(ItemPositions position)
 {
     switch(position)
@@ -143,12 +148,24 @@ Item ItemFactory::Create(ItemTypes type)
         return {[&] {static const auto itemType = Axe(type, "AxeT1", ItemUses::WEAPON); return &itemType;} ()};
     case ItemTypes::BOW:
         return {[&] {static const auto itemType = Bow(type, "BowT1", ItemUses::WEAPON); return &itemType;} ()};
+    case ItemTypes::FOOD:
+        return {[&] {static const auto itemType = Food(type, "Carrot", ItemUses::OTHER); return &itemType;} ()};
     }
 }
 
-void ItemManager::Add(ItemTypes type)
+void ItemManager::Add(ItemTypes type, int amount)
 {
-    *items.Add() = ItemFactory::Get()->Create(type);
+    auto item = GetItem(type);
+    if(item == nullptr)
+    {
+        auto newItem = ItemFactory::Get()->Create(type);
+        newItem.Amount = amount;
+        *items.Add() = newItem;
+    }
+    else
+    {
+        item->Amount += amount;
+    }
 }
 
 void ItemManager::Remove(Item *item)
@@ -169,6 +186,11 @@ int ItemManager::GetAmount(ItemTypes type)
     }
 
     return amount;
+}
+
+Item *ItemManager::GetItem(ItemTypes type)
+{
+    return items.Find(type);
 }
 
 Item *ItemManager::GetItem(int index)

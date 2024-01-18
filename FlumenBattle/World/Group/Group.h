@@ -190,6 +190,8 @@ namespace world::group
 
         void ExitBattle();
 
+        void AddItem(character::ItemTypes, int = 1);
+
         WorldTile *GetDestination() const {return travelActionData.Destination;}
 
         WorldTile *GetFinalDestination() const;
@@ -209,6 +211,8 @@ namespace world::group
         int GetProgressRate() const;
 
         world::character::Item *GetItem(int);
+
+        const container::Pool <character::Item> &GetItems() const;
 
         const int &GetMoney() const {return money;}
 

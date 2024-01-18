@@ -1,3 +1,6 @@
+#include "FlumenCore/Delegate/Delegate.hpp"
+#include "FlumenCore/Delegate/Event.hpp"
+
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/Text.hpp"
 #include "FlumenEngine/Interface/Sprite.hpp"
@@ -8,6 +11,7 @@
 #include "FlumenBattle/World/Character/CharacterClass.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/HumanMind.h"
 
 using namespace world::interface;
 
@@ -73,6 +77,8 @@ void InventorySlot::SetItem(world::character::Item *newItem)
 
 void InventoryMenu::HandleConfigure()
 {
+    *group::HumanMind::Get()->OnItemAdded += {this, &InventoryMenu::HandleItemAdded};
+
     playerGroup = world::WorldScene::Get()->GetPlayerGroup();
 
     nameLabel = ElementFactory::BuildText(
@@ -196,6 +202,9 @@ void InventoryMenu::HandleConfigure()
 
 void InventoryMenu::SelectSlot(InventorySlot *slot)
 {
+    if(selectedSlot == nullptr && slot->item == nullptr)
+        return;
+
     if(selectedSlot == slot)
     {
         DropItem();
@@ -376,4 +385,35 @@ void InventoryMenu::HandleUpdate()
     }
 
     damageLabel->Setup(text);
+}
+
+void InventoryMenu::HandleItemAdded()
+{
+    auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
+
+    for(auto &item : playerGroup->GetItems())
+    {
+        bool hasFound = false;
+        for(auto &slot : inventorySlots)
+        {
+            if(slot->item == &item)
+            {
+                hasFound = true;
+                break;
+            }
+        }
+
+        if(hasFound == false)
+        {
+            for(auto &slot : inventorySlots)
+            {
+                if(slot->item != nullptr)
+                    continue;
+
+                slot->SetItem(&item);
+                break;    
+            }
+            break;
+        }
+    }
 }

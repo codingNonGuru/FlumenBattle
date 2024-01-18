@@ -47,6 +47,8 @@ namespace world::character
         void ApplyEffect(Character &character) const {Type->ApplyEffect(character);}
 
         bool IsRangedWeapon() const {return Type->IsRangedWeapon();}
+
+        bool operator==(ItemTypes type) {return Type->Type == type;}
     };
 
     class ItemSet
@@ -63,13 +65,17 @@ namespace world::character
 
         friend class group::Group;
 
-        void Add(ItemTypes);
+        void Add(ItemTypes, int = 1);
 
         void Remove(Item *);
 
         int GetAmount(ItemTypes);
 
+        Item *GetItem(ItemTypes);
+
         Item *GetItem(int);
+
+        const container::Pool <Item> &GetItems() const {return items;}
     };
 
     class ItemFactory : public core::Singleton <ItemFactory>
