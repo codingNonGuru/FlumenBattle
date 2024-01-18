@@ -27,6 +27,12 @@ namespace world
 
         WorldTile *hoveredTile;
 
+        bool isGrabbingScreen {false};
+
+        Position2 grabStartPosition;
+
+        Position2 grabPositionDelta;
+
         bool isInEncounterMode {false};
 
         bool isResourceDisplayActive {false};
@@ -67,6 +73,10 @@ namespace world
         void HandlePanLeft();
 
         void HandlePanRight();
+
+        void HandleGrabPressed();
+
+        void HandleGrabReleased();
 
         void HandleTravelPressed();
 

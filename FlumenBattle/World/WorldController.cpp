@@ -26,11 +26,15 @@ static const Float CAMERA_ZOOM_SPEED = 3.0f;
 
 static const Float TRANSITION_TO_BATTLE_DELAY = 0.5f;
 
+static const Float CAMERA_PAN_SENSITIVITY = 1.5f;
+
 static Camera *camera = nullptr;
 
 const int PLANNED_PATH_MAXIMUM_SIZE = 12;
 
-static const SDL_Scancode travelModeInputKey = SDL_Scancode::SDL_SCANCODE_T;
+static const auto travelModeInputKey = SDL_Scancode::SDL_SCANCODE_T;
+
+static const auto screenGrabInputKey = SDL_Scancode::SDL_SCANCODE_LALT;
 
 namespace world
 {
@@ -72,6 +76,8 @@ namespace world
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_5, {this, &WorldController::HandleCharacterSelected});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_6, {this, &WorldController::HandleCharacterSelected});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_I, {this, &WorldController::HandleInventoryPressed});
+
+        InputHandler::RegisterContinualEvent(screenGrabInputKey, {this, &WorldController::HandleGrabPressed}, {this, &WorldController::HandleGrabReleased});
 
         //InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_C, {this, &WorldController::HandleColonizationSwitch});
 
@@ -179,6 +185,21 @@ namespace world
             isTravelPlanActive = false;
         }
 
+        if(isGrabbingScreen == true)
+        {
+            camera->Translate({grabPositionDelta.x, grabPositionDelta.y, 0.0f});
+
+            auto mouseDelta = InputHandler::GetMousePosition() - grabStartPosition;
+            
+            mouseDelta *= CAMERA_PAN_SENSITIVITY;
+
+            mouseDelta *= camera->GetZoomFactor();
+
+            camera->Translate({-mouseDelta.x, -mouseDelta.y, 0.0f});
+
+            grabPositionDelta = mouseDelta;
+        }
+
         if(hoveredTile == nullptr)
             return;
 
@@ -228,6 +249,19 @@ namespace world
     {
         auto panSpeed = (CAMERA_PAN_SPEED * camera->GetZoomFactor()) * Time::GetDelta();        
         camera->Translate(Direction3(panSpeed, 0.0f, 0.0f));
+    }
+
+    void WorldController::HandleGrabPressed()
+    {
+        isGrabbingScreen = true;
+        grabStartPosition = InputHandler::GetMousePosition();
+
+        grabPositionDelta = Position2();
+    }
+
+    void WorldController::HandleGrabReleased()
+    {
+        isGrabbingScreen = false;
     }
 
     void WorldController::HandleSpacePressed()
@@ -330,6 +364,8 @@ namespace world
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_5, {this, &WorldController::HandleCharacterSelected});
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_6, {this, &WorldController::HandleCharacterSelected});
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_I, {this, &WorldController::HandleInventoryPressed});
+
+        InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LALT);
     }
 
     group::Encounter * WorldController::GetPlayerBattle() const 
