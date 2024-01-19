@@ -30,7 +30,7 @@ static const SDL_Scancode slackenActionKey = SDL_Scancode::SDL_SCANCODE_LEFTBRAC
 
 static const SDL_Scancode intensifyActionKey = SDL_Scancode::SDL_SCANCODE_RIGHTBRACKET;
 
-static const auto coinSounds = container::Array {"Coin", "Coin2", "Coin3"};
+static const auto coinSounds = container::Array {"Coin", "Coin2", "Coin3", "Coin4"};
 
 static const auto DICE_ROLL_SOUND = "DiceRoll";
 
