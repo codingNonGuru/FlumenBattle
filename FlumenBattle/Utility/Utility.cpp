@@ -9,9 +9,63 @@ utility::Result utility::RollD4Dice()
     return utility::GetRandom(1, 4);
 }
 
+utility::Result utility::RollD6Dice()
+{
+    return utility::GetRandom(1, 6);
+}
+
+utility::Result utility::RollD8Dice()
+{
+    return utility::GetRandom(1, 8);
+}
+
+utility::Result utility::RollD10Dice()
+{
+    return utility::GetRandom(1, 10);
+}
+
+utility::Result utility::RollD12Dice()
+{
+    return utility::GetRandom(1, 12);
+}
+
 utility::Result utility::RollD20Dice()
 {
     return utility::GetRandom(1, 20);
+}
+
+utility::Result utility::RollDice(utility::RollMaterial material)
+{
+    auto result = 0;
+
+    for(int i = 0; i < material.DieCount; ++i)
+    {
+        switch(material.Die)
+        {
+        case RollDies::D4:
+            result += RollD4Dice();
+            break;
+        case RollDies::D6:
+            result += RollD6Dice();
+            break;
+        case RollDies::D8:
+            result += RollD8Dice();
+            break;
+        case RollDies::D10:
+            result += RollD10Dice();
+            break;
+        case RollDies::D12:
+            result += RollD12Dice();
+            break;
+        case RollDies::D20:
+            result += RollD20Dice();
+            break;
+        }
+    }
+
+    result += material.Bonus;
+
+    return result;
 }
 
 utility::Result utility::RollD100Dice()

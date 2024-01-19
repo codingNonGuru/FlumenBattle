@@ -59,7 +59,7 @@ namespace world::character
                 if(mainHandItem == nullptr)
                     return 1;
                 else if(mainHandItem->IsRangedWeapon() == true)
-                    return 6;
+                    return 24;
                 else
                     return 1;
             }

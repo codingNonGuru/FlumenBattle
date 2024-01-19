@@ -249,7 +249,7 @@ namespace world::group
 
         group.CancelAction();
 
-        //WorldScene::Get()->InitiateEncounter(&group, other);
+        WorldScene::Get()->InitiateEncounter(&group, other);
 
         return {};
     }

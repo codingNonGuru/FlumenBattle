@@ -153,18 +153,24 @@ Item ItemFactory::Create(ItemTypes type)
     }
 }
 
-void ItemManager::Add(ItemTypes type, int amount)
+Item *ItemManager::Add(ItemTypes type, int amount)
 {
     auto item = GetItem(type);
     if(item == nullptr)
     {
         auto newItem = ItemFactory::Get()->Create(type);
         newItem.Amount = amount;
-        *items.Add() = newItem;
+
+        auto itemLocation = items.Add();
+        *itemLocation = newItem;
+
+        return itemLocation;
     }
     else
     {
         item->Amount += amount;
+        
+        return item;
     }
 }
 

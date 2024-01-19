@@ -119,7 +119,23 @@ namespace world::group
         items.Add(character::ItemTypes::SHIELD);
         items.Add(character::ItemTypes::ARMOR);
         items.Add(character::ItemTypes::SPEAR);
-        items.Add(character::ItemTypes::BOW);
+        auto firstBow = items.Add(character::ItemTypes::BOW);
+        auto secondBow = items.Add(character::ItemTypes::BOW);
+
+        auto index = 0;
+        for(auto &character : characters)
+        {
+            if(character.GetClass()->Class == character::CharacterClasses::RANGER)
+            {
+                character.SetItem(firstBow, character::ItemPositions::MAIN_HAND);
+                index++;
+
+                if(index == 2)
+                {
+                    break;
+                }
+            }
+        }
     }
 
     bool Group::IsAlive()

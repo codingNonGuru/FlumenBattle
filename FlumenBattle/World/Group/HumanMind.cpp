@@ -30,7 +30,7 @@ static const SDL_Scancode slackenActionKey = SDL_Scancode::SDL_SCANCODE_LEFTBRAC
 
 static const SDL_Scancode intensifyActionKey = SDL_Scancode::SDL_SCANCODE_RIGHTBRACKET;
 
-static const auto coinSounds = container::Array {"Coin", "Coin2", "Coin3", "Coin4"};
+static const auto COIN_SOUNDS = container::Array {"Coin", "Coin2", "Coin3", "Coin4"};
 
 static const auto DICE_ROLL_SOUND = "DiceRoll";
 
@@ -291,7 +291,7 @@ void HumanMind::BuyFood()
     playerGroup->money -= foodPrice;
     playerGroup->AddItem(character::ItemTypes::FOOD, VOLUME_PER_MARKET_ITEM);
 
-    auto sound = coinSounds.GetRandom();
+    auto sound = COIN_SOUNDS.GetRandom();
     engine::SoundManager::Get()->PlaySound(*sound);
 
     OnItemAdded->Invoke();

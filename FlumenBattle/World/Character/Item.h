@@ -65,7 +65,7 @@ namespace world::character
 
         friend class group::Group;
 
-        void Add(ItemTypes, int = 1);
+        Item *Add(ItemTypes, int = 1);
 
         void Remove(Item *);
 

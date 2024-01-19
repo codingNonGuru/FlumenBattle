@@ -12,6 +12,14 @@ namespace utility
 
     Result RollD4Dice();
 
+    Result RollD6Dice();
+
+    Result RollD8Dice();
+
+    Result RollD10Dice();
+
+    Result RollD12Dice();
+
     Result RollD20Dice();
 
     typedef int Bonus;
@@ -26,6 +34,8 @@ namespace utility
 
         int Bonus;
     };
+
+    Result RollDice(RollMaterial);
 
     struct Success
     {
