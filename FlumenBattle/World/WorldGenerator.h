@@ -3,6 +3,7 @@
 #include <atomic>
 
 #include "FlumenCore/Singleton.h"
+#include "FlumenCore/Container/Grid.hpp"
 
 namespace pregame
 {
@@ -20,7 +21,7 @@ namespace world
         void GenerateSociety(pregame::NewWorldData);
 
     public:
-        int GenerateWorld(pregame::NewWorldData);
+        int GenerateWorld(pregame::NewWorldData, const container::Grid <float> &);
 
         int GetMaximumPolityCount(int) const;
 

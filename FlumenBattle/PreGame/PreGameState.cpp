@@ -2,6 +2,7 @@
 
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Thread/ThreadManager.h"
+#include "FlumenEngine/Utility/Perlin.hpp"
 
 #include "PreGameState.h"
 #include "FlumenBattle/PreGame/PreGameController.h"
@@ -60,14 +61,20 @@ namespace pregame
         newWorldMenu->Enable();
     }
 
+    static auto perlinNoise = container::Grid <float> (128, 128);
+
     void PreGameState::GenerateNewWorld(NewWorldData data)
     {
         generatorPopup->Enable();
 
+        Perlin::Generate(Size(perlinNoise.GetWidth(), perlinNoise.GetHeight()), 0.3f, ContrastThreshold(0.5f), ContrastStrength(4.0f));
+        
+        Perlin::Download(&perlinNoise);
+
         engine::ThreadManager::Get()->LaunchAsyncThread(
             {this, &PreGameState::FinishWorldGeneration}, 
             &world::WorldGenerator::GenerateWorld, world::WorldGenerator::Get(), 
-            data);
+            data, &perlinNoise);
     }
 
     void PreGameState::FinishWorldGeneration()

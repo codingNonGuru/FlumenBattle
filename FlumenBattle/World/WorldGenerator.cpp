@@ -1,3 +1,5 @@
+#include "FlumenEngine/Utility/Perlin.hpp"
+
 #include "WorldGenerator.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldMap.h"
@@ -20,7 +22,7 @@ using namespace world;
 
 #define METAL_SPAWN_CHANCE 1
 
-int WorldGenerator::GenerateWorld(pregame::NewWorldData data)
+int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::Grid <float> &perlinNoise)
 {
     assert((data.Size % TILES_PER_SIMULATION_DOMAIN == 0) && "World generation size incompatible with simulation standard.\n");
 
@@ -32,14 +34,23 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data)
 
     auto map = scene.worldMap;
 
-    const float CONTINENT_GIRTH = float(data.Size) * 23.0f;
+    const float CONTINENT_GIRTH = float(data.Size) * 17.0f;
 
     auto defineContinents = [&]
     {
+        std::cout<<"Defining continents\n";
+
         auto centerTile = map->GetCenterTile();
         for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
         {
-            if(centerTile->GetPhysicalDistanceTo(*tile) > CONTINENT_GIRTH)
+            auto distanceToCenter = centerTile->GetPhysicalDistanceTo(*tile);
+            auto baseHeight = exp(-(distanceToCenter * distanceToCenter) / (2.0f * CONTINENT_GIRTH * CONTINENT_GIRTH));
+
+            auto noiseFactor = *perlinNoise.Get(tile->SquareCoordinates.x, tile->SquareCoordinates.y);
+
+            auto height = noiseFactor + (1.0f - noiseFactor) * baseHeight;
+            height *= 0.2f + baseHeight * 0.8f;
+            if(height < 0.5f)
             {
                 tile->Type = WorldTiles::SEA;
             }
@@ -47,6 +58,8 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data)
             {
                 tile->Type = WorldTiles::LAND;
             }
+
+            tile->Elevation = int(height * 100.0f);
         }
     };
 
@@ -61,28 +74,11 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data)
             }
             else
             {
-                auto mountainChance = 20;
-                auto distance = centerTile->GetPhysicalDistanceTo(*tile);
-                if(distance > CONTINENT_GIRTH * 0.95f)
-                {
+                auto mountainChance = tile->Elevation - 50;
+                if(mountainChance < 0)
                     mountainChance = 0;
-                }
-                else if(distance > CONTINENT_GIRTH * 0.9f)
-                {
-                    mountainChance = 4;
-                }
-                else if(distance > CONTINENT_GIRTH * 0.85f)
-                {
-                    mountainChance = 8;
-                }
-                else if(distance > CONTINENT_GIRTH * 0.7f)
-                {
-                    mountainChance = 12;
-                }
-                else if(distance > CONTINENT_GIRTH * 0.5f)
-                {
-                    mountainChance = 16;
-                }
+
+                mountainChance /= 2;
 
                 if(utility::GetRandom(1, 100) <= mountainChance)
                 {
@@ -331,7 +327,7 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
         }
     };
     
-    for(auto i = 0; i < 5; ++i)
+    for(auto i = 0; i < 1; ++i)
     {
         auto location = findSettleLocation();
         scene.FoundSettlement(location, nullptr);

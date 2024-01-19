@@ -8,10 +8,10 @@
 
 using namespace world;
 
-static constexpr auto VARIATION_FACTOR = 0.07f;
+static constexpr auto VARIATION_FACTOR = 0.05f;
 
 WorldTile::WorldTile(Position2 position, Integer2 squareCoordinates) : Position(position), SquareCoordinates(squareCoordinates), 
-group(nullptr), settlement(nullptr), owner(nullptr), isBorderingOwnedTile(false), pathData(-1)
+group(nullptr), settlement(nullptr), owner(nullptr), isBorderingOwnedTile(false)
 {
     HexCoordinates.x = squareCoordinates.x - squareCoordinates.y / 2;
     HexCoordinates.z = squareCoordinates.y;
@@ -22,13 +22,18 @@ void WorldTile::Initialize()
 {
     auto dirtColor = Color(0.9f, 0.7f, 0.5f, 1.0f);
     auto grassColor = Color(0.4f, 0.6f, 0.05f, 1.0f);
-    auto seaColor = Color(0.05f, 0.3f, 0.6f, 1.0f);
+    auto seaColor = Color(0.03f, 0.2f, 0.5f, 1.0f);
     auto rockColor = Color(0.25f, 0.25f, 0.25f, 1.0f);
     auto peakColor = Color(0.95f, 0.95f, 0.95f, 1.0f);
 
     auto color = [&] {
         if(Type == WorldTiles::SEA)
-            return seaColor;
+        {
+            auto depthFactor = (float)Elevation / 50.0f;
+            depthFactor *= depthFactor * depthFactor;
+            depthFactor *= depthFactor * depthFactor;
+            return seaColor * (1.0f - depthFactor) + Color::CYAN * depthFactor;
+        }
 
         if(HasRelief(WorldReliefs::MOUNTAINS))
         {

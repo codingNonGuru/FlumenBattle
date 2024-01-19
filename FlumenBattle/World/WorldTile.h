@@ -53,7 +53,7 @@ namespace world
 
         container::SmartBlock <settlement::PathSegment *, 6> links;
 
-        int pathData;
+        //int pathData;
 
     public:
         struct PathData
@@ -72,6 +72,8 @@ namespace world
         Integer2 SquareCoordinates;
 
         Integer3 HexCoordinates;
+
+        Integer Elevation;
 
         Float4 Shade;
 
@@ -143,9 +145,9 @@ namespace world
 
         settlement::PathSegment * GetLinkTo(WorldTile *);
 
-        void SetPathData(int data) {pathData = data;}
+        //void SetPathData(int data) {pathData = data;}
 
-        int GetPathData() {return pathData;}
+        //int GetPathData() {return pathData;}
 
         ResourceAmount GetResource(settlement::ResourceTypes type) {return *resources[(int)type];}
 
