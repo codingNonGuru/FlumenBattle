@@ -36,6 +36,9 @@ namespace world
 
         friend class WorldGenerator;
 
+    public:
+        static constexpr int MAXIMUM_TILE_HEAT = 100;
+
     private:
         WorldMap *map;
 

@@ -31,6 +31,8 @@
 
 const Float CAMERA_SHIFT_DURATION = 0.5f;
 
+const auto SEASONAL_SWING_FACTOR = 0.15f;
+
 static Camera* camera = nullptr;
 
 static Float shadeTimer = 0.0f;
@@ -397,6 +399,8 @@ DataBuffer *positionBuffer = nullptr;
 
 DataBuffer *colorBuffer = nullptr;
 
+DataBuffer *heatBuffer = nullptr;
+
 void WorldTileModel::RenderGlobalLight()
 {
     /*shader->Bind();
@@ -471,6 +475,38 @@ void WorldTileModel::RenderTilesAdvanced()
     newHexShader->Unbind();
 }
 
+void WorldTileModel::RenderSnow()
+{
+    auto map = worldScene->GetWorldMap();
+
+    auto snowShader = ShaderManager::GetShader("Snow");
+
+    snowShader->Bind();
+
+    snowShader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	snowShader->SetConstant(0.0f, "depth");
+
+    snowShader->SetConstant(WORLD_TILE_SIZE, "hexSize");
+
+    auto &worldTime = worldScene->GetTime();
+    
+    auto timeFactor = float(worldTime.TotalMinuteCount) / float(WorldTime::MINUTES_IN_YEAR);
+    timeFactor *= TWO_PI;
+
+    auto weatherFactor = -cos(timeFactor) * SEASONAL_SWING_FACTOR;
+
+    snowShader->SetConstant(weatherFactor, "weatherFactor");
+
+    positionBuffer->Bind(0);
+
+    heatBuffer->Bind(1);
+
+    glDrawArrays(GL_TRIANGLES, 0, 18 * map->GetTileCount());
+
+    snowShader->Unbind();
+}
+
 void WorldTileModel::RenderPlayerPath()
 {
     if(WorldController::Get()->IsTravelPlanActive() == true)
@@ -519,19 +555,27 @@ void WorldTileModel::Render()
 
         static auto colors = container::Array <Color> (map->GetTileCount());
 
+        static auto temperatures = container::Array <Float> (map->GetTileCount());
+
         for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
         {
             *positions.Add() = tile->Position;
 
             *colors.Add() = tile->GetShade();
+
+            *temperatures.Add() = tile->Type == WorldTiles::LAND ? (float)tile->Heat / (float)WorldTile::MAXIMUM_TILE_HEAT : 1.0f;
         }
 
         positionBuffer = new DataBuffer(positions.GetMemorySize(), positions.GetStart());
 
         colorBuffer = new DataBuffer(colors.GetMemorySize(), colors.GetStart());
+
+        heatBuffer = new DataBuffer(temperatures.GetMemorySize(), temperatures.GetStart());
     }
 
     RenderTilesAdvanced();
+
+    RenderSnow();
 
     RenderPaths();
 

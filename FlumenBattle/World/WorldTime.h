@@ -6,7 +6,15 @@ namespace world
 {
     struct WorldTime
     {
+        static constexpr auto DAYS_IN_YEAR = 365;
+
+        static constexpr auto MINUTES_IN_DAYS = 24 * 60;
+
+        static constexpr auto MINUTES_IN_YEAR = DAYS_IN_YEAR * MINUTES_IN_DAYS;
+
         int MinuteCount;
+
+        int TotalMinuteCount;
 
         int HourCount;
 
@@ -35,7 +43,8 @@ namespace world
         WorldTime() {}
 
         WorldTime(int yearCount, int dayCount, int hourCount) : 
-            YearCount(yearCount), DayCount(dayCount), TotalDayCount(dayCount), HourCount(hourCount), TotalHourCount(hourCount), MinuteCount(0), IsFlowing(false), FlowSpeed(1), IsStopDelayed(false) {}
+            YearCount(yearCount), DayCount(dayCount), TotalDayCount(dayCount), HourCount(hourCount), TotalHourCount(hourCount), MinuteCount(0), TotalMinuteCount(dayCount * MINUTES_IN_DAYS), 
+            IsFlowing(false), FlowSpeed(1), IsStopDelayed(false) {}
 
         void SpeedUp() 
         {
@@ -68,6 +77,7 @@ namespace world
             IsNewYear = false;
 
             MinuteCount += 10;
+            TotalMinuteCount += 10;
             if(MinuteCount >= 60)
             {
                 MinuteCount = 0;

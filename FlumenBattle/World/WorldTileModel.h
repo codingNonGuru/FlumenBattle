@@ -25,6 +25,8 @@ namespace world
 
         void RenderTiles();
 
+        void RenderSnow();
+
         void RenderPaths();
 
         void RenderBorders();

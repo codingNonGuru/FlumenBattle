@@ -60,13 +60,6 @@ void WorldTile::Initialize()
         }
     } ();
 
-    if(Type == WorldTiles::LAND)
-    {
-        auto factor = (float)Heat / 100.0f;
-        factor = factor > 0.5f ? 1.0f : 0.0f;
-        color = color * factor + Color::WHITE * (1.0f - factor);
-    }
-
     auto variationFactor = VARIATION_FACTOR;
     if(Type == WorldTiles::SEA)
         variationFactor *= 0.3f;

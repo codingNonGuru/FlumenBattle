@@ -12,7 +12,8 @@ static container::Array <Word> startParticles =
     "shade", "wall", "blade", "spoke", "wise", "proud", "mouth", "neck", "oak", "ash", "pine", "car", "kin", "bryn", "shroud", "shale", "bow", "mist",
     "winter", "summer", "fall", "mimble", "cross", "sizzle", "key", "smite", "broke", "smoke", "still", "loud", "fare", "chaff", "snow", "gray", "waste",
     "hammer", "light", "dark", "dust", "peak", "rain", "foul", "seed", "dirt", "riddle", "lock", "wander", "knave", "shard", "mellow", "nut", "nail",
-    "chisel", "chap", "chime", "bless", "quick", "fast", "bottom", "top", "toast"
+    "chisel", "chap", "chime", "bless", "quick", "fast", "bottom", "top", "toast", "corn", "husk", "fiddle", "needle", "thorn", "whole", "some", "frail",
+    "rope", "chest", "whistle", "sear", "singe", "stir", "stick", "stale"
 };
 
 static container::Array <Word> endParticles = 
@@ -22,7 +23,7 @@ static container::Array <Word> endParticles =
     "hurst", "meadow", "brook", "root", "spring", "plane", "bite", "shaft", "pit", "well", "field", "way", "road", "crack", "camp", "watch", "fort",
     "bridge", "rim", "wind", "ridge", "pass", "rift", "pond", "lands", "water", "more", "cradle", "cliff", "head", "glade", "fen", "moor", "marsh",
     "bog", "tip", "song", "yard", "path", "heart", "deep", "mere", "mead", "wast", "cher", "gard", "gate", "combe", "fold", "keld", "keth", "stead", "garth", 
-    "mine", "ward", "keep", "end", "peak"
+    "mine", "ward", "keep", "end", "peak", "husk", "rope", "quest"
     //"reef", "sea", "isle", "harbor", "dock", "tide", "flood", "coast", "beach", "wave", "bay", "vic", "fish", "whale", "shore"
 };
 

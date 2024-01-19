@@ -190,20 +190,16 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::G
             auto y = tile->SquareCoordinates.y;
             y -= map->tiles.GetHeight() / 2;
             
-            float heatFactor = float(y) / float(map->tiles.GetHeight() / 2);
+            float baseHeatFactor = float(y) / float(map->tiles.GetHeight() / 2);
             float b = 0.4f;
-            heatFactor = exp(-(heatFactor * heatFactor) / (2.0f * b * b));
+            baseHeatFactor = exp(-(baseHeatFactor * baseHeatFactor) / (2.0f * b * b));
 
             auto snowFactor = *snowNoise.Get(tile->SquareCoordinates.x, tile->SquareCoordinates.y);
-            //heatFactor = 1.0f - (1.0f - heatFactor) * snowFactor;
 
+            auto heatFactor = snowFactor + (1.0f - snowFactor) * baseHeatFactor;
+            heatFactor *= 0.5f + baseHeatFactor * 0.5f;
 
-            auto height = snowFactor + (1.0f - snowFactor) * heatFactor;
-            height *= 0.5f + heatFactor * 0.5f;
-
-
-
-            tile->Heat = int(height * 100.0f);
+            tile->Heat = int(heatFactor * float(WorldTile::MAXIMUM_TILE_HEAT));
         }
     };
 
