@@ -3,6 +3,11 @@
 
 #include "SettlementMenuOption.h"
 #include "FlumenBattle/World/Interface/SettlementMenu.h"
+#include "FlumenBattle/World/Interface/ResourceCounter.h"
+#include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/Character/Types.h"
+#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Settlement/Settlement.h"
 
 using namespace world::interface;
 
@@ -30,6 +35,16 @@ void SettlementMenuOption::HandleConfigure()
         }
     );
     label->Enable();
+
+    priceCounter = ElementFactory::BuildElement <ResourceCounter> (
+        {Size(), drawOrder_ + 1, {Position2(-60.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_CENTER, this}}
+    );
+    priceCounter->Setup("Coin", [] -> int {
+        auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
+
+        return playerGroup->GetCurrentSettlement()->GetResourcePrice(settlement::ResourceTypes::FOOD);
+    });
+    priceCounter->Enable();
 }
 
 void SettlementMenuOption::HandleLeftClick()

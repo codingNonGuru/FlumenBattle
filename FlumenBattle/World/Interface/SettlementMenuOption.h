@@ -7,12 +7,15 @@ class Text;
 namespace world::interface
 {
     class SettlementMenu;
+    class ResourceCounter;
 
     class SettlementMenuOption : public Element
     {
         Text *label;
 
         SettlementMenu *menu;
+
+        ResourceCounter *priceCounter;
 
         void HandleConfigure() override;    
 

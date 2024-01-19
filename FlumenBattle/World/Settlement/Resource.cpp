@@ -7,7 +7,7 @@ using namespace world::settlement;
 
 struct Food : public ResourceType
 {
-    Food() : ResourceType(ResourceTypes::FOOD, 10, true) {PopulationConsumption = 1;}
+    Food() : ResourceType(ResourceTypes::FOOD, 15, true) {PopulationConsumption = 1;}
 };
 
 struct Timber : public ResourceType

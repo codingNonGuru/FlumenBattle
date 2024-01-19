@@ -36,6 +36,8 @@ static const auto DICE_ROLL_SOUND = "DiceRoll";
 
 static const auto DICE_SOUND_INTERVAL = 1000;
 
+static const auto VOLUME_PER_MARKET_ITEM = 10;
+
 GroupActionResult selectedActionResult;
 
 GroupActionResult performedActionResult;
@@ -287,7 +289,7 @@ void HumanMind::BuyFood()
     auto foodPrice = foodResource->Type->Value;
 
     playerGroup->money -= foodPrice;
-    playerGroup->AddItem(character::ItemTypes::FOOD, foodPrice);
+    playerGroup->AddItem(character::ItemTypes::FOOD, VOLUME_PER_MARKET_ITEM);
 
     auto sound = coinSounds.GetRandom();
     engine::SoundManager::Get()->PlaySound(*sound);

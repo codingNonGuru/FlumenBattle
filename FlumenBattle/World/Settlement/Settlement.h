@@ -190,6 +190,8 @@ namespace world::settlement
 
         Resource *GetResource(ResourceTypes type) const {return resourceHandler.Get(type);}
 
+        int GetResourcePrice(ResourceTypes type) const {return resourceHandler.Get(type)->Type->Value;}
+
         int GetStock(ResourceTypes type) const {return resourceHandler.Get(type)->Storage;}
 
         SettlementProduction *GetCurrentProduction() const {return currentProduction;}

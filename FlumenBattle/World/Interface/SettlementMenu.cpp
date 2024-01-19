@@ -19,7 +19,7 @@ static constexpr auto DEFAULT_FONT_SIZE = "Medium";
 
 static constexpr auto DEFAULT_FONT_TYPE = "JSLAncient";
 
-static constexpr auto OPTION_ITEM_SIZE = Size(200, 35);
+static constexpr auto OPTION_ITEM_SIZE = Size(280, 35);
 
 void SettlementMenu::HandleConfigure()
 {
