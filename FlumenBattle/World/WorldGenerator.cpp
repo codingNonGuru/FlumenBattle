@@ -22,7 +22,11 @@ using namespace world;
 
 #define METAL_SPAWN_CHANCE 1
 
-int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::Grid <float> &perlinNoise)
+static const auto MAXIMUM_TILE_ELEVATION = 100;
+
+static const auto SIZE_TO_GIRTH_FACTOR = 17.0f;
+
+int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::Grid <float> &perlinNoise, const container::Grid <float> &snowNoise)
 {
     assert((data.Size % TILES_PER_SIMULATION_DOMAIN == 0) && "World generation size incompatible with simulation standard.\n");
 
@@ -34,7 +38,7 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::G
 
     auto map = scene.worldMap;
 
-    const float CONTINENT_GIRTH = float(data.Size) * 17.0f;
+    const float CONTINENT_GIRTH = float(data.Size) * SIZE_TO_GIRTH_FACTOR;
 
     auto defineContinents = [&]
     {
@@ -59,7 +63,7 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::G
                 tile->Type = WorldTiles::LAND;
             }
 
-            tile->Elevation = int(height * 100.0f);
+            tile->Elevation = int(height * float(MAXIMUM_TILE_ELEVATION));
         }
     };
 
@@ -179,6 +183,30 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::G
         }
     };
 
+    auto generateClimates = [&]
+    {
+        for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
+        {
+            auto y = tile->SquareCoordinates.y;
+            y -= map->tiles.GetHeight() / 2;
+            
+            float heatFactor = float(y) / float(map->tiles.GetHeight() / 2);
+            float b = 0.4f;
+            heatFactor = exp(-(heatFactor * heatFactor) / (2.0f * b * b));
+
+            auto snowFactor = *snowNoise.Get(tile->SquareCoordinates.x, tile->SquareCoordinates.y);
+            //heatFactor = 1.0f - (1.0f - heatFactor) * snowFactor;
+
+
+            auto height = snowFactor + (1.0f - snowFactor) * heatFactor;
+            height *= 0.5f + heatFactor * 0.5f;
+
+
+
+            tile->Heat = int(height * 100.0f);
+        }
+    };
+
     auto generateBiomes = [&]
     {
         for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
@@ -275,6 +303,8 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::G
     uniteMountains();
 
     generateBiomes();
+
+    generateClimates();
 
     initializeTiles();
 

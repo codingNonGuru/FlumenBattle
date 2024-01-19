@@ -8,7 +8,7 @@
 
 using namespace world;
 
-static constexpr auto VARIATION_FACTOR = 0.05f;
+static constexpr auto VARIATION_FACTOR = 0.07f;
 
 WorldTile::WorldTile(Position2 position, Integer2 squareCoordinates) : Position(position), SquareCoordinates(squareCoordinates), 
 group(nullptr), settlement(nullptr), owner(nullptr), isBorderingOwnedTile(false)
@@ -22,11 +22,12 @@ void WorldTile::Initialize()
 {
     auto dirtColor = Color(0.9f, 0.7f, 0.5f, 1.0f);
     auto grassColor = Color(0.4f, 0.6f, 0.05f, 1.0f);
-    auto seaColor = Color(0.03f, 0.2f, 0.5f, 1.0f);
+    auto seaColor = Color(0.02f, 0.1f, 0.35f, 1.0f);
     auto rockColor = Color(0.25f, 0.25f, 0.25f, 1.0f);
     auto peakColor = Color(0.95f, 0.95f, 0.95f, 1.0f);
 
-    auto color = [&] {
+    auto color = [&] 
+    {
         if(Type == WorldTiles::SEA)
         {
             auto depthFactor = (float)Elevation / 50.0f;
@@ -59,8 +60,19 @@ void WorldTile::Initialize()
         }
     } ();
 
-    color = Color::AddSaturation(color, utility::GetRandom(-VARIATION_FACTOR, VARIATION_FACTOR));
-    color = Color::Lighten(color, utility::GetRandom(-VARIATION_FACTOR, VARIATION_FACTOR));
+    if(Type == WorldTiles::LAND)
+    {
+        auto factor = (float)Heat / 100.0f;
+        factor = factor > 0.5f ? 1.0f : 0.0f;
+        color = color * factor + Color::WHITE * (1.0f - factor);
+    }
+
+    auto variationFactor = VARIATION_FACTOR;
+    if(Type == WorldTiles::SEA)
+        variationFactor *= 0.3f;
+
+    color = Color::AddSaturation(color, utility::GetRandom(-variationFactor, variationFactor));
+    color = Color::Lighten(color, utility::GetRandom(-variationFactor, variationFactor));
 
     Shade = color;
 }

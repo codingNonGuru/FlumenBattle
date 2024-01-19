@@ -75,6 +75,8 @@ namespace world
 
         Integer Elevation;
 
+        Integer Heat;
+
         Float4 Shade;
 
         WorldTiles Type;
