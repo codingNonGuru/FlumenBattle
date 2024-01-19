@@ -30,8 +30,6 @@ static const SDL_Scancode slackenActionKey = SDL_Scancode::SDL_SCANCODE_LEFTBRAC
 
 static const SDL_Scancode intensifyActionKey = SDL_Scancode::SDL_SCANCODE_RIGHTBRACKET;
 
-static constexpr auto DEFAULT_FOOD_PRICE = 7;
-
 static const auto coinSounds = container::Array {"Coin", "Coin2", "Coin3"};
 
 static const auto DICE_ROLL_SOUND = "DiceRoll";
@@ -282,11 +280,14 @@ void HumanMind::HandleIntensifyAction()
 void HumanMind::BuyFood()
 {
     auto playerGroup = WorldScene::Get()->GetPlayerGroup();
-    if(playerGroup->money < DEFAULT_FOOD_PRICE)
-        return;
 
-    playerGroup->money -= DEFAULT_FOOD_PRICE;
-    playerGroup->AddItem(character::ItemTypes::FOOD, 10);
+    auto playerSettlement = playerGroup->GetCurrentSettlement();
+
+    auto foodResource = playerSettlement->GetResource(settlement::ResourceTypes::FOOD);
+    auto foodPrice = foodResource->Type->Value;
+
+    playerGroup->money -= foodPrice;
+    playerGroup->AddItem(character::ItemTypes::FOOD, foodPrice);
 
     auto sound = coinSounds.GetRandom();
     engine::SoundManager::Get()->PlaySound(*sound);

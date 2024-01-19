@@ -10,7 +10,7 @@ static container::Array <Word> startParticles =
     "dread", "hard", "tame", "dawn", "dusk", "mourn", "cheer", "bloom", "brine", "bold", "flood", "cliff", "home", "hair", "head", "gold",
     "ferry", "merry", "sorrow", "song", "yarn", "chill", "shield", "yard", "breast", "fleck", "ice", "lone", "sage", "heart", "keen", "bale", "grim",
     "shade", "wall", "blade", "spoke", "wise", "proud", "mouth", "neck", "oak", "ash", "pine", "car", "kin", "bryn", "shroud", "shale", "bow", "mist",
-    "winter", "summer", "fall", "mimble", "cross", "sizzle"
+    "winter", "summer", "fall", "mimble", "cross", "sizzle", "key", "smite", "broke", "smoke", "still", "loud", "fare", "chaff"
 };
 
 static container::Array <Word> endParticles = 

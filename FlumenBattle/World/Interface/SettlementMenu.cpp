@@ -7,7 +7,7 @@
 #include "FlumenBattle/World/Interface/SettlementMenuOption.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Group/Group.h"
-#include "FlumenBattle/World/Group/HumanMind.h"
+#include "FlumenBattle/World/WorldController.h"
 
 using namespace world::interface;
 
@@ -86,9 +86,8 @@ void SettlementMenu::Setup(settlement::Settlement *newSettlement)
 
 void SettlementMenu::ProcessOptionInput()
 {
-    group::HumanMind::Get()->BuyFood();
-
-    /*auto playerGroup = WorldScene::Get()->GetPlayerGroup();
-
-    auto money = playerGroup->GetMoney();*/
+    if(WorldController::Get()->CanBuyFood() == true)
+    {
+        WorldController::Get()->BuyFood();
+    }
 }

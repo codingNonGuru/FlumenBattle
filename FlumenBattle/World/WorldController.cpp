@@ -369,6 +369,38 @@ namespace world
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LALT);
     }
 
+    bool WorldController::CanBuyFood()
+    {
+        auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+        auto playerSettlement = playerGroup->GetCurrentSettlement();
+        if(playerSettlement == nullptr)
+            return false;
+
+        auto playerMoney = playerGroup->GetMoney();
+
+        auto foodResource = playerSettlement->GetResource(settlement::ResourceTypes::FOOD);
+        if(playerMoney < foodResource->Type->Value)
+            return false;
+
+        if(foodResource->Storage == 0)
+            return false;
+
+        return true;
+    }
+
+    void WorldController::BuyFood()
+    {
+        auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+        auto playerSettlement = playerGroup->GetCurrentSettlement();
+
+        group::HumanMind::Get()->BuyFood();
+
+        auto foodResource = playerSettlement->GetResource(settlement::ResourceTypes::FOOD);
+        foodResource->Storage--;
+    }
+
     group::Encounter * WorldController::GetPlayerBattle() const 
     {
         return WorldScene::Get()->GetPlayerGroup()->GetEncounter();

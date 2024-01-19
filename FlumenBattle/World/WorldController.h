@@ -109,6 +109,10 @@ namespace world
 
         void DisableEncounterMode();
 
+        bool CanBuyFood();
+
+        void BuyFood();
+
         bool ShouldDisplayResources() const {return isResourceDisplayActive;}
 
         bool CanColonize() const {return canColonize;}

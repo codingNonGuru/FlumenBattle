@@ -28,7 +28,7 @@ namespace world::settlement
     {
         const ResourceType *Type;
 
-        int Storage {0};
+        int Storage {100};
 
         int Production {0};
 
