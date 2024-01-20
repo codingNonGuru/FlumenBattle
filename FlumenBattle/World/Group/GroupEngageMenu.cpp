@@ -139,7 +139,7 @@ void GroupEngageMenu::RefreshOptions()
 
 void GroupEngageMenu::DisableInput()
 {
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_F, {this, &GroupEngageMenu::HandleFightPressed});
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_L, {this, &GroupEngageMenu::HandleLeavePressed});
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_P, {this, &GroupEngageMenu::HandlePersuadePressed});
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_F);
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_L);
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_P);
 }

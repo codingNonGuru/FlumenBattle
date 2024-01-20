@@ -37,9 +37,9 @@ void NewGameMenu::HandleEnable()
 
 void NewGameMenu::HandleDisable() 
 {
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_N, {this, &NewGameMenu::OnNewWorldPressed});
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_N);
 
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_B, {this, &NewGameMenu::OnBackPressed});
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_B);
 }
 
 void NewGameMenu::OnNewWorldPressed()

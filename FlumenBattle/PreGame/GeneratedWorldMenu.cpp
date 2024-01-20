@@ -64,16 +64,14 @@ void GeneratedWorldMenu::HandleEnable()
 
 void GeneratedWorldMenu::HandleDisable() 
 {
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_S, {this, &GeneratedWorldMenu::OnStartGamePressed});
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_S);
 
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_B, {this, &GeneratedWorldMenu::OnBackPressed});
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_B);
 }
 
 void GeneratedWorldMenu::OnStartGamePressed()
 {
     PreGameState::Get()->StartGame();
-
-    this->Disable();
 }
 
 void GeneratedWorldMenu::OnBackPressed()

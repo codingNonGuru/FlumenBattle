@@ -133,19 +133,19 @@ void HumanMind::EnableInput()
 
 void HumanMind::DisableInput()
 {
-    InputHandler::UnregisterEvent(searchInputKey, {this, &HumanMind::HandleSearch});
+    InputHandler::UnregisterEvent(searchInputKey);
 
-    InputHandler::UnregisterEvent(takeQuickRestInputKey, {this, &HumanMind::HandleTakeQuickRest});
+    InputHandler::UnregisterEvent(takeQuickRestInputKey);
 
-    InputHandler::UnregisterEvent(takeLongRestInputKey, {this, &HumanMind::HandleTakeLongRest});
+    InputHandler::UnregisterEvent(takeLongRestInputKey);
 
-    InputHandler::UnregisterEvent(resumeTravelInputKey, {this, &HumanMind::HandleResumeTravel});
+    InputHandler::UnregisterEvent(resumeTravelInputKey);
 
-    InputHandler::UnregisterEvent(cancelTravelInputKey, {this, &HumanMind::HandleCancelTravel});
+    InputHandler::UnregisterEvent(cancelTravelInputKey);
 
-    InputHandler::UnregisterEvent(slackenActionKey, {this, &HumanMind::HandleSlackenAction});
+    InputHandler::UnregisterEvent(slackenActionKey);
 
-    InputHandler::UnregisterEvent(intensifyActionKey, {this, &HumanMind::HandleIntensifyAction});
+    InputHandler::UnregisterEvent(intensifyActionKey);
 
     auto canvas = WorldInterface::Get()->GetCanvas();
     canvas->GetLeftClickEvents() -= {this, &HumanMind::HandleTravel};

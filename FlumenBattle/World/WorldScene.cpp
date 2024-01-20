@@ -248,7 +248,7 @@ namespace world
 
         OnPlayerBattleStarted->Invoke();
 
-        this->StartTime();
+        this->StartTime(1);
     }
 
     void WorldScene::FinishPlayerBattle()

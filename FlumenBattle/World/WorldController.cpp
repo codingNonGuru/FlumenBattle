@@ -114,9 +114,9 @@ namespace world
         auto controller = group::HumanMind::Get();
         controller->DisableInput();
 
-        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, {this, &WorldController::HandleSpacePressed});
-        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_COMMA, {this, &WorldController::HandleSpeedUpTime});
-        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_PERIOD, {this, &WorldController::HandleSlowDownTime});
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE);
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_COMMA);
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_PERIOD);
     }
 
     void WorldController::EnableHardInput()
@@ -353,18 +353,18 @@ namespace world
     {
         DisableHardInput();
 
-        InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_UP, {this, &WorldController::HandlePanUp});
-        InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_DOWN, {this, &WorldController::HandlePanDown});
-        InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_RIGHT, {this, &WorldController::HandlePanRight});
-        InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LEFT, {this, &WorldController::HandlePanLeft});
-        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_M, {this, &WorldController::HandleResourceDisplayPressed});
-        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_1, {this, &WorldController::HandleCharacterSelected});
-        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_2, {this, &WorldController::HandleCharacterSelected});
-        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_3, {this, &WorldController::HandleCharacterSelected});
-        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_4, {this, &WorldController::HandleCharacterSelected});
-        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_5, {this, &WorldController::HandleCharacterSelected});
-        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_6, {this, &WorldController::HandleCharacterSelected});
-        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_I, {this, &WorldController::HandleInventoryPressed});
+        InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_UP);
+        InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_DOWN);
+        InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_RIGHT);
+        InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LEFT);
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_M);
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_1);
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_2);
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_3);
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_4);
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_5);
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_6);
+        InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_I);
 
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LALT);
     }

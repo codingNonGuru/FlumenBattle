@@ -48,13 +48,13 @@ void NewWorldMenu::HandleEnable()
 
 void NewWorldMenu::HandleDisable() 
 {
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_G, {this, &NewWorldMenu::OnGenerateWorldPressed});
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_G);
 
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_LEFT, {this, &NewWorldMenu::OnSizeDecreasePressed});
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_LEFT);
 
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_RIGHT, {this, &NewWorldMenu::OnSizeIncreasePressed});
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_RIGHT);
 
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_B, {this, &NewWorldMenu::OnBackPressed});
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_B);
 }
 
 void NewWorldMenu::OnGenerateWorldPressed()

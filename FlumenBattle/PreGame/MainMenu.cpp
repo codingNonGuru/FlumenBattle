@@ -31,9 +31,9 @@ void MainMenu::HandleEnable()
 
 void MainMenu::HandleDisable() 
 {
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_N, {this, &MainMenu::HandleNewGamePressed});
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_N);
 
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_X, {this, &MainMenu::OnExitPressed});
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_X);
 }
 
 void MainMenu::HandleNewGamePressed()

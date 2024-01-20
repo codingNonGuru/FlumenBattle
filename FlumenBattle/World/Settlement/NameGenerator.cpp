@@ -13,7 +13,8 @@ static container::Array <Word> startParticles =
     "winter", "summer", "fall", "mimble", "cross", "sizzle", "key", "smite", "broke", "smoke", "still", "loud", "fare", "chaff", "snow", "gray", "waste",
     "hammer", "light", "dark", "dust", "peak", "rain", "foul", "seed", "dirt", "riddle", "lock", "wander", "knave", "shard", "mellow", "nut", "nail",
     "chisel", "chap", "chime", "bless", "quick", "fast", "bottom", "top", "toast", "corn", "husk", "fiddle", "needle", "thorn", "whole", "some", "frail",
-    "rope", "chest", "whistle", "sear", "singe", "stir", "stick", "stale", "grow", "stave", "staff", "flock", "wool", "huckle"
+    "rope", "chest", "whistle", "sear", "singe", "stir", "stick", "stale", "grow", "stave", "staff", "flock", "wool", "huckle", "pile", "pyke", "bird", 
+    "fresh", "tear", "foot", "roof", "rough", "cedar", "maple", "birch"
 };
 
 static container::Array <Word> endParticles = 
@@ -24,7 +25,7 @@ static container::Array <Word> endParticles =
     "bridge", "rim", "wind", "ridge", "pass", "rift", "pond", "lands", "water", "more", "cradle", "cliff", "head", "glade", "fen", "moor", "marsh",
     "bog", "tip", "song", "yard", "path", "heart", "deep", "mere", "mead", "wast", "cher", "gard", "gate", "combe", "fold", "keld", "keth", "stead", "garth", 
     "mine", "ward", "keep", "end", "peak", "husk", "rope", "quest"
-    //"reef", "sea", "isle", "harbor", "dock", "tide", "flood", "coast", "beach", "wave", "bay", "vic", "fish", "whale", "shore"
+    //"reef", "sea", "isle", "harbor", "dock", "tide", "flood", "coast", "beach", "wave", "bay", "vic", "fish", "whale", "shore", "sail", "boat"
 };
 
 Word NameGenerator::GenerateName()
