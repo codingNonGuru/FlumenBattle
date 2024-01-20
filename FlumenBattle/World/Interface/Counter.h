@@ -12,15 +12,21 @@ namespace world::interface
 
         static constexpr auto DEFAULT_FONT_TYPE = "JSLAncient";
 
+        static constexpr auto BACKDROP_SCALE = Scale2(0.8f, 0.8f);
+
+        static constexpr auto BACKDROP_ENLARGE_FACTOR = 1.3f;
+
         Text *label;
 
-        const int *value;
+        const int *value {nullptr};
+
+        Scale2 backdropScale;
 
         void HandleConfigure() override;    
 
         void HandleUpdate() override;  
 
     public:
-        void Setup(const int *, Word = DEFAULT_FONT_TYPE, Word = DEFAULT_FONT_SIZE);
+        void Setup(const int *, Scale2 = BACKDROP_SCALE, Word = DEFAULT_FONT_SIZE);
     };
 }

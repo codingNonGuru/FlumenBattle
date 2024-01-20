@@ -13,7 +13,7 @@ static container::Array <Word> startParticles =
     "winter", "summer", "fall", "mimble", "cross", "sizzle", "key", "smite", "broke", "smoke", "still", "loud", "fare", "chaff", "snow", "gray", "waste",
     "hammer", "light", "dark", "dust", "peak", "rain", "foul", "seed", "dirt", "riddle", "lock", "wander", "knave", "shard", "mellow", "nut", "nail",
     "chisel", "chap", "chime", "bless", "quick", "fast", "bottom", "top", "toast", "corn", "husk", "fiddle", "needle", "thorn", "whole", "some", "frail",
-    "rope", "chest", "whistle", "sear", "singe", "stir", "stick", "stale"
+    "rope", "chest", "whistle", "sear", "singe", "stir", "stick", "stale", "grow", "stave", "staff", "flock", "wool", "huckle"
 };
 
 static container::Array <Word> endParticles = 

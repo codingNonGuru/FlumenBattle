@@ -6,10 +6,6 @@
 
 using namespace world::interface;
 
-static const auto BACKDROP_SCALE = Scale2(0.8f, 0.8f);
-
-static const auto BACKDROP_SCALE_ENLARGED = Scale2(0.9f, 0.9f);
-
 static const auto TEXT_COLOR = Color::RED * 0.5f;
 
 void Counter::HandleConfigure()
@@ -20,7 +16,7 @@ void Counter::HandleConfigure()
     );
     label->Enable();
 
-    GetSprite()->SetTextureSize(BACKDROP_SCALE);
+    GetSprite()->SetTextureSize(backdropScale);
 }
 
 void Counter::HandleUpdate()
@@ -30,17 +26,19 @@ void Counter::HandleUpdate()
 
     if(*value > 9)
     {
-        GetSprite()->SetTextureSize(BACKDROP_SCALE_ENLARGED);
+        GetSprite()->SetTextureSize(backdropScale * BACKDROP_ENLARGE_FACTOR);
     }
     else
     {
-        GetSprite()->SetTextureSize(BACKDROP_SCALE);
+        GetSprite()->SetTextureSize(backdropScale);
     }
 }
 
-void Counter::Setup(const int *newValue, Word fontType, Word fontSize)
+void Counter::Setup(const int *newValue, Scale2 newScale, Word fontSize)
 {
     value = newValue;
 
-    label->SetFont({fontType, fontSize});
+    label->SetFont({DEFAULT_FONT_TYPE, fontSize});
+
+    backdropScale = newScale;
 }

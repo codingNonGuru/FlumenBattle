@@ -51,6 +51,7 @@ namespace world::character
 
     Integer Character::GetActionRange() const
     {
+        return 30;
         if(IsAlive())
         {
             if(selectedAction->Type == CharacterActions::ATTACK)
