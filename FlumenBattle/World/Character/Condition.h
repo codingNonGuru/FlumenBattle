@@ -58,7 +58,7 @@ namespace world::character
 
 #include "FlumenCore/Container/Pool.hpp"
 #include "FlumenCore/Container/PoolAllocator.h"
-
+#include "FlumenCore/Conventions.hpp"
 #include "FlumenCore/Singleton.h"
 
 #include "FlumenBattle/World/Character/Types.h"
@@ -83,9 +83,13 @@ namespace world::character
 
         bool IsTimeDependent;
 
-        explicit ConditionType(Conditions type) : Type(type) {}
+        ShortWord Name;
 
-        explicit ConditionType(Conditions type, bool isTimeDependent) : Type(type), IsTimeDependent(isTimeDependent) {}
+        bool IsBattleSpecific;
+
+        explicit ConditionType(Conditions type, ShortWord name) : Type(type), Name(name) {}
+
+        explicit ConditionType(Conditions type, ShortWord name, bool isTimeDependent) : Type(type), Name(name), IsTimeDependent(isTimeDependent) {}
 
         virtual void HandleApplyEffect(Character &) const = 0;
     };
@@ -144,6 +148,8 @@ namespace world::character
         void ApplyModifiers(Character &) const;
 
         void Update();
+
+        const container::Pool <Condition> &GetConditions() const {return conditionSet.Get();}
     };
 
     class ConditionAllocator

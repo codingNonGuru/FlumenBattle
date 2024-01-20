@@ -114,6 +114,11 @@ namespace world::character
         return type->Spells;
     }
 
+    const Pool <Condition> &Character::GetConditions() const
+    {
+        return conditions.GetConditions();
+    }
+
     Integer Character::GetArmorClass() const
     {
         if(GetItem(ItemPositions::BODY) != nullptr)

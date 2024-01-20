@@ -10,6 +10,8 @@ namespace world
 {
     class GroupEngageMenu : public Element
     {
+        Element *border;
+        
         Text *descriptionLabel;
 
         container::Array <Text *> optionLabels;

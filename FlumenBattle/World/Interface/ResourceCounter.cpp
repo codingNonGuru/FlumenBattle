@@ -36,20 +36,24 @@ void ResourceCounter::HandleUpdate()
     label->Setup(text);
 }
 
-void ResourceCounter::Setup(Word name, const int *newValue, Word fontType, Word fontSize)
+void ResourceCounter::Setup(Word name, const int *newValue, Word fontSize, Scale2 textureScale)
 {
     valuePointer = newValue;
 
     icon->GetSprite()->SetTexture(name);
 
-    label->SetFont({fontType, fontSize});
+    icon->GetSprite()->SetTextureSize(textureScale);
+
+    label->SetFont({DEFAULT_FONT_TYPE, fontSize});
 }
 
-void ResourceCounter::Setup(Word name, std::function <int(void)> newFetcher, Word fontType, Word fontSize)
+void ResourceCounter::Setup(Word name, std::function <int(void)> newFetcher, Word fontSize, Scale2 textureScale)
 {
     valueFetcher = newFetcher;
 
     icon->GetSprite()->SetTexture(name);
 
-    label->SetFont({fontType, fontSize});
+    icon->GetSprite()->SetTextureSize(textureScale);
+
+    label->SetFont({DEFAULT_FONT_TYPE, fontSize});
 }

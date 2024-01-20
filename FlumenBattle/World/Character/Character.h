@@ -141,9 +141,9 @@ namespace world::character
 
         Float GetHealth() const {return (Float)currentHitPoints / (Float)maximumHitPoints;}
 
-        Integer GetCurrentHitPoints() const {return currentHitPoints;}
+        const Integer &GetCurrentHitPoints() const {return currentHitPoints;}
 
-        Integer GetMaximumHitPoints() const {return maximumHitPoints;}
+        const Integer &GetMaximumHitPoints() const {return maximumHitPoints;}
 
         Word GetClassName();
 
@@ -186,6 +186,8 @@ namespace world::character
         Integer GetAttackRating() const;
 
         utility::RollMaterial GetDamage() const;
+
+        const Pool <Condition> &GetConditions() const;
 
         bool SelectAction(Index);
 

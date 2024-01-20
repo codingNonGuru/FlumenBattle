@@ -13,18 +13,34 @@ using namespace world;
 
 #define MAXIMUM_OPTION_COUNT 4
 
+static auto BORDER_COLOR = Color::RED * 0.25f;
+
+static auto TEXT_COLOR = Color::RED * 0.5f;
+
 void GroupEngageMenu::HandleConfigure()
 {
     descriptionLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {Position2(5.0f, 5.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}},
-        {{"JSLAncient", "Large"}, Color::RED * 0.5f, "You come across a band of travellers most merry..."}
+        {Size(100, 100), drawOrder_ + 1, {Position2(20.0f, 20.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}},
+        {{"JSLAncient", "Large"}, TEXT_COLOR, "You come across a band of travellers most merry..."}
     );
     descriptionLabel->SetAlignment(Text::Alignments::LEFT);
     descriptionLabel->Enable();
 
+    border = ElementFactory::BuildElement <Element>
+    (
+        {
+            size_ - Size(4, 4), 
+            drawOrder_ + 1, 
+            {Position2(), this}, 
+            {"panel-border-031", "SlicedSprite"}
+        }
+    );
+    border->SetSpriteColor(BORDER_COLOR);
+    border->Enable();
+
     optionLabels.Initialize(MAXIMUM_OPTION_COUNT);
 
-    auto startPosition = Position2(30.0f, 70.0f);
+    auto startPosition = Position2(45.0f, 85.0f);
 
     for(int i = 0; i < MAXIMUM_OPTION_COUNT; ++i)
     {

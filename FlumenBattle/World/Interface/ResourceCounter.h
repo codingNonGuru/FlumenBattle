@@ -25,8 +25,8 @@ namespace world::interface
         void HandleUpdate() override;  
 
     public:
-        void Setup(Word, const int *, Word = DEFAULT_FONT_TYPE, Word = DEFAULT_FONT_SIZE);
+        void Setup(Word, const int *, Word = DEFAULT_FONT_SIZE, Scale2 = Scale2(1.0f));
 
-        void Setup(Word, std::function <int(void)>, Word = DEFAULT_FONT_TYPE, Word = DEFAULT_FONT_SIZE);
+        void Setup(Word, std::function <int(void)>, Word = DEFAULT_FONT_SIZE, Scale2 = Scale2(1.0f));
     };
 }

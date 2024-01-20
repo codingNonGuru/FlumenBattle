@@ -175,31 +175,31 @@ Condition ConditionFactory::Create(ConditionData data)
     case Conditions::PARALYZED:
         return 
         {
-            [&] {static const auto conditionType = Paralyzed(data.Type, false); return &conditionType;} (), 
+            [&] {static const auto conditionType = Paralyzed(data.Type, "Paralyzed", false); return &conditionType;} (),
             1
         };
     case Conditions::FRIGHTENED:
         return 
         {
-            [&] {static const auto conditionType = Frightened(data.Type, false); return &conditionType;} (), 
+            [&] {static const auto conditionType = Frightened(data.Type, "Frightened", false); return &conditionType;} (), 
             1
         };
     case Conditions::SICKENED:
         return 
         {
-            [&] {static const auto conditionType = Sickened(data.Type, false); return &conditionType;} (), 
+            [&] {static const auto conditionType = Sickened(data.Type, "Sickened", false); return &conditionType;} (), 
             1
         };
     case Conditions::FATIGUE:
         return 
         {
-            [&] {static const auto conditionType = Fatigue(data.Type, false); return &conditionType;} (), 
+            [&] {static const auto conditionType = Fatigue(data.Type, "Fatigue", false); return &conditionType;} (), 
             1
         };
     case Conditions::NOURISHED:
         return 
         {
-            [&] {static const auto conditionType = Nourished(data.Type, true); return &conditionType;} (), 
+            [&] {static const auto conditionType = Nourished(data.Type, "Nourished", true); return &conditionType;} (),
             1,
             data.Duration
         };

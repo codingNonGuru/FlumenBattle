@@ -56,7 +56,7 @@ namespace world::group
 
         actionProgress = 0;
 
-        timeSinceLongRest = 0;
+        timeSinceLongRest = 70;
 
         action = nullptr;
         encounter = nullptr;
