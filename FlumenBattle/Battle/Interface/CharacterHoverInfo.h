@@ -39,6 +39,14 @@ namespace battle::interface
 
         world::interface::ResourceCounter *spellCounter;
 
+        LayoutGroup *saveThrowGroup;
+
+        world::interface::ResourceCounter *fortitudeCounter;
+
+        world::interface::ResourceCounter *reflexCounter;
+
+        world::interface::ResourceCounter *willCounter;
+
         Text *conditionLabel;
 
         Position2 characterPosition;

@@ -55,6 +55,7 @@ void CharacterHoverInfo::HandleConfigure()
     );
     counterGroup->LockHeight(80.0f);
     counterGroup->SetDistancing(2, 60.0f, 35.0f);
+    counterGroup->SetOffset({-10.0f, 0.0f});
     counterGroup->Enable();
 
     healthCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> 
@@ -83,8 +84,38 @@ void CharacterHoverInfo::HandleConfigure()
     spellCounter->MakeSignSensitive();
     spellCounter->Enable();
 
+    saveThrowGroup = ElementFactory::BuildElement <LayoutGroup> 
+    (
+        {Size(), drawOrder_, {Position2(), layout}}
+    );
+    saveThrowGroup->LockHeight(50.0f);
+    saveThrowGroup->SetDistancing(3, 60.0f);
+    saveThrowGroup->SetOffset({-10.0f, 0.0f});
+    saveThrowGroup->Enable();
+
+    fortitudeCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> 
+    (
+        {Size(), drawOrder_ + 1, {Position2(), saveThrowGroup}}
+    );
+    fortitudeCounter->MakeSignSensitive();
+    fortitudeCounter->Enable();
+
+    reflexCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> 
+    (
+        {Size(), drawOrder_ + 1, {Position2(), saveThrowGroup}}
+    );
+    reflexCounter->MakeSignSensitive();
+    reflexCounter->Enable();
+
+    willCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> 
+    (
+        {Size(), drawOrder_ + 1, {Position2(), saveThrowGroup}}
+    );
+    willCounter->MakeSignSensitive();
+    willCounter->Enable();
+
     conditionLabel = ElementFactory::BuildText(
-        {Size(), drawOrder_ + 1, {Position2(0.0f, 0.0f), layout}}, 
+        {Size(), drawOrder_ + 1, {Position2(), layout}}, 
         {{"JSLAncient", "Medium"}, TEXT_COLOR, ""}
     );
     conditionLabel->LockWidth(size_.x - 20);
@@ -174,4 +205,25 @@ void CharacterHoverInfo::Setup(CharacterInfo *characterInfo)
             Scale2(0.7f)
             );
     }
+
+    fortitudeCounter->Setup(
+        "FortitudeSave", 
+        [] () -> int {return BattleInterface::Get()->GetHoveredCombatant()->GetCharacter()->GetFortitudeSaveBonus();}, 
+        "Medium", 
+        Scale2(1.0f)
+        );
+
+    reflexCounter->Setup(
+        "ReflexSave", 
+        [] () -> int {return BattleInterface::Get()->GetHoveredCombatant()->GetCharacter()->GetReflexSaveBonus();}, 
+        "Medium", 
+        Scale2(1.0f)
+        );
+
+    willCounter->Setup(
+        "WillSave", 
+        [] () -> int {return BattleInterface::Get()->GetHoveredCombatant()->GetCharacter()->GetWillSaveBonus();}, 
+        "Medium", 
+        Scale2(1.0f)
+        );
 }
