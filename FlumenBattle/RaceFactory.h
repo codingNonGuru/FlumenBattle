@@ -3,6 +3,7 @@
 #include "FlumenCore/Utility/Utility.hpp"
 
 #include "FlumenBattle/Race.h"
+#include "FlumenBattle/World/Character/Types.h"
 
 class RaceFactory
 {
@@ -54,11 +55,11 @@ public:
     {
         static Race race = {RaceTypes::DWARF, "Dwarf", 10, 4,
             {
-                {AbilityTypes::STRENGTH, 1}, 
-                {AbilityTypes::DEXTERITY, -1}, 
-                {AbilityTypes::CONSTITUTION, 2}, 
-                {AbilityTypes::WISDOM, 1},
-                {AbilityTypes::CHARISMA, -1}
+                {world::character::AbilityTypes::STRENGTH, 1}, 
+                {world::character::AbilityTypes::DEXTERITY, -1}, 
+                {world::character::AbilityTypes::CONSTITUTION, 2}, 
+                {world::character::AbilityTypes::WISDOM, 1},
+                {world::character::AbilityTypes::CHARISMA, -1}
             }
         };
         return &race;
@@ -68,10 +69,10 @@ public:
     {
         static Race race = {RaceTypes::ELF, "Elf", 6, 6,
             {
-                {AbilityTypes::DEXTERITY, 2}, 
-                {AbilityTypes::INTELLIGENCE, 1}, 
-                {AbilityTypes::CONSTITUTION, -1}, 
-                {AbilityTypes::CHARISMA, 1}
+                {world::character::AbilityTypes::DEXTERITY, 2}, 
+                {world::character::AbilityTypes::INTELLIGENCE, 1}, 
+                {world::character::AbilityTypes::CONSTITUTION, -1}, 
+                {world::character::AbilityTypes::CHARISMA, 1}
             }
         };
         return &race;
@@ -81,9 +82,9 @@ public:
     {
         static Race race = {RaceTypes::HUMAN, "Human", 8, 5,
             {
-                {AbilityTypes::DEXTERITY, 1}, 
-                {AbilityTypes::INTELLIGENCE, 1}, 
-                {AbilityTypes::CHARISMA, 1}
+                {world::character::AbilityTypes::DEXTERITY, 1}, 
+                {world::character::AbilityTypes::INTELLIGENCE, 1}, 
+                {world::character::AbilityTypes::CHARISMA, 1}
             }
         };
         return &race;
@@ -93,10 +94,10 @@ public:
     {
         static Race race = {RaceTypes::GNOME, "Gnome", 8, 5,
             {
-                {AbilityTypes::STRENGTH, -1}, 
-                {AbilityTypes::CONSTITUTION, 1}, 
-                {AbilityTypes::INTELLIGENCE, 1}, 
-                {AbilityTypes::CHARISMA, 1}
+                {world::character::AbilityTypes::STRENGTH, -1}, 
+                {world::character::AbilityTypes::CONSTITUTION, 1}, 
+                {world::character::AbilityTypes::INTELLIGENCE, 1}, 
+                {world::character::AbilityTypes::CHARISMA, 1}
             }
         };
         return &race;
@@ -106,10 +107,10 @@ public:
     {
         static Race race = {RaceTypes::HALFLING, "Halfling", 6, 5,
             {
-                {AbilityTypes::STRENGTH, -1}, 
-                {AbilityTypes::DEXTERITY, 2}, 
-                {AbilityTypes::WISDOM, 1}, 
-                {AbilityTypes::CHARISMA, 1}
+                {world::character::AbilityTypes::STRENGTH, -1}, 
+                {world::character::AbilityTypes::DEXTERITY, 2}, 
+                {world::character::AbilityTypes::WISDOM, 1}, 
+                {world::character::AbilityTypes::CHARISMA, 1}
             }
         };
         return &race;
@@ -119,11 +120,11 @@ public:
     {
         static Race race = {RaceTypes::GOBLIN, "Goblin", 6, 5,
             {
-                {AbilityTypes::STRENGTH, -1}, 
-                {AbilityTypes::DEXTERITY, 2},
-                {AbilityTypes::WISDOM, 1}, 
-                {AbilityTypes::INTELLIGENCE, -1}, 
-                {AbilityTypes::CHARISMA, 1}
+                {world::character::AbilityTypes::STRENGTH, -1}, 
+                {world::character::AbilityTypes::DEXTERITY, 2},
+                {world::character::AbilityTypes::WISDOM, 1}, 
+                {world::character::AbilityTypes::INTELLIGENCE, -1}, 
+                {world::character::AbilityTypes::CHARISMA, 1}
             }
         };
         return &race;
@@ -133,11 +134,11 @@ public:
     {
         static Race race = {RaceTypes::ORC, "Orc", 10, 5,
             {
-                {AbilityTypes::STRENGTH, 2}, 
-                {AbilityTypes::CONSTITUTION, 2},
-                {AbilityTypes::WISDOM, 1}, 
-                {AbilityTypes::INTELLIGENCE, -1}, 
-                {AbilityTypes::CHARISMA, -1}
+                {world::character::AbilityTypes::STRENGTH, 2}, 
+                {world::character::AbilityTypes::CONSTITUTION, 2},
+                {world::character::AbilityTypes::WISDOM, 1}, 
+                {world::character::AbilityTypes::INTELLIGENCE, -1}, 
+                {world::character::AbilityTypes::CHARISMA, -1}
             }
         };
         return &race;

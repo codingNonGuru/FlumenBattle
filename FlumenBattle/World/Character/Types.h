@@ -15,4 +15,9 @@ namespace world::character
     enum class ItemPositions {HEAD, MAIN_HAND, OFF_HAND, BODY, FEET, POUCH, COUNT, NONE};
 
     enum class ItemUses {WEAPON, BODY_WEAR, HEAD_WEAR, SHIELD, POTION, SCROLL, OTHER};
+
+    enum class AbilityTypes
+    {
+        STRENGTH, DEXTERITY, CONSTITUTION, INTELLIGENCE, WISDOM, CHARISMA
+    };
 }

@@ -16,6 +16,15 @@ namespace world::interface
 
         Text *label;
 
+        enum class ValueOrigins
+        {
+            STRING, 
+            POINTER,
+            FUNCTION
+        } valueOrigin;
+
+        Word valueString;
+
         const int *valuePointer {nullptr};
 
         std::function <int(void)> valueFetcher;
@@ -30,6 +39,8 @@ namespace world::interface
         void Setup(Word, const int *, Word = DEFAULT_FONT_SIZE, Scale2 = Scale2(1.0f));
 
         void Setup(Word, std::function <int(void)>, Word = DEFAULT_FONT_SIZE, Scale2 = Scale2(1.0f));
+
+        void Setup(Word, Word, Word = DEFAULT_FONT_SIZE, Scale2 = Scale2(1.0f));
 
         void MakeSignSensitive() {isSignSensitive = true;}
     };

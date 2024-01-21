@@ -161,7 +161,7 @@ namespace world::character
 
         const Ability & GetAttackAbility() {return *abilities.GetAttackAbility();}
 
-        const Ability & GetSpellCastingAbility() {return *abilities.GetSpellCastingAbility();}
+        const Ability & GetSpellCastingAbility() {return *abilities.GetSpellCastingAbility(*this);}
 
         void BoostAbility(AbilityTypes, Integer);
 
@@ -179,11 +179,15 @@ namespace world::character
 
         const Array <world::character::CharacterAction> &GetActions();
 
+        bool CanCastSpells() const;
+
         const Array <Spell> &GetSpells() const;
 
         Integer GetArmorClass() const;
 
         Integer GetAttackRating() const;
+
+        Integer GetSpellPower() const;
 
         utility::RollMaterial GetDamage() const;
 

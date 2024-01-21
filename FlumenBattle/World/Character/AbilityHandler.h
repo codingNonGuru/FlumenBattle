@@ -4,63 +4,65 @@
 
 #include "FlumenBattle/World/Character/Ability.h"
 
-class AbilityHandler
+namespace world::character
 {
-    container::Block <Ability, 6> abilities;
+    class Character;
 
-    AbilityTypes attackAbility;
-
-    AbilityTypes spellCastingAbility;
-
-public:
-    AbilityHandler()
+    class AbilityHandler
     {
-        for(Index i = 0; i < 6; ++i)
+        container::Block <Ability, 6> abilities;
+
+        AbilityTypes attackAbility;
+
+    public:
+        AbilityHandler()
         {
-            abilities[i]->Type = (AbilityTypes)i;
+            for(Index i = 0; i < 6; ++i)
+            {
+                abilities[i]->Type = (AbilityTypes)i;
+            }
         }
-    }
 
-    const Ability * GetAbility(AbilityTypes type) const
-    {
-        auto ability = abilities.Get((int)type);
-        return ability;
-    }
+        const Ability * GetAbility(AbilityTypes type) const
+        {
+            auto ability = abilities.Get((int)type);
+            return ability;
+        }
 
-    Integer GetModifier(AbilityTypes type) const
-    {
-        return GetAbility(type)->Modifier;
-    }
+        Integer GetModifier(AbilityTypes type) const
+        {
+            return GetAbility(type)->Modifier;
+        }
 
-    void SetScore(AbilityTypes type, Integer score)
-    {
-        auto ability = abilities[(int)type];
-        ability->SetScore(score);
-    }
+        void SetScore(AbilityTypes type, Integer score)
+        {
+            auto ability = abilities[(int)type];
+            ability->SetScore(score);
+        }
 
-    void Boost(AbilityTypes type, Integer amount)
-    {
-        auto ability = abilities[(int)type];
-        ability->SetScore(ability->Score + amount);
-    }
-    
-    const Ability * GetAttackAbility()
-    {
-        return GetAbility(attackAbility);
-    }
+        void Boost(AbilityTypes type, Integer amount)
+        {
+            auto ability = abilities[(int)type];
+            ability->SetScore(ability->Score + amount);
+        }
+        
+        const Ability * GetAttackAbility()
+        {
+            return GetAbility(attackAbility);
+        }
 
-    const Ability * GetSpellCastingAbility()
-    {
-        return GetAbility(spellCastingAbility);
-    }
+        const Ability * GetSpellCastingAbility(const Character &) const;
 
-    void SetAttackAbility(AbilityTypes type)
-    {
-        attackAbility = type;
-    }
+        const int &GetSpellCastingAbilityModifier(const Character &) const;
 
-    void SetSpellCastingAbility(AbilityTypes type)
-    {
-        spellCastingAbility = type;
-    }
-};
+        void SetAttackAbility(AbilityTypes type)
+        {
+            attackAbility = type;
+        }
+
+        /*void SetSpellCastingAbility(AbilityTypes type)
+        {
+            spellCastingAbility = type;
+        }*/
+    };
+}

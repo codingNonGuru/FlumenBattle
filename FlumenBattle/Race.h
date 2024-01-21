@@ -3,16 +3,17 @@
 #include "FlumenCore/Conventions.hpp"
 
 #include "FlumenBattle/Types.hpp"
+#include "FlumenBattle/World/Character/Types.h"
 
 struct AbilityBoost
 {
-    AbilityTypes Type;
+    world::character::AbilityTypes Type;
 
     Integer Boost;
 
     AbilityBoost() : Boost(0) {}
 
-    AbilityBoost(AbilityTypes type, Integer boost) : Type(type), Boost(boost) {}
+    AbilityBoost(world::character::AbilityTypes type, Integer boost) : Type(type), Boost(boost) {}
 };
 
 struct Race

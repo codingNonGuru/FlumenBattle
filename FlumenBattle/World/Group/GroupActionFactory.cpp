@@ -233,7 +233,7 @@ namespace world::group
         auto stealthBonus = INT_MAX;
         for(auto &character : group.characters)
         {
-            auto bonus = character.GetAbility(AbilityTypes::DEXTERITY).Modifier;
+            auto bonus = character.GetAbility(character::AbilityTypes::DEXTERITY).Modifier;
             if(bonus < stealthBonus)
                 stealthBonus = bonus;
         }

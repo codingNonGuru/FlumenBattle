@@ -109,9 +109,14 @@ namespace world::character
         return type->Actions;
     }
 
+    bool Character::CanCastSpells() const
+    {
+        return type->CanCastSpells();
+    }
+
     const Array <Spell> &Character::GetSpells() const
     {
-        return type->Spells;
+        return type->SpellPower.Spells;
     }
 
     const Pool <Condition> &Character::GetConditions() const
@@ -164,6 +169,14 @@ namespace world::character
         } ();
 
         return modifiers.GetAmount(Modifiers::ATTACK_RATING_BONUS) + bonus;
+    }
+
+    Integer Character::GetSpellPower() const
+    {
+        if(type->CanCastSpells() == false)
+            return 0;
+
+        return abilities.GetSpellCastingAbilityModifier(*this);
     }
 
     utility::RollMaterial Character::GetDamage() const
@@ -222,10 +235,10 @@ namespace world::character
                 selectedWeapon = weapons.Get(index);*/
                 return true;
             case CharacterActions::CAST_SPELL:
-                if(index >= type->Spells.GetSize())
+                if(index >= type->SpellPower.Spells.GetSize())
                     return false;
 
-                selectedSpell = type->Spells.Get(index);
+                selectedSpell = type->SpellPower.Spells.Get(index);
                 return true;
             default:
                 return false;
@@ -248,7 +261,7 @@ namespace world::character
 
     bool Character::SelectSpell(SpellTypes type)
     {
-        selectedSpell = this->type->Spells.Find(type);
+        selectedSpell = this->type->SpellPower.Spells.Find(type);
 
         return true;
     }
@@ -265,7 +278,7 @@ namespace world::character
             case CharacterActions::ATTACK:
                 return 0;//weapons.GetIndex(selectedWeapon);//  selectedWeapon - weapons.GetStart();
             case CharacterActions::CAST_SPELL:
-                return selectedSpell - type->Spells.GetStart();
+                return selectedSpell - type->SpellPower.Spells.GetStart();
             default:
                 return 0;
         }

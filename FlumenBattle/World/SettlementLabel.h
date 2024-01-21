@@ -72,7 +72,7 @@ namespace world::settlement
 
         Text * groupLabel;
 
-        Settlement *settlement;
+        const Settlement *settlement;
 
         LayoutGroup *storageLayout;
 
@@ -99,12 +99,12 @@ namespace world::settlement
         void HandleEnable() override;
 
     public:
-        void SetSettlement(Settlement *settlement) {this->settlement = settlement;}
+        void SetSettlement(const Settlement *settlement) {this->settlement = settlement;}
     };
 
     class SettlementLabel : public Element
     {
-        Settlement *settlement;
+        const Settlement *settlement;
 
         Text *nameLabel;
 
@@ -121,7 +121,7 @@ namespace world::settlement
         void HandleUpdate() override;
 
     public:
-        void SetSettlement(Settlement *);
+        void SetSettlement(const Settlement *);
 
         bool HasSettlement() const {return settlement != nullptr;}
 

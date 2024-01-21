@@ -38,7 +38,7 @@ namespace world::settlement
 
         void Update(Settlement &);
 
-        int GetProduction(Settlement &);
+        int GetProduction(const Settlement &) const;
 
         bool operator==(ResourceTypes type) {return Type->Type == type;}
     };

@@ -20,7 +20,7 @@ struct Metal : public ResourceType
     Metal() : ResourceType(ResourceTypes::METAL, 10) {}
 };
 
-int Resource::GetProduction(Settlement &settlement)
+int Resource::GetProduction(const Settlement &settlement) const
 {
     auto production = 0;
     for(auto &tile : settlement.tiles)

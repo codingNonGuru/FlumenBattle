@@ -196,7 +196,7 @@ namespace world::settlement
 
         SettlementProduction *GetCurrentProduction() const {return currentProduction;}
 
-        polity::Faction *GetFaction() {return faction;}
+        polity::Faction *GetFaction() const {return faction;}
 
         world::SimulationLevels GetSimulationLevel() const;
 
@@ -236,7 +236,7 @@ namespace world::settlement
 
         Path *GetPathTo(Settlement *settlement);
 
-        const Pool <Link> &GetLinks() {return links;}
+        const Pool <Link> &GetLinks() const {return links;}
 
         PathData &GetPathData() {return pathData;}
 

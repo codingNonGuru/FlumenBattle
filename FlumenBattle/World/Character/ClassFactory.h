@@ -52,27 +52,35 @@ namespace world::character
 
         static const CharacterClass & BuildClericClass()
         {
-            static CharacterClass clericClass = {
+            static CharacterClass clericClass = 
+            {
                 CharacterClasses::CLERIC, 
                 "Cleric", 
                 8, 
                 12, 
                 {CharacterActions::ATTACK, CharacterActions::DODGE, CharacterActions::DASH, CharacterActions::CAST_SPELL},
-                {SpellFactory::BuildCureWounds(), SpellFactory::BuildSacredFlame(), SpellFactory::BuildHealingWord()}
-                };
+                {
+                    AbilityTypes::WISDOM, 
+                    {SpellFactory::BuildCureWounds(), SpellFactory::BuildSacredFlame(), SpellFactory::BuildHealingWord()}
+                }
+            };
             return clericClass;
         }
 
         static const CharacterClass & BuildWizardClass()
         {
-            static CharacterClass wizardClass = {
+            static CharacterClass wizardClass = 
+            {
                 CharacterClasses::WIZARD, 
                 "Wizard", 
                 6, 
                 10, 
                 {CharacterActions::ATTACK, CharacterActions::DODGE, CharacterActions::DASH, CharacterActions::HELP},
-                {SpellFactory::BuildFrostRay(), SpellFactory::BuildShockingGrasp(), SpellFactory::BuildFireBolt(), SpellFactory::BuildMagicMissile()}
-                };
+                {
+                    AbilityTypes::INTELLIGENCE, 
+                    {SpellFactory::BuildFrostRay(), SpellFactory::BuildShockingGrasp(), SpellFactory::BuildFireBolt(), SpellFactory::BuildMagicMissile()}
+                }
+            };
             return wizardClass;
         }
     };

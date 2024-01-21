@@ -118,7 +118,6 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
         character->abilities.SetScore(AbilityTypes::DEXTERITY, abilityScores[5]);
 
         character->abilities.SetAttackAbility(AbilityTypes::STRENGTH);
-        character->abilities.SetSpellCastingAbility(AbilityTypes::WISDOM);
 
         /**character->actions.Allocate() = {CharacterActions::ATTACK};
         *character->actions.Allocate() = {CharacterActions::CAST_SPELL};
@@ -148,7 +147,6 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
         character->abilities.SetScore(AbilityTypes::STRENGTH, abilityScores[5]);
 
         character->abilities.SetAttackAbility(AbilityTypes::STRENGTH);
-        character->abilities.SetSpellCastingAbility(AbilityTypes::INTELLIGENCE);
 
         /**character->actions.Allocate() = {CharacterActions::ATTACK};
         *character->actions.Allocate() = {CharacterActions::CAST_SPELL};

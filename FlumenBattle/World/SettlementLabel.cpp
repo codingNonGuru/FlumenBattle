@@ -281,7 +281,7 @@ void HoverExtension::HandleConfigure()
     }
 }
 
-void SettlementLabel::SetSettlement(Settlement *settlement)
+void SettlementLabel::SetSettlement(const Settlement *settlement)
 {
     this->settlement = settlement;
 }

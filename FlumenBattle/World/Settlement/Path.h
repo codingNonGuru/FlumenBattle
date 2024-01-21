@@ -61,7 +61,7 @@ namespace world::settlement
 
         void AddTile(WorldTile *tile);
 
-        Settlement *GetOther(Settlement *settlement) 
+        Settlement *GetOther(const Settlement *settlement) 
         {
             if(To == settlement)
             {
