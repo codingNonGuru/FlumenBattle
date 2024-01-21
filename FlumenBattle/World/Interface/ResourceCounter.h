@@ -20,6 +20,8 @@ namespace world::interface
 
         std::function <int(void)> valueFetcher;
 
+        bool isSignSensitive {false};
+
         void HandleConfigure() override;    
 
         void HandleUpdate() override;  
@@ -28,5 +30,7 @@ namespace world::interface
         void Setup(Word, const int *, Word = DEFAULT_FONT_SIZE, Scale2 = Scale2(1.0f));
 
         void Setup(Word, std::function <int(void)>, Word = DEFAULT_FONT_SIZE, Scale2 = Scale2(1.0f));
+
+        void MakeSignSensitive() {isSignSensitive = true;}
     };
 }

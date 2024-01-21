@@ -24,14 +24,22 @@ void ResourceCounter::HandleConfigure()
 void ResourceCounter::HandleUpdate()
 {
     Phrase text;
+    int value;
     if(valuePointer)
     {
-        text << *valuePointer;
+        value = *valuePointer;
     }
     else
     {
-        text << valueFetcher();
+        value = valueFetcher();
     }
+
+    if(isSignSensitive == true && value > 0)
+    {
+        text << "+";
+    }
+
+    text << value;
 
     label->Setup(text);
 }

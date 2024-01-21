@@ -15,7 +15,7 @@ static container::Array <Word> startParticles =
     "chisel", "chap", "chime", "bless", "quick", "fast", "bottom", "top", "toast", "corn", "husk", "fiddle", "needle", "thorn", "whole", "some", "frail",
     "rope", "chest", "whistle", "sear", "singe", "stir", "stick", "stale", "grow", "stave", "staff", "flock", "wool", "huckle", "pile", "pyke", "bird", 
     "fresh", "tear", "foot", "roof", "rough", "cedar", "maple", "birch", "reach", "rash", "wonder", "witch", "arrow", "barn", "thunder", "bluff", "noon",
-    "mush", "bride", "raven", "wax", "white", "gray", "tail", "lost"
+    "mush", "bride", "raven", "wax", "white", "gray", "tail", "lost", "never", "hope", "glove"
 };
 
 static container::Array <Word> endParticles = 
