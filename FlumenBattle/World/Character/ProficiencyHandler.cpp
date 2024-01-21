@@ -72,7 +72,7 @@ Integer ProficiencyHandler::GetSaveBonus(const Character &character, SavingThrow
     return modifier;
 }
 
-Integer ProficiencyHandler::GetMagicBonus(const Character & character)
+Integer ProficiencyHandler::GetMagicBonus(const Character & character) const
 {
     Integer modifier = 0;
     modifier += character.level / 6;

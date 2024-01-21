@@ -176,7 +176,9 @@ namespace world::character
         if(type->CanCastSpells() == false)
             return 0;
 
-        return abilities.GetSpellCastingAbilityModifier(*this);
+        auto abilityModifier = abilities.GetSpellCastingAbilityModifier(*this);
+        auto proficiencyModifer = proficiencies.GetMagicBonus(*this);
+        return abilityModifier + proficiencyModifer;
     }
 
     utility::RollMaterial Character::GetDamage() const

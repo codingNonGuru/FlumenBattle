@@ -35,7 +35,7 @@ namespace world::character
 
         Integer GetWeaponBonus(const Character &);
 
-        Integer GetMagicBonus(const Character &);
+        Integer GetMagicBonus(const Character &) const;
 
         Integer GetSkillBonus(const Character &, SkillTypes);
 
