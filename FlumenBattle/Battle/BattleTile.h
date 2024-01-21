@@ -59,11 +59,13 @@ namespace battle
             return (abs(direction.x) + abs(direction.y) + abs(direction.z)) / 2;
         }
 
-        const Array <BattleTile*> & GetNearbyTiles(Integer);
+        const Array <BattleTile *> &GetNearbyTiles(Integer);
 
         BattleTile * GetEmptyTileInRange(Integer);
 
         BattleTile * GetNeighbor(Integer3);
+
+        const Array <BattleTile *> &GetTileRing(Integer);
 
         const Array <PathData> & FindPath(Integer);
     };

@@ -7,9 +7,9 @@
 
 using namespace battle::interface;
 
-static const auto INSIDE_RANGE_OPACITY = Opacity(1.0f);
+static const auto INSIDE_RANGE_TEXTURE = "SwordCursor";
 
-static const auto OUTSIDE_RANGE_OPACITY = Opacity(0.4f);
+static const auto OUTSIDE_RANGE_TEXTURE = "X";
 
 void TargetCursor::HandleEnable() 
 {
@@ -26,7 +26,7 @@ void TargetCursor::HandleUpdate()
     auto hoveredTile = HumanController::Get()->GetHoveredTile();
     if(hoveredTile == nullptr)
     {
-        SetOpacity(OUTSIDE_RANGE_OPACITY);
+        SetTexture(OUTSIDE_RANGE_TEXTURE);
         return;
     }
 
@@ -35,10 +35,10 @@ void TargetCursor::HandleUpdate()
     bool isWithingRange = yourSelectedCombatant->IsWithinActionRange(hoveredTile);
     if(isWithingRange)
     {
-        SetOpacity(INSIDE_RANGE_OPACITY);
+        SetTexture(INSIDE_RANGE_TEXTURE);
     }
     else
     {
-        SetOpacity(OUTSIDE_RANGE_OPACITY);
+        SetTexture(OUTSIDE_RANGE_TEXTURE);
     }
 }

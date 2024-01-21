@@ -150,6 +150,8 @@ void HumanController::ChangeActionSelection(Integer actionIndex)
         if(actionIndex != currentIndex)
         {
             isInitiatingTargeting = false;
+
+            OnTargetAbandoned->Invoke();
         }
     }
     else
@@ -160,6 +162,8 @@ void HumanController::ChangeActionSelection(Integer actionIndex)
         if(actionIndex != currentIndex)
         {
             isInitiatingTargeting = false;
+
+            OnTargetAbandoned->Invoke();
         }
     }
 }
@@ -216,5 +220,7 @@ void HumanController::TargetCombatant(Combatant *target)
     battleController->TargetCombatant(target);
 
     isInitiatingTargeting = false;
+
+    OnTargetAbandoned->Invoke();
 }
 

@@ -25,10 +25,15 @@ BattleTile::BattleTile(Position2 position, Integer2 squareCoordinates) : Positio
     Shade = color;
 }
 
-const Array <BattleTile*> & BattleTile::GetNearbyTiles(Integer range)
+const Array <BattleTile *> &BattleTile::GetNearbyTiles(Integer range)
 {
     return Map->GetNearbyTiles(this, range);
 }
+
+const Array <BattleTile *> &BattleTile::GetTileRing(Integer range)
+{
+    return Map->GetTileRing(this, range);
+}   
 
 BattleTile* BattleTile::GetEmptyTileInRange(Integer range)
 {

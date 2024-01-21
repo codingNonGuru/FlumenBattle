@@ -60,6 +60,31 @@ const Array<BattleTile*> & BattleMap::GetNearbyTiles(BattleTile* tile, Integer r
     return nearbyTiles;
 }
 
+const Array<BattleTile *> & BattleMap::GetTileRing(BattleTile *tile, Integer range)
+{
+    nearbyTiles.Reset();
+
+    for(Integer x = -range; x <= range; ++x)
+    {
+        for(Integer y = -range; y <= range; ++y)
+        {
+            for(Integer z = -range; z <= range; ++z)
+            {
+                if(x + y + z == 0 && abs(x) + abs(y) + abs(z) == range * 2)
+                {
+                    auto nearbyTile = GetTile(tile->HexCoordinates + Integer3(x, y, z));
+                    if(nearbyTile != nullptr)
+                    {
+                        *nearbyTiles.Add() = nearbyTile;
+                    }
+                }
+            }
+        }
+    }
+
+    return nearbyTiles;
+}
+
 BattleTile* BattleMap::GetTile(Integer3 position)
 {
     return tiles.Get(position.x + position.z / 2, position.z);

@@ -35,6 +35,8 @@ namespace battle
 
         BattleTile* GetEmptyTileAroundTile(BattleTile *, Integer);
 
-        const Array<BattleTile*> & GetNearbyTiles(BattleTile*, Integer);
+        const Array<BattleTile *> & GetNearbyTiles(BattleTile*, Integer);
+
+        const Array<BattleTile *> &GetTileRing(BattleTile *, Integer);
     };
 }

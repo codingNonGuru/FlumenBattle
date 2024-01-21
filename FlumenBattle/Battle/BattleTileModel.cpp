@@ -8,6 +8,8 @@
 #include "FlumenEngine/Render/MeshManager.hpp"
 #include "FlumenEngine/Render/Mesh.hpp"
 #include "FlumenEngine/Core/Engine.hpp"
+#include "FlumenEngine/Render/DataBuffer.hpp"
+#include "FlumenEngine/Interface/Sprite.hpp"
 
 #include "FlumenBattle/Battle/BattleTileModel.h"
 #include "FlumenBattle/Battle/BattleScene.h"
@@ -70,6 +72,60 @@ void BattleTileModel::HandleCharacterSelected()
 {
     auto combatant = battleController->GetSelectedCombatant();
     camera->SetTarget(Position3(combatant->GetPosition(), 0.0f), CAMERA_SHIFT_DURATION);
+}
+
+static DataBuffer *positionBuffer = nullptr;
+
+static const auto MAXIMUM_TILES_PER_RANGE_RING = 1024;
+
+void BattleTileModel::RenderActionRange()
+{
+    if(HumanController::Get()->IsInitiatingTargeting() == false)
+        return;
+
+    static auto positions = container::Array <Position2> (MAXIMUM_TILES_PER_RANGE_RING);
+
+    static auto rangeShader = ShaderManager::GetShader("MassSprite");
+
+    static Sprite *dotSprite = new Sprite(rangeShader, "Dot");
+
+    if(positionBuffer == nullptr)
+    {
+        positionBuffer = new DataBuffer(positions.GetMemoryCapacity(), positions.GetStart());
+    }
+
+    auto combatant = BattleController::Get()->GetSelectedCombatant();
+
+    auto actionRange = combatant->GetCharacter()->GetActionRange();
+
+    auto &nearbyTiles = combatant->GetTile()->GetTileRing(actionRange);
+
+    positions = container::Array <Position2> (nearbyTiles.GetSize());
+
+    for(auto &tile : nearbyTiles)
+    {
+        *positions.Add() = tile->Position;
+    }
+
+    positionBuffer->UploadData(positions.GetStart(), positions.GetMemorySize());
+
+    rangeShader->Bind();
+
+    rangeShader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	rangeShader->SetConstant(0.0f, "depth");
+
+    rangeShader->SetConstant(1.0f, "opacity");
+
+    rangeShader->SetConstant(25.0f, "spriteSize");
+
+    positionBuffer->Bind(0);
+
+    dotSprite->BindDefaultTextures();
+
+    glDrawArrays(GL_TRIANGLES, 0, 6 * nearbyTiles.GetSize());
+
+    rangeShader->Unbind();
 }
 
 void BattleTileModel::Render() 
@@ -142,4 +198,6 @@ void BattleTileModel::Render()
     }
 
 	shader->Unbind();
+
+    RenderActionRange();
 }

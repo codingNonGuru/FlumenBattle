@@ -20,6 +20,8 @@ namespace battle
 
         BattleTileModel();
 
+        void RenderActionRange();
+
     public:
         void Initialize() override;
 

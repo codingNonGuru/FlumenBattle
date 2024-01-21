@@ -128,8 +128,6 @@ namespace world::character
 
         void Initialize();
 
-        Integer GetActionRange() const;
-
         void AddProficiency(Proficiency);
 
         void AddModifier(Modifier modifier) {modifiers.AddModifier(modifier);}
@@ -178,6 +176,8 @@ namespace world::character
         Integer GetSkillProficiency(SkillTypes skill) {return proficiencies.GetSkillBonus(*this, skill);}
 
         const Array <world::character::CharacterAction> &GetActions();
+
+        Integer GetActionRange() const;
 
         bool CanCastSpells() const;
 

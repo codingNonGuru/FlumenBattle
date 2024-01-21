@@ -86,7 +86,7 @@ BattleInterface::BattleInterface()
     (
         {
             Size(200, 200), 
-            DrawOrder(3), 
+            DrawOrder(4), 
             {Position2(), canvas}, 
             {"Sprite"}, 
             Opacity(0.6f)
@@ -100,7 +100,7 @@ BattleInterface::BattleInterface()
             Size(), 
             DrawOrder(3), 
             {Position2(), canvas}, 
-            {"X", "Sprite"}
+            {"Sprite"}
         }
     );
     targetCursor->FollowMouse();
