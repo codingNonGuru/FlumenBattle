@@ -66,6 +66,7 @@ void BattleTileModel::CreateCamera()
     auto centerTile = battleScene->GetBattleMap()->GetCenterTile();
     camera->SetTarget(Position3(centerTile->Position, 0.0f));
     camera->Zoom(2.0f);
+    camera->EnableDynamicZooming();
 }
 
 void BattleTileModel::HandleCharacterSelected()
@@ -78,6 +79,8 @@ static DataBuffer *positionBuffer = nullptr;
 
 static const auto MAXIMUM_TILES_PER_RANGE_RING = 1024;
 
+static const auto RANGE_DOT_SIZE = 25.0f;
+
 void BattleTileModel::RenderActionRange()
 {
     if(HumanController::Get()->IsInitiatingTargeting() == false)
@@ -85,14 +88,14 @@ void BattleTileModel::RenderActionRange()
 
     static auto positions = container::Array <Position2> (MAXIMUM_TILES_PER_RANGE_RING);
 
-    static auto rangeShader = ShaderManager::GetShader("MassSprite");
-
-    static Sprite *dotSprite = new Sprite(rangeShader, "Dot");
-
     if(positionBuffer == nullptr)
     {
         positionBuffer = new DataBuffer(positions.GetMemoryCapacity(), positions.GetStart());
     }
+
+    static auto rangeShader = ShaderManager::GetShader("MassSprite");
+
+    static Sprite *dotSprite = new Sprite(rangeShader, "Dot");
 
     auto combatant = BattleController::Get()->GetSelectedCombatant();
 
@@ -100,7 +103,7 @@ void BattleTileModel::RenderActionRange()
 
     auto &nearbyTiles = combatant->GetTile()->GetTileRing(actionRange);
 
-    positions = container::Array <Position2> (nearbyTiles.GetSize());
+    positions.Reset();
 
     for(auto &tile : nearbyTiles)
     {
@@ -117,7 +120,7 @@ void BattleTileModel::RenderActionRange()
 
     rangeShader->SetConstant(1.0f, "opacity");
 
-    rangeShader->SetConstant(25.0f, "spriteSize");
+    rangeShader->SetConstant(RANGE_DOT_SIZE, "spriteSize");
 
     positionBuffer->Bind(0);
 

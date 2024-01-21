@@ -52,6 +52,12 @@ namespace battle
 
         Turn *turn;
 
+        bool isGrabbingScreen {false};
+
+        Position2 grabStartPosition;
+
+        Position2 grabPositionDelta;
+
         void Initialize() override;
 
         void HandleEnable() override;
@@ -63,6 +69,10 @@ namespace battle
         void Update() override;
 
         void DetermineTurnOrder();
+
+        void HandleGrabPressed();
+
+        void HandleGrabReleased();
 
     public:
         Delegate OnInitialized;

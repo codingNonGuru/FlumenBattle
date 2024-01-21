@@ -24,9 +24,13 @@ static Camera* camera = nullptr;
 
 static const Float CAMERA_PAN_SPEED = 1500.0f;
 
-static const Float CAMERA_ZOOM_SPEED = 10.0f;
+static const Float CAMERA_ZOOM_SPEED = 2.0f;
+
+static const Float CAMERA_GRAB_SENSITIVITY = 1.7f;
 
 static const Length BATTLE_MAP_SIZE = 55;
+
+static const auto screenGrabInputKey = SDL_Scancode::SDL_SCANCODE_LALT;
 
 namespace battle
 {
@@ -67,7 +71,22 @@ namespace battle
     {
         DetermineTurnOrder();
 
+        InputHandler::RegisterContinualEvent(screenGrabInputKey, {this, &BattleScene::HandleGrabPressed}, {this, &BattleScene::HandleGrabReleased});
+
         OnEnabled.Invoke();
+    }
+
+    void BattleScene::HandleGrabPressed()
+    {
+        isGrabbingScreen = true;
+        grabStartPosition = InputHandler::GetMousePosition();
+
+        grabPositionDelta = Position2();
+    }
+
+    void BattleScene::HandleGrabReleased()
+    {
+        isGrabbingScreen = false;
     }
 
     void BattleScene::DetermineTurnOrder()
@@ -141,11 +160,26 @@ namespace battle
 
         if(InputHandler::GetMouse().ScrollUp_)
         {
-            camera->Zoom(1.0f - zoomSpeed);
+            camera->ZoomDynamically(zoomSpeed);
         }
         else if(InputHandler::GetMouse().ScrollDown_)
         {
-            camera->Zoom(1.0f + zoomSpeed);
+            camera->ZoomDynamically(-zoomSpeed);
+        }
+
+        if(isGrabbingScreen == true)
+        {
+            camera->Translate({grabPositionDelta.x, grabPositionDelta.y, 0.0f});
+
+            auto mouseDelta = InputHandler::GetMousePosition() - grabStartPosition;
+            
+            mouseDelta *= CAMERA_GRAB_SENSITIVITY;
+
+            mouseDelta *= camera->GetZoomFactor();
+
+            camera->Translate({-mouseDelta.x, -mouseDelta.y, 0.0f});
+
+            grabPositionDelta = mouseDelta;
         }
     }
 
@@ -161,8 +195,7 @@ namespace battle
             tile->Combatant = nullptr;
         }
 
-        //auto battle = world::WorldController::Get()->GetPlayerBattle();
-        //battle->Finish();
+        InputHandler::UnregisterContinualEvent(screenGrabInputKey);
     }
 
     bool BattleScene::IsCharactersTurn(Combatant *character) const
