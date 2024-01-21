@@ -501,7 +501,7 @@ namespace battle
             if(hasActed)
                 return;
 
-            auto range = SpellFactory::BuildSacredFlame().Range;
+            auto range = world::character::SpellFactory::BuildSacredFlame().Range;
 
             auto mostVulnerableEnemy = FindCombatant(
                 {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ENEMY, NarrowingCriteria::IS_VULNERABLE, {NarrowingCriteria::IS_WITHIN_RANGE, range}}, 
@@ -546,7 +546,7 @@ namespace battle
 
             if(closestEnemy)
             {
-                auto range = SpellFactory::BuildSacredFlame().Range;
+                auto range = world::character::SpellFactory::BuildSacredFlame().Range;
 
                 auto hasReached = ApproachTile(closestEnemy.Combatant->GetTile(), range);
 
@@ -609,7 +609,7 @@ namespace battle
             if(hasActed)
                 return;
 
-            auto range = SpellFactory::BuildFireBolt().Range;
+            auto range = world::character::SpellFactory::BuildFireBolt().Range;
 
             auto mostVulnerableEnemy = FindCombatant(
                 {NarrowingCriteria::IS_ALIVE, NarrowingCriteria::IS_ENEMY, NarrowingCriteria::IS_VULNERABLE, {NarrowingCriteria::IS_WITHIN_RANGE, range}}, 
@@ -641,7 +641,7 @@ namespace battle
 
             if(closestEnemy)
             {
-                auto range = SpellFactory::BuildFireBolt().Range;
+                auto range = world::character::SpellFactory::BuildFireBolt().Range;
 
                 auto hasReached = ApproachTile(closestEnemy.Combatant->GetTile(), range);
 

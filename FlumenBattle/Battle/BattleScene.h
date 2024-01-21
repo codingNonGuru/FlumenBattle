@@ -74,6 +74,8 @@ namespace battle
 
         void HandleGrabReleased();
 
+        void HandleCombatantActed();
+
     public:
         Delegate OnInitialized;
 

@@ -8,6 +8,7 @@
 #include "FlumenBattle/World/Character/Condition.h"
 
 using namespace battle;
+using namespace world::character;
 
 struct SpellResult 
 {
@@ -134,6 +135,11 @@ CharacterActionData SpellCaster::ApplyHealingWord(Combatant &combatant, const Sp
     RollHealing(combatant, spell);
 }
 
+CharacterActionData SpellCaster::ApplyBless(Combatant &combatant, const Spell &spell)
+{
+    combatant.target->GetCharacter()->AddCondition({world::character::Conditions::BLESSED, 3, 1});
+}
+
 CharacterActionData SpellCaster::ApplyEffect(Combatant &combatant, const Spell &spell)
 {
     spellResult.Reset();
@@ -157,6 +163,9 @@ CharacterActionData SpellCaster::ApplyEffect(Combatant &combatant, const Spell &
             break;
         case SpellTypes::HEALING_WORD:
             ApplyHealingWord(combatant, spell);
+            break;
+        case SpellTypes::BLESS:
+            ApplyBless(combatant, spell);
             break;
         default:
             return CharacterActionData();    

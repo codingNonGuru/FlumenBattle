@@ -19,6 +19,8 @@
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/World/Group/Encounter.h"
+#include "FlumenBattle/Battle/BattleController.h"
+#include "FlumenBattle/World/Character/Character.h"
 
 static Camera* camera = nullptr;
 
@@ -64,6 +66,8 @@ namespace battle
 
         camera = RenderManager::GetCamera(Cameras::BATTLE);
 
+        BattleController::Get()->OnCharacterActed += {this, &BattleScene::HandleCombatantActed};
+
         OnInitialized.Invoke();
     }
 
@@ -87,6 +91,19 @@ namespace battle
     void BattleScene::HandleGrabReleased()
     {
         isGrabbingScreen = false;
+    }
+
+    void BattleScene::HandleCombatantActed()
+    {
+        for(auto group : {playerGroup, computerGroup})
+        {    
+            for(auto combatant = group->combatants.GetStart(); combatant != group->combatants.GetEnd(); ++combatant)
+            {
+                auto character = combatant->GetCharacter();
+
+                character->RefreshModifiers();
+            }
+        }
     }
 
     void BattleScene::DetermineTurnOrder()

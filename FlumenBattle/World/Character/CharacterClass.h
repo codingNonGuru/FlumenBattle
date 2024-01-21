@@ -4,11 +4,12 @@
 
 #include "FlumenBattle/World/Character/Types.h"
 
-struct Spell;
 struct CharacterAction;
 
 namespace world::character
 {
+    struct Spell;
+    
     struct CharacterClass
     {
         CharacterClasses Class;

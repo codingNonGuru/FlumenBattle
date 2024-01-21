@@ -161,6 +161,16 @@ namespace world::character
             ModifierAccessor::AddModifier(character, {Modifiers::FORTITUDE_BONUS, 1});
         }
     };
+
+    class Blessed : public ConditionType
+    {
+        using ConditionType::ConditionType; 
+
+        void HandleApplyEffect(Character &character) const override
+        {
+            ModifierAccessor::AddModifier(character, {Modifiers::ATTACK_RATING_BONUS, 1});
+        }
+    };
 }
 
 void Condition::ApplyEffect(Character &character) const
@@ -201,6 +211,13 @@ Condition ConditionFactory::Create(ConditionData data)
         {
             [&] {static const auto conditionType = Nourished(data.Type, "Nourished", true); return &conditionType;} (),
             1,
+            data.Duration
+        };
+    case Conditions::BLESSED:
+        return 
+        {
+            [&] {static const auto conditionType = Blessed(data.Type, "Blessed", true); return &conditionType;} (),
+            data.Strength,
             data.Duration
         };
     }

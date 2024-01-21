@@ -48,7 +48,7 @@ WorldInterface::WorldInterface()
     hoverInfo->Enable();
 
     engageMenu = ElementFactory::BuildElement<GroupEngageMenu>(
-        {Size(900, 360), DrawOrder(6), {Position2(0.0f, 360.0f), canvas}, {"Sprite"}, Opacity(0.75f)}
+        {Size(900, 360), DrawOrder(6), {Position2(0.0f, -5.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, canvas}, {"Sprite"}, Opacity(0.75f)}
     );
     engageMenu->Disable();
 

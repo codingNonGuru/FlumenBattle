@@ -8,7 +8,10 @@ namespace battle
     struct CharacterActionData;
 }
 
-struct Spell;
+namespace world::character
+{
+    struct Spell;
+}
 
 namespace battle
 {
@@ -18,23 +21,25 @@ namespace battle
 
         static void RollAttack(Combatant &);
 
-        static void RollDamage(Combatant &, const Spell &);
+        static void RollDamage(Combatant &, const world::character::Spell &);
 
-        static void RollHealing(Combatant &, const Spell &);
+        static void RollHealing(Combatant &, const world::character::Spell &);
 
-        static CharacterActionData ApplyFrostRay(Combatant &, const Spell &);
+        static CharacterActionData ApplyFrostRay(Combatant &, const world::character::Spell &);
 
-        static CharacterActionData ApplyShockingGrasp(Combatant &, const Spell &);
+        static CharacterActionData ApplyShockingGrasp(Combatant &, const world::character::Spell &);
 
-        static CharacterActionData ApplySacredFlame(Combatant &, const Spell &);
+        static CharacterActionData ApplySacredFlame(Combatant &, const world::character::Spell &);
 
-        static CharacterActionData ApplyFireBolt(Combatant &, const Spell &);
+        static CharacterActionData ApplyFireBolt(Combatant &, const world::character::Spell &);
 
-        static CharacterActionData ApplyCureWounds(Combatant &, const Spell &);
+        static CharacterActionData ApplyCureWounds(Combatant &, const world::character::Spell &);
 
-        static CharacterActionData ApplyHealingWord(Combatant &, const Spell &);
+        static CharacterActionData ApplyHealingWord(Combatant &, const world::character::Spell &);
+
+        static CharacterActionData ApplyBless(Combatant &, const world::character::Spell &);
 
     public:
-        static CharacterActionData ApplyEffect(Combatant &, const Spell &);
+        static CharacterActionData ApplyEffect(Combatant &, const world::character::Spell &);
     };
 }

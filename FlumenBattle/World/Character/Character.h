@@ -11,8 +11,6 @@
 #include "FlumenBattle/World/Character/Modifier.h"
 
 struct Weapon;
-struct Spell;
-struct SpellSlot;
 
 namespace render
 {
@@ -52,6 +50,8 @@ namespace world
         class CharacterFactory;
         class Modifier;
         struct Item;
+        struct Spell;
+        struct SpellSlot;
     }
 }
 

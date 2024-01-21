@@ -61,7 +61,7 @@ namespace world::character
                 {CharacterActions::ATTACK, CharacterActions::DODGE, CharacterActions::DASH, CharacterActions::CAST_SPELL},
                 {
                     AbilityTypes::WISDOM, 
-                    {SpellFactory::BuildCureWounds(), SpellFactory::BuildSacredFlame(), SpellFactory::BuildHealingWord()}
+                    {SpellFactory::BuildCureWounds(), SpellFactory::BuildSacredFlame(), SpellFactory::BuildHealingWord(), SpellFactory::BuildBless()}
                 }
             };
             return clericClass;
