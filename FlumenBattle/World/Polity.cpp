@@ -1,5 +1,6 @@
 #include "Polity.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Settlement/Path.h"
 #include "FlumenBattle/World/Settlement/SettlementEvent.h"
 #include "FlumenBattle/World/Science/Technology.h"
 #include "FlumenBattle/World/WorldScene.h"

@@ -21,9 +21,9 @@ export CXX=/usr/bin/g++
 
 make -j 4
 
-mkdir ../../Builds
+mkdir -p ../../Builds
 
-mkdir ../../Builds/Flumen
+mkdir -p ../../Builds/Flumen
 
 cp Battle ../../Builds/Flumen --update
 

@@ -2,6 +2,7 @@
 
 #include "FlumenBattle/Battle/BattleTile.h"
 #include "FlumenBattle/Battle/BattleMap.h"
+#include "FlumenBattle/Types.hpp"
 
 using namespace battle;
 
@@ -25,9 +26,31 @@ BattleTile::BattleTile(Position2 position, Integer2 squareCoordinates) : Positio
     Shade = color;
 }
 
+TravelPenalty BattleTile::GetTravelPenalty() const
+{
+    container::SmartBlock <TravelPenaltyTypes, 4> penalties;
+
+    if(IsObstacle)
+    {
+        *penalties.Add() = TravelPenaltyTypes::MOUNTAINS;
+    }
+
+    return {1, penalties};
+}
+
+int BattleTile::GetPenalty() const
+{
+    return IsObstacle ? 3 : 1;
+}
+
 const Array <BattleTile *> &BattleTile::GetNearbyTiles(Integer range)
 {
     return Map->GetNearbyTiles(this, range);
+}
+
+const container::Block <BattleTile *, 6> BattleTile::GetNearbyTiles()
+{
+    return Map->GetNearbyTiles(this);
 }
 
 const Array <BattleTile *> &BattleTile::GetTileRing(Integer range)
@@ -46,7 +69,7 @@ BattleTile * BattleTile::GetNeighbor(Integer3 direction)
     return Map->GetTile(coordinates);
 }
 
-auto visitedTiles = Array <BattleTile::PathData>(1024);
+auto visitedTiles = Array <BattleTile::OldPathData>(1024);
 
 auto fringeTiles = [] () {
     static auto arrays = Array <Array <BattleTile *>>(128);
@@ -59,7 +82,7 @@ auto fringeTiles = [] () {
     return arrays;
 } ();
 
-const Array <BattleTile::PathData> & BattleTile::FindPath(Integer range)
+const Array <BattleTile::OldPathData> & BattleTile::FindPath(Integer range)
 {
     visitedTiles.Reset();
     *visitedTiles.Add() = {this, 0};

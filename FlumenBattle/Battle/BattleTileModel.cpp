@@ -22,6 +22,7 @@
 #include "FlumenBattle/Battle/Combatant.h"
 #include "FlumenBattle/Battle/BattleTile.h"
 #include "FlumenBattle/Battle/CombatGroup.h"
+#include "FlumenBattle/Utility/Pathfinder.h"
 
 using namespace battle;
 
@@ -220,6 +221,66 @@ void BattleTileModel::RenderCombatants()
     massShader->Unbind();
 }
 
+static DataBuffer *pathPositionBuffer = nullptr;
+
+static const auto PATH_SPRITE_SIZE = 25.0f;
+
+void BattleTileModel::RenderPath()
+{
+    if(HumanController::Get()->IsMoveInitiated() == false)
+        return;
+
+    static auto positions = container::Array <Position2> (HumanController::MAXIMUM_PATH_LENGTH);
+
+    if(pathPositionBuffer == nullptr)
+    {
+        pathPositionBuffer = new DataBuffer(positions.GetMemoryCapacity(), positions.GetStart());
+    }
+
+    static auto rangeShader = ShaderManager::GetShader("MassSprite");
+
+    static Sprite *dotSprite = new Sprite(rangeShader, "Dot");
+
+    auto combatant = BattleController::Get()->GetSelectedCombatant();
+
+    auto &pathTiles = HumanController::Get()->GetHoveredPath();
+
+    positions.Reset();
+
+    auto index = 0;
+    for(auto &tile : pathTiles.Tiles)
+    {
+        if(tile == combatant->GetTile())
+            continue;
+
+        *positions.Add() = tile->Position;
+
+        index++;
+        if(index == combatant->GetMovement())
+            break;
+    }
+
+    pathPositionBuffer->UploadData(positions.GetStart(), positions.GetMemorySize());
+
+    rangeShader->Bind();
+
+    rangeShader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	rangeShader->SetConstant(0.0f, "depth");
+
+    rangeShader->SetConstant(1.0f, "opacity");
+
+    rangeShader->SetConstant(PATH_SPRITE_SIZE, "spriteSize");
+
+    pathPositionBuffer->Bind(0);
+
+    dotSprite->BindDefaultTextures();
+
+    glDrawArrays(GL_TRIANGLES, 0, 6 * (pathTiles.Tiles.GetSize() - 1));
+
+    rangeShader->Unbind();
+}
+
 void BattleTileModel::Render() 
 {
 	shader->Bind();
@@ -294,4 +355,6 @@ void BattleTileModel::Render()
     RenderActionRange();
 
     RenderCombatants();
+
+    RenderPath();
 }

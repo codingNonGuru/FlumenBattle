@@ -65,8 +65,6 @@ namespace world
 
             bool IsTotallyVisited;
 
-            bool IsFringe;
-
             bool IsToBeVisited = false;
         } PathData;
 
@@ -124,7 +122,7 @@ namespace world
 
         Float4 GetShade() const;
 
-        //Integer GetTravelPenalty() const;
+        Integer GetPenalty() const;
 
         TravelPenalty GetTravelPenalty() const;
 

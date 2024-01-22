@@ -13,6 +13,8 @@
 #include "FlumenBattle/Utility/Pathfinder.h"
 #include "FlumenBattle/WorldInterface.h"
 #include "FlumenBattle/World/Character/Types.h"
+#include "FlumenBattle/World/Settlement/Path.h"
+#include "FlumenBattle/World/Settlement/Settlement.h"
 
 using namespace world::group;
 
@@ -42,7 +44,7 @@ GroupActionResult selectedActionResult;
 
 GroupActionResult performedActionResult;
 
-utility::WorldPathData extendedPath;
+utility::PathData <world::WorldTile> extendedPath;
 
 int extendedPathIndex = 0;
 
@@ -297,9 +299,9 @@ void HumanMind::BuyFood()
     OnItemAdded->Invoke();
 }
 
-const utility::WorldPathData HumanMind::GetFullPathData()
+const utility::PathData <world::WorldTile> HumanMind::GetFullPathData()
 {
-    utility::WorldPathData pathData;
+    utility::PathData <world::WorldTile> pathData;
 
     auto playerGroup = WorldScene::Get()->GetPlayerGroup();
 

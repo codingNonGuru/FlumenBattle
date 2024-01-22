@@ -4,6 +4,12 @@
 
 class Delegate;
 
+namespace utility
+{
+    template <typename TileType>
+    struct PathData;
+}
+
 namespace battle
 {
     struct BattleTile;
@@ -13,12 +19,10 @@ namespace battle
     {
         friend class BattleController;
 
-        //void DetermineActionCourse();
+    public:
+        static constexpr auto MAXIMUM_PATH_LENGTH = 15;
 
-        //void MoveCharacter();
-
-        //void UpdateCharacter();
-
+    private:
         bool isInitiatingMove;
 
         bool isInitiatingTargeting;
@@ -53,6 +57,8 @@ namespace battle
 
         void HandleAPressed();
 
+        void HandleSceneUpdate();
+
         HumanController();
 
     public:
@@ -67,6 +73,8 @@ namespace battle
         void TargetCombatant(Combatant *);
 
         BattleTile * GetHoveredTile() const {return hoveredTile;}
+
+        const utility::PathData <BattleTile> &GetHoveredPath();
 
         static HumanController * Get()
         {

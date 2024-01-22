@@ -13,7 +13,8 @@ namespace world
 
 namespace utility
 {
-    class WorldPathData;
+    template <typename TileType>
+    struct PathData;
 }
 
 namespace world::group
@@ -69,7 +70,7 @@ namespace world::group
 
         const GroupActionResult & GetPerformedActionResult();
 
-        const utility::WorldPathData GetFullPathData();
+        const utility::PathData <WorldTile> GetFullPathData();
 
         world::WorldTile *GetFinalDestination() const;
     };  

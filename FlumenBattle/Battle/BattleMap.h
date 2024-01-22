@@ -37,6 +37,8 @@ namespace battle
 
         const Array<BattleTile *> & GetNearbyTiles(BattleTile*, Integer);
 
+        const container::Block <BattleTile *, 6> GetNearbyTiles(BattleTile*);
+
         const Array<BattleTile *> &GetTileRing(BattleTile *, Integer);
     };
 }

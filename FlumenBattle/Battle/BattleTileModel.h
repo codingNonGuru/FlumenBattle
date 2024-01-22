@@ -24,6 +24,8 @@ namespace battle
 
         void RenderCombatants();
 
+        void RenderPath();
+
     public:
         void Initialize() override;
 

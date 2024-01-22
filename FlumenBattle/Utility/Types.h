@@ -1,5 +1,7 @@
 #pragma once
 
+#include "FlumenBattle/Types.hpp"
+
 namespace utility
 {
     enum class RollDies
@@ -11,4 +13,12 @@ namespace utility
     {
         CRITICAL_SUCCESS, SUCCESS, FAILURE, CRITICAL_FAILURE
     };
+
+    template<typename T>
+	concept CanBeTravelled = requires(T a, int b)
+	{
+        { a.GetNearbyTiles(b) };
+
+        { a.GetTravelPenalty() } -> std::same_as <TravelPenalty>;
+	};
 }

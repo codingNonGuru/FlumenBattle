@@ -3,13 +3,14 @@
 #include "FlumenEngine/Core/Scene.hpp"
 
 #include "FlumenBattle/World/WorldTime.h"
-#include "FlumenBattle/World/Settlement/Path.h"
 
 class Delegate;
 
 namespace world::settlement
 {
     class Settlement;
+    struct Path;
+    struct PathSegment;
 }
 
 namespace world

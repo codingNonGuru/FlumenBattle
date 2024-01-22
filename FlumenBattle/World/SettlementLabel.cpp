@@ -94,7 +94,7 @@ void SettlementLabel::HandleConfigure()
     auto height = -float(size_.y) / 2.0f + 20.0f;
     nameLabel = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {Position2(10.0f, 3.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}},
-        {{"JSLAncient", "Medium"}, color, "Aloha"}
+        {{"JSLAncient", "Medium"}, color, "PathData"}
     );
     nameLabel->SetAlignment(Text::Alignments::LEFT);
     nameLabel->Enable();

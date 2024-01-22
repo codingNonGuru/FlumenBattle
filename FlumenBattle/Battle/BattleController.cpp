@@ -18,10 +18,13 @@
 #include "FlumenBattle/Battle/CombatGroup.h"
 #include "FlumenBattle/World/WorldState.h"
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/Utility/Pathfinder.h"
 
 using namespace battle;
 
 BattleController * BattleController::instance = nullptr;
+
+static utility::PathData <battle::BattleTile> pathData;
 
 void BattleController::Initialize()
 {

@@ -156,6 +156,8 @@ namespace battle
 
     void BattleScene::Update()
     {
+        OnUpdate.Invoke();
+
         auto panSpeed = CAMERA_PAN_SPEED * Time::GetDelta();
 
         if(InputHandler::IsPressed(SDL_SCANCODE_UP))

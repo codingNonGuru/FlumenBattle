@@ -106,6 +106,26 @@ Float4 WorldTile::GetShade() const
     return Biome->TravelPenalty + Relief->TravelPenalty;
 }*/
 
+int WorldTile::GetPenalty() const
+{
+    if(Type == WorldTiles::SEA)
+    {
+        return 10;
+    }
+
+    if(Relief->Type == WorldReliefs::MOUNTAINS)
+    {
+        return 5;
+    }
+
+    if(Biome->Type == WorldBiomes::WOODS)
+    {
+        return 3;
+    }
+
+    return 1;
+}
+
 TravelPenalty WorldTile::GetTravelPenalty() const
 {
     container::SmartBlock <TravelPenaltyTypes, 4> penalties;

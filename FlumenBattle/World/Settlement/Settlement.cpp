@@ -19,6 +19,7 @@
 #include "FlumenBattle/World/SimulationMap.h"
 #include "FlumenBattle/World/SimulationDomain.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
+#include "FlumenBattle/Utility/SettlementPathfinder.h"
 
 using namespace world::settlement;
 
@@ -710,6 +711,6 @@ void Settlement::UpdateDistanceToCapital()
         return;
     }
 
-    auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathToSettlement(this, polity->GetRuler());
+    auto pathData = utility::SettlementPathfinder::Get()->FindPathToSettlement(this, polity->GetRuler());
     distanceToCapital = pathData.Complexity;
 }

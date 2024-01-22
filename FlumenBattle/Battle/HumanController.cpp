@@ -9,6 +9,7 @@
 #include "FlumenBattle/Battle/BattleScene.h"
 #include "FlumenBattle/Battle/BattleMap.h"
 #include "FlumenBattle/Battle/BattleTile.h"
+#include "FlumenBattle/Utility/Pathfinder.h"
 
 using namespace battle;
 
@@ -19,6 +20,8 @@ static Combatant *selectedCombatant = nullptr;
 static BattleScene *battleScene = nullptr;
 
 static Camera *camera = nullptr;
+
+static utility::PathData <BattleTile> hoveredPathData;
 
 HumanController::HumanController()
 {
@@ -41,6 +44,8 @@ void HumanController::Initialize()
     battleScene = BattleScene::Get();
 
     camera = battleScene->GetCamera();
+
+    battleScene->OnUpdate += {this, &HumanController::HandleSceneUpdate};
 }
 
 void HumanController::EnablePlayerInput()
@@ -212,6 +217,26 @@ void HumanController::HandleAPressed()
     battleController->Act();
 }
 
+void HumanController::HandleSceneUpdate()
+{
+    if(hoveredTile == nullptr || isInitiatingMove == false)
+        return;
+
+    if(hoveredTile->IsObstacle == true || hoveredTile->Combatant != nullptr)
+    {
+        hoveredPathData.Tiles.Clear();
+        return;
+    }
+
+    auto battleController = BattleController::Get();
+    auto selectedCombatant = battleController->GetSelectedCombatant();
+
+    if(hoveredTile->GetDistanceTo(*selectedCombatant->GetTile()) <= MAXIMUM_PATH_LENGTH)
+    {
+        hoveredPathData = utility::Pathfinder <BattleTile>::Get()->FindPathAsGeneric(hoveredTile, selectedCombatant->GetTile(), MAXIMUM_PATH_LENGTH - 3);
+    }
+}
+
 void HumanController::TargetCombatant(Combatant *target)
 {
     if(isInitiatingTargeting == false)
@@ -222,5 +247,10 @@ void HumanController::TargetCombatant(Combatant *target)
     isInitiatingTargeting = false;
 
     OnTargetAbandoned->Invoke();
+}
+
+const utility::PathData <BattleTile> &HumanController::GetHoveredPath()
+{
+    return hoveredPathData;
 }
 

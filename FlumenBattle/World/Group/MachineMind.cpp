@@ -5,6 +5,7 @@
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Settlement/Path.h"
 #include "FlumenBattle/World/Character/Character.h"
 
 namespace world::group

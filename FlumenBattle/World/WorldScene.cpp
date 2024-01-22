@@ -15,6 +15,7 @@
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/GroupFactory.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Settlement/Path.h"
 #include "FlumenBattle/World/Settlement/SettlementFactory.h"
 #include "FlumenBattle/World/Settlement/SettlementAllocator.h"
 #include "FlumenBattle/World/Polity.h"

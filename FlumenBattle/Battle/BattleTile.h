@@ -2,6 +2,8 @@
 
 #include "FlumenCore/Conventions.hpp"
 
+#include "FlumenBattle/Types.hpp"
+
 namespace battle
 {
     class Combatant;
@@ -25,7 +27,7 @@ namespace battle
         BattleMap* Map;
 
     public:
-        struct PathData
+        struct OldPathData
         {
             BattleTile *Tile;
 
@@ -44,6 +46,15 @@ namespace battle
 
         bool IsObstacle;
 
+        struct PathData
+        {
+            bool IsVisited = false;
+
+            bool IsTotallyVisited;
+
+            bool IsToBeVisited = false;
+        } PathData;
+
         BattleTile() {}
 
         BattleTile(Position2 position, Integer2 squareCoordinates);/* : Position(position), SquareCoordinates(squareCoordinates), Combatant(nullptr)
@@ -59,7 +70,13 @@ namespace battle
             return (abs(direction.x) + abs(direction.y) + abs(direction.z)) / 2;
         }
 
+        int GetPenalty() const;
+
+        TravelPenalty GetTravelPenalty() const;
+
         const Array <BattleTile *> &GetNearbyTiles(Integer);
+
+        const container::Block <BattleTile *, 6> GetNearbyTiles();
 
         BattleTile * GetEmptyTileInRange(Integer);
 
@@ -67,6 +84,6 @@ namespace battle
 
         const Array <BattleTile *> &GetTileRing(Integer);
 
-        const Array <PathData> & FindPath(Integer);
+        const Array <OldPathData> & FindPath(Integer);
     };
 }

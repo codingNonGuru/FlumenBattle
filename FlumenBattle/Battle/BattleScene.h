@@ -83,6 +83,8 @@ namespace battle
 
         Delegate OnRoundEnded;
 
+        Delegate OnUpdate;
+
         BattleScene();
 
         BattleMap* GetBattleMap() {return battleMap;}

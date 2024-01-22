@@ -6,7 +6,8 @@ class Delegate;
 
 namespace utility
 {
-    struct WorldPathData;
+    template <typename TileType>
+    struct PathData;
 }
 
 namespace world
@@ -119,6 +120,6 @@ namespace world
 
         bool IsTravelPlanActive() const {return isTravelPlanActive;}
 
-        utility::WorldPathData GetPlannedPath() const;
+        utility::PathData <WorldTile> GetPlannedPath() const;
     };
 }
