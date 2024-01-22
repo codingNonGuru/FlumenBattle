@@ -3,6 +3,7 @@
 #include "FlumenBattle/Battle/BattleController.h"
 #include "FlumenBattle/Battle/BattleInterface.h"
 #include "FlumenBattle/Battle/BattleTileModel.h"
+#include "FlumenBattle/Battle/Sound/BattleMixer.h"
 
 using namespace battle;
 
@@ -19,15 +20,24 @@ BattleState::BattleState()
     interface = BattleInterface::Get();
 }
 
+bool isInitialized = false;
+
 void BattleState::HandleEnter() 
 {
-    scene->Initialize();
-    
-    controller->Initialize();
+    if(isInitialized == false)
+    {
+        scene->Initialize();
+        
+        controller->Initialize();
 
-    tileModel->Initialize();
+        tileModel->Initialize();
 
-    interface->Initialize();
+        interface->Initialize();
+
+        sound::BattleMixer::Get()->Initialize();
+
+        isInitialized = true;
+    }
 
     scene->Enable();
 }

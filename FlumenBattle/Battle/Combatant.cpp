@@ -1,7 +1,5 @@
 #include "FlumenCore/Utility/Utility.hpp"
 
-#include "FlumenEngine/Sound/SoundManager.h"
-
 #include "FlumenBattle/Battle/Combatant.h"
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/Battle/BattleTile.h"
@@ -19,8 +17,6 @@
 #include "FlumenBattle/Utility/Utility.h"
 
 using namespace battle;
-
-static const auto SWING_SOUNDS = container::Array {"Swing", "Swing2", "Swing3"};
 
 Combatant::Combatant()
 {
@@ -380,14 +376,6 @@ CharacterActionData Combatant::Strike()
     }
 
     remainingActionCount--;
-
-    auto attackRange = GetCharacter()->GetActionRange();
-    if(attackRange == 1)
-    {
-        auto swingSound = SWING_SOUNDS.GetRandom();
-
-        engine::SoundManager::Get()->PlaySound(*swingSound);
-    }
 
     return CharacterActionData(character->selectedAction->Type, this, attackBonus, targetArmor, damage, hasHit);
 }
