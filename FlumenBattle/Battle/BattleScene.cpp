@@ -30,6 +30,10 @@ static const Float CAMERA_ZOOM_SPEED = 2.0f;
 
 static const Float CAMERA_GRAB_SENSITIVITY = 1.7f;
 
+static const Scale2 CAMERA_ZOOM_LIMIT = {0.3f, 3.5f};
+
+static const Integer3 COMBAT_GROUP_OFFSET = {-4, 12, -8};
+
 static const Length BATTLE_MAP_SIZE = 55;
 
 static const auto screenGrabInputKey = SDL_Scancode::SDL_SCANCODE_LALT;
@@ -49,11 +53,9 @@ namespace battle
     void BattleScene::Initialize()
     {
         auto centerTile = battleMap->GetCenterTile();
-        Integer3 offset = {-4, 12, -8};
-
+        
         auto GetComputerGroup = [this]
         {
-            //auto battle = world::WorldScene::Get()->GetPlayerBattle();
             auto battle = world::WorldController::Get()->GetPlayerBattle();
             if(world::WorldScene::Get()->GetPlayerGroup() == battle->GetFirst())
                 return battle->GetSecond();
@@ -61,10 +63,11 @@ namespace battle
                 return battle->GetFirst();
         };  
 
-        playerGroup->Initialize(world::WorldScene::Get()->GetPlayerGroup(), centerTile->GetNeighbor(offset));
-        computerGroup->Initialize(GetComputerGroup(), centerTile->GetNeighbor(-offset));
+        playerGroup->Initialize(world::WorldScene::Get()->GetPlayerGroup(), centerTile->GetNeighbor(COMBAT_GROUP_OFFSET));
+        computerGroup->Initialize(GetComputerGroup(), centerTile->GetNeighbor(-COMBAT_GROUP_OFFSET));
 
         camera = RenderManager::GetCamera(Cameras::BATTLE);
+        camera->LimitZoom(CAMERA_ZOOM_LIMIT);
 
         BattleController::Get()->OnCharacterActed += {this, &BattleScene::HandleCombatantActed};
 

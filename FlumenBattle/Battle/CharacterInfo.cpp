@@ -5,6 +5,7 @@
 #include "FlumenEngine/Core/Transform.hpp"
 #include "FlumenEngine/Render/RenderManager.hpp"
 #include "FlumenEngine/Render/Camera.hpp"
+#include "FlumenEngine/Interface/Sprite.hpp"
 
 #include "FlumenBattle/Battle/CharacterInfo.h"
 #include "FlumenBattle/World/Character/Condition.h"
@@ -25,21 +26,15 @@ void CharacterInfo::HandleConfigure()
 
     auto textColor = Color::BLACK;
 
-    textLabel = ElementFactory::BuildText(
-        {Size(150, 150), DrawOrder(2), {Position2(-5.0f, 0.0f), this}},
-        {{"JSLAncient", "Large"}, textColor}
-    );
-	//textLabel->Enable();
-
     selectLabel = ElementFactory::BuildText(
         {Size(150, 150), DrawOrder(2), {Position2(0.0f, 30.0f), this}},
         {{"JSLAncient", "Small"}, textColor, "S"}
     );
 
-    targetedLabel = ElementFactory::BuildText(
-        {Size(150, 150), DrawOrder(2), {Position2(0.0f, -30.0f), this}},
-        {{"JSLAncient", "Small"}, textColor, "x"}
+    targetedLabel = ElementFactory::BuildElement <Element>(
+        {Size(), DrawOrder(2), {Position2(), this}, {"RedArrow", "Sprite"}}
     );
+    targetedLabel->UpdatePositionConstantly();
 
     hitpointLabel = ElementFactory::BuildText(
         {Size(150, 150), DrawOrder(2), {Position2(20.0f, 0.0f), this}},
@@ -61,13 +56,8 @@ void CharacterInfo::HandleEnable()
     camera = RenderManager::GetCamera(Cameras::BATTLE);
     
     auto className = combatant->character->type->Name;
-    textLabel->Setup(className.GetFirstCharacter());
-
-    textLabel->SetColor(combatant->GetGroup()->GetGroup()->GetColor());
 
     SetOpacity(0.0f);
-
-    textLabel->SetOpacity(1.0f);
 
     //hitpointLabel->Enable();
 
@@ -86,12 +76,12 @@ void CharacterInfo::HandleHover()
 
 void CharacterInfo::Select()
 {
-    selectLabel->Enable();
+    //selectLabel->Enable();
 }
 
 void CharacterInfo::Deselect()
 {
-    selectLabel->Disable();
+    //selectLabel->Disable();
 }
 
 void CharacterInfo::HandleUpdate()
@@ -102,6 +92,13 @@ void CharacterInfo::HandleUpdate()
     if(battleController->GetTargetedCombatant() == combatant)
     {
         targetedLabel->Enable();
+
+        auto offset = 40.0f / camera->GetZoomFactor();
+
+        targetedLabel->SetBasePosition({0.0f, -offset});
+
+        auto scaleFactor = 1.5f / utility::Clamp(camera->GetZoomFactor(), 0.2f, 2.0f);
+        targetedLabel->GetSprite()->SetTextureSize(Scale2(scaleFactor));
     }
     else
     {
@@ -117,9 +114,7 @@ void CharacterInfo::HandleUpdate()
 
     if(combatant->IsAlive() == false)
     {
-        SetOpacity(0.5f);
-
-        textLabel->SetOpacity(0.5f);
+        //SetOpacity(0.5f);
 
         hitpointLabel->Disable();
 

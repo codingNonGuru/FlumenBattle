@@ -21,11 +21,9 @@ namespace battle
 
         Combatant* combatant;
 
-        Text* textLabel;
-
         Text* selectLabel;
 
-        Text *targetedLabel;
+        Element *targetedLabel;
 
         Text* hitpointLabel;
 

@@ -154,7 +154,9 @@ void BattleTileModel::RenderCombatants()
 
     static auto massShader = ShaderManager::GetShader("ComplexMassSprite");
 
-    static auto sprite = new Sprite(massShader, "CombatantsComposite");
+    static auto unborderedSprite = new Sprite(massShader, "CombatantsComposite");
+
+    static auto borderedSprite = new Sprite(massShader, "CombatantsCompositeBordered");
 
     positions.Reset();
 
@@ -186,15 +188,34 @@ void BattleTileModel::RenderCombatants()
 
     massShader->SetConstant(1.0f, "opacity");
 
-    massShader->SetConstant(100.0f, "spriteSize");
+    massShader->SetConstant(115.0f, "spriteSize");
 
     combatantPositionBuffer->Bind(0);
 
     combatantTextureOffsetBuffer->Bind(1);
 
-    sprite->BindDefaultTextures();
+    unborderedSprite->BindDefaultTextures();
 
     glDrawArrays(GL_TRIANGLES, 0, 6 * positions.GetSize());
+
+    if(auto selectedCombatant = BattleController::Get()->GetSelectedCombatant(); selectedCombatant != nullptr)
+    {
+        positions.Reset();
+
+        offsets.Reset();
+
+        *positions.Add() = selectedCombatant->GetTile()->Position;
+
+        *offsets.Add() = selectedCombatant->GetCharacter()->GetClass()->TextureData.Offset;
+
+        combatantPositionBuffer->UploadData(positions.GetStart(), positions.GetMemorySize());
+
+        combatantTextureOffsetBuffer->UploadData(offsets.GetStart(), offsets.GetMemorySize());
+
+        borderedSprite->BindDefaultTextures();
+
+        glDrawArrays(GL_TRIANGLES, 0, 6 * positions.GetSize());
+    }
 
     massShader->Unbind();
 }

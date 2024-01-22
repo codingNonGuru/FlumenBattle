@@ -134,7 +134,7 @@ void CharacterHoverInfo::HandleUpdate()
 
     auto &conditions = characterInfo->GetCombatant()->GetCharacter()->GetConditions();
 
-    Phrase text;
+    Phrase text = "";
 
     auto index = 0;
     for(auto &condition : conditions)
@@ -165,7 +165,7 @@ void CharacterHoverInfo::Setup(CharacterInfo *characterInfo)
 
     characterPosition = combatant->GetTile()->Position;
 
-    FollowWorldPosition(&characterPosition, Cameras::BATTLE, Scale2(0.0f, 1.0f), Scale2(0.0f, 30.0f));
+    FollowWorldPosition(&characterPosition, Cameras::BATTLE, Scale2(0.0f, 1.1f), Scale2(0.0f, 40.0f));
 
     nameLabel->Setup(character->GetName());
 
