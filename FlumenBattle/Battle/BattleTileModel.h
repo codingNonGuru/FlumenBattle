@@ -22,6 +22,8 @@ namespace battle
 
         void RenderActionRange();
 
+        void RenderCombatants();
+
     public:
         void Initialize() override;
 

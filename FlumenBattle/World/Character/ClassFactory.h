@@ -32,6 +32,7 @@ namespace world::character
                 "Fighter", 
                 10, 
                 16, 
+                {"Fighter1", Position2(0.0f, 0.0f)},
                 {{CharacterActions::ATTACK}, {CharacterActions::DODGE}, {CharacterActions::DASH}}
             };
             return fighterClass;
@@ -45,6 +46,7 @@ namespace world::character
                 "Ranger", 
                 10, 
                 14, 
+                {"Ranger1", Position2(0.75f, 0.0f)},
                 {CharacterActions::ATTACK, CharacterActions::DODGE, CharacterActions::DASH}
             };
             return rangerClass;
@@ -58,6 +60,7 @@ namespace world::character
                 "Cleric", 
                 8, 
                 12, 
+                {"Cleric1", Position2(0.5f, 0.0f)},
                 {CharacterActions::ATTACK, CharacterActions::DODGE, CharacterActions::DASH, CharacterActions::CAST_SPELL},
                 {
                     AbilityTypes::WISDOM, 
@@ -75,6 +78,7 @@ namespace world::character
                 "Wizard", 
                 6, 
                 10, 
+                {"Wizard1", Position2(0.0f, 0.5f)},
                 {CharacterActions::ATTACK, CharacterActions::DODGE, CharacterActions::DASH, CharacterActions::HELP},
                 {
                     AbilityTypes::INTELLIGENCE, 

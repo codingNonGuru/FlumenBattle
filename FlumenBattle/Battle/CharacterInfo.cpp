@@ -29,7 +29,7 @@ void CharacterInfo::HandleConfigure()
         {Size(150, 150), DrawOrder(2), {Position2(-5.0f, 0.0f), this}},
         {{"JSLAncient", "Large"}, textColor}
     );
-	textLabel->Enable();
+	//textLabel->Enable();
 
     selectLabel = ElementFactory::BuildText(
         {Size(150, 150), DrawOrder(2), {Position2(0.0f, 30.0f), this}},
@@ -65,11 +65,11 @@ void CharacterInfo::HandleEnable()
 
     textLabel->SetColor(combatant->GetGroup()->GetGroup()->GetColor());
 
-    SetOpacity(1.0f);
+    SetOpacity(0.0f);
 
     textLabel->SetOpacity(1.0f);
 
-    hitpointLabel->Enable();
+    //hitpointLabel->Enable();
 
     deathSavingLabel->Disable();
 }

@@ -43,7 +43,7 @@ BattleInterface::BattleInterface()
     for(Index i = 0; i < characterInfos.GetCapacity(); ++i)
     {
         auto characterInfo = ElementFactory::BuildElement<CharacterInfo>(
-            {Size(60, 90), DrawOrder(1), {Position2(0.0f, 0.0f), canvas}, sprite, Opacity(1.0f)}
+            {Size(60, 90), DrawOrder(1), {Position2(), canvas}, sprite, Opacity(0.5f)}
         );
 
         *characterInfos.Allocate() = characterInfo;

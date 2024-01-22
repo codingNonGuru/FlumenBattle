@@ -20,6 +20,15 @@ namespace world::character
 
         Integer ArmorClass;
 
+        struct TextureData
+        {
+            Word Name {};
+
+            Position2 Offset;
+        };
+
+        TextureData TextureData;
+
         Array <CharacterAction> Actions;
 
         struct SpellPower

@@ -18,8 +18,10 @@
 #include "FlumenBattle/Battle/BattleMap.h"
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/World/Character/Character.h"
+#include "FlumenBattle/World/Character/CharacterClass.h"
 #include "FlumenBattle/Battle/Combatant.h"
 #include "FlumenBattle/Battle/BattleTile.h"
+#include "FlumenBattle/Battle/CombatGroup.h"
 
 using namespace battle;
 
@@ -131,6 +133,72 @@ void BattleTileModel::RenderActionRange()
     rangeShader->Unbind();
 }
 
+static DataBuffer *combatantPositionBuffer = nullptr;
+
+static DataBuffer *combatantTextureOffsetBuffer = nullptr;
+
+static const auto MAXIMUM_COMBATANTS_PER_SCENE = 32;
+
+void BattleTileModel::RenderCombatants()
+{
+    static auto positions = container::Array <Position2> (MAXIMUM_COMBATANTS_PER_SCENE);
+
+    static auto offsets = container::Array <Position2> (MAXIMUM_COMBATANTS_PER_SCENE);
+
+    if(combatantPositionBuffer == nullptr)
+    {
+        combatantPositionBuffer = new DataBuffer(positions.GetMemoryCapacity(), positions.GetStart());
+
+        combatantTextureOffsetBuffer = new DataBuffer(offsets.GetMemoryCapacity(), offsets.GetStart());
+    }
+
+    static auto massShader = ShaderManager::GetShader("ComplexMassSprite");
+
+    static auto sprite = new Sprite(massShader, "CombatantsComposite");
+
+    positions.Reset();
+
+    offsets.Reset();
+
+    auto playerGroup = BattleScene::Get()->GetPlayerGroup();
+    auto computerGroup = BattleScene::Get()->GetComputerGroup();
+    for(auto group : {playerGroup, computerGroup})
+    {    
+        for(auto &combatant : group->GetCombatants())
+        {
+            auto character = combatant.GetCharacter();
+
+            *positions.Add() = combatant.GetTile()->Position;
+
+            *offsets.Add() = character->GetClass()->TextureData.Offset;
+        }
+    }
+
+    combatantPositionBuffer->UploadData(positions.GetStart(), positions.GetMemorySize());
+
+    combatantTextureOffsetBuffer->UploadData(offsets.GetStart(), offsets.GetMemorySize());
+
+    massShader->Bind();
+
+    massShader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	massShader->SetConstant(0.0f, "depth");
+
+    massShader->SetConstant(1.0f, "opacity");
+
+    massShader->SetConstant(100.0f, "spriteSize");
+
+    combatantPositionBuffer->Bind(0);
+
+    combatantTextureOffsetBuffer->Bind(1);
+
+    sprite->BindDefaultTextures();
+
+    glDrawArrays(GL_TRIANGLES, 0, 6 * positions.GetSize());
+
+    massShader->Unbind();
+}
+
 void BattleTileModel::Render() 
 {
 	shader->Bind();
@@ -203,4 +271,6 @@ void BattleTileModel::Render()
 	shader->Unbind();
 
     RenderActionRange();
+
+    RenderCombatants();
 }
