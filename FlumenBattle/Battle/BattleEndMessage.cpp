@@ -13,7 +13,7 @@ void BattleEndMessage::HandleConfigure()
 {
     mainLabel = ElementFactory::BuildText(
         {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, 0.0f), this}},
-        {{"JSLAncient", "Large"}, Color::RED * 0.5f}
+        {{"Large"}, Color::RED * 0.5f}
     );
     mainLabel->Enable();
 

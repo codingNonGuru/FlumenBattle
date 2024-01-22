@@ -31,7 +31,7 @@ void HoverExtension::ResourceWidget::HandleConfigure()
 {
     Label = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {Position2(), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, this}},
-        {{"JSLAncient", "Small"}, color, "20"}
+        {{"Small"}, color, "20"}
     );
     Label->SetAlignment(Text::Alignments::LEFT);
     Label->Enable();
@@ -94,7 +94,7 @@ void SettlementLabel::HandleConfigure()
     auto height = -float(size_.y) / 2.0f + 20.0f;
     nameLabel = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {Position2(10.0f, 3.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}},
-        {{"JSLAncient", "Medium"}, color, "PathData"}
+        {{"Medium"}, color, "PathData"}
     );
     nameLabel->SetAlignment(Text::Alignments::LEFT);
     nameLabel->Enable();
@@ -117,7 +117,7 @@ void SettlementLabel::HandleConfigure()
 
     populationLabel = ElementFactory::BuildText(
         {Size(50, 50), drawOrder_ + 2, {Position2(0.0f, 0.0f), populationBackdrop}},
-        {{"JSLAncient", "Large"}, color, "5"}
+        {{"Large"}, color, "5"}
     );
     populationLabel->SetAlignment(Text::Alignments::CENTER);
     populationLabel->Enable();
@@ -139,7 +139,7 @@ void HoverExtension::HandleConfigure()
 
     growthLabel = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
-        {{"JSLAncient", "Small"}, color, "Growth "}
+        {{"Small"}, color, "Growth "}
     );
     growthLabel->SetAlignment(Text::Alignments::LEFT);
     growthLabel->Enable();
@@ -147,7 +147,7 @@ void HoverExtension::HandleConfigure()
 
     simulationLabel = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
-        {{"JSLAncient", "Small"}, color, "Growth "}
+        {{"Small"}, color, "Growth "}
     );
     simulationLabel->SetAlignment(Text::Alignments::LEFT);
     simulationLabel->Enable();
@@ -161,7 +161,7 @@ void HoverExtension::HandleConfigure()
 
     industryLabel = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
-        {{"JSLAncient", "Small"}, color, "Industry: 20"}
+        {{"Small"}, color, "Industry: 20"}
     );
     industryLabel->SetAlignment(Text::Alignments::LEFT);
     industryLabel->Enable();
@@ -169,7 +169,7 @@ void HoverExtension::HandleConfigure()
 
     tileLabel = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
-        {{"JSLAncient", "Small"}, color, "Tiles: 20"}
+        {{"Small"}, color, "Tiles: 20"}
     );
     tileLabel->SetAlignment(Text::Alignments::LEFT);
     tileLabel->Enable();
@@ -177,7 +177,7 @@ void HoverExtension::HandleConfigure()
 
     factionLabel = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
-        {{"JSLAncient", "Small"}, color, "Faction: 20"}
+        {{"Small"}, color, "Faction: 20"}
     );
     factionLabel->SetAlignment(Text::Alignments::LEFT);
     factionLabel->Enable();
@@ -219,7 +219,7 @@ void HoverExtension::HandleConfigure()
 
     productionLabel = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
-        {{"JSLAncient", "Small"}, color, "Industry: 20"}
+        {{"Small"}, color, "Industry: 20"}
     );
     productionLabel->SetAlignment(Text::Alignments::LEFT);
     productionLabel->Enable();
@@ -244,7 +244,7 @@ void HoverExtension::HandleConfigure()
     {
         auto label = ElementFactory::BuildText(
             {Size(100, 100), drawOrder_ + 1, {Position2(), pathLayout}},
-            {{"JSLAncient", "VerySmall"}, color, "Industry: 20"}
+            {{"VerySmall"}, color, "Industry: 20"}
         );
         label->SetAlignment(Text::Alignments::LEFT);
         label->Disable();
@@ -254,7 +254,7 @@ void HoverExtension::HandleConfigure()
 
     separator = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {Position2(), pathLayout}},
-        {{"JSLAncient", "VerySmall"}, color, "----------"}
+        {{"VerySmall"}, color, "----------"}
     );
     separator->SetAlignment(Text::Alignments::LEFT);
     separator->Enable();
@@ -272,7 +272,7 @@ void HoverExtension::HandleConfigure()
     {
         auto label = ElementFactory::BuildText <ConditionWidget>(
             {Size(100, 100), drawOrder_ + 1, {Position2(), conditionLayout}},
-            {{"JSLAncient", "VerySmall"}, color, "Industry: 20"}
+            {{"VerySmall"}, color, "Industry: 20"}
         );
         label->SetAlignment(Text::Alignments::LEFT);
         label->Disable();

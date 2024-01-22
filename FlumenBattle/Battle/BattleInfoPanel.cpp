@@ -27,7 +27,7 @@ void BattleInfoPanel::HandleConfigure()
     
     actionLabel = ElementFactory::BuildText(
         {Size(600, 140), DrawOrder(4), {Position2(0.0f, 0.0f), this}},
-        {{"JSLAncient", "Small"}, textColor, "No action"}
+        {{"Small"}, textColor, "No action"}
     );
 
     actionLabel->SetAlignment(Text::Alignments::LEFT);

@@ -33,7 +33,7 @@ void CharacterDetailPanel::HandleConfigure()
 
         auto label = ElementFactory::BuildText<CharacterAbilityLabel>(
             {Size(150, 150), drawOrder_ + 1, {position, this}},
-            {{"JSLAncient", "Medium"}, textColor}
+            {{"Medium"}, textColor}
         );
         label->SetAbilityData(data);
 
@@ -49,7 +49,7 @@ void CharacterDetailPanel::HandleConfigure()
 
     headerLabel = ElementFactory::BuildText(
         {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, -80.0f), this}},
-        {{"JSLAncient", "Large"}, textColor}
+        {{"Large"}, textColor}
     );
     headerLabel->Enable();
 

@@ -36,7 +36,7 @@ void WorldDecisionMenu::HandleConfigure()
         auto opacity = 0.4f + (float)i * 0.1f;
         auto rollLabel = ElementFactory::BuildText(
             {Size(size_.x - 10, 150), drawOrder_ + 1, {position, this}},
-            {{"JSLAncient", "Small"}, Color::RED, defaultText}
+            {{"Small"}, Color::RED, defaultText}
         );
         rollLabel->SetAlignment(Text::Alignments::LEFT);
         rollLabel->SetOpacity(opacity);
@@ -49,25 +49,25 @@ void WorldDecisionMenu::HandleConfigure()
     }
     /*travelLabel = ElementFactory::BuildText(
         {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, 30.0f), this}},
-        {{"JSLAncient", "Medium"}, Color::RED * 0.5f, "Press [T] to travel to location."}
+        {{"Medium"}, Color::RED * 0.5f, "Press [T] to travel to location."}
     );
     travelLabel->Enable();
 
     searchLabel = ElementFactory::BuildText(
         {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, 0.0f), this}},
-        {{"JSLAncient", "Medium"}, Color::RED * 0.5f, "Press [S] to search for enemies."}
+        {{"Medium"}, Color::RED * 0.5f, "Press [S] to search for enemies."}
     );
     searchLabel->Enable();
 
     restLabel = ElementFactory::BuildText(
         {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, -30.0f), this}},
-        {{"JSLAncient", "Medium"}, Color::RED * 0.5f, "Press [R] to rest."}
+        {{"Medium"}, Color::RED * 0.5f, "Press [R] to rest."}
     );
     restLabel->Enable();*/
 
     statusLabel = ElementFactory::BuildText(
         {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, -85.0f), this}},
-        {{"JSLAncient", "Medium"}, Color::RED * 0.5f, "Current action: None"}
+        {{"Medium"}, Color::RED * 0.5f, "Current action: None"}
     );
     statusLabel->Enable();
 

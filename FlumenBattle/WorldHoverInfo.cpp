@@ -18,7 +18,7 @@ void WorldHoverInfo::HandleConfigure()
     static auto color = Color::RED * 0.5f;
     infoLabel = ElementFactory::BuildText(
         {Size(), drawOrder_ + 1, {Position2(5.0f, 5.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}},
-        {{"JSLAncient", "Large"}, color, "Pop 1"}
+        {{"Large"}, color, "Pop 1"}
     );
     infoLabel->SetAlignment(Text::Alignments::LEFT);
     infoLabel->LockWidth(size_.x - 10);

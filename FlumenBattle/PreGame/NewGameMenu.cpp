@@ -11,19 +11,19 @@ void NewGameMenu::HandleConfigure()
 {
     newWorldLabel = ElementFactory::BuildText(
         {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, -40.0f), this}},
-        {{"JSLAncient", "Large"}, Color::RED * 0.5f, "[N]ew World"}
+        {{"Large"}, Color::RED * 0.5f, "[N]ew World"}
     );
     newWorldLabel->Enable();
 
     loadWorldLabel = ElementFactory::BuildText(
         {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, 0.0f), this}},
-        {{"JSLAncient", "Large"}, Color::RED * 0.5f, "[L]oad World"}
+        {{"Large"}, Color::RED * 0.5f, "[L]oad World"}
     );
     loadWorldLabel->Enable();
 
     backLabel = ElementFactory::BuildText(
         {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, 40.0f), this}},
-        {{"JSLAncient", "Large"}, Color::RED * 0.5f, "[B]ack"}
+        {{"Large"}, Color::RED * 0.5f, "[B]ack"}
     );
     backLabel->Enable();
 }

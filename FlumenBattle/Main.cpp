@@ -11,8 +11,7 @@ int main()
 		pregame::PreGameState::Get()->Enter();
 	};
 
-	auto screenSize = Size(1920, 1080);
-	Engine::Initialize(screenSize);
+	Engine::Initialize();
 
 	return 0;
 }

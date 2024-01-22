@@ -94,13 +94,13 @@ void InventoryMenu::HandleConfigure()
 
     nameLabel = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}}, 
-        {{"JSLAncient", "Large"}, Color::RED * 0.5f, "Elric"}
+        {{"Large"}, Color::RED * 0.5f, "Elric"}
     );
     nameLabel->Enable();
 
     classLabel = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, 25.0f), ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, nameLabel}}, 
-        {{"JSLAncient", "Medium"}, Color::RED * 0.5f, "Cleric"}
+        {{"Medium"}, Color::RED * 0.5f, "Cleric"}
     );
     classLabel->Enable();
 
@@ -110,7 +110,7 @@ void InventoryMenu::HandleConfigure()
     {
         *label = ElementFactory::BuildText(
             {Size(100, 100), drawOrder_ + 1, {Position2(10.0f, height), ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
-            {{"JSLAncient", "Small"}, Color::RED * 0.5f, "Health: 10 / 10"}
+            {{"Small"}, Color::RED * 0.5f, "Health: 10 / 10"}
         );
         (*label)->SetAlignment(Text::Alignments::LEFT);
         (*label)->Enable();

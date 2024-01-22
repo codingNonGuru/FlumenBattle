@@ -19,7 +19,7 @@ void PathLabel::HandleConfigure()
     //auto height = -float(size_.y) / 2.0f + 20.0f;
     label = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, 0.0f), this}},
-        {{"JSLAncient", "Medium"}, color, "1"}
+        {{"Medium"}, color, "1"}
     );
     label->SetAlignment(Text::Alignments::CENTER);
     label->Enable();

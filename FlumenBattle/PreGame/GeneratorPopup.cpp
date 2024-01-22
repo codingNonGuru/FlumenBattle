@@ -12,7 +12,7 @@ void GeneratorPopup::HandleConfigure()
 {
     loadingLabel = ElementFactory::BuildText(
         {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, -20.0f), this}},
-        {{"JSLAncient", "Large"}, Color::RED * 0.5f, "Loading..."}
+        {{"Large"}, Color::RED * 0.5f, "Loading..."}
     );
     loadingLabel->Enable();
 }

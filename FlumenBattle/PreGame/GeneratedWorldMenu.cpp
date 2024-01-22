@@ -14,19 +14,19 @@ void GeneratedWorldMenu::HandleConfigure()
 {
     startGameLabel = ElementFactory::BuildText(
         {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, -40.0f), this}},
-        {{"JSLAncient", "Large"}, Color::RED * 0.5f, "[S]tart Game"}
+        {{"Large"}, Color::RED * 0.5f, "[S]tart Game"}
     );
     startGameLabel->Enable();
 
     saveWorldLabel = ElementFactory::BuildText(
         {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, 0.0f), this}},
-        {{"JSLAncient", "Large"}, Color::RED * 0.5f, "[S]ave World"}
+        {{"Large"}, Color::RED * 0.5f, "[S]ave World"}
     );
     saveWorldLabel->Enable();
 
     backLabel = ElementFactory::BuildText(
         {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, 40.0f), this}},
-        {{"JSLAncient", "Large"}, Color::RED * 0.5f, "[B]ack"}
+        {{"Large"}, Color::RED * 0.5f, "[B]ack"}
     );
     backLabel->Enable();
 
@@ -37,7 +37,7 @@ void GeneratedWorldMenu::HandleConfigure()
 
     sizeLabel = ElementFactory::BuildText(
         {Size(150, 50), drawOrder_ + 1, {Position2(0.0f, 5.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, backdrop}},
-        {{"JSLAncient", "Medium"}, Color::RED * 0.5f, "World size: 50"}
+        {{"Medium"}, Color::RED * 0.5f, "World size: 50"}
     );
     //sizeLabel->SetAlignment(Text::Alignments::LEFT);
     sizeLabel->Enable();

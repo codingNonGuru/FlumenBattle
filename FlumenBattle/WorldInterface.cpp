@@ -93,7 +93,7 @@ WorldInterface::WorldInterface()
 
     travelLabel = ElementFactory::BuildText(
         {Size(200, 50), DrawOrder(3), {Position2(), ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, canvas}},
-        {{"JSLAncient", "Medium"}, Color::RED * 0.5f, "Plan your travel"}
+        {{"Medium"}, Color::RED * 0.5f, "Plan your travel"}
     );
 
     /*pathLabels.Initialize(1024);

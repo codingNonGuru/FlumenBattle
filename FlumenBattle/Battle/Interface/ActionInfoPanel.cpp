@@ -64,7 +64,7 @@ void ActionInfoPanel::HandleConfigure()
     {
         auto label = ElementFactory::BuildText(
             {Size(), drawOrder_ + 1, {Position2(), actionLayoutGroup}},
-            {{"JSLAncient", "Medium"}, DEFAULT_COLOR}
+            {{"Medium"}, DEFAULT_COLOR}
         );
 
         *actionLabels.Allocate() = label;
@@ -75,7 +75,7 @@ void ActionInfoPanel::HandleConfigure()
     {
         auto label = ElementFactory::BuildText(
             {Size(), drawOrder_ + 1, {Position2(), subactionLayoutGroup}},
-            {{"JSLAncient", "Medium"}, DEFAULT_COLOR}
+            {{"Medium"}, DEFAULT_COLOR}
         );
 
         *subactionLabels.Allocate() = label;

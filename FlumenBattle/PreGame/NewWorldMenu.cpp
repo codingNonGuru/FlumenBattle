@@ -1,36 +1,36 @@
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/Text.hpp"
 #include "FlumenEngine/Core/InputHandler.hpp"
+#include "FlumenEngine/Core/ConfigManager.h"
 
 #include "NewWorldMenu.h"
 #include "FlumenBattle/PreGame/PreGameState.h"
+#include "FlumenBattle/Config.h"
 
 using namespace pregame;
 
-#define DEFAULT_WORLD_SIZE (MINIMUM_WORLD_SIZE + MAXIMUM_WORLD_SIZE) / 2
-
 void NewWorldMenu::HandleConfigure() 
 {
-    sizeParameterValue = 80;//DEFAULT_WORLD_SIZE;
+    sizeParameterValue = engine::ConfigManager::Get()->GetValue(game::ConfigValues::DEFAULT_WORLD_SIZE).Integer;
 
     Phrase text = "Size: "; 
     text << sizeParameterValue;
 
     sizeLabel = ElementFactory::BuildText(
         {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, -40.0f), this}},
-        {{"JSLAncient", "Large"}, Color::RED * 0.5f, text}
+        {{"Large"}, Color::RED * 0.5f, text}
     );
     sizeLabel->Enable();
 
     generateLabel = ElementFactory::BuildText(
         {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, 0.0f), this}},
-        {{"JSLAncient", "Large"}, Color::RED * 0.5f, "[G]enerate"}
+        {{"Large"}, Color::RED * 0.5f, "[G]enerate"}
     );
     generateLabel->Enable();
 
     backLabel = ElementFactory::BuildText(
         {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, 40.0f), this}},
-        {{"JSLAncient", "Large"}, Color::RED * 0.5f, "[B]ack"}
+        {{"Large"}, Color::RED * 0.5f, "[B]ack"}
     );
     backLabel->Enable();
 }

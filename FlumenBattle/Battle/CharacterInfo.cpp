@@ -28,7 +28,7 @@ void CharacterInfo::HandleConfigure()
 
     selectLabel = ElementFactory::BuildText(
         {Size(150, 150), DrawOrder(2), {Position2(0.0f, 30.0f), this}},
-        {{"JSLAncient", "Small"}, textColor, "S"}
+        {{"Small"}, textColor, "S"}
     );
 
     targetedLabel = ElementFactory::BuildElement <Element>(
@@ -38,12 +38,12 @@ void CharacterInfo::HandleConfigure()
 
     hitpointLabel = ElementFactory::BuildText(
         {Size(150, 150), DrawOrder(2), {Position2(20.0f, 0.0f), this}},
-        {{"JSLAncient", "Small"}, textColor}
+        {{"Small"}, textColor}
     );
 
     deathSavingLabel = ElementFactory::BuildText(
         {Size(150, 150), DrawOrder(2), {Position2(0.0f, 30.0f), this}},
-        {{"JSLAncient", "VerySmall"}, textColor}
+        {{"VerySmall"}, textColor}
     );
 
     SetInteractivity(true);

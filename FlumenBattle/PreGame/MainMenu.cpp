@@ -11,13 +11,13 @@ void MainMenu::HandleConfigure()
 {
     newGameLabel = ElementFactory::BuildText(
         {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, -20.0f), this}},
-        {{"JSLAncient", "Large"}, Color::RED * 0.5f, "[N]ew Game"}
+        {{"Large"}, Color::RED * 0.5f, "[N]ew Game"}
     );
     newGameLabel->Enable();
 
     quitGameLabel = ElementFactory::BuildText(
         {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, 20.0f), this}},
-        {{"JSLAncient", "Large"}, Color::RED * 0.5f, "[E]xit"}
+        {{"Large"}, Color::RED * 0.5f, "[E]xit"}
     );
     quitGameLabel->Enable();
 }

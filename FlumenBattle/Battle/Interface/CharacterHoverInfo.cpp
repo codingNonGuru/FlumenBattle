@@ -39,13 +39,13 @@ void CharacterHoverInfo::HandleConfigure()
 
     nameLabel = ElementFactory::BuildText(
         {Size(), drawOrder_ + 1, {Position2(), layout}}, 
-        {{"JSLAncient", "Large"}, TEXT_COLOR, ""}
+        {{"Large"}, TEXT_COLOR, ""}
     );
     nameLabel->Enable();
 
     classLabel = ElementFactory::BuildText(
         {Size(), drawOrder_ + 1, {Position2(), layout}}, 
-        {{"JSLAncient", "Medium"}, TEXT_COLOR, ""}
+        {{"Medium"}, TEXT_COLOR, ""}
     );
     classLabel->Enable();
 
@@ -116,7 +116,7 @@ void CharacterHoverInfo::HandleConfigure()
 
     conditionLabel = ElementFactory::BuildText(
         {Size(), drawOrder_ + 1, {Position2(), layout}}, 
-        {{"JSLAncient", "Medium"}, TEXT_COLOR, ""}
+        {{"Medium"}, TEXT_COLOR, ""}
     );
     conditionLabel->LockWidth(size_.x - 20);
     conditionLabel->SetAlignment(Text::Alignments::LEFT);

@@ -55,7 +55,7 @@ void WorldInfoPanel::CharacterItem::HandleConfigure()
 {
     /*classLabel = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 2, {Position2(0.0f, -15.0f), this}},
-        {{"JSLAncient", "Large"}, Color::RED * 0.75f}
+        {{"Large"}, Color::RED * 0.75f}
     );
     classLabel->Enable();*/
 
@@ -68,13 +68,13 @@ void WorldInfoPanel::CharacterItem::HandleConfigure()
 
     healthLabel = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, 20.0f), this}}, 
-        {{"JSLAncient", "Medium"}, Color::RED * 0.5f}
+        {{"Medium"}, Color::RED * 0.5f}
     );
     healthLabel->Enable();
 
     conditionsLabel = ElementFactory::BuildText(
         {Size(70, 100), drawOrder_ + 1, {Position2(3.0f, 47.0f), this}}, 
-        {{"JSLAncient", "VerySmall"}, Color::RED * 0.5f, "F C S"}
+        {{"VerySmall"}, Color::RED * 0.5f, "F C S"}
     );
     conditionsLabel->SetAlignment(Text::Alignments::LEFT);
     conditionsLabel->Enable();
@@ -113,13 +113,13 @@ void WorldInfoPanel::HandleConfigure()
 
     timeLabel = ElementFactory::BuildText(
         {Size(200, 80), drawOrder_ + 1, {Position2(-50.0f, -20.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}}, 
-        {{"JSLAncient", "Medium"}, Color::RED * 0.5f}
+        {{"Medium"}, Color::RED * 0.5f}
     );
     timeLabel->Enable();
 
     speedLabel = ElementFactory::BuildText(
         {Size(200, 80), drawOrder_ + 1, {Position2(-50.0f, 20.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}}, 
-        {{"JSLAncient", "Large"}, Color::RED * 0.65f}
+        {{"Large"}, Color::RED * 0.65f}
     );
     speedLabel->Enable();
 
