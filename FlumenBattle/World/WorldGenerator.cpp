@@ -24,7 +24,7 @@ using namespace world;
 
 static const auto MAXIMUM_TILE_ELEVATION = 100;
 
-static const auto SIZE_TO_GIRTH_FACTOR = 17.0f;
+static const auto SIZE_TO_GIRTH_FACTOR = 12.0f;
 
 int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::Grid <float> &perlinNoise, const container::Grid <float> &snowNoise)
 {
@@ -48,12 +48,19 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::G
         for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
         {
             auto distanceToCenter = centerTile->GetPhysicalDistanceTo(*tile);
+            auto angleBetweenTiles = centerTile->GetPhysicalAngle(*tile);
             auto baseHeight = exp(-(distanceToCenter * distanceToCenter) / (2.0f * CONTINENT_GIRTH * CONTINENT_GIRTH));
+
+            auto angleFactor = (1.0f + cos(angleBetweenTiles * 5.0f)) * 0.5f;
+            angleFactor *= angleFactor * angleFactor;
+            angleFactor = angleFactor * 2.5f + 0.05f;
+            //baseHeight = angleFactor * baseHeight + baseHeight;
+            baseHeight = (angleFactor * (1.0f - baseHeight) * (1.0f - baseHeight) + baseHeight) * baseHeight;
 
             auto noiseFactor = *perlinNoise.Get(tile->SquareCoordinates.x, tile->SquareCoordinates.y);
 
             auto height = noiseFactor + (1.0f - noiseFactor) * baseHeight;
-            height *= 0.3f + baseHeight * 0.7f;
+            height *= 0.4f + baseHeight * 0.6f;
             if(height < 0.5f)
             {
                 tile->Type = WorldTiles::SEA;
@@ -72,17 +79,39 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::G
         auto centerTile = map->GetCenterTile();
         for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
         {
+            auto distanceToCenter = centerTile->GetPhysicalDistanceTo(*tile);
+            auto angleBetweenTiles = centerTile->GetPhysicalAngle(*tile);
+            auto baseHeight = exp(-(distanceToCenter * distanceToCenter) / (2.0f * CONTINENT_GIRTH * CONTINENT_GIRTH));
+            auto baseHeight2 = exp(-(distanceToCenter) / (2.8f * CONTINENT_GIRTH));
+
+            auto angleFactor = (1.0f + cos(angleBetweenTiles * 5.0f)) * 0.5f;
+            angleFactor = 1.0f - angleFactor;
+
+            angleFactor = exp(-angleFactor / (0.5f * baseHeight));
+            angleFactor = utility::Clamp(angleFactor, 0.0f, 1.0f);
+
+            baseHeight = (angleFactor * (1.0f - baseHeight) + baseHeight) * baseHeight2;
+
+            auto noiseFactor = *perlinNoise.Get(tile->SquareCoordinates.x, tile->SquareCoordinates.y);
+
+            auto height = noiseFactor + (1.0f - noiseFactor) * baseHeight;
+            height *= 0.3f + baseHeight * 0.7f;
+
+            height *= height;
+
+            //tile->Elevation = int(height * float(MAXIMUM_TILE_ELEVATION));
+
             if(tile->Type == WorldTiles::SEA)
             {
                 tile->Relief = WorldReliefFactory::BuildRelief(WorldReliefs::SEA);
             }
             else
             {
-                auto mountainChance = tile->Elevation - 50;
+                auto mountainChance = int(height * 100.0f) - 15;
                 if(mountainChance < 0)
                     mountainChance = 0;
 
-                mountainChance /= 2;
+                mountainChance /= 3;
 
                 if(utility::GetRandom(1, 100) <= mountainChance)
                 {

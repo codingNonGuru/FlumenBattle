@@ -32,7 +32,9 @@
 
 const Float CAMERA_SHIFT_DURATION = 0.5f;
 
-const auto SEASONAL_SWING_FACTOR = 0.15f;
+const auto SEASONAL_SWING_FACTOR = 0.17f;
+
+const auto DIURNAL_SWING_FACTOR = 0.01f;
 
 static Camera* camera = nullptr;
 
@@ -403,30 +405,7 @@ DataBuffer *colorBuffer = nullptr;
 DataBuffer *heatBuffer = nullptr;
 
 void WorldTileModel::RenderGlobalLight()
-{
-    /*shader->Bind();
-
-    shader->SetConstant(camera->GetMatrix(), "viewMatrix");
-
-	shader->SetConstant(0.0f, "depth");
-
-    shader->SetConstant(0.8f, "opacity");
-
-    auto map = worldScene->GetWorldMap();
-    auto lightColor = GetGlobalLightColor();
-    for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
-    {
-        shader->SetConstant(tile->Position, "hexPosition");
-
-        shader->SetConstant(WORLD_TILE_SIZE, "hexSize");
-
-        shader->SetConstant(lightColor, "color");
-
-        glDrawArrays(GL_TRIANGLES, 0, 18);
-    }
-
-    shader->Unbind();*/
-    
+{    
     auto map = worldScene->GetWorldMap();
 
     auto hexShader = ShaderManager::GetShader("UniformHex");
@@ -497,7 +476,13 @@ void WorldTileModel::RenderSnow()
 
     auto weatherFactor = -cos(timeFactor) * SEASONAL_SWING_FACTOR;
 
-    snowShader->SetConstant(weatherFactor, "weatherFactor");
+    timeFactor = float(worldTime.TotalMinuteCount) / float(WorldTime::MINUTES_IN_DAYS);
+    timeFactor *= TWO_PI;
+    timeFactor += HALF_PI;
+
+    auto dayNightFactor = -cos(timeFactor) * DIURNAL_SWING_FACTOR;
+
+    snowShader->SetConstant(weatherFactor + dayNightFactor, "weatherFactor");
 
     positionBuffer->Bind(0);
 
@@ -562,6 +547,7 @@ void WorldTileModel::Render()
         {
             *positions.Add() = tile->Position;
 
+            //*colors.Add() = Color((float)tile->Elevation / 100.0f);
             *colors.Add() = tile->GetShade();
 
             *temperatures.Add() = tile->Type == WorldTiles::LAND ? (float)tile->Heat / (float)WorldTile::MAXIMUM_TILE_HEAT : 1.0f;
@@ -576,7 +562,7 @@ void WorldTileModel::Render()
 
     RenderTilesAdvanced();
 
-    RenderSnow();
+    //RenderSnow();
 
     RenderPaths();
 

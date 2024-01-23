@@ -104,6 +104,13 @@ namespace world
             return glm::length(direction);
         }
 
+        Float GetPhysicalAngle(const WorldTile& other)
+        {
+            auto direction = this->Position - other.Position;
+            auto angle = atan2(direction.y, direction.x);
+            return angle;//angle + angle > 0 ? angle : (TWO_PI + angle);
+        }
+
         const Array <WorldTile*> & GetNearbyTiles(Integer, int = 0);
 
         const container::Block <WorldTile *, 6> GetNearbyTiles();
