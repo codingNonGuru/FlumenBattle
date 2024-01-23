@@ -175,14 +175,14 @@ void CharacterHoverInfo::Setup(CharacterInfo *characterInfo)
 
     armorCounter->Setup(
         "MetalArmor", 
-        [] () -> int {return BattleInterface::Get()->GetHoveredCombatant()->GetCharacter()->GetArmorClass();}, 
+        std::function <int(void)> ([] () -> int {return BattleInterface::Get()->GetHoveredCombatant()->GetCharacter()->GetArmorClass();}),
         "Medium", 
         Scale2(1.2f)
         );
 
     attackCounter->Setup(
         "MetalSword", 
-        [] () -> int {return BattleInterface::Get()->GetHoveredCombatant()->GetCharacter()->GetAttackRating();}, 
+        std::function <int(void)> ([] () -> int {return BattleInterface::Get()->GetHoveredCombatant()->GetCharacter()->GetAttackRating();}),
         "Medium", 
         Scale2(1.2f)
         );
@@ -191,7 +191,7 @@ void CharacterHoverInfo::Setup(CharacterInfo *characterInfo)
     {
         spellCounter->Setup(
             "WandT1",
-            [] () -> int {return BattleInterface::Get()->GetHoveredCombatant()->GetCharacter()->GetSpellPower();},
+            std::function <int(void)> ([] () -> int {return BattleInterface::Get()->GetHoveredCombatant()->GetCharacter()->GetSpellPower();}),
             "Medium", 
             Scale2(0.7f)
             );
@@ -208,21 +208,21 @@ void CharacterHoverInfo::Setup(CharacterInfo *characterInfo)
 
     fortitudeCounter->Setup(
         "FortitudeSave", 
-        [] () -> int {return BattleInterface::Get()->GetHoveredCombatant()->GetCharacter()->GetFortitudeSaveBonus();}, 
+        std::function <int(void)> ([] () -> int {return BattleInterface::Get()->GetHoveredCombatant()->GetCharacter()->GetFortitudeSaveBonus();}),
         "Medium", 
         Scale2(1.0f)
         );
 
     reflexCounter->Setup(
         "ReflexSave", 
-        [] () -> int {return BattleInterface::Get()->GetHoveredCombatant()->GetCharacter()->GetReflexSaveBonus();}, 
+        std::function <int(void)> ([] () -> int {return BattleInterface::Get()->GetHoveredCombatant()->GetCharacter()->GetReflexSaveBonus();}), 
         "Medium", 
         Scale2(1.0f)
         );
 
     willCounter->Setup(
         "WillSave", 
-        [] () -> int {return BattleInterface::Get()->GetHoveredCombatant()->GetCharacter()->GetWillSaveBonus();}, 
+        std::function <int(void)> ([] () -> int {return BattleInterface::Get()->GetHoveredCombatant()->GetCharacter()->GetWillSaveBonus();}),
         "Medium", 
         Scale2(1.0f)
         );

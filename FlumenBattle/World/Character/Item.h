@@ -23,6 +23,8 @@ namespace world::character
 
         Word TextureName;
 
+        int Weight {1};
+
         ItemUses Use {ItemUses::OTHER};
 
         ItemType(ItemTypes type, Word textureName) : Type(type), TextureName(textureName) {}
@@ -76,6 +78,8 @@ namespace world::character
         Item *GetItem(ItemTypes);
 
         Item *GetItem(int);
+
+        int GetTotalWeight();
 
         const container::Pool <Item> &GetItems() const {return items;}
     };

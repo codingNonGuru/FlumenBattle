@@ -25,6 +25,13 @@ void ResourceCounter::HandleConfigure()
 
 void ResourceCounter::HandleUpdate()
 {
+    if(valueOrigin == ValueOrigins::STRING_FUNCTION)
+    {
+        Phrase text(stringFetcher());
+        label->Setup(text);
+        return;
+    }
+
     Phrase text;
     int value;
     switch(valueOrigin)
@@ -90,4 +97,24 @@ void ResourceCounter::Setup(Word name, Word string, Word fontSize, Scale2 textur
     label->SetFont({DEFAULT_FONT_TYPE, fontSize});
 
     valueOrigin = ValueOrigins::STRING;
+}
+
+void ResourceCounter::Setup(Word name, std::function <Word(void)> newFetcher, Word fontSize, Scale2 textureScale)
+{
+    stringFetcher = newFetcher;
+
+    icon->GetSprite()->SetTexture(name);
+
+    icon->GetSprite()->SetTextureSize(textureScale);
+
+    label->SetFont({DEFAULT_FONT_TYPE, fontSize});
+
+    valueOrigin = ValueOrigins::STRING_FUNCTION;
+}
+
+void ResourceCounter::SetOffset(float newOffset) 
+{
+    offset = newOffset;
+
+    label->SetBasePosition({offset, 0.0f});
 }

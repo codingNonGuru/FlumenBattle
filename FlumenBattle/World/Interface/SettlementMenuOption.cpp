@@ -39,11 +39,11 @@ void SettlementMenuOption::HandleConfigure()
     priceCounter = ElementFactory::BuildElement <ResourceCounter> (
         {Size(), drawOrder_ + 1, {Position2(-60.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_CENTER, this}}
     );
-    priceCounter->Setup("Coin", [] -> int {
+    priceCounter->Setup("Coin", std::function <int(void)> ([] -> int {
         auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
 
         return playerGroup->GetCurrentSettlement()->GetResourcePrice(settlement::ResourceTypes::FOOD);
-    });
+    }));
     priceCounter->Enable();
 }
 

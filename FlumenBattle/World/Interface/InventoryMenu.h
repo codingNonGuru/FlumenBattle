@@ -17,6 +17,7 @@ namespace world::interface
 {
     class InventoryMenu;
     class Counter;
+    class ResourceCounter;
 
     class InventorySlot : public Element
     {
@@ -64,6 +65,8 @@ namespace world::interface
         Text *attackLabel;
 
         Text *damageLabel;
+
+        ResourceCounter *weightCounter;
 
         Element *border;
 

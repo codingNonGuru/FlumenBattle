@@ -237,3 +237,14 @@ Item *ItemManager::GetItem(int index)
 {
     return items.Get(index);
 }
+
+int ItemManager::GetTotalWeight()
+{
+    auto weight = 0;
+    for(auto &item : items)
+    {
+        weight += item.Type->Weight * item.Amount;
+    }
+
+    return weight;
+}

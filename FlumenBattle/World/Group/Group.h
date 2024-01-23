@@ -170,6 +170,10 @@ namespace world::group
 
         GroupClasses GetClass() const;
 
+        int GetCarryCapacity() const;
+
+        int GetCarriedWeight() const;
+
         void Update();
 
         void CheckFatigue();

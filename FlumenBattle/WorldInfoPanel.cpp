@@ -122,11 +122,17 @@ void WorldInfoPanel::HandleConfigure()
     foodCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
         {drawOrder_ + 1, {Position2(70.0f, 0.0f), this}}
     );
-    foodCounter->Setup("Radish", [] -> int {
-        auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
+    foodCounter->Setup(
+        "Radish", 
+        std::function <int(void)> (
+            [] -> int 
+            {
+                auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
 
-        return playerGroup->GetItemAmount(world::character::ItemTypes::FOOD);
-    });
+                return playerGroup->GetItemAmount(world::character::ItemTypes::FOOD);
+            }
+        )
+    );
     foodCounter->Enable();
 }
 

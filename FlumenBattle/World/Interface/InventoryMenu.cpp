@@ -13,12 +13,15 @@
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Interface/Counter.h"
+#include "FlumenBattle/World/Interface/ResourceCounter.h"
 
 using namespace world::interface;
 
 #define MAXIMUM_SLOT_COUNT 12
 
 static auto color = Color::RED * 0.25f;
+
+static auto TEXT_COLOR = Color::RED * 0.5f;
 
 world::group::Group *playerGroup = nullptr;
 
@@ -93,14 +96,14 @@ void InventoryMenu::HandleConfigure()
     playerGroup = world::WorldScene::Get()->GetPlayerGroup();
 
     nameLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}}, 
-        {{"Large"}, Color::RED * 0.5f, "Elric"}
+        {drawOrder_ + 1, {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}}, 
+        {{"Large"}, TEXT_COLOR, "Elric"}
     );
     nameLabel->Enable();
 
     classLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, 25.0f), ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, nameLabel}}, 
-        {{"Medium"}, Color::RED * 0.5f, "Cleric"}
+        {drawOrder_ + 1, {Position2(0.0f, 25.0f), nameLabel}}, 
+        {{"Medium"}, TEXT_COLOR, "Cleric"}
     );
     classLabel->Enable();
 
@@ -207,6 +210,21 @@ void InventoryMenu::HandleConfigure()
     grabbedItem->Disable();
 
     grabbedItem->FollowMouse();
+
+    weightCounter = ElementFactory::BuildElement <ResourceCounter>(
+        {drawOrder_ + 1, {Position2(-30.0f, -20.0f), ElementAnchors::UPPER_CENTER, ElementPivots::MIDDLE_CENTER, nullptr}}
+    );
+    weightCounter->SetDynamicParent(slotLayout);
+    auto fetcher = [] () -> Word {
+        auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
+        Word text = "";
+        text << playerGroup->GetCarriedWeight();
+        text << " / " << playerGroup->GetCarryCapacity();
+        return text;
+    };
+    weightCounter->Setup("CrateShadowed", std::function <Word(void)> (fetcher));
+    weightCounter->SetOffset(7.0f);
+    weightCounter->Enable();
 }
 
 void InventoryMenu::SelectSlot(InventorySlot *slot)

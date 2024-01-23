@@ -407,4 +407,23 @@ namespace world::group
 
         return tile->GetSettlement();
     }
+
+    int Group::GetCarryCapacity() const
+    {
+        int strengthScoreSum = 0;
+        for(auto &character : characters)
+        {
+            if(character.IsAlive() == false)
+                continue;
+
+            strengthScoreSum += character.GetAbility(character::AbilityTypes::STRENGTH).Score;
+        }
+
+        return strengthScoreSum;
+    }
+
+    int Group::GetCarriedWeight() const
+    {
+        return items.GetTotalWeight();
+    }
 }

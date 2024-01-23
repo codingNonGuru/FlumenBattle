@@ -20,7 +20,8 @@ namespace world::interface
         {
             STRING, 
             POINTER,
-            FUNCTION
+            FUNCTION,
+            STRING_FUNCTION
         } valueOrigin;
 
         Word valueString;
@@ -29,7 +30,11 @@ namespace world::interface
 
         std::function <int(void)> valueFetcher;
 
+        std::function <Word(void)> stringFetcher;
+
         bool isSignSensitive {false};
+
+        float offset {0.0f};
 
         void HandleConfigure() override;    
 
@@ -41,6 +46,10 @@ namespace world::interface
         void Setup(Word, std::function <int(void)>, Word = DEFAULT_FONT_SIZE, Scale2 = Scale2(1.0f));
 
         void Setup(Word, Word, Word = DEFAULT_FONT_SIZE, Scale2 = Scale2(1.0f));
+
+        void Setup(Word, std::function <Word(void)>, Word = DEFAULT_FONT_SIZE, Scale2 = Scale2(1.0f));
+
+        void SetOffset(float);
 
         void MakeSignSensitive() {isSignSensitive = true;}
     };
