@@ -25,33 +25,33 @@ static const auto BORDER_OPACITY = Opacity(0.8f);
 void CharacterHoverInfo::HandleConfigure() 
 {
     border = ElementFactory::BuildElement <Element>(
-        {size_, drawOrder_ + 1, {Position2(), this}, BORDER_SPRITE, BORDER_OPACITY}
+        {size_, drawOrder_ + 1, {this}, BORDER_SPRITE, BORDER_OPACITY}
     );
     border->SetSpriteColor(BORDER_COLOR);
     border->Enable();
 
     layout = ElementFactory::BuildElement <LayoutGroup> 
     (
-        {Size(), drawOrder_, {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}}
+        {drawOrder_, {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}}
     );
     layout->SetDistancing(1, 0.0f, 0.0f);
     layout->Enable();
 
     nameLabel = ElementFactory::BuildText(
-        {Size(), drawOrder_ + 1, {Position2(), layout}}, 
+        {drawOrder_ + 1, {layout}}, 
         {{"Large"}, TEXT_COLOR, ""}
     );
     nameLabel->Enable();
 
     classLabel = ElementFactory::BuildText(
-        {Size(), drawOrder_ + 1, {Position2(), layout}}, 
+        {drawOrder_ + 1, {layout}}, 
         {{"Medium"}, TEXT_COLOR, ""}
     );
     classLabel->Enable();
 
     counterGroup = ElementFactory::BuildElement <LayoutGroup> 
     (
-        {Size(), drawOrder_, {Position2(), layout}}
+        {drawOrder_, {layout}}
     );
     counterGroup->LockHeight(80.0f);
     counterGroup->SetDistancing(2, 60.0f, 35.0f);
@@ -60,33 +60,33 @@ void CharacterHoverInfo::HandleConfigure()
 
     healthCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> 
     (
-        {Size(), drawOrder_ + 1, {Position2(), counterGroup}}
+        {drawOrder_ + 1, {counterGroup}}
     );
     healthCounter->Enable();
 
     armorCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> 
     (
-        {Size(), drawOrder_ + 1, {Position2(), counterGroup}}
+        {drawOrder_ + 1, {counterGroup}}
     );
     armorCounter->Enable();
 
     attackCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> 
     (
-        {Size(), drawOrder_ + 1, {Position2(), counterGroup}}
+        {drawOrder_ + 1, {counterGroup}}
     );
     attackCounter->MakeSignSensitive();
     attackCounter->Enable();
 
     spellCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> 
     (
-        {Size(), drawOrder_ + 1, {Position2(), counterGroup}}
+        {drawOrder_ + 1, {counterGroup}}
     );
     spellCounter->MakeSignSensitive();
     spellCounter->Enable();
 
     saveThrowGroup = ElementFactory::BuildElement <LayoutGroup> 
     (
-        {Size(), drawOrder_, {Position2(), layout}}
+        {drawOrder_, {layout}}
     );
     saveThrowGroup->LockHeight(50.0f);
     saveThrowGroup->SetDistancing(3, 60.0f);
@@ -95,27 +95,27 @@ void CharacterHoverInfo::HandleConfigure()
 
     fortitudeCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> 
     (
-        {Size(), drawOrder_ + 1, {Position2(), saveThrowGroup}}
+        {drawOrder_ + 1, {saveThrowGroup}}
     );
     fortitudeCounter->MakeSignSensitive();
     fortitudeCounter->Enable();
 
     reflexCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> 
     (
-        {Size(), drawOrder_ + 1, {Position2(), saveThrowGroup}}
+        {drawOrder_ + 1, {saveThrowGroup}}
     );
     reflexCounter->MakeSignSensitive();
     reflexCounter->Enable();
 
     willCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> 
     (
-        {Size(), drawOrder_ + 1, {Position2(), saveThrowGroup}}
+        {drawOrder_ + 1, {saveThrowGroup}}
     );
     willCounter->MakeSignSensitive();
     willCounter->Enable();
 
     conditionLabel = ElementFactory::BuildText(
-        {Size(), drawOrder_ + 1, {Position2(), layout}}, 
+        {drawOrder_ + 1, {layout}}, 
         {{"Medium"}, TEXT_COLOR, ""}
     );
     conditionLabel->LockWidth(size_.x - 20);

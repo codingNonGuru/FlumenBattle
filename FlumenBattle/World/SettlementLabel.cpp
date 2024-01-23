@@ -54,7 +54,7 @@ void HoverExtension::ResourceWidget::HandleUpdate()
 void HoverExtension::ConditionWidget::HandleConfigure()
 {
     Progress = ElementFactory::BuildProgressBar <ProgressBar>(
-        {Size(48, 16), drawOrder_ + 1, {Position2(0.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, this}, {"BaseBar", "SlicedSprite"}},
+        {Size(48, 16), drawOrder_ + 1, {Position2(), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, this}, {"BaseBar", "SlicedSprite"}},
         {"BaseFillerRed", {6.0f, 8.0f}}
     );
     Progress->Enable();
@@ -110,13 +110,13 @@ void SettlementLabel::HandleConfigure()
     populationBackdrop->Enable();
 
     populationBorder = ElementFactory::BuildElement <Element>(
-        {populationBackdrop->GetSize(), drawOrder_ + 2, {Position2(0.0f, 0.0f), populationBackdrop}, {"panel-border-015","SlicedSprite"}, Opacity(0.8f)}
+        {populationBackdrop->GetSize(), drawOrder_ + 2, {populationBackdrop}, {"panel-border-015","SlicedSprite"}, Opacity(0.8f)}
     );
     populationBorder->SetSpriteColor(borderColor);
     populationBorder->Enable();
 
     populationLabel = ElementFactory::BuildText(
-        {Size(50, 50), drawOrder_ + 2, {Position2(0.0f, 0.0f), populationBackdrop}},
+        {drawOrder_ + 2, {populationBackdrop}},
         {{"Large"}, color, "5"}
     );
     populationLabel->SetAlignment(Text::Alignments::CENTER);
@@ -130,7 +130,7 @@ void HoverExtension::HandleConfigure()
     this->settlement = nullptr;
 
     border = ElementFactory::BuildElement <Element>(
-        {size_, drawOrder_ + 1, {Position2(0.0f, 0.0f), this}, {"panel-border-007", "SlicedSprite"}, Opacity(0.8f)}
+        {size_, drawOrder_ + 1, {this}, {"panel-border-007", true}, Opacity(0.8f)}
     );
     border->SetSpriteColor(borderColor);
     border->Enable();
@@ -138,7 +138,7 @@ void HoverExtension::HandleConfigure()
     auto basePosition = Position2(8.0f, 23.0f);
 
     growthLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
+        {drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
         {{"Small"}, color, "Growth "}
     );
     growthLabel->SetAlignment(Text::Alignments::LEFT);
@@ -146,7 +146,7 @@ void HoverExtension::HandleConfigure()
     basePosition.y += 20.0f;
 
     simulationLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
+        {drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
         {{"Small"}, color, "Growth "}
     );
     simulationLabel->SetAlignment(Text::Alignments::LEFT);
@@ -154,13 +154,13 @@ void HoverExtension::HandleConfigure()
     basePosition.y += 20.0f;
 
     growthProgress = ElementFactory::BuildProgressBar <ProgressBar>(
-        {Size(96, 16), drawOrder_ + 1, {Position2(), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, growthLabel}, {"BaseBar", "SlicedSprite"}},
+        {Size(96, 16), drawOrder_ + 1, {ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, growthLabel}, {"BaseBar", "SlicedSprite"}},
         {"BaseFillerRed", {6.0f, 8.0f}}
     );
     growthProgress->Enable();
 
     industryLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
+        {drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
         {{"Small"}, color, "Industry: 20"}
     );
     industryLabel->SetAlignment(Text::Alignments::LEFT);
@@ -168,7 +168,7 @@ void HoverExtension::HandleConfigure()
     basePosition.y += 20.0f;
 
     tileLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
+        {drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
         {{"Small"}, color, "Tiles: 20"}
     );
     tileLabel->SetAlignment(Text::Alignments::LEFT);
@@ -176,7 +176,7 @@ void HoverExtension::HandleConfigure()
     basePosition.y += 20.0f;
 
     factionLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
+        {drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
         {{"Small"}, color, "Faction: 20"}
     );
     factionLabel->SetAlignment(Text::Alignments::LEFT);
@@ -184,7 +184,7 @@ void HoverExtension::HandleConfigure()
     basePosition.y += 10.0f;
 
     storageLayout = ElementFactory::BuildElement <LayoutGroup>(
-        {Size(), drawOrder_, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}}
+        {drawOrder_, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}}
     );
     storageLayout->Enable();
     storageLayout->SetDistancing(3, 30.0f, -5.0f);
@@ -208,7 +208,7 @@ void HoverExtension::HandleConfigure()
     for(auto resource : resources)
     {
         *resource.Widget = ElementFactory::BuildElement <ResourceWidget>(
-            {Size(32, 32), drawOrder_ + 1, {Position2(), storageLayout}, {resource.Texture, "Sprite"}, Opacity(1.0f)}
+            {Size(32, 32), drawOrder_ + 1, {storageLayout}, {resource.Texture, false}}
         );
         (*resource.Widget)->Resource = resource.Type;
         (*resource.Widget)->Parent = this;
@@ -218,7 +218,7 @@ void HoverExtension::HandleConfigure()
     basePosition.y += 70.0f;
 
     productionLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
+        {drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
         {{"Small"}, color, "Industry: 20"}
     );
     productionLabel->SetAlignment(Text::Alignments::LEFT);
@@ -233,7 +233,7 @@ void HoverExtension::HandleConfigure()
     basePosition.y += 15.0f;
 
     pathLayout = ElementFactory::BuildElement <LayoutGroup>(
-        {Size(10, 10), drawOrder_ + 1, {Position2(0.0f, 15.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, productionProgress}}
+        {drawOrder_ + 1, {Position2(0.0f, 15.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, productionProgress}}
     );
     pathLayout->Enable();
     pathLayout->SetDistancing(1, -3.0f);
@@ -243,7 +243,7 @@ void HoverExtension::HandleConfigure()
     for(int i = 0; i < 8; ++i)
     {
         auto label = ElementFactory::BuildText(
-            {Size(100, 100), drawOrder_ + 1, {Position2(), pathLayout}},
+            {drawOrder_ + 1, {pathLayout}},
             {{"VerySmall"}, color, "Industry: 20"}
         );
         label->SetAlignment(Text::Alignments::LEFT);
@@ -253,14 +253,14 @@ void HoverExtension::HandleConfigure()
     }
 
     separator = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {Position2(), pathLayout}},
+        {drawOrder_ + 1, {pathLayout}},
         {{"VerySmall"}, color, "----------"}
     );
     separator->SetAlignment(Text::Alignments::LEFT);
     separator->Enable();
 
     conditionLayout = ElementFactory::BuildElement <LayoutGroup>(
-        {Size(100, 100), drawOrder_ + 1, {Position2(), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, nullptr}}
+        {drawOrder_ + 1, {ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, nullptr}}
     );
     conditionLayout->SetDynamicParent(pathLayout);
     conditionLayout->Enable();
@@ -271,7 +271,7 @@ void HoverExtension::HandleConfigure()
     for(int i = 0; i < 8; ++i)
     {
         auto label = ElementFactory::BuildText <ConditionWidget>(
-            {Size(100, 100), drawOrder_ + 1, {Position2(), conditionLayout}},
+            {drawOrder_ + 1, {conditionLayout}},
             {{"VerySmall"}, color, "Industry: 20"}
         );
         label->SetAlignment(Text::Alignments::LEFT);

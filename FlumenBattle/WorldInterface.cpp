@@ -57,7 +57,7 @@ WorldInterface::WorldInterface()
         {
             Size(480, 540), 
             DrawOrder(6), 
-            {Position2(0.0f, 0.0f), canvas}, 
+            {canvas}, 
             {"Sprite"}, 
             Opacity(0.9f)
         }
@@ -80,7 +80,7 @@ WorldInterface::WorldInterface()
     for(int i = 0; i < settlementLabels.GetCapacity(); i++)
     {
         auto settlementLabel = ElementFactory::BuildElement <settlement::SettlementLabel>(
-            {Size(220, 40), DrawOrder(3), {Position2(0.0f, 0.0f), canvas}, {"panel-border-005", "SlicedSprite"}, Opacity(0.8f)}
+            {Size(220, 40), DrawOrder(3), {canvas}, {"panel-border-005", true}, Opacity(0.8f)}
         );
         settlementLabel->Disable();
         *settlementLabels.Add() = settlementLabel;

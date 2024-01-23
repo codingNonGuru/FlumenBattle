@@ -24,7 +24,7 @@ void WorldInfoPanel::CharacterItem::SetCharacter(world::character::Character *_c
     icon->GetSprite()->SetTexture(character->GetAvatar());
 }
 
-static Color borderColor = Color::RED * 0.5f;
+static Color BORDER_COLOR = Color::RED * 0.5f;
 
 void WorldInfoPanel::CharacterItem::ToggleSelection() 
 {
@@ -38,8 +38,6 @@ void WorldInfoPanel::CharacterItem::ToggleSelection()
     {
         border->Disable();
     }
-
-    //GetSprite()->SetColor(isSelected ? &selectedColor : &unselectedColor);
 }
 
 void WorldInfoPanel::CharacterItem::ForceSelection()
@@ -47,42 +45,33 @@ void WorldInfoPanel::CharacterItem::ForceSelection()
     isSelected = true;
 
     border->Enable();
-
-    //GetSprite()->SetColor(isSelected ? &selectedColor : &unselectedColor);
 }
 
 void WorldInfoPanel::CharacterItem::HandleConfigure()
 {
-    /*classLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 2, {Position2(0.0f, -15.0f), this}},
-        {{"Large"}, Color::RED * 0.75f}
-    );
-    classLabel->Enable();*/
-
     icon = ElementFactory::BuildElement<Element>(
-        {Size(32, 32), drawOrder_ + 1, {Position2(0.0f, 15.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}, {"Icons_01", "Sprite"}, Opacity(1.0f)}
+        {Size(32, 32), drawOrder_ + 1, {Position2(0.0f, 15.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}, {"Icons_01", false}}
     );
-    static SpriteDrawData drawData = {Position2(), Scale2(1.5f, 1.5f), Opacity(1.0f), DrawOrder(-2)};
-    icon->GetSprite()->SetDrawData(&drawData);
+    icon->SetTextureScale(Scale2(1.5f));
     icon->Enable();
 
     healthLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {Position2(0.0f, 20.0f), this}}, 
-        {{"Medium"}, Color::RED * 0.5f}
+        {drawOrder_ + 1, {Position2(0.0f, 20.0f), this}}, 
+        {{"Medium"}, BORDER_COLOR}
     );
     healthLabel->Enable();
 
     conditionsLabel = ElementFactory::BuildText(
-        {Size(70, 100), drawOrder_ + 1, {Position2(3.0f, 47.0f), this}}, 
-        {{"VerySmall"}, Color::RED * 0.5f, "F C S"}
+        {drawOrder_ + 1, {Position2(3.0f, 47.0f), this}}, 
+        {{"VerySmall"}, BORDER_COLOR, "F C S"}
     );
     conditionsLabel->SetAlignment(Text::Alignments::LEFT);
     conditionsLabel->Enable();
 
     border = ElementFactory::BuildElement <Element>(
-        {size_, drawOrder_ + 1, {Position2(0.0f, 0.0f), this}, {"panel-border-019", "SlicedSprite"}, Opacity(1.0f)}
+        {size_, drawOrder_ + 1, {this}, {"panel-border-019", true}}
     );
-    border->GetSprite()->SetColor(&borderColor);
+    border->GetSprite()->SetColor(&BORDER_COLOR);
     border->Disable();
 }
 
@@ -107,13 +96,13 @@ void WorldInfoPanel::HandleConfigure()
     for(Index i = 0; i < items.GetCapacity(); ++i, position += Direction2(80.0f, 0.0f))
     {
         auto item = ElementFactory::BuildElement <CharacterItem>(
-            {Size(70, 105), drawOrder_ + 1, {position, ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}, {"panel-019", "SlicedSprite"}, Opacity(0.5f)}
+            {Size(70, 105), drawOrder_ + 1, {position, ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}, {"panel-019", true}, Opacity(0.5f)}
         );
     }
 
     timeLabel = ElementFactory::BuildText(
         {Size(200, 80), drawOrder_ + 1, {Position2(-50.0f, -20.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}}, 
-        {{"Medium"}, Color::RED * 0.5f}
+        {{"Medium"}, BORDER_COLOR}
     );
     timeLabel->Enable();
 
@@ -124,14 +113,14 @@ void WorldInfoPanel::HandleConfigure()
     speedLabel->Enable();
 
     moneyCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
-        {Size(), drawOrder_ + 1, {Position2(), this}}
+        {drawOrder_ + 1, {this}}
     );
     auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
     moneyCounter->Setup("Coin", &playerGroup->GetMoney());
     moneyCounter->Enable();
 
     foodCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
-        {Size(), drawOrder_ + 1, {Position2(70.0f, 0.0f), this}}
+        {drawOrder_ + 1, {Position2(70.0f, 0.0f), this}}
     );
     foodCounter->Setup("Radish", [] -> int {
         auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
