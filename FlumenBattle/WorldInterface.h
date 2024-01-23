@@ -17,6 +17,7 @@ namespace world
     {
         class InventoryMenu;
         class SettlementMenu;
+        class VendorCursor;
     }
 
     namespace settlement
@@ -55,6 +56,8 @@ namespace world
 
         Text *travelLabel;
 
+        interface::VendorCursor *vendorCursor;
+
         void Update();
 
         void HandlePlayerEncounter();
@@ -71,6 +74,8 @@ namespace world
 
         void HandleCharacterSelected();
 
+        void HandleSellModeEntered();
+
         WorldInterface();
 
     public:
@@ -83,5 +88,7 @@ namespace world
         settlement::HoverExtension *GetHoverExtension() {return hoverExtension;}
 
         Element *GetCanvas() const {return canvas;}
+
+        bool IsInInventoryMode() const {return isInInventoryMode;}
     };
 }

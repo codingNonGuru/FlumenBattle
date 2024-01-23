@@ -22,6 +22,8 @@
 #include "FlumenBattle/World/Interface/InventoryMenu.h"
 #include "FlumenBattle/World/Interface/SettlementMenu.h"
 #include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/HumanMind.h"
+#include "FlumenBattle/World/Interface/VendorCursor.h"
 
 using namespace world;
 
@@ -56,7 +58,7 @@ WorldInterface::WorldInterface()
     (
         {
             Size(480, 540), 
-            DrawOrder(6), 
+            DrawOrder(4), 
             {canvas}, 
             {false}, 
             Opacity(0.9f)
@@ -108,6 +110,17 @@ WorldInterface::WorldInterface()
         label->Disable();
         *pathLabels.Add() = label;
     }*/
+
+    vendorCursor = ElementFactory::BuildElement <interface::VendorCursor>
+    (
+        {
+            DrawOrder(7), 
+            {canvas}, 
+            {"Coin", false}
+        }
+    );
+    vendorCursor->FollowMouse();
+    vendorCursor->Disable();
 }
 
 void WorldInterface::Initialize()
@@ -137,6 +150,8 @@ void WorldInterface::Initialize()
     *controller->onInventoryPressed += {this, &WorldInterface::HandleInventoryPressed};
 
     *controller->onCharacterSelected += {this, &WorldInterface::HandleCharacterSelected};
+
+    *group::HumanMind::Get()->OnSellModeEntered += {this, &WorldInterface::HandleSellModeEntered};
 }
 
 void WorldInterface::Enable()
@@ -147,6 +162,11 @@ void WorldInterface::Enable()
 void WorldInterface::Disable()
 {
     canvas->Disable();
+}
+
+void WorldInterface::HandleSellModeEntered()
+{
+    vendorCursor->Enable();
 }
 
 void WorldInterface::HandlePlayerEncounter()

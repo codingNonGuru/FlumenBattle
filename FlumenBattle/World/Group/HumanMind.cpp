@@ -32,6 +32,8 @@ static const SDL_Scancode slackenActionKey = SDL_Scancode::SDL_SCANCODE_LEFTBRAC
 
 static const SDL_Scancode intensifyActionKey = SDL_Scancode::SDL_SCANCODE_RIGHTBRACKET;
 
+static const SDL_Scancode sellInputKey = SDL_Scancode::SDL_SCANCODE_V;
+
 static const auto COIN_SOUNDS = container::Array {"Coin", "Coin2", "Coin3", "Coin4"};
 
 static const auto DICE_ROLL_SOUND = "DiceRoll";
@@ -61,6 +63,8 @@ HumanMind::HumanMind()
     OnSkillCheckRolled = new Delegate();
 
     OnItemAdded = new Delegate();
+
+    OnSellModeEntered = new Delegate();
 }
 
 void HumanMind::DetermineAction(Group &group) const 
@@ -129,6 +133,8 @@ void HumanMind::EnableInput()
 
     InputHandler::RegisterEvent(intensifyActionKey, {this, &HumanMind::HandleIntensifyAction});
 
+    InputHandler::RegisterContinualEvent(sellInputKey, {this, &HumanMind::HandleSellModeEntered}, {this, &HumanMind::HandleSellModeExited});
+
     auto canvas = WorldInterface::Get()->GetCanvas();
     canvas->GetLeftClickEvents() += {this, &HumanMind::HandleTravel};
 }
@@ -148,6 +154,8 @@ void HumanMind::DisableInput()
     InputHandler::UnregisterEvent(slackenActionKey);
 
     InputHandler::UnregisterEvent(intensifyActionKey);
+
+    InputHandler::UnregisterContinualEvent(sellInputKey);
 
     auto canvas = WorldInterface::Get()->GetCanvas();
     canvas->GetLeftClickEvents() -= {this, &HumanMind::HandleTravel};
@@ -281,6 +289,25 @@ void HumanMind::HandleIntensifyAction()
     playerGroup->IntensifyAction();
 }
 
+void HumanMind::HandleSellModeEntered()
+{   
+    if(WorldInterface::Get()->IsInInventoryMode() == false)
+        return;
+
+    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    if(playerGroup->GetCurrentSettlement() == nullptr)
+        return;
+
+    isSellModeActive = true;
+
+    OnSellModeEntered->Invoke();
+}
+
+void HumanMind::HandleSellModeExited()
+{
+    isSellModeActive = false;
+}
+
 void HumanMind::BuyFood()
 {
     auto playerGroup = WorldScene::Get()->GetPlayerGroup();
@@ -297,6 +324,17 @@ void HumanMind::BuyFood()
     engine::SoundManager::Get()->PlaySound(*sound);
 
     OnItemAdded->Invoke();
+}
+
+void HumanMind::SellItem(character::Item *item)
+{
+    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    playerGroup->RemoveItem(item);
+
+    playerGroup->money += 10 * item->Amount;
+
+    auto sound = COIN_SOUNDS.GetRandom();
+    engine::SoundManager::Get()->PlaySound(*sound);
 }
 
 const utility::PathData <world::WorldTile> HumanMind::GetFullPathData()

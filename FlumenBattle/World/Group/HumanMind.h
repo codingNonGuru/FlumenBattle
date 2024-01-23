@@ -9,6 +9,11 @@ class Delegate;
 namespace world
 {
     class WorldTile;
+
+    namespace character
+    {
+        struct Item;
+    }
 }
 
 namespace utility
@@ -24,6 +29,8 @@ namespace world::group
     class HumanMind : public GroupMind, public core::Singleton <HumanMind>
     {
         friend class core::Singleton <HumanMind>;
+
+        bool isSellModeActive {false};
 
         HumanMind();
 
@@ -49,6 +56,10 @@ namespace world::group
 
         void HandleIntensifyAction();
 
+        void HandleSellModeEntered();
+
+        void HandleSellModeExited();
+
     public:
         Delegate *OnActionSelected;
 
@@ -60,11 +71,15 @@ namespace world::group
 
         Delegate *OnItemAdded;
 
+        Delegate *OnSellModeEntered;
+
         void EnableInput();
 
         void DisableInput();
 
         void BuyFood();
+
+        void SellItem(character::Item *);
 
         const GroupActionResult & GetSelectedActionResult();
 
@@ -73,5 +88,7 @@ namespace world::group
         const utility::PathData <WorldTile> GetFullPathData();
 
         world::WorldTile *GetFinalDestination() const;
+
+        bool IsSellModeActive() const {return isSellModeActive;}
     };  
 };

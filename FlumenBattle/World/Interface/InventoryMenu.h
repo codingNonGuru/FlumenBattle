@@ -92,15 +92,17 @@ namespace world::interface
 
         void HandleEnable() override;
 
-        void SelectSlot(InventorySlot *slot);
+        void SelectSlot(InventorySlot *);
 
-        void GrabItem(InventorySlot *slot);
+        void GrabItem(InventorySlot *);
 
-        void MoveItem(InventorySlot *slot);
+        void MoveItem(InventorySlot *);
 
-        void SwapItem(InventorySlot *slot);
+        void SwapItem(InventorySlot *);
 
         void DropItem();
+
+        void SellItem(InventorySlot *);
 
         void HandleItemAdded();
 

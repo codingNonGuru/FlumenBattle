@@ -130,7 +130,7 @@ namespace world::group
                 character.EquipItem(firstBow, character::ItemPositions::MAIN_HAND);
                 index++;
 
-                if(index == 2)
+                if(index == 1)
                 {
                     break;
                 }
@@ -296,6 +296,11 @@ namespace world::group
     void Group::AddItem(character::ItemTypes type, int amount)
     {
         items.Add(type, amount);
+    }
+
+    void Group::RemoveItem(character::Item *item)
+    {
+        items.Remove(item);
     }
 
     void Group::RemoveItemAmount(character::ItemTypes type, int amount)

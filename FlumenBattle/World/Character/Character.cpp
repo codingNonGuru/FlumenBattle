@@ -273,6 +273,8 @@ namespace world::character
         *items[(int)position] = item;
 
         item->IsUsed = true;
+
+        RefreshModifiers();
     }
 
     void Character::UnequipItem(ItemPositions position) 
@@ -282,6 +284,8 @@ namespace world::character
         (*item)->IsUsed = false;
 
         *item = nullptr;
+
+        RefreshModifiers();
     }
 
 

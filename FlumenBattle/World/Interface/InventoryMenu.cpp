@@ -236,30 +236,38 @@ void InventoryMenu::SelectSlot(InventorySlot *slot)
     if(selectedSlot == nullptr && slot->item == nullptr)
         return;
 
-    if(selectedSlot == slot)
+    if(group::HumanMind::Get()->IsSellModeActive() == true)
     {
-        DropItem();
+        if(selectedSlot == nullptr && slot->isCharacterItem == false)
+        {
+            SellItem(slot);
+        }
     }
     else
     {
-        if(slot->item != nullptr)
+        if(selectedSlot == slot)
         {
-            if(selectedSlot == nullptr)
+            DropItem();
+        }
+        else
+        {
+            if(slot->item != nullptr)
             {
-                GrabItem(slot);
+                if(selectedSlot == nullptr)
+                {
+                    GrabItem(slot);
+                }
+                else 
+                {
+                    SwapItem(slot);
+                }
             }
             else 
             {
-                SwapItem(slot);
+                MoveItem(slot);
             }
         }
-        else 
-        {
-            MoveItem(slot);
-        }
     }
-
-    character->RefreshModifiers();
 }
 
 void InventoryMenu::HandleEnable()
@@ -363,6 +371,15 @@ void InventoryMenu::SwapItem(InventorySlot *slot)
     grabbedItem->Disable();
 }
 
+void InventoryMenu::SellItem(InventorySlot *slot)
+{
+    auto item = slot->item;
+
+    slot->SetItem(nullptr);
+
+    group::HumanMind::Get()->SellItem(item);
+}
+
 void InventoryMenu::SelectCharacter(character::Character *newCharacter)
 {
     character = newCharacter;
@@ -440,6 +457,9 @@ void InventoryMenu::HandleItemAdded()
 
     for(auto &item : playerGroup->GetItems())
     {
+        if(item.IsUsed == true)
+            continue;
+
         bool hasFound = false;
         for(auto &slot : inventorySlots)
         {

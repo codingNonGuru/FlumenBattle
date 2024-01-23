@@ -155,7 +155,7 @@ Item ItemFactory::Create(ItemTypes type)
 
 Item *ItemManager::Add(ItemTypes type, int amount)
 {
-    auto item = GetItem(type);
+    auto item = GetUnusedItem(type);
     if(item == nullptr)
     {
         auto newItem = ItemFactory::Get()->Create(type);
@@ -231,6 +231,20 @@ int ItemManager::GetAmount(ItemTypes type)
 Item *ItemManager::GetItem(ItemTypes type)
 {
     return items.Find(type);
+}
+
+Item *ItemManager::GetUnusedItem(ItemTypes type)
+{
+    for(auto &item : items)
+    {
+        if(item.IsUsed == true)
+            continue;
+
+        if(item.Type->Type == type)
+            return &item;
+    }
+
+    return nullptr;
 }
 
 Item *ItemManager::GetItem(int index)
