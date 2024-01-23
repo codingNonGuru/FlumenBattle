@@ -36,7 +36,9 @@ namespace world::group
             Type(type), BaseDuration(duration), HasVaryingIntensity(hasVaryingIntensity), onCheck(_onCheck), onInitiate(_onInitiate), onGetDuration(_onGetDuration), onPerform(_onPerform) {}
 
     public:
-        static const int ACTION_PROGRESS_RATE = 2;
+        static const int BASE_PROGRESS_RATE = 6;
+
+        static const int BASE_ENCUMBRANCE_PENALTY = 2;
 
         GroupActions Type;
 

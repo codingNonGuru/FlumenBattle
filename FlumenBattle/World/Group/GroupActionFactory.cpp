@@ -41,7 +41,7 @@ namespace world::group
     {
         static GroupAction action = {
             GroupActions::TAKE_SHORT_REST, 
-            18 * GroupAction::ACTION_PROGRESS_RATE,
+            18 * GroupAction::BASE_PROGRESS_RATE,
             false, 
             &GroupActionValidator::CanTakeShortRest, 
             &GroupActionPerformer::TakeShortRest};
@@ -52,7 +52,7 @@ namespace world::group
     {
         static GroupAction action = {
             GroupActions::TAKE_LONG_REST, 
-            48 * GroupAction::ACTION_PROGRESS_RATE,
+            48 * GroupAction::BASE_PROGRESS_RATE,
             false,
             &GroupActionValidator::CanTakeLongRest, 
             &GroupActionPerformer::TakeLongRest};
@@ -63,7 +63,7 @@ namespace world::group
     {
         static GroupAction action = {
             GroupActions::SEARCH, 
-            18 * GroupAction::ACTION_PROGRESS_RATE, 
+            18 * GroupAction::BASE_PROGRESS_RATE, 
             false,
             &GroupActionValidator::CanSearch, 
             &GroupActionPerformer::Search
@@ -75,7 +75,7 @@ namespace world::group
     {
         static GroupAction action = {
             GroupActions::ENGAGE, 
-            0 * GroupAction::ACTION_PROGRESS_RATE,
+            0 * GroupAction::BASE_PROGRESS_RATE,
             false,
             &GroupActionValidator::CanEngage, 
             &GroupActionPerformer::Engage,
@@ -88,7 +88,7 @@ namespace world::group
     {
         static GroupAction action = {
             GroupActions::FIGHT, 
-            0 * GroupAction::ACTION_PROGRESS_RATE,
+            0 * GroupAction::BASE_PROGRESS_RATE,
             false,
             &GroupActionValidator::CanFight, 
             &GroupActionPerformer::Fight
@@ -100,7 +100,7 @@ namespace world::group
     {
         static GroupAction action = {
             GroupActions::DISENGAGE, 
-            0 * GroupAction::ACTION_PROGRESS_RATE,
+            0 * GroupAction::BASE_PROGRESS_RATE,
             false,
             &GroupActionValidator::CanDisengage, 
             &GroupActionPerformer::Disengage
@@ -112,7 +112,7 @@ namespace world::group
     {
         static GroupAction action = {
             GroupActions::TRAVEL, 
-            36 * GroupAction::ACTION_PROGRESS_RATE,
+            36 * GroupAction::BASE_PROGRESS_RATE,
             true, 
             &GroupActionValidator::CanTravel, 
             &GroupActionPerformer::Travel, 
@@ -126,7 +126,7 @@ namespace world::group
     {
         static GroupAction action = {
             GroupActions::PERSUADE, 
-            0 * GroupAction::ACTION_PROGRESS_RATE,
+            0 * GroupAction::BASE_PROGRESS_RATE,
             false, 
             &GroupActionValidator::CanPersuade, 
             &GroupActionPerformer::Persuade 
@@ -164,7 +164,7 @@ namespace world::group
         durationModifier += group.travelActionData.Source->GetTravelPenalty().Value;
         durationModifier += group.travelActionData.Destination->GetTravelPenalty().Value;
 
-        return group.action->BaseDuration + durationModifier * 6 * GroupAction::ACTION_PROGRESS_RATE;
+        return group.action->BaseDuration + durationModifier * 6 * GroupAction::BASE_PROGRESS_RATE;
     }
 
     GroupActionResult GroupActionPerformer::TakeShortRest(Group& group)
@@ -288,7 +288,7 @@ namespace world::group
 
         group.travelActionData.ProgressSinceCheck += group.GetProgressRate();
 
-        static const int CHECK_INTERVAL = 6 * GroupAction::ACTION_PROGRESS_RATE;
+        static const int CHECK_INTERVAL = 6 * GroupAction::BASE_PROGRESS_RATE;
         if(group.travelActionData.ProgressSinceCheck > CHECK_INTERVAL)
         {
             group.travelActionData.ProgressSinceCheck -= CHECK_INTERVAL;

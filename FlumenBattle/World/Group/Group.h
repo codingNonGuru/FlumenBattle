@@ -174,6 +174,8 @@ namespace world::group
 
         int GetCarriedWeight() const;
 
+        bool IsEncumbered() const;
+
         void Update();
 
         void CheckFatigue();

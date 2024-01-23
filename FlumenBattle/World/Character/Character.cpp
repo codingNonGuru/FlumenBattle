@@ -268,6 +268,23 @@ namespace world::character
         return true;
     }
 
+    void Character::EquipItem(Item *item, ItemPositions position) 
+    {
+        *items[(int)position] = item;
+
+        item->IsUsed = true;
+    }
+
+    void Character::UnequipItem(ItemPositions position) 
+    {
+        auto item = items[(int)position];
+
+        (*item)->IsUsed = false;
+
+        *item = nullptr;
+    }
+
+
     Index Character::GetSelectedActionIndex() const
     {
         return selectedAction - type->Actions.GetStart();

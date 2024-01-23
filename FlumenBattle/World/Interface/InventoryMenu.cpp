@@ -81,6 +81,10 @@ void InventorySlot::SetItem(world::character::Item *newItem)
             counter->Setup(&item->Amount);
             counter->Enable();
         }
+        else
+        {
+            counter->Disable();
+        }
     }
     else
     {
@@ -265,7 +269,7 @@ void InventoryMenu::HandleEnable()
         if(slot->item == nullptr)
             continue;
 
-        if(slot->item->Amount == 0)
+        if(slot->item->Amount == 0 || slot->item->IsUsed == true)
         {
             slot->SetItem(nullptr);
         }
@@ -295,33 +299,31 @@ void InventoryMenu::GrabItem(InventorySlot *slot)
     grabbedItem->GetSprite()->SetTexture(slot->item->Type->TextureName);
 }
 
-void InventoryMenu::MoveItem(InventorySlot *slot)
+void InventoryMenu::MoveItem(InventorySlot *destinationSlot)
 {
-    if(slot->isCharacterItem == true && selectedSlot->item->CanFitInto(slot->itemPosition) == false)
+    if(destinationSlot->isCharacterItem == true && selectedSlot->item->CanFitInto(destinationSlot->itemPosition) == false)
         return;
 
-    if(slot->isCharacterItem == true)
+    if(destinationSlot->isCharacterItem == true)
     {
-        selectedSlot->item->IsUsed = true;
-
-        character->SetItem(selectedSlot->item, slot->itemPosition);
+        character->EquipItem(selectedSlot->item, destinationSlot->itemPosition);
     }
 
     if(selectedSlot->isCharacterItem == true)
     {
-        if(slot->isCharacterItem == false)
+        if(destinationSlot->isCharacterItem == false)
         {
-            selectedSlot->item->IsUsed = false;
+            //selectedSlot->item->IsUsed = false;
         }
 
-        character->SetItem(nullptr, selectedSlot->itemPosition);
+        character->UnequipItem(selectedSlot->itemPosition);
     }
 
     selectedSlot->Deselect();
 
     grabbedItem->Disable();
 
-    slot->SetItem(selectedSlot->item);
+    destinationSlot->SetItem(selectedSlot->item);
 
     selectedSlot->SetItem(nullptr);
 
@@ -338,12 +340,12 @@ void InventoryMenu::SwapItem(InventorySlot *slot)
 
     if(slot->isCharacterItem == true)
     {
-        character->SetItem(selectedSlot->item, slot->itemPosition);
+        character->EquipItem(selectedSlot->item, slot->itemPosition);
     }
 
     if(selectedSlot->isCharacterItem == true)
     {
-        character->SetItem(slot->item, selectedSlot->itemPosition);
+        character->EquipItem(slot->item, selectedSlot->itemPosition);
     }
 
     slot->Deselect();

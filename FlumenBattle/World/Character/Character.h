@@ -207,7 +207,9 @@ namespace world::character
 
         bool SelectSpell(SpellTypes);
 
-        void SetItem(Item *item, ItemPositions position) {*items[(int)position] = item;}
+        void EquipItem(Item *, ItemPositions);
+
+        void UnequipItem(ItemPositions);
 
         Index GetSelectedActionIndex() const;
 

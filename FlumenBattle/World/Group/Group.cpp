@@ -52,7 +52,7 @@ namespace world::group
         this->isAlive = true;
         this->hasAchievedObjective = false;
 
-        this->money = 50;
+        this->money = 150;
 
         actionProgress = 0;
 
@@ -127,7 +127,7 @@ namespace world::group
         {
             if(character.GetClass()->Class == character::CharacterClasses::RANGER)
             {
-                character.SetItem(firstBow, character::ItemPositions::MAIN_HAND);
+                character.EquipItem(firstBow, character::ItemPositions::MAIN_HAND);
                 index++;
 
                 if(index == 2)
@@ -336,17 +336,19 @@ namespace world::group
     {
         if(action->HasVaryingIntensity == false)
         {
-            return GroupAction::ACTION_PROGRESS_RATE;
+            return GroupAction::BASE_PROGRESS_RATE;
         }
+
+        auto encumbrancePenalty = IsEncumbered() == true ? GroupAction::BASE_ENCUMBRANCE_PENALTY : 0;
 
         switch(travelActionData.Intensity)
         {
             case ActionIntensities::LEISURELY:
-                return GroupAction::ACTION_PROGRESS_RATE / 2;
+                return GroupAction::BASE_PROGRESS_RATE / 2;
             case ActionIntensities::NORMAL:
-                return GroupAction::ACTION_PROGRESS_RATE;
+                return GroupAction::BASE_PROGRESS_RATE - encumbrancePenalty;
             case ActionIntensities::INTENSE:
-                return GroupAction::ACTION_PROGRESS_RATE + GroupAction::ACTION_PROGRESS_RATE / 2;
+                return GroupAction::BASE_PROGRESS_RATE + (GroupAction::BASE_PROGRESS_RATE / 2) - encumbrancePenalty;
         }
     }
 
@@ -425,5 +427,10 @@ namespace world::group
     int Group::GetCarriedWeight() const
     {
         return items.GetTotalWeight();
+    }
+
+    bool Group::IsEncumbered() const
+    {
+        return GetCarriedWeight() > GetCarryCapacity();
     }
 }
