@@ -23,27 +23,27 @@ namespace pregame
         canvas = ElementFactory::BuildCanvas();
 
         mainMenu = ElementFactory::BuildElement<MainMenu>(
-            {Size(480, 300), DrawOrder(3), {Position2(), canvas}, {"Sprite"}, DEFAULT_MENU_OPACITY}
+            {Size(480, 300), DrawOrder(3), {canvas}, {false}, DEFAULT_MENU_OPACITY}
         );
         mainMenu->Disable();
 
         newGameMenu = ElementFactory::BuildElement<NewGameMenu>(
-            {Size(480, 300), DrawOrder(3), {Position2(), canvas}, {"Sprite"}, DEFAULT_MENU_OPACITY}
+            {Size(480, 300), DrawOrder(3), {canvas}, {false}, DEFAULT_MENU_OPACITY}
         );
         newGameMenu->Disable();
 
         newWorldMenu = ElementFactory::BuildElement<NewWorldMenu>(
-            {Size(480, 300), DrawOrder(3), {Position2(), canvas}, {"Sprite"}, DEFAULT_MENU_OPACITY}
+            {Size(480, 300), DrawOrder(3), {canvas}, {false}, DEFAULT_MENU_OPACITY}
         );
         newWorldMenu->Disable();
 
         generatorPopup = ElementFactory::BuildElement<GeneratorPopup>(
-            {Size(480, 300), DrawOrder(3), {Position2(), canvas}, {"Sprite"}, DEFAULT_MENU_OPACITY}
+            {Size(480, 300), DrawOrder(3), {canvas}, {false}, DEFAULT_MENU_OPACITY}
         );
         generatorPopup->Disable();
 
         generatedWorldMenu = ElementFactory::BuildElement<GeneratedWorldMenu>(
-            {Size(480, 300), DrawOrder(3), {Position2(), canvas}, {"Sprite"}, DEFAULT_MENU_OPACITY}
+            {Size(480, 300), DrawOrder(3), {canvas}, {false}, DEFAULT_MENU_OPACITY}
         );
         generatedWorldMenu->Disable();
     }

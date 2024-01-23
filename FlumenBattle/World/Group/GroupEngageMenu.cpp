@@ -32,7 +32,7 @@ void GroupEngageMenu::HandleConfigure()
             size_ - Size(4, 4), 
             drawOrder_ + 1, 
             {Position2(), this}, 
-            {"panel-border-031", "SlicedSprite"}
+            {"panel-border-031", true}
         }
     );
     border->SetSpriteColor(BORDER_COLOR);

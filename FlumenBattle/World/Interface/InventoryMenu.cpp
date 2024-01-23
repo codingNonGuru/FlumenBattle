@@ -26,18 +26,18 @@ void InventorySlot::HandleConfigure()
 {
     icon = ElementFactory::BuildElement <Element>
     (
-        {size_, drawOrder_ + 1, {Position2(), this}, {"SwordT1", "Sprite"}}
+        {size_, drawOrder_ + 1, {Position2(), this}, {"SwordT1", false}}
     );
 
     border = ElementFactory::BuildElement <Element>
     (
-        {size_, drawOrder_ + 1, {Position2(), this}, {"panel-border-007", "SlicedSprite"}, Opacity(0.5f)}
+        {size_, drawOrder_ + 1, {Position2(), this}, {"panel-border-007", true}, Opacity(0.5f)}
     );
     border->GetSprite()->SetColor(&color);
 
     counter = ElementFactory::BuildElement <Counter>
     (
-        {Size(), drawOrder_ + 1, {Position2(-8.0f, -8.0f), ElementAnchors::LOWER_RIGHT, ElementPivots::LOWER_RIGHT, this}, {"WhiteDotBackdrop", "Sprite"}}
+        {Size(), drawOrder_ + 1, {Position2(-8.0f, -8.0f), ElementAnchors::LOWER_RIGHT, ElementPivots::LOWER_RIGHT, this}, {"WhiteDotBackdrop", false}}
     );
 }
 
@@ -124,7 +124,7 @@ void InventoryMenu::HandleConfigure()
             size_ - Size(4, 4), 
             drawOrder_ + 1, 
             {Position2(0.0f, 0.0f), this}, 
-            {"panel-border-031", "SlicedSprite"}, 
+            {"panel-border-031", true}, 
             Opacity(1.0f)
         }
     );
@@ -133,12 +133,10 @@ void InventoryMenu::HandleConfigure()
 
     slotLayout = ElementFactory::BuildElement <LayoutGroup>
     (
-        {
-            Size(200, 200), 
+        { 
             drawOrder_, 
             {Position2(0.0f, -20.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, this}, 
-            {"Sprite"}, 
-            Opacity(0.0f)
+            {false}
         }
     );
     slotLayout->SetDistancing(6, 10.0f);
@@ -149,7 +147,7 @@ void InventoryMenu::HandleConfigure()
     {
         auto slot = ElementFactory::BuildElement <InventorySlot>
         (
-            {Size(60, 60), drawOrder_ + 1, {Position2(0.0f, 0.0f), slotLayout}, {"panel-007", "SlicedSprite"}, Opacity(0.3f)}
+            {Size(60, 60), drawOrder_ + 1, {slotLayout}, {"panel-007", true}, Opacity(0.3f)}
         );
         slot->GetSprite()->SetColor(&color);
 
@@ -186,7 +184,7 @@ void InventoryMenu::HandleConfigure()
     {
         *slotData.Slot = ElementFactory::BuildElement <InventorySlot>
         (
-            {Size(60, 60), drawOrder_ + 1, {slotData.Position, ElementAnchors::UPPER_RIGHT, ElementPivots::MIDDLE_CENTER, this}, {"panel-007", "SlicedSprite"}, Opacity(0.3f)}
+            {Size(60, 60), drawOrder_ + 1, {slotData.Position, ElementAnchors::UPPER_RIGHT, ElementPivots::MIDDLE_CENTER, this}, {"panel-007", true}, Opacity(0.3f)}
         );
 
         auto slot = *slotData.Slot;
@@ -204,7 +202,7 @@ void InventoryMenu::HandleConfigure()
 
     grabbedItem = ElementFactory::BuildElement <Element>
     (
-        {size_, drawOrder_ + 3, {Position2(0.0f, 0.0f), ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, this}, {"SwordT1", "Sprite"}}
+        {size_, drawOrder_ + 3, {ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, this}, {"SwordT1", false}}
     );
     grabbedItem->Disable();
 

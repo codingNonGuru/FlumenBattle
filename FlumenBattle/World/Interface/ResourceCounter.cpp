@@ -6,16 +6,18 @@
 
 using namespace world::interface;
 
+static const auto TEXT_COLOR = Color::RED * 0.5f;
+
 void ResourceCounter::HandleConfigure()
 {
     icon = ElementFactory::BuildElement <Element>(
-        {Size(32, 32), drawOrder_ + 1, {Position2(), this}, {"Sprite"}}
+        {Size(32, 32), drawOrder_ + 1, {this}, SpriteDescriptor{false}}
     );
     icon->Enable();
 
     label = ElementFactory::BuildText(
-        {Size(), drawOrder_ + 1, {Position2(), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, icon}},
-        {{DEFAULT_FONT_TYPE, DEFAULT_FONT_SIZE}, Color::RED * 0.5f, "20"}
+        {drawOrder_ + 1, {ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, icon}},
+        {{DEFAULT_FONT_TYPE, DEFAULT_FONT_SIZE}, TEXT_COLOR, "20"}
     );
     label->SetAlignment(Text::Alignments::LEFT);
     label->Enable();

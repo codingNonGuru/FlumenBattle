@@ -28,9 +28,8 @@ void SettlementMenu::HandleConfigure()
         {
             size_ - BORDER_INNER_OFFSET, 
             drawOrder_ + 1, 
-            {Position2(), this}, 
-            {"panel-border-031", "SlicedSprite"}, 
-            Opacity(1.0f)
+            {this}, 
+            {"panel-border-031", true} 
         }
     );
     border->SetSpriteColor(BORDER_COLOR);
@@ -39,7 +38,6 @@ void SettlementMenu::HandleConfigure()
     nameLabel = ElementFactory::BuildText
     (
         {
-            Size(), 
             drawOrder_ + 1, 
             {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}
         },
@@ -53,7 +51,7 @@ void SettlementMenu::HandleConfigure()
 
     optionLayout = ElementFactory::BuildElement <LayoutGroup> 
     (
-        {Size(), drawOrder_, {Position2(10.0f, 70.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}}
+        {drawOrder_, {Position2(10.0f, 70.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}}
     );
     optionLayout->Enable();
 
@@ -62,8 +60,8 @@ void SettlementMenu::HandleConfigure()
         {
             OPTION_ITEM_SIZE, 
             drawOrder_ + 1, 
-            {Position2(), optionLayout}, 
-            {"panel-border-001", "SlicedSprite"}
+            {optionLayout}, 
+            {"panel-border-001", true}
         }
     );
     optionItem->SetSpriteColor(BORDER_COLOR);

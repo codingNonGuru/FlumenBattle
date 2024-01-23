@@ -32,7 +32,7 @@ void CharacterInfo::HandleConfigure()
     );
 
     targetedLabel = ElementFactory::BuildElement <Element>(
-        {Size(), DrawOrder(2), {Position2(), this}, {"RedArrow", "Sprite"}}
+        {DrawOrder(2), {this}, {"RedArrow", false}}
     );
     targetedLabel->UpdatePositionConstantly();
 

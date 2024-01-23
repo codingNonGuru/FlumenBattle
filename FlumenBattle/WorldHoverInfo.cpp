@@ -25,7 +25,7 @@ void WorldHoverInfo::HandleConfigure()
     infoLabel->Enable();
 
     scienceProgress = ElementFactory::BuildProgressBar <ProgressBar>(
-        {Size(256, 16), drawOrder_ + 1, {Position2(0.0f, 0.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, infoLabel}, {"Settings", "SlicedSprite"}},
+        {Size(256, 16), drawOrder_ + 1, {Position2(0.0f, 0.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, infoLabel}, {"Settings", true}},
         {"SettingsBar", {20.0f, 8.0f}}
     );
     scienceProgress->Disable();

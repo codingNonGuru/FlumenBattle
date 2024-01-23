@@ -31,7 +31,7 @@ void GeneratedWorldMenu::HandleConfigure()
     backLabel->Enable();
 
     backdrop = ElementFactory::BuildElement <Element>(
-        {Size(300, 300), drawOrder_, {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, this}, {"Sprite"}, opacity_}
+        {Size(300, 300), drawOrder_, {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, this}, {false}, opacity_}
     );
     backdrop->Enable();
 

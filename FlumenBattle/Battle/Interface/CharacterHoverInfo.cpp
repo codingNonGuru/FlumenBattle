@@ -18,7 +18,7 @@ static const auto BORDER_COLOR = Color::RED * 0.25f;
 
 static const auto TEXT_COLOR = Color::RED * 0.5f;
 
-static const SpriteDescriptor BORDER_SPRITE = {"panel-border-007", "SlicedSprite"};
+static const SpriteDescriptor BORDER_SPRITE = {"panel-border-007", true};
 
 static const auto BORDER_OPACITY = Opacity(0.8f);
 

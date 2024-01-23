@@ -30,13 +30,11 @@ static const auto BASE_COUNTER_SCALE = Scale2(1.0f, 1.0f);
 
 static const auto TEXTURE_NAME = "WhiteDotBackdrop";
 
-static const auto SPRITE_SHADER = "Sprite";
-
 void BattleCounter::HandleConfigure()
 {
     counter = ElementFactory::BuildElement <world::interface::Counter>
     (
-        {Size(), drawOrder_ + 3, {Position2(), this}, {TEXTURE_NAME, SPRITE_SHADER}}
+        {drawOrder_ + 3, {this}, {TEXTURE_NAME, false}}
     );
     counter->Setup(&value, BASE_COUNTER_SCALE, FONT_SIZE);
     counter->UpdatePositionConstantly();
@@ -54,7 +52,7 @@ void BattleCounter::ConfigureAnimation()
     property->AddKey()->Initialize(0.0f, 0.0f);
     property->AddKey()->Initialize(ANIMATION_LENGTH, COUNTER_END_HEIGHT);
 
-    property = animation->AddProperty({animation, &counter->GetOpacity()});
+    property = animation->AddProperty({animation, &counter->GetOpacity().Value});
 
     property->AddKey()->Initialize(0.0f, 1.0f);
     property->AddKey()->Initialize(ANIMATION_LENGTH, 0.0f);

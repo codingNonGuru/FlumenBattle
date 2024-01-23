@@ -33,22 +33,22 @@ WorldInterface::WorldInterface()
     canvas->SetInteractivity(true);
 
     decisionMenu = ElementFactory::BuildElement<WorldDecisionMenu>(
-        {Size(1080, 220), DrawOrder(6), {Position2(0.0f, 420.0f), canvas}, {"Sprite"}, Opacity(0.75f)}
+        {Size(1080, 220), DrawOrder(6), {Position2(0.0f, 420.0f), canvas}, {false}, Opacity(0.75f)}
     );
     decisionMenu->Enable();
 
     infoPanel = ElementFactory::BuildElement<WorldInfoPanel>(
-        {Size(1900, 80), DrawOrder(6), {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, canvas}, {"Sprite"}, Opacity(0.75f)}
+        {Size(1900, 80), DrawOrder(6), {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, canvas}, {false}, Opacity(0.75f)}
     );
     infoPanel->Enable();
 
     hoverInfo = ElementFactory::BuildElement<WorldHoverInfo>(
-        {Size(390, 590), DrawOrder(6), {Position2(760.0f, 240.0f), canvas}, {"Sprite"}, Opacity(0.75f)}
+        {Size(390, 590), DrawOrder(6), {Position2(760.0f, 240.0f), canvas}, {false}, Opacity(0.75f)}
     );
     hoverInfo->Enable();
 
     engageMenu = ElementFactory::BuildElement<GroupEngageMenu>(
-        {Size(900, 360), DrawOrder(6), {Position2(0.0f, -5.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, canvas}, {"Sprite"}, Opacity(0.75f)}
+        {Size(900, 360), DrawOrder(6), {Position2(0.0f, -5.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, canvas}, {false}, Opacity(0.75f)}
     );
     engageMenu->Disable();
 
@@ -58,7 +58,7 @@ WorldInterface::WorldInterface()
             Size(480, 540), 
             DrawOrder(6), 
             {canvas}, 
-            {"Sprite"}, 
+            {false}, 
             Opacity(0.9f)
         }
     );
@@ -70,7 +70,7 @@ WorldInterface::WorldInterface()
             Size(320, 400), 
             DrawOrder(6), 
             {Position2(5.0f, -5.0f), ElementAnchors::LOWER_LEFT, ElementPivots::LOWER_LEFT, canvas}, 
-            {"Sprite"}, 
+            {false}, 
             Opacity(0.9f)
         }
     );
@@ -79,20 +79,23 @@ WorldInterface::WorldInterface()
     settlementLabels.Initialize(128);
     for(int i = 0; i < settlementLabels.GetCapacity(); i++)
     {
-        auto settlementLabel = ElementFactory::BuildElement <settlement::SettlementLabel>(
+        auto settlementLabel = ElementFactory::BuildElement <settlement::SettlementLabel>
+        (
             {Size(220, 40), DrawOrder(3), {canvas}, {"panel-border-005", true}, Opacity(0.8f)}
         );
         settlementLabel->Disable();
         *settlementLabels.Add() = settlementLabel;
     }
 
-    hoverExtension = ElementFactory::BuildElement <settlement::HoverExtension>(
-        {Size(210, 320), DrawOrder(3), {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, nullptr}, {"Sprite"}, Opacity(0.6f)}
+    hoverExtension = ElementFactory::BuildElement <settlement::HoverExtension>
+    (
+        {Size(210, 320), DrawOrder(3), {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, nullptr}, {false}, Opacity(0.6f)}
     );
     hoverExtension->Disable();
 
-    travelLabel = ElementFactory::BuildText(
-        {Size(200, 50), DrawOrder(3), {Position2(), ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, canvas}},
+    travelLabel = ElementFactory::BuildText
+    (
+        {Size(200, 50), DrawOrder(3), {ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, canvas}},
         {{"Medium"}, Color::RED * 0.5f, "Plan your travel"}
     );
 
@@ -100,7 +103,7 @@ WorldInterface::WorldInterface()
     for(int i = 0; i < 1024; i++)
     {
         auto label = ElementFactory::BuildElement<PathLabel>(
-            {Size(30, 30), DrawOrder(3), {Position2(0.0f, 0.0f), canvas}, {"Sprite"}, Opacity(0.2f)}
+            {Size(30, 30), DrawOrder(3), {Position2(0.0f, 0.0f), canvas}, {false}, Opacity(0.2f)}
         );
         label->Disable();
         *pathLabels.Add() = label;

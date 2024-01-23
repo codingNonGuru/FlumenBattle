@@ -38,7 +38,7 @@ BattleInterface::BattleInterface()
 
     canvas = ElementFactory::BuildCanvas();
 
-    auto sprite = SpriteDescriptor("Sprite");
+    auto sprite = SpriteDescriptor(false);
 
     for(Index i = 0; i < characterInfos.GetCapacity(); ++i)
     {
@@ -66,7 +66,7 @@ BattleInterface::BattleInterface()
     characterDetailPanel->Enable();
 
     battleEndMessage = ElementFactory::BuildElement<BattleEndMessage>(
-        {Size(300, 180), DrawOrder(3), {Position2(0.0f, 0.0f), canvas}, sprite, Opacity(ELEMENT_OPACITY)}
+        {Size(300, 180), DrawOrder(3), {canvas}, sprite, Opacity(ELEMENT_OPACITY)}
     );
 
     damageCounters.Initialize(MAXIMUM_DAMAGE_COUNTERS);
@@ -74,7 +74,7 @@ BattleInterface::BattleInterface()
     {
         auto counter = ElementFactory::BuildElement <interface::BattleCounter>
         (
-            {Size(), DrawOrder(1), {Position2(), canvas}}
+            {DrawOrder(1), {canvas}}
         );
 
         *damageCounters.Add() = counter;
@@ -87,8 +87,8 @@ BattleInterface::BattleInterface()
         {
             Size(200, 200), 
             DrawOrder(4), 
-            {Position2(), canvas}, 
-            {"Sprite"}, 
+            {canvas}, 
+            {false}, 
             Opacity(0.6f)
         }
     );
@@ -97,10 +97,9 @@ BattleInterface::BattleInterface()
     targetCursor = ElementFactory::BuildElement <interface::TargetCursor>
     (
         {
-            Size(), 
             DrawOrder(3), 
-            {Position2(), canvas}, 
-            {"Sprite"}
+            {canvas}, 
+            {false}
         }
     );
     targetCursor->FollowMouse();

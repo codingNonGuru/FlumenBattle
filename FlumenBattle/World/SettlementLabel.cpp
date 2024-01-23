@@ -54,7 +54,7 @@ void HoverExtension::ResourceWidget::HandleUpdate()
 void HoverExtension::ConditionWidget::HandleConfigure()
 {
     Progress = ElementFactory::BuildProgressBar <ProgressBar>(
-        {Size(48, 16), drawOrder_ + 1, {Position2(), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, this}, {"BaseBar", "SlicedSprite"}},
+        {Size(48, 16), drawOrder_ + 1, {Position2(), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, this}, {"BaseBar", true}},
         {"BaseFillerRed", {6.0f, 8.0f}}
     );
     Progress->Enable();
@@ -100,17 +100,17 @@ void SettlementLabel::HandleConfigure()
     nameLabel->Enable();
 
     backdrop = ElementFactory::BuildElement <Element>(
-        {size_, drawOrder_ - 1, {Position2(0.0f, 0.0f), this}, {"Sprite"}, Opacity(0.6f)}
+        {size_, drawOrder_ - 1, {Position2(0.0f, 0.0f), this}, {false}, Opacity(0.6f)}
     );
     backdrop->Enable();
 
     populationBackdrop = ElementFactory::BuildElement <Element>(
-        {Size(50, 50), drawOrder_ + 1, {Position2(-15.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}, {"Sprite"}, Opacity(0.6f)}
+        {Size(50, 50), drawOrder_ + 1, {Position2(-15.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}, {false}, Opacity(0.6f)}
     );
     populationBackdrop->Enable();
 
     populationBorder = ElementFactory::BuildElement <Element>(
-        {populationBackdrop->GetSize(), drawOrder_ + 2, {populationBackdrop}, {"panel-border-015","SlicedSprite"}, Opacity(0.8f)}
+        {populationBackdrop->GetSize(), drawOrder_ + 2, {populationBackdrop}, {"panel-border-015",true}, Opacity(0.8f)}
     );
     populationBorder->SetSpriteColor(borderColor);
     populationBorder->Enable();
@@ -154,7 +154,7 @@ void HoverExtension::HandleConfigure()
     basePosition.y += 20.0f;
 
     growthProgress = ElementFactory::BuildProgressBar <ProgressBar>(
-        {Size(96, 16), drawOrder_ + 1, {ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, growthLabel}, {"BaseBar", "SlicedSprite"}},
+        {Size(96, 16), drawOrder_ + 1, {ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, growthLabel}, {"BaseBar", true}},
         {"BaseFillerRed", {6.0f, 8.0f}}
     );
     growthProgress->Enable();
@@ -226,7 +226,7 @@ void HoverExtension::HandleConfigure()
     basePosition.y += 20.0f;
 
     productionProgress = ElementFactory::BuildProgressBar <ProgressBar>(
-        {Size(160, 16), drawOrder_ + 1, {Position2(0.0f, basePosition.y), ElementAnchors::UPPER_CENTER, ElementPivots::MIDDLE_CENTER, this}, {"BaseBar", "SlicedSprite"}},
+        {Size(160, 16), drawOrder_ + 1, {Position2(0.0f, basePosition.y), ElementAnchors::UPPER_CENTER, ElementPivots::MIDDLE_CENTER, this}, {"BaseBar", true}},
         {"BaseFillerRed", {6.0f, 8.0f}}
     );
     productionProgress->Enable();
