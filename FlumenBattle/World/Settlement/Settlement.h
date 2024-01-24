@@ -96,6 +96,10 @@ namespace world::settlement
 
         world::SimulationDomain *simulationDomain;
 
+        SimulationLevels simulationLevel;
+
+        int timeSinceSimulationChange;
+
         Integer population;
 
         group::GroupDynamics *groupDynamics;
@@ -199,6 +203,8 @@ namespace world::settlement
         polity::Faction *GetFaction() const {return faction;}
 
         world::SimulationLevels GetSimulationLevel() const;
+
+        void SetupSimulation();
 
         void RemoveGroup(const group::Group &);
 

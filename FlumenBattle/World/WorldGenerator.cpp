@@ -398,6 +398,11 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
     scene.playerGroup = group::GroupFactory::Create({group::GroupClasses::PLAYER, RaceTypes::HUMAN, scene.settlements->GetRandom()});
 
     SimulationMap::Get()->Initialize();
+
+    for(auto &settlement : *settlements)
+    {
+        settlement.SetupSimulation();
+    }
 }
 
 int WorldGenerator::GetMaximumPolityCount(int worldSize) const

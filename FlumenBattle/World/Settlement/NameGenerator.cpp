@@ -26,7 +26,7 @@ static container::Array <Word> endParticles =
     "hurst", "meadow", "brook", "root", "spring", "plane", "bite", "shaft", "pit", "well", "field", "way", "road", "crack", "camp", "watch", "fort",
     "bridge", "rim", "wind", "ridge", "pass", "rift", "pond", "lands", "water", "more", "cradle", "cliff", "head", "glade", "fen", "moor", "marsh",
     "bog", "tip", "song", "yard", "path", "heart", "deep", "mere", "mead", "wast", "cher", "gard", "gate", "combe", "fold", "keld", "keth", "stead", "garth", 
-    "mine", "ward", "keep", "end", "peak", "husk", "rope", "quest", "reach", "bluff", "grove", "fist", "horn"
+    "mine", "ward", "keep", "end", "peak", "husk", "rope", "quest", "reach", "bluff", "grove", "fist", "horn", "hold"
     //"reef", "sea", "isle", "harbor", "dock", "tide", "flood", "coast", "beach", "wave", "bay", "vic", "fish", "whale", "shore", "sail", "boat"
 };
 

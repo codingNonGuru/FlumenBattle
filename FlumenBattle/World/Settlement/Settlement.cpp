@@ -20,6 +20,7 @@
 #include "FlumenBattle/World/SimulationDomain.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 #include "FlumenBattle/Utility/SettlementPathfinder.h"
+#include "FlumenBattle/Config.h"
 
 using namespace world::settlement;
 
@@ -50,8 +51,6 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
 
     this->location = location;
 
-    this->simulationDomain = world::SimulationMap::Get()->GetDomain(location);
-
     this->population = 1;
 
     this->growth = 0;
@@ -81,6 +80,8 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
     {
         tile.Tile->AssertOwnership(this);
     }
+
+    SetupSimulation();
 }
 
 void Settlement::AddPath(Path *path) 
@@ -456,7 +457,16 @@ const Pool <Condition> &Settlement::GetConditions() const
 
 world::SimulationLevels Settlement::GetSimulationLevel() const
 {
-    return simulationDomain->Level;
+    return simulationLevel;
+}
+
+void Settlement::SetupSimulation()
+{
+    simulationDomain = world::SimulationMap::Get()->GetDomain(location);
+
+    simulationLevel = simulationDomain->Level;
+
+    timeSinceSimulationChange = 0;
 }
 
 void Settlement::RemoveGroup(const group::Group &group)
@@ -609,6 +619,19 @@ void Settlement::Update()
     if(worldTime.MinuteCount == 0)
     {
         groupDynamics->Update(*this);
+
+        if(simulationLevel != simulationDomain->Level)
+        {
+            timeSinceSimulationChange++;
+
+            static const auto threshold = engine::ConfigManager::Get()->GetValue(game::ConfigValues::SIMULATION_CHANGE_DELAY).Integer;
+            if(timeSinceSimulationChange > threshold)
+            {
+                timeSinceSimulationChange = 0;
+
+                simulationLevel = simulationDomain->Level;
+            }
+        }
     }
 }
 
