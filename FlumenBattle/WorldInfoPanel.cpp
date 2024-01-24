@@ -217,18 +217,18 @@ void WorldInfoPanel::HandleUpdate()
 {
     auto time = world::WorldScene::Get()->GetTime();
 
-    auto string = Word() << "Year " << time.YearCount << ", day " << time.DayCount << ", hour " << time.HourCount;
+    auto string = Phrase() << "hour " << time.HourCount << ", day " << time.GetDayOfMonth() << " of month " << time.GetMonthName() << ", year " << time.YearCount;
     timeLabel->Setup(string);   
 
-    string = [] () -> Word
+    string = [] () -> Phrase
     {
         if(world::WorldScene::Get()->IsTimeFlowing() == false)
         {
-            return Word() << "ii";
+            return Phrase() << "ii";
         }
         else
         {
-            return Word() << Word(">") * world::WorldScene::Get()->GetTimeSpeed();
+            return Phrase() << Phrase(">") * world::WorldScene::Get()->GetTimeSpeed();
         }
     } ();
     speedLabel->Setup(string);

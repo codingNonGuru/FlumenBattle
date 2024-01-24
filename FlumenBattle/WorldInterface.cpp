@@ -98,7 +98,7 @@ WorldInterface::WorldInterface()
 
     travelLabel = ElementFactory::BuildText
     (
-        {Size(200, 50), DrawOrder(3), {Position2(0.0f, 200.0f), canvas}, Opacity(1.0f)},
+        {Size(200, 50), DrawOrder(3), {Position2(0.0f, 200.0f), canvas}},
         {{"Medium"}, Color::RED * 0.5f, "Plan your travel"}
     );
 

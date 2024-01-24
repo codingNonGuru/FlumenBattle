@@ -81,7 +81,8 @@ namespace world
 
         AWAIT(time.GetStep())
 
-        for(int i = 0; i < 1; ++i)
+        auto refreshCount = time.FlowSpeed == 5 ? 2 : 1;
+        for(int i = 0; i < refreshCount; ++i)
         {
             Refresh();
         }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "FlumenCore/Utility/Utility.hpp"
+#include "FlumenCore/Container/Array.hpp"
 
 namespace world
 {
@@ -11,6 +12,10 @@ namespace world
         static constexpr auto MINUTES_IN_DAYS = 24 * 60;
 
         static constexpr auto MINUTES_IN_YEAR = DAYS_IN_YEAR * MINUTES_IN_DAYS;
+
+        static constexpr int MONTH_LENGTHS[12] = {30, 31, 30, 31, 30, 31, 30, 30, 31, 30, 31, 30};
+
+        static constexpr const char *MONTH_LITERALS[12] = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "XI", "XII"};
 
         int MinuteCount;
 
@@ -63,9 +68,9 @@ namespace world
             switch(FlowSpeed)
             {
                 case 5: return 0.001f;
-                case 4: return 0.1f;
-                case 3: return 0.2f;
-                case 2: return 0.5f;
+                case 4: return 0.0166f;
+                case 3: return 0.0333f;
+                case 2: return 0.2f;
                 case 1: return 1.0f;
             }
         }
@@ -136,6 +141,49 @@ namespace world
             {
                 IsStopDelayed = true;
                 StopDelay = stopDelay;
+            }
+        }
+
+        int GetMonth()
+        {
+            auto index = 0;
+            auto days = DayCount;
+            while(true)
+            {
+                if(days < MONTH_LENGTHS[index])
+                {
+                    return index + 1;
+                }
+                else
+                {
+                    days -= MONTH_LENGTHS[index];
+                }
+
+                index++;
+            }
+        }
+
+        const char *GetMonthName()
+        {
+            return MONTH_LITERALS[GetMonth() - 1];
+        }
+
+        int GetDayOfMonth()
+        {
+            auto index = 0;
+            auto days = DayCount;
+            while(true)
+            {
+                if(days < MONTH_LENGTHS[index])
+                {
+                    return days + 1;
+                }
+                else
+                {
+                    days -= MONTH_LENGTHS[index];
+                }
+
+                index++;
             }
         }
 

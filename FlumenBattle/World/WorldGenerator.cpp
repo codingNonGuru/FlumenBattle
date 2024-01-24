@@ -54,13 +54,14 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::G
             auto angleFactor = (1.0f + cos(angleBetweenTiles * 5.0f)) * 0.5f;
             angleFactor *= angleFactor * angleFactor;
             angleFactor = angleFactor * 2.5f + 0.05f;
-            //baseHeight = angleFactor * baseHeight + baseHeight;
+
             baseHeight = (angleFactor * (1.0f - baseHeight) * (1.0f - baseHeight) + baseHeight) * baseHeight;
 
             auto noiseFactor = *perlinNoise.Get(tile->SquareCoordinates.x, tile->SquareCoordinates.y);
 
             auto height = noiseFactor + (1.0f - noiseFactor) * baseHeight;
             height *= 0.4f + baseHeight * 0.6f;
+            
             if(height < 0.5f)
             {
                 tile->Type = WorldTiles::SEA;

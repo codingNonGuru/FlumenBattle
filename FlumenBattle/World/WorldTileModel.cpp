@@ -562,7 +562,7 @@ void WorldTileModel::Render()
 
     RenderTilesAdvanced();
 
-    //RenderSnow();
+    RenderSnow();
 
     RenderPaths();
 

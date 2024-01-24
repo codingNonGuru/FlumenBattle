@@ -20,11 +20,11 @@ group(nullptr), settlement(nullptr), owner(nullptr), isBorderingOwnedTile(false)
 
 void WorldTile::Initialize()
 {
-    auto dirtColor = Color(0.9f, 0.7f, 0.5f, 1.0f);
-    auto grassColor = Color(0.4f, 0.6f, 0.05f, 1.0f);
-    auto seaColor = Color(0.02f, 0.1f, 0.35f, 1.0f);
-    auto rockColor = Color(0.25f, 0.25f, 0.25f, 1.0f);
-    auto peakColor = Color(0.95f, 0.95f, 0.95f, 1.0f);
+    auto const DIRT_COLOR = Color(0.9f, 0.7f, 0.5f, 1.0f);
+    auto const GRASS_COLOR = Color(0.4f, 0.6f, 0.05f, 1.0f);
+    auto const SEA_COLOR = Color(0.02f, 0.07f, 0.3f, 1.0f);
+    auto const ROCK_COLOR = Color(0.25f, 0.25f, 0.25f, 1.0f);
+    auto const PEAK_COLOR = Color(0.95f, 0.95f, 0.95f, 1.0f);
 
     auto color = [&] 
     {
@@ -33,7 +33,7 @@ void WorldTile::Initialize()
             auto depthFactor = (float)Elevation / 50.0f;
             depthFactor *= depthFactor * depthFactor;
             depthFactor *= depthFactor * depthFactor;
-            return seaColor * (1.0f - depthFactor) + Color::CYAN * depthFactor;
+            return SEA_COLOR * (1.0f - depthFactor) + Color::CYAN * depthFactor;
         }
 
         if(HasRelief(WorldReliefs::MOUNTAINS))
@@ -43,20 +43,20 @@ void WorldTile::Initialize()
             for(auto tile = nearbyTiles.GetStart(); tile != nearbyTiles.GetEnd(); ++tile)
             {
                 if((*tile)->HasRelief(WorldReliefs::MOUNTAINS) == false)
-                    return rockColor;
+                    return ROCK_COLOR;
             }
 
-            return peakColor;
+            return PEAK_COLOR;
         }
         
         switch(Biome->Type)
         {
             case WorldBiomes::DESERT:
-                return dirtColor;
+                return DIRT_COLOR;
             case WorldBiomes::STEPPE:
-                return dirtColor * 0.3f + grassColor * 0.7f;
+                return DIRT_COLOR * 0.3f + GRASS_COLOR * 0.7f;
             case WorldBiomes::WOODS:
-                return grassColor * 0.9f;
+                return GRASS_COLOR * 0.9f;
         }
     } ();
 
