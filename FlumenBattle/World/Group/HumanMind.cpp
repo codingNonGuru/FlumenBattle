@@ -331,7 +331,7 @@ void HumanMind::SellItem(character::Item *item)
     auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     playerGroup->RemoveItem(item);
 
-    playerGroup->money += 10 * item->Amount;
+    playerGroup->money += item->Type->Value * item->Amount;
 
     auto sound = COIN_SOUNDS.GetRandom();
     engine::SoundManager::Get()->PlaySound(*sound);

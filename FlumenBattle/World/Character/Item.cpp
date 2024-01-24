@@ -125,31 +125,31 @@ Item ItemFactory::Create(ItemTypes type)
     case ItemTypes::SWORD:
         return 
         {
-            [&] {static const auto itemType = Sword(type, "SwordT1", ItemUses::WEAPON); return &itemType;} ()
+            [&] {static const auto itemType = Sword(type, "Sword", "SwordT1", ItemUses::WEAPON, 5); return &itemType;} ()
         };
     case ItemTypes::ARMOR:
         return 
         {
-            [&] {static const auto itemType = Armor(type, "ArmorT1", ItemUses::BODY_WEAR); return &itemType;} ()
+            [&] {static const auto itemType = Armor(type, "Armor", "ArmorT1", ItemUses::BODY_WEAR, 8); return &itemType;} ()
         };
     case ItemTypes::SPEAR:
         return 
         {
-            [&] {static const auto itemType = Spear(type, "SpearT1", ItemUses::WEAPON); return &itemType;} ()
+            [&] {static const auto itemType = Spear(type, "Spear", "SpearT1", ItemUses::WEAPON, 3); return &itemType;} ()
         };
     case ItemTypes::SHIELD:
         return 
         {
-            [&] {static const auto itemType = Shield(type, "ShieldLargeT1", ItemUses::SHIELD); return &itemType;} ()
+            [&] {static const auto itemType = Shield(type, "Large shield", "ShieldLargeT1", ItemUses::SHIELD, 3); return &itemType;} ()
         };
     case ItemTypes::HELMET:
-        return {[&] {static const auto itemType = Helmet(type, "HelmetT1", ItemUses::HEAD_WEAR); return &itemType;} ()};
+        return {[&] {static const auto itemType = Helmet(type, "Helmet", "HelmetT1", ItemUses::HEAD_WEAR, 5); return &itemType;} ()};
     case ItemTypes::AXE:
-        return {[&] {static const auto itemType = Axe(type, "AxeT1", ItemUses::WEAPON); return &itemType;} ()};
+        return {[&] {static const auto itemType = Axe(type, "Axe", "AxeT1", ItemUses::WEAPON, 5); return &itemType;} ()};
     case ItemTypes::BOW:
-        return {[&] {static const auto itemType = Bow(type, "BowT1", ItemUses::WEAPON); return &itemType;} ()};
+        return {[&] {static const auto itemType = Bow(type, "Bow", "BowT1", ItemUses::WEAPON, 5); return &itemType;} ()};
     case ItemTypes::FOOD:
-        return {[&] {static const auto itemType = Food(type, "Radish", ItemUses::OTHER); return &itemType;} ()};
+        return {[&] {static const auto itemType = Food(type, "Radish", "Radish", ItemUses::OTHER, 10); return &itemType;} ()};
     }
 }
 

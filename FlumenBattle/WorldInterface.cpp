@@ -24,6 +24,7 @@
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Interface/VendorCursor.h"
+#include "FlumenBattle/World/Interface/ItemHoverInfo.h"
 
 using namespace world;
 
@@ -97,7 +98,7 @@ WorldInterface::WorldInterface()
 
     travelLabel = ElementFactory::BuildText
     (
-        {Size(200, 50), DrawOrder(3), {ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, canvas}},
+        {Size(200, 50), DrawOrder(3), {Position2(0.0f, 200.0f), canvas}, Opacity(1.0f)},
         {{"Medium"}, Color::RED * 0.5f, "Plan your travel"}
     );
 
@@ -121,6 +122,17 @@ WorldInterface::WorldInterface()
     );
     vendorCursor->FollowMouse();
     vendorCursor->Disable();
+
+    itemHoverInfo = ElementFactory::BuildElement <interface::ItemHoverInfo>
+    (
+        {
+            DrawOrder(8),
+            {ElementAnchors::MIDDLE_CENTER, ElementPivots::UPPER_CENTER, canvas},
+            {false},
+            Opacity(0.5f)
+        }
+    );
+    itemHoverInfo->Disable();
 }
 
 void WorldInterface::Initialize()

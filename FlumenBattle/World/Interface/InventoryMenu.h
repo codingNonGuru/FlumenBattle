@@ -45,9 +45,14 @@ namespace world::interface
 
         void HandleLeftClick() override;
 
+        void HandleHover() override;
+
         void Select();
 
         void Deselect();
+
+    public:
+        character::Item *GetItem() {return item;}
     };
 
     class InventoryMenu : public Element

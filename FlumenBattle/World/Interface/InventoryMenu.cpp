@@ -10,10 +10,12 @@
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/World/Character/CharacterClass.h"
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/WorldInterface.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Interface/Counter.h"
 #include "FlumenBattle/World/Interface/ResourceCounter.h"
+#include "FlumenBattle/World/Interface/ItemHoverInfo.h"
 
 using namespace world::interface;
 
@@ -29,24 +31,36 @@ void InventorySlot::HandleConfigure()
 {
     icon = ElementFactory::BuildElement <Element>
     (
-        {size_, drawOrder_ + 1, {Position2(), this}, {"SwordT1", false}}
+        {size_, drawOrder_ + 1, {this}, {"SwordT1", false}}
     );
 
     border = ElementFactory::BuildElement <Element>
     (
-        {size_, drawOrder_ + 1, {Position2(), this}, {"panel-border-007", true}, Opacity(0.5f)}
+        {size_, drawOrder_ + 1, {this}, {"panel-border-007", true}, Opacity(0.5f)}
     );
     border->GetSprite()->SetColor(&color);
 
     counter = ElementFactory::BuildElement <Counter>
     (
-        {Size(), drawOrder_ + 1, {Position2(-8.0f, -8.0f), ElementAnchors::LOWER_RIGHT, ElementPivots::LOWER_RIGHT, this}, {"WhiteDotBackdrop", false}}
+        {drawOrder_ + 2, {Position2(-8.0f, -8.0f), ElementAnchors::LOWER_RIGHT, ElementPivots::LOWER_RIGHT, this}, {"WhiteDotBackdrop", false}}
     );
 }
 
 void InventorySlot::HandleLeftClick()
 {
     menu->SelectSlot(this);
+}
+
+void InventorySlot::HandleHover()
+{
+    if(item == nullptr)
+        return;
+
+    auto itemHoverInfo = WorldInterface::Get()->GetItemHoverInfo();
+
+    itemHoverInfo->Setup(this);
+
+    itemHoverInfo->Enable();
 }
 
 void InventorySlot::Select()
@@ -130,9 +144,8 @@ void InventoryMenu::HandleConfigure()
         {
             size_ - Size(4, 4), 
             drawOrder_ + 1, 
-            {Position2(0.0f, 0.0f), this}, 
-            {"panel-border-031", true}, 
-            Opacity(1.0f)
+            {this}, 
+            {"panel-border-031", true}
         }
     );
     border->GetSprite()->SetColor(&color);
@@ -209,7 +222,7 @@ void InventoryMenu::HandleConfigure()
 
     grabbedItem = ElementFactory::BuildElement <Element>
     (
-        {size_, drawOrder_ + 3, {ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, this}, {"SwordT1", false}}
+        {size_, drawOrder_ + 3, {this}, {"SwordT1", false}}
     );
     grabbedItem->Disable();
 

@@ -18,6 +18,7 @@ namespace world
         class InventoryMenu;
         class SettlementMenu;
         class VendorCursor;
+        class ItemHoverInfo;
     }
 
     namespace settlement
@@ -58,6 +59,8 @@ namespace world
 
         interface::VendorCursor *vendorCursor;
 
+        interface::ItemHoverInfo *itemHoverInfo;
+
         void Update();
 
         void HandlePlayerEncounter();
@@ -90,5 +93,7 @@ namespace world
         Element *GetCanvas() const {return canvas;}
 
         bool IsInInventoryMode() const {return isInInventoryMode;}
+
+        interface::ItemHoverInfo *GetItemHoverInfo() {return itemHoverInfo;}
     };
 }

@@ -21,15 +21,25 @@ namespace world::character
     {
         ItemTypes Type;
 
+        Word Name;
+
         Word TextureName;
 
         int Weight {1};
 
         ItemUses Use {ItemUses::OTHER};
 
-        ItemType(ItemTypes type, Word textureName) : Type(type), TextureName(textureName) {}
+        int Value {1};
 
-        ItemType(ItemTypes type, Word textureName, ItemUses use) : Type(type), TextureName(textureName), Use(use) {}
+        bool IsResource {false};
+
+        ItemType(ItemTypes type, Word name, Word textureName) : Type(type), Name(name), TextureName(textureName) {}
+
+        ItemType(ItemTypes type, Word name, Word textureName, ItemUses use) : Type(type), Name(name), TextureName(textureName), Use(use) {}
+
+        ItemType(ItemTypes type, Word name, Word textureName, int value) : Type(type), Name(name), TextureName(textureName), Value(value) {}
+
+        ItemType(ItemTypes type, Word name, Word textureName, ItemUses use, int value) : Type(type), Name(name), TextureName(textureName), Use(use), Value(value) {}
 
         virtual void ApplyEffect(Character &) const {}
 
