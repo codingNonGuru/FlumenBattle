@@ -15,6 +15,8 @@ const auto SEASONAL_TEMPERATURE_SWING = 17.0f;
 
 const auto DIURNAL_TEMPERATURE_SWING = 1.5f;
 
+const auto WINTER_THRESHOLD = 50;
+
 WorldTile::WorldTile(Position2 position, Integer2 squareCoordinates) : Position(position), SquareCoordinates(squareCoordinates), 
 group(nullptr), settlement(nullptr), owner(nullptr), isBorderingOwnedTile(false)
 {
@@ -213,6 +215,11 @@ int WorldTile::GetSeasonalTemperature() const
     auto swing = WorldTile::GetSeasonalTemperatureSwing();
 
     return Heat + int(swing);
+}
+
+bool WorldTile::IsWinter() const
+{
+    return GetSeasonalTemperature() < WINTER_THRESHOLD;
 }
 
 int WorldTile::GetActualTemperature() const

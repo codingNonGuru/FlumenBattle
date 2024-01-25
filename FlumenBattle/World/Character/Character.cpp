@@ -362,4 +362,9 @@ namespace world::character
             item->ApplyEffect(*this);
         }
     }
+
+    void Character::SufferDamage(int damage)
+    {
+        currentHitPoints -= damage;
+    }
 }

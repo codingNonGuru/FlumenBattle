@@ -7,10 +7,11 @@
 #include "FlumenBattle/World/WorldBiome.h"
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/Utility/Utility.h"
+#include "FlumenBattle/Config.h"
 
 #define GROUP_SEARCH_DC 32
 
-static const auto NOURISHED_DURATION = 16 * 6;
+static const auto NOURISHED_DURATION = 8 * 6;
 
 namespace world::group
 {
@@ -206,9 +207,59 @@ namespace world::group
             }
         }
 
-        group.CancelAction();
+        auto isWinter = group.GetTile()->IsWinter();
+        if(isWinter == true && group.GetCurrentSettlement() == nullptr)
+        {
+            int survivalBonus = -100;
+            for(auto &character : group.characters)
+            {
+                if(character.GetSkillProficiency(SkillTypes::SURVIVAL) > survivalBonus)
+                    survivalBonus = character.GetSkillProficiency(SkillTypes::SURVIVAL);
+            }
 
-        return {};
+            static const auto survivalDC = engine::ConfigManager::Get()->GetValue(game::ConfigValues::WINTER_SURVIVAL_DC).Integer;
+            auto success = utility::RollD20Dice(survivalDC, survivalBonus);
+            if(success.IsAnyFailure() == true)
+            {
+                for(auto &character : group.characters)
+                {
+                    auto fortitudeBonus = character.GetFortitudeSaveBonus();
+
+                    static const auto frostBiteDC = engine::ConfigManager::Get()->GetValue(game::ConfigValues::WINTER_FROSTBITE_DC).Integer;
+                    auto frostBiteCheck = utility::RollD20Dice(frostBiteDC, fortitudeBonus);
+                    if(frostBiteCheck.IsCriticalSuccess() == false)
+                    {
+                        auto damage = utility::RollDice({utility::RollDies::D4, 1, 0});
+                        if(frostBiteCheck.IsNormalSuccess() == true)
+                        {
+                            character.SufferDamage(damage / 2);
+                        }
+                        else if(frostBiteCheck.IsRegularFailure() == true)
+                        {
+                            character.SufferDamage(damage);
+                        }
+                        else
+                        {
+                            character.SufferDamage(damage * 2);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                
+            }
+
+            group.CancelAction();
+
+            return {success, SkillTypes::SURVIVAL};
+        }
+        else
+        {
+            group.CancelAction();
+
+            return {};
+        }
     }
 
     GroupActionResult GroupActionPerformer::Search(Group& group)

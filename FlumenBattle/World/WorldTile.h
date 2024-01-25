@@ -169,6 +169,8 @@ namespace world
 
         int GetActualTemperature() const;
 
+        bool IsWinter() const;
+
         static float GetSeasonalTemperatureSwing();
 
         static float GetDiurnalTemperatureSwing();

@@ -232,5 +232,7 @@ namespace world::character
         void Update();
 
         void RefreshModifiers();
+
+        void SufferDamage(int);
     };
 }

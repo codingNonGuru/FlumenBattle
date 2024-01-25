@@ -61,6 +61,8 @@ namespace utility
 
         bool IsNormalSuccess() const {return Type == SuccessTypes::SUCCESS;}
 
+        bool IsRegularFailure() const {return Type == SuccessTypes::FAILURE;}
+
         bool IsCriticalSuccess() const {return Type == SuccessTypes::CRITICAL_SUCCESS;}
 
         bool IsCriticalFailure() const {return Type == SuccessTypes::CRITICAL_FAILURE;}
