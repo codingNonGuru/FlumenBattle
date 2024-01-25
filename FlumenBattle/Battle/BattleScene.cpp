@@ -52,6 +52,16 @@ namespace battle
 
     void BattleScene::Initialize()
     {
+        camera = RenderManager::GetCamera(Cameras::BATTLE);
+        camera->LimitZoom(CAMERA_ZOOM_LIMIT);
+
+        BattleController::Get()->OnCharacterActed += {this, &BattleScene::HandleCombatantActed};
+
+        OnInitialized.Invoke();
+    }
+
+    void BattleScene::HandleEnable()
+    {
         auto centerTile = battleMap->GetCenterTile();
         
         auto GetComputerGroup = [this]
@@ -66,16 +76,6 @@ namespace battle
         playerGroup->Initialize(world::WorldScene::Get()->GetPlayerGroup(), centerTile->GetNeighbor(COMBAT_GROUP_OFFSET));
         computerGroup->Initialize(GetComputerGroup(), centerTile->GetNeighbor(-COMBAT_GROUP_OFFSET));
 
-        camera = RenderManager::GetCamera(Cameras::BATTLE);
-        camera->LimitZoom(CAMERA_ZOOM_LIMIT);
-
-        BattleController::Get()->OnCharacterActed += {this, &BattleScene::HandleCombatantActed};
-
-        OnInitialized.Invoke();
-    }
-
-    void BattleScene::HandleEnable()
-    {
         DetermineTurnOrder();
 
         InputHandler::RegisterContinualEvent(screenGrabInputKey, {this, &BattleScene::HandleGrabPressed}, {this, &BattleScene::HandleGrabReleased});

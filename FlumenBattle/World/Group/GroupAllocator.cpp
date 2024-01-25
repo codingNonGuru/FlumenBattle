@@ -50,8 +50,13 @@ namespace world::group
         return group;
     }
 
-    void GroupAllocator::Free(Group *group)
+    void GroupAllocator::Free(Group *group, bool willRemoveFromHome)
     {
+        if(group->home != nullptr && willRemoveFromHome == true)
+        {
+            group->home->RemoveGroup(*group);
+        }
+
         for(auto &character : group->characters)
         {
             character::CharacterAllocator::Get()->Free(&character);
@@ -78,16 +83,7 @@ namespace world::group
 
         for(auto &group : finishedGroups)
         {
-            if(group->home != nullptr)
-            {
-                group->home->RemoveGroup(*group);
-            }
-
-            groups.RemoveAt(group);
-
-            group->GetCharacters().Terminate(characterAllocator);
-
-            character::ItemAllocator::Free(itemAllocator, group->items);
+            Free(group, true);
         }
 
         finishedGroups.Reset();

@@ -38,6 +38,8 @@ namespace world::group
 
         void StrengthenPatrol();
 
+        void UpdateSimulationLevel(settlement::Settlement &);
+
         void AddAdventurer(settlement::Settlement &);
 
         void AddMerchant(settlement::Settlement &);

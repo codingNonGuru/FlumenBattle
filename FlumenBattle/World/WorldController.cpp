@@ -45,7 +45,7 @@ namespace world
         onCharacterSelected = new Delegate();
     }
 
-    void WorldController::Enable()
+    void WorldController::Initialize()
     {
         *WorldScene::Get()->OnUpdateStarted += {this, &WorldController::HandleSceneUpdate};
 
@@ -54,7 +54,10 @@ namespace world
         *WorldScene::Get()->OnPlayerEncounterFinished += {this, &WorldController::DisableEncounterMode};
 
         *WorldScene::Get()->OnPlayerBattleStarted += {this, &WorldController::HandleBattleStarted};
+    }
 
+    void WorldController::Enable()
+    {
         if(GetPlayerBattle() != nullptr)
         {
             

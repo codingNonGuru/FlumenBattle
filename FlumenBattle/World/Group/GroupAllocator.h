@@ -5,11 +5,6 @@
 
 #include "FlumenCore/Singleton.h"
 
-namespace world
-{
-    class WorldScene;
-}
-
 namespace world::character
 {
     class Character;
@@ -24,8 +19,6 @@ namespace world::group
 
     class GroupAllocator : public core::Singleton <GroupAllocator>
     {
-        friend class world::WorldScene;
-
         friend class Group;
 
         container::Pool <Group>::Memory groupMemory;
@@ -45,11 +38,7 @@ namespace world::group
 
         container::PoolAllocator <character::Item> itemAllocator;
 
-        void PerformCleanup();
-
         Group *Allocate();
-
-        void Free(Group *);
 
         container::PoolAllocator <character::Character> &GetCharacterAllocator() {return characterAllocator;}
 
@@ -61,5 +50,9 @@ namespace world::group
         container::Pool <Group> *GetGroups() {return &groups;}
 
         container::Pool <Encounter> *GetBattles() {return &battles;}
+
+        void Free(Group *, bool);
+
+        void PerformCleanup();
     };
 }

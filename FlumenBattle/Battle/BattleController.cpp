@@ -48,8 +48,6 @@ void BattleController::HandleSceneEnabled()
     isPlayerInputEnabled = false;
 
     DetermineCharacterController();
-
-    battleScene->OnEnabled -= {this, &BattleController::HandleSceneEnabled};
 }
 
 void BattleController::DetermineCharacterController()

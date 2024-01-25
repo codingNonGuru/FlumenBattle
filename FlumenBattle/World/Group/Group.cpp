@@ -36,11 +36,6 @@ namespace world::group
         return GroupAllocator::Get()->Allocate();
     }
 
-    void Group::operator delete(void *object)
-    {
-        GroupAllocator::Get()->Free((Group *)object);
-    }
-
     void Group::Initialize(Word name, const GroupType *groupType, Integer size, Color color, RaceTypes raceType)
     {
         this->type = groupType;

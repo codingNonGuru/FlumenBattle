@@ -98,6 +98,8 @@ namespace world
         CharacterSelection GetSelectionData() const {return characterSelection;}
 
     public:
+        void Initialize();
+
         void Enable();
 
         void Disable();

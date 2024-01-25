@@ -630,6 +630,8 @@ void Settlement::Update()
                 timeSinceSimulationChange = 0;
 
                 simulationLevel = simulationDomain->Level;
+
+                hasUsedSimulationChange = false;
             }
         }
     }

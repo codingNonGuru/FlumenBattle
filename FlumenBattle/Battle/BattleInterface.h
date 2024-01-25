@@ -60,6 +60,8 @@ namespace battle
     public:
         void Initialize();
 
+        void Enable();
+
         void Disable();
 
         interface::BattleCounter *GetDamageCounter(int, Combatant *);

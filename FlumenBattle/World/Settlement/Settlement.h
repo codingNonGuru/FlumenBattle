@@ -100,6 +100,8 @@ namespace world::settlement
 
         int timeSinceSimulationChange;
 
+        bool hasUsedSimulationChange {true};
+
         Integer population;
 
         group::GroupDynamics *groupDynamics;
@@ -249,5 +251,9 @@ namespace world::settlement
         const Pool <Condition> &GetConditions() const;
 
         bool HasAvailableColonySpots() const {return hasAvailableColonySpots;}
+
+        bool HasUsedSimulationChange() const {return hasUsedSimulationChange;}
+
+        void UseSimulationChange() {hasUsedSimulationChange = true;}
     };
 }

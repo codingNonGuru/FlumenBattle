@@ -108,6 +108,13 @@ BattleInterface::BattleInterface()
 
 void BattleInterface::Initialize()
 {
+    *HumanController::Get()->OnTargetInitiated += {this, &BattleInterface::HandleTargetInitiated};
+
+    *HumanController::Get()->OnTargetAbandoned += {this, &BattleInterface::HandleTargetAbandoned};
+}
+
+void BattleInterface::Enable()
+{
     canvas->Enable();
 
     auto characterInfo = characterInfos.GetStart();
@@ -121,10 +128,6 @@ void BattleInterface::Initialize()
             (*characterInfo)->Enable();
         }
     }
-
-    *HumanController::Get()->OnTargetInitiated += {this, &BattleInterface::HandleTargetInitiated};
-
-    *HumanController::Get()->OnTargetAbandoned += {this, &BattleInterface::HandleTargetAbandoned};
 }
 
 void BattleInterface::HandleTargetInitiated()

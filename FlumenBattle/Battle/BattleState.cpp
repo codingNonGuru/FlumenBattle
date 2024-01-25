@@ -30,8 +30,6 @@ void BattleState::HandleEnter()
         
         controller->Initialize();
 
-        tileModel->Initialize();
-
         interface->Initialize();
 
         sound::BattleMixer::Get()->Initialize();
@@ -40,6 +38,10 @@ void BattleState::HandleEnter()
     }
 
     scene->Enable();
+
+    interface->Enable();
+
+    tileModel->Initialize();
 }
 
 void BattleState::HandleExit() 

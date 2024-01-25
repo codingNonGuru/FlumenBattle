@@ -55,7 +55,7 @@ namespace world
 
     void WorldScene::Initialize()
     {
-        time = WorldTime(230, 63, 14);
+        time = WorldTime(230, 271, 14);
 
         battle::BattleScene::Get()->OnRoundEnded += {this, &WorldScene::HandleBattleRoundEnded};
 

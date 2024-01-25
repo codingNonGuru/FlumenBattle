@@ -217,7 +217,9 @@ void WorldInfoPanel::HandleUpdate()
 {
     auto time = world::WorldScene::Get()->GetTime();
 
-    auto string = Phrase() << "hour " << time.HourCount << ", day " << time.GetDayOfMonth() << " of month " << time.GetMonthName() << ", year " << time.YearCount;
+    auto dayOfMonth = time.GetDayOfMonth();
+    auto monthName = time.GetMonthName();
+    auto string = Phrase() << "hour " << time.HourCount << ", day " << dayOfMonth << " of month " << monthName << ", year " << time.YearCount;
     timeLabel->Setup(string);   
 
     string = [] () -> Phrase

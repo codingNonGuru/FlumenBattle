@@ -6,6 +6,7 @@
 #include "FlumenBattle/World/Group/Types.h"
 #include "FlumenBattle/World/WorldTime.h"
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/Group/GroupAllocator.h"
 
 using namespace world;
 using namespace world::group;
@@ -65,6 +66,8 @@ void GroupDynamics::Update(settlement::Settlement &settlement)
         }
     }
 
+    UpdateSimulationLevel(settlement);
+
     AddAdventurer(settlement);
 
     AddMerchant(settlement);
@@ -76,6 +79,44 @@ void GroupDynamics::StrengthenPatrol()
     if(patrolStrength > 10)
     {
         patrolStrength = 10;
+    }
+}
+
+void GroupDynamics::UpdateSimulationLevel(settlement::Settlement &settlement)
+{
+    if(settlement.HasUsedSimulationChange() == true)
+        return;
+
+    settlement.UseSimulationChange();
+
+    auto simulationLevel = settlement.GetSimulationLevel();
+
+    for(auto &adventurer : adventurers)
+    {
+        if(adventurer.Group == nullptr && simulationLevel == SimulationLevels::ADVANCED)
+        {
+            adventurer.Group = group::GroupFactory::Create({group::GroupClasses::ADVENTURER, RaceTypes::ORC, &settlement});
+        }
+        else if(adventurer.Group != nullptr && simulationLevel != SimulationLevels::ADVANCED)
+        {
+            group::GroupAllocator::Get()->Free(adventurer.Group, false);
+
+            adventurer.Group = nullptr;
+        }
+    }
+
+    for(auto &merchant : merchants)
+    {
+        if(merchant.Group == nullptr && simulationLevel != SimulationLevels::BASIC)
+        {
+            merchant.Group = group::GroupFactory::Create({group::GroupClasses::MERCHANT, RaceTypes::ORC, &settlement});
+        }
+        else if(merchant.Group != nullptr && simulationLevel == SimulationLevels::BASIC)
+        {
+            group::GroupAllocator::Get()->Free(merchant.Group, false);
+
+            merchant.Group = nullptr;
+        }
     }
 }
 

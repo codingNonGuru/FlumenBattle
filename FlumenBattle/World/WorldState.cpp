@@ -24,6 +24,7 @@ namespace world
         interface = WorldInterface::Get();
 
         controller = WorldController::Get();
+        controller->Initialize();
 
         tileModel = WorldTileModel::Get();
     }
