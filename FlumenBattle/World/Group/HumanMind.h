@@ -40,6 +40,8 @@ namespace world::group
 
         void RegisterActionInitiation(Group &, GroupActionResult) const override;
 
+        void HandleSceneUpdate();
+
         void HandleSearch();
 
         void HandleTakeQuickRest();
@@ -72,6 +74,10 @@ namespace world::group
         Delegate *OnItemAdded;
 
         Delegate *OnSellModeEntered;
+
+        Delegate *OnSettlementEntered;
+
+        Delegate *OnSettlementExited;
 
         void EnableInput();
 

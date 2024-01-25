@@ -17,8 +17,6 @@ static const auto BORDER_INNER_OFFSET = Size(4, 4);
 
 static constexpr auto DEFAULT_FONT_SIZE = "Medium";
 
-static constexpr auto DEFAULT_FONT_TYPE = "JSLAncient";
-
 static constexpr auto OPTION_ITEM_SIZE = Size(280, 35);
 
 void SettlementMenu::HandleConfigure()
@@ -42,7 +40,7 @@ void SettlementMenu::HandleConfigure()
             {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}
         },
         {
-            {DEFAULT_FONT_TYPE, DEFAULT_FONT_SIZE}, 
+            {DEFAULT_FONT_SIZE}, 
             Color::RED * 0.5f, 
             ""
         }

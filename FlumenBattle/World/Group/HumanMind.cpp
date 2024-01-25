@@ -52,6 +52,8 @@ int extendedPathIndex = 0;
 
 auto diceSoundClock = steady_clock::now();
 
+world::settlement::Settlement *previousSettlement = nullptr;
+
 HumanMind::HumanMind()
 {
     OnActionSelected = new Delegate();
@@ -65,6 +67,12 @@ HumanMind::HumanMind()
     OnItemAdded = new Delegate();
 
     OnSellModeEntered = new Delegate();
+
+    OnSettlementEntered = new Delegate();
+
+    OnSettlementExited = new Delegate();
+
+    *WorldScene::Get()->OnUpdateStarted += {this, &HumanMind::HandleSceneUpdate};
 }
 
 void HumanMind::DetermineAction(Group &group) const 
@@ -159,6 +167,24 @@ void HumanMind::DisableInput()
 
     auto canvas = WorldInterface::Get()->GetCanvas();
     canvas->GetLeftClickEvents() -= {this, &HumanMind::HandleTravel};
+}
+
+void HumanMind::HandleSceneUpdate()
+{
+    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    if(playerGroup->GetCurrentSettlement() != previousSettlement)
+    {
+        if(playerGroup->GetCurrentSettlement() != nullptr)
+        {
+            OnSettlementEntered->Invoke();
+        }
+        else
+        {
+            OnSettlementExited->Invoke();
+        }
+    }
+
+    previousSettlement = playerGroup->GetCurrentSettlement();
 }
 
 const GroupActionResult & HumanMind::GetSelectedActionResult()

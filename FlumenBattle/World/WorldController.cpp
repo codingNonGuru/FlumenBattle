@@ -54,6 +54,8 @@ namespace world
         *WorldScene::Get()->OnPlayerEncounterFinished += {this, &WorldController::DisableEncounterMode};
 
         *WorldScene::Get()->OnPlayerBattleStarted += {this, &WorldController::HandleBattleStarted};
+
+        group::HumanMind::Get();
     }
 
     void WorldController::Enable()

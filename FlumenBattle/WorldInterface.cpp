@@ -4,6 +4,7 @@
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Render/RenderManager.hpp"
 #include "FlumenEngine/Render/Camera.hpp"
+#include "FlumenEngine/Core/InputHandler.hpp"
 
 #include "FlumenBattle/WorldInterface.h"
 #include "FlumenBattle/Types.hpp"
@@ -25,10 +26,13 @@
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Interface/VendorCursor.h"
 #include "FlumenBattle/World/Interface/ItemHoverInfo.h"
+#include "FlumenBattle/World/Interface/ExplorationMenu.h"
 
 using namespace world;
 
 WorldController *controller = nullptr;
+
+static const auto EXPLORATION_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_TAB;
 
 WorldInterface::WorldInterface()
 {
@@ -78,6 +82,18 @@ WorldInterface::WorldInterface()
         }
     );
     settlementMenu->Disable();
+
+    explorationMenu = ElementFactory::BuildElement <interface::ExplorationMenu>
+    (
+        {
+            Size(320, 400), 
+            DrawOrder(6), 
+            {Position2(5.0f, -5.0f), ElementAnchors::LOWER_LEFT, ElementPivots::LOWER_LEFT, canvas}, 
+            {false}, 
+            Opacity(0.9f)
+        }
+    );
+    explorationMenu->Disable();
 
     settlementLabels.Initialize(128);
     for(int i = 0; i < settlementLabels.GetCapacity(); i++)
@@ -168,12 +184,31 @@ void WorldInterface::Initialize()
 
 void WorldInterface::Enable()
 {
+    InputHandler::RegisterEvent(EXPLORATION_INPUT_KEY, {this, &WorldInterface::HandleExplorationToggled});
+
     canvas->Enable();
 }
 
 void WorldInterface::Disable()
 {
+    InputHandler::UnregisterEvent(EXPLORATION_INPUT_KEY);
+
     canvas->Disable();
+}
+
+void WorldInterface::HandleExplorationToggled()
+{
+    isInExplorationMode = isInExplorationMode == true ? false : true;
+
+    if(isInExplorationMode)
+    {
+        explorationMenu->Enable();
+        settlementMenu->Disable();
+    }
+    else
+    {
+        explorationMenu->Disable();
+    }
 }
 
 void WorldInterface::HandleSellModeEntered()
@@ -292,16 +327,21 @@ void WorldInterface::Update()
         travelLabel->Disable();
     }
 
-    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
-    auto currentSettlement = playerGroup->GetCurrentSettlement();
-    if(currentSettlement == nullptr)
+    if(isInExplorationMode == false)
     {
-        settlementMenu->Disable();
-    }
-    else
-    {
-        settlementMenu->Setup(currentSettlement);
-        settlementMenu->Enable();
+        auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+        auto currentSettlement = playerGroup->GetCurrentSettlement();
+        if(currentSettlement == nullptr)
+        {
+            settlementMenu->Disable();
+            explorationMenu->Enable();
+        }
+        else
+        {
+            settlementMenu->Setup(currentSettlement);
+            settlementMenu->Enable();
+            explorationMenu->Disable();
+        }
     }
 
     /*for(auto &label : pathLabels)

@@ -19,6 +19,7 @@ namespace world
         class SettlementMenu;
         class VendorCursor;
         class ItemHoverInfo;
+        class ExplorationMenu;
     }
 
     namespace settlement
@@ -49,9 +50,13 @@ namespace world
 
         interface::SettlementMenu *settlementMenu;
 
-        Array <settlement::SettlementLabel *> settlementLabels;
+        interface::ExplorationMenu *explorationMenu;
 
-        Array <PathLabel *> pathLabels;
+        bool isInExplorationMode {false};
+
+        container::Array <settlement::SettlementLabel *> settlementLabels;
+
+        container::Array <PathLabel *> pathLabels;
 
         settlement::HoverExtension *hoverExtension;
 
@@ -78,6 +83,8 @@ namespace world
         void HandleCharacterSelected();
 
         void HandleSellModeEntered();
+
+        void HandleExplorationToggled();
 
         WorldInterface();
 
