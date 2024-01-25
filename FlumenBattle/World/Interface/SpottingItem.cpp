@@ -6,6 +6,7 @@
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/GroupType.h"
 #include "FlumenBattle/World/Character/Character.h"
+#include "FlumenBattle/World/WorldScene.h"
 
 using namespace world::interface;
 
@@ -27,13 +28,20 @@ void SpottingItem::HandleConfigure()
         {{"Small"}, TEXT_COLOR, ""}
     );
     nameLabel->Enable();
+
+    timeLabel = ElementFactory::BuildText 
+    (
+        {drawOrder_, {Position2(-15.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}},
+        {{"Small"}, TEXT_COLOR, ""}
+    );
+    timeLabel->Enable();
 }
 
 void SpottingItem::HandleUpdate()
 {
     auto string = Word() << [&]
     {
-        switch(spotting->Group->GetClass())
+        switch(spotting->GroupClass)
         {
             case group::GroupClasses::MERCHANT:
                 return "Merchants";
@@ -44,7 +52,21 @@ void SpottingItem::HandleUpdate()
         }
     } ();
 
-    string << " " << spotting->Group->GetLeader()->GetName();
+    string << " " << spotting->LeaderName;
 
     nameLabel->Setup(string);
+
+    static auto &worldTime = WorldScene::Get()->GetTime();
+    auto lifeTime = worldTime.TotalHourCount - spotting->TimeInHours;
+
+    string = Word() << lifeTime;
+    timeLabel->Setup(string);
+}
+
+bool SpottingItem::HasContent(const group::GroupSpotting &spotting) 
+{
+    if(this->spotting == nullptr)
+        return false;
+        
+    return this->spotting->GroupUniqueId == spotting.GroupUniqueId;
 }

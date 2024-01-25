@@ -17,6 +17,7 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/Config.h"
 #include "FlumenBattle/World/Group/GroupSpotting.h"
+#include "FlumenBattle/World/Character/Character.h"
 
 using namespace world::group;
 
@@ -60,10 +61,14 @@ static container::Pool <GroupSpotting> groupSpottings;
 
 static GroupSpotting *latestGroupSpotting = nullptr;
 
+static container::Array <GroupSpotting *> latestFadings;
+
 HumanMind::HumanMind()
 {
     static const auto spottingCount = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_SPOTTING_LIMIT).Integer;
     groupSpottings.Initialize(spottingCount);
+
+    latestFadings.Initialize(spottingCount);
 
     OnActionSelected = new Delegate();
 
@@ -132,13 +137,17 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
             static auto &worldTime = WorldScene::Get()->GetTime();
 
             auto spottedGroup = result.Content.spottedGroup;
-            auto existingSpotting = groupSpottings.Find(spottedGroup);
+            auto existingSpotting = groupSpottings.Find(spottedGroup->GetUniqueId());
+
             if(existingSpotting == nullptr)
             {
                 auto newSpotting = groupSpottings.Add();
                 *newSpotting = 
                 {
                     spottedGroup, 
+                    spottedGroup->GetUniqueId(),
+                    spottedGroup->GetClass(),
+                    spottedGroup->GetLeader()->GetName(),
                     worldTime.TotalHourCount, 
                     result.Success.IsCriticalSuccess(), 
                     group.GetTile()->GetDistanceTo(*spottedGroup->GetTile())
@@ -151,6 +160,9 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
                 *existingSpotting = 
                 {
                     spottedGroup, 
+                    spottedGroup->GetUniqueId(),
+                    spottedGroup->GetClass(),
+                    spottedGroup->GetLeader()->GetName(),
                     worldTime.TotalHourCount, 
                     result.Success.IsCriticalSuccess(), 
                     group.GetTile()->GetDistanceTo(*spottedGroup->GetTile())
@@ -233,6 +245,35 @@ void HumanMind::HandleSceneUpdate()
     }
 
     previousSettlement = playerGroup->GetCurrentSettlement();
+
+    UpdateSpottings();
+}
+
+void HumanMind::UpdateSpottings()
+{
+    static const auto maximumLifetime = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_SPOTTING_LIFETIME).Integer;
+
+    latestFadings.Reset();
+
+    static auto &worldTime = WorldScene::Get()->GetTime();
+    for(auto &spotting : groupSpottings)
+    {
+        auto hoursElapsed = worldTime.TotalHourCount - spotting.TimeInHours;
+        if(hoursElapsed >= maximumLifetime)
+        {
+            *latestFadings.Add() = &spotting;
+        }
+    }
+
+    for(auto &spotting : latestFadings)
+    {
+        groupSpottings.RemoveAt(spotting);
+    }
+
+    if(latestFadings.GetSize() > 0)
+    {
+        OnGroupFaded->Invoke();
+    }
 }
 
 const GroupActionResult & HumanMind::GetSelectedActionResult()
@@ -285,13 +326,14 @@ void HumanMind::HandleTravel()
     extendedPath.Tiles.Clear();
     extendedPathIndex = 0;
 
-    if(playerGroup->travelActionData.IsOnRoute && playerGroup->GetTravelProgress() < 0.5f)
+    bool isHalfwayThrough = playerGroup->GetTravelProgress() >= 0.5f;
+    if(playerGroup->travelActionData.IsOnRoute && isHalfwayThrough == false)
     {
         playerGroup->CancelAction();
     }
 
     auto routeIndexDisplace = 0;
-    if(playerGroup->travelActionData.IsOnRoute && playerGroup->GetTravelProgress() >= 0.5f)
+    if(playerGroup->travelActionData.IsOnRoute && isHalfwayThrough == true)
     {
         routeIndexDisplace = 1;
     }
@@ -449,4 +491,9 @@ world::WorldTile *HumanMind::GetFinalDestination() const
 const GroupSpotting &HumanMind::GetLatestGroupSpotting() const
 {
     return *latestGroupSpotting;
+}
+
+const container::Array <GroupSpotting *> &HumanMind::GetLatestFadings() const
+{
+    return latestFadings;
 }

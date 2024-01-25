@@ -17,6 +17,8 @@ namespace world::interface
 
         Text *nameLabel;
 
+        Text *timeLabel;
+
         const group::GroupSpotting *spotting {nullptr};
 
         void HandleConfigure() override;
@@ -26,7 +28,9 @@ namespace world::interface
         void HandleDisable() override {spotting = nullptr;}
 
     public:
-        bool HasContent(const group::GroupSpotting *spotting) {return this->spotting == spotting;}
+        bool HasContent() const {return spotting != nullptr;}
+
+        bool HasContent(const group::GroupSpotting &);
 
         void Setup(const group::GroupSpotting *newSpotting) {spotting = newSpotting;}
     };

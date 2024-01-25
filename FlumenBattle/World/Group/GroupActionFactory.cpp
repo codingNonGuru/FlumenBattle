@@ -210,7 +210,7 @@ namespace world::group
         auto isWinter = group.GetTile()->IsWinter();
         if(isWinter == true && group.GetCurrentSettlement() == nullptr)
         {
-            int survivalBonus = -100;
+            int survivalBonus = INT_MIN;
             for(auto &character : group.characters)
             {
                 if(character.GetSkillProficiency(SkillTypes::SURVIVAL) > survivalBonus)

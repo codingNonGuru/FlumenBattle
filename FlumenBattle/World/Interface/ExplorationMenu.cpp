@@ -12,6 +12,7 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/Config.h"
 #include "FlumenBattle/World/Interface/SpottingItem.h"
+#include "FlumenBattle/World/Group/GroupSpotting.h"
 
 using namespace world::interface;
 
@@ -160,21 +161,43 @@ void ExplorationMenu::HandleGroupSpotted()
 {
     auto &spotting = group::HumanMind::Get()->GetLatestGroupSpotting();
 
+    bool hasFound = false;
     for(auto &item : spottingItems)
     {
-        if(item->HasContent(&spotting) == true)
-            break;
-
-        if(item->HasContent(nullptr) == true)
+        if(item->HasContent(spotting) == true)
         {
-            item->Setup(&spotting);
-            item->Enable();
+            hasFound = true;
             break;
+        }
+    }
+
+    if(hasFound == false)
+    {
+        for(auto &item : spottingItems)
+        {
+            if(item->HasContent() == false)
+            {
+                item->Setup(&spotting);
+                item->Enable();
+                break;
+            }
         }
     }
 }
 
 void ExplorationMenu::HandleGroupFaded()
 {
+    auto &fadings = group::HumanMind::Get()->GetLatestFadings();
 
+    for(auto &fading : fadings)
+    {   
+        for(auto &item : spottingItems)
+        {
+            if(item->HasContent(*fading) == true)
+            {
+                item->Disable();
+                break;
+            }
+        }
+    }
 }

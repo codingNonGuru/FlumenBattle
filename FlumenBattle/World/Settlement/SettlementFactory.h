@@ -16,8 +16,6 @@ namespace world::settlement
 
     struct SettlementBuildData
     {
-        Word Name;
-
         world::WorldTile * Location;
 
         //RaceTypes Race;

@@ -55,7 +55,7 @@ namespace world
 
     void WorldScene::Initialize()
     {
-        time = WorldTime(230, 271, 14);
+        time.Initialize(230, 271, 14);
 
         battle::BattleScene::Get()->OnRoundEnded += {this, &WorldScene::HandleBattleRoundEnded};
 
@@ -277,7 +277,7 @@ namespace world
 
     settlement::Settlement * WorldScene::FoundSettlement(WorldTile *location, settlement::Settlement *mother)
     {
-        auto settlement = settlement::SettlementFactory::Create({"Safehaven", location});
+        auto settlement = settlement::SettlementFactory::Create({location});
 
         auto polity = mother != nullptr ? mother->GetPolity() : nullptr;
         if(polity == nullptr)

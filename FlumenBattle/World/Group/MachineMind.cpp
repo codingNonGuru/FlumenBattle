@@ -99,11 +99,12 @@ namespace world::group
                 {
                     auto bonus = group.home->GetModifier(settlement::Modifiers::PATROL_ATTACK_ROLLS);
 
-                    auto fightAttempt = utility::RollD20Dice(15, bonus);
+                    auto fightAttempt = utility::RollD20Dice(20, bonus);
                     if(fightAttempt.IsAnySuccess() == true)
                     {
                         group.hasAchievedObjective = true;
                         group.money += 100;
+                        group.isAlive = false;
                     }
                     else if(fightAttempt.IsCriticalFailure() == true)
                     {
@@ -113,6 +114,7 @@ namespace world::group
                     }
                     else if(fightAttempt.IsAnyFailure() == true)
                     {
+                        group.isAlive = false;
                         group.hasAchievedObjective = true;
                     }
                 }

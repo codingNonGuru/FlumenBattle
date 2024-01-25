@@ -41,6 +41,8 @@ namespace world::group
 
         void RegisterActionInitiation(Group &, GroupActionResult) const override;
 
+        void UpdateSpottings();
+
         void HandleSceneUpdate();
 
         void HandleSearch();
@@ -103,5 +105,7 @@ namespace world::group
         bool IsSellModeActive() const {return isSellModeActive;}
 
         const GroupSpotting &GetLatestGroupSpotting() const;
+
+        const container::Array <GroupSpotting *> &GetLatestFadings() const;
     };  
 };

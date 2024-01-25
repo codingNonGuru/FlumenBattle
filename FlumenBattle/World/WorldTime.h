@@ -49,9 +49,27 @@ namespace world
 
         WorldTime() {}
 
-        WorldTime(int yearCount, int dayCount, int hourCount) : 
-            YearCount(yearCount), DayCount(dayCount), TotalDayCount(dayCount), HourCount(hourCount), TotalHourCount(hourCount), MinuteCount(0), TotalMinuteCount(dayCount * MINUTES_IN_DAYS), 
-            IsFlowing(false), FlowSpeed(1), IsStopDelayed(false) {}
+        WorldTime(const WorldTime &) = delete;
+
+        WorldTime &operator= (const WorldTime &) = delete;
+
+        void Initialize(int yearCount, int dayCount, int hourCount) 
+        {
+            YearCount = yearCount;
+
+            DayCount = dayCount;
+            TotalDayCount = dayCount;
+
+            HourCount = hourCount;
+            TotalHourCount = hourCount;
+
+            MinuteCount = 0;
+            TotalMinuteCount = dayCount * MINUTES_IN_DAYS;
+
+            IsFlowing = false;
+            FlowSpeed = 1;
+            IsStopDelayed = false;
+        }
 
         void SpeedUp() 
         {

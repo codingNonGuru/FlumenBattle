@@ -215,7 +215,7 @@ void WorldInfoPanel::HandleEnable()
 
 void WorldInfoPanel::HandleUpdate()
 {
-    auto time = world::WorldScene::Get()->GetTime();
+    static auto &time = world::WorldScene::Get()->GetTime();
 
     auto dayOfMonth = time.GetDayOfMonth();
     auto monthName = time.GetMonthName();
