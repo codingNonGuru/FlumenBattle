@@ -15,6 +15,8 @@
 #include "FlumenBattle/World/Character/Types.h"
 #include "FlumenBattle/World/Settlement/Path.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/Config.h"
+#include "FlumenBattle/World/Group/GroupSpotting.h"
 
 using namespace world::group;
 
@@ -54,8 +56,15 @@ auto diceSoundClock = steady_clock::now();
 
 world::settlement::Settlement *previousSettlement = nullptr;
 
+static container::Pool <GroupSpotting> groupSpottings;
+
+static GroupSpotting *latestGroupSpotting = nullptr;
+
 HumanMind::HumanMind()
 {
+    static const auto spottingCount = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_SPOTTING_LIMIT).Integer;
+    groupSpottings.Initialize(spottingCount);
+
     OnActionSelected = new Delegate();
 
     OnActionPerformed = new Delegate();
@@ -71,6 +80,10 @@ HumanMind::HumanMind()
     OnSettlementEntered = new Delegate();
 
     OnSettlementExited = new Delegate();
+
+    OnGroupSpotted = new Delegate();
+
+    OnGroupFaded = new Delegate();
 
     *WorldScene::Get()->OnUpdateStarted += {this, &HumanMind::HandleSceneUpdate};
 }
@@ -112,6 +125,41 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
         {
             engine::SoundManager::Get()->PlaySound(DICE_ROLL_SOUND);
             diceSoundClock = clock;
+        }
+
+        if(group.IsDoing(GroupActions::SEARCH) == true)
+        {
+            static auto &worldTime = WorldScene::Get()->GetTime();
+
+            auto spottedGroup = result.Content.spottedGroup;
+            auto existingSpotting = groupSpottings.Find(spottedGroup);
+            if(existingSpotting == nullptr)
+            {
+                auto newSpotting = groupSpottings.Add();
+                *newSpotting = 
+                {
+                    spottedGroup, 
+                    worldTime.TotalHourCount, 
+                    result.Success.IsCriticalSuccess(), 
+                    group.GetTile()->GetDistanceTo(*spottedGroup->GetTile())
+                };
+
+                latestGroupSpotting = newSpotting;
+            }
+            else
+            {
+                *existingSpotting = 
+                {
+                    spottedGroup, 
+                    worldTime.TotalHourCount, 
+                    result.Success.IsCriticalSuccess(), 
+                    group.GetTile()->GetDistanceTo(*spottedGroup->GetTile())
+                };
+
+                latestGroupSpotting = existingSpotting;                
+            }
+
+            OnGroupSpotted->Invoke();
         }
 
         OnSkillCheckRolled->Invoke();
@@ -396,4 +444,9 @@ world::WorldTile *HumanMind::GetFinalDestination() const
     {
         return *(extendedPath.Tiles.GetLast() - 1);
     }
+}
+
+const GroupSpotting &HumanMind::GetLatestGroupSpotting() const
+{
+    return *latestGroupSpotting;
 }

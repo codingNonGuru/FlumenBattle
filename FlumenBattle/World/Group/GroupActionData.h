@@ -10,6 +10,8 @@ namespace world
 
 namespace world::group
 {
+    class Group;
+
     union GroupActionData
     {
         WorldTile *TravelDestination;
@@ -31,8 +33,16 @@ namespace world::group
 
         SkillTypes Skill;
 
+        union SpecificContent
+        {
+            Group *spottedGroup;
+        } Content;
+
         GroupActionResult(utility::Success success, SkillTypes skill) : 
         HasRolled(true), Success(success), Skill(skill) {}
+
+        GroupActionResult(utility::Success success, SkillTypes skill, Group *spottedGroup) : 
+        HasRolled(true), Success(success), Skill(skill), Content{spottedGroup} {}
 
         GroupActionResult() : HasRolled(false) {}
     };

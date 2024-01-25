@@ -7,6 +7,8 @@ namespace world
 {
     struct WorldTime
     {
+        static constexpr auto HOUR_SIZE = 6;
+
         static constexpr auto DAYS_IN_YEAR = 365;
 
         static constexpr auto MINUTES_IN_DAYS = 24 * 60;

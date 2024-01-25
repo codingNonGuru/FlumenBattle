@@ -2,6 +2,7 @@
 
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/Text.hpp"
+#include "FlumenEngine/Interface/LayoutGroup.h"
 
 #include "ExplorationMenu.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
@@ -9,6 +10,8 @@
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/Config.h"
+#include "FlumenBattle/World/Interface/SpottingItem.h"
 
 using namespace world::interface;
 
@@ -62,6 +65,33 @@ void ExplorationMenu::HandleConfigure()
     );
     ownerLabel->Enable();
 
+    spottingGroup = ElementFactory::BuildElement <LayoutGroup>
+    (
+        {
+            drawOrder_,
+            {Position2(10.0f, 70.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}
+        }
+    );
+    spottingGroup->SetDistancing(1, 5.0f);
+    spottingGroup->Enable();
+
+    static const auto spottingCount = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_SPOTTING_LIMIT).Integer;
+    spottingItems.Initialize(spottingCount);
+
+    for(int i = 0; i < spottingItems.GetCapacity(); ++i)
+    {
+        auto itemIterator = spottingItems.Add();
+        *itemIterator = ElementFactory::BuildElement <SpottingItem>
+        (
+            { 
+                drawOrder_ + 1, 
+                {spottingGroup}, 
+                {"panel-border-007", true},
+            }
+        );
+        (*itemIterator)->Disable();
+    }
+
     tabLabel = ElementFactory::BuildText
     (
         {
@@ -79,6 +109,10 @@ void ExplorationMenu::HandleConfigure()
     *group::HumanMind::Get()->OnSettlementEntered += {this, &ExplorationMenu::HandleSettlementEntered};
 
     *group::HumanMind::Get()->OnSettlementExited += {this, &ExplorationMenu::HandleSettlementExited};
+
+    *group::HumanMind::Get()->OnGroupSpotted += {this, &ExplorationMenu::HandleGroupSpotted};
+
+    *group::HumanMind::Get()->OnGroupFaded += {this, &ExplorationMenu::HandleGroupFaded};
 }
 
 void ExplorationMenu::HandleUpdate()
@@ -120,4 +154,27 @@ void ExplorationMenu::HandleSettlementEntered()
 void ExplorationMenu::HandleSettlementExited()
 {
     tabLabel->Disable();
+}
+
+void ExplorationMenu::HandleGroupSpotted()
+{
+    auto &spotting = group::HumanMind::Get()->GetLatestGroupSpotting();
+
+    for(auto &item : spottingItems)
+    {
+        if(item->HasContent(&spotting) == true)
+            break;
+
+        if(item->HasContent(nullptr) == true)
+        {
+            item->Setup(&spotting);
+            item->Enable();
+            break;
+        }
+    }
+}
+
+void ExplorationMenu::HandleGroupFaded()
+{
+
 }

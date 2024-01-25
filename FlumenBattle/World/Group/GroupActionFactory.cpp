@@ -9,7 +9,7 @@
 #include "FlumenBattle/Utility/Utility.h"
 #include "FlumenBattle/Config.h"
 
-#define GROUP_SEARCH_DC 32
+#define GROUP_SEARCH_DC 18
 
 static const auto NOURISHED_DURATION = 8 * 6;
 
@@ -42,7 +42,7 @@ namespace world::group
     {
         static GroupAction action = {
             GroupActions::TAKE_SHORT_REST, 
-            18 * GroupAction::BASE_PROGRESS_RATE,
+            3 * WorldTime::HOUR_SIZE * GroupAction::BASE_PROGRESS_RATE,
             false, 
             &GroupActionValidator::CanTakeShortRest, 
             &GroupActionPerformer::TakeShortRest};
@@ -53,7 +53,7 @@ namespace world::group
     {
         static GroupAction action = {
             GroupActions::TAKE_LONG_REST, 
-            48 * GroupAction::BASE_PROGRESS_RATE,
+            8 * WorldTime::HOUR_SIZE * GroupAction::BASE_PROGRESS_RATE,
             false,
             &GroupActionValidator::CanTakeLongRest, 
             &GroupActionPerformer::TakeLongRest};
@@ -64,7 +64,7 @@ namespace world::group
     {
         static GroupAction action = {
             GroupActions::SEARCH, 
-            18 * GroupAction::BASE_PROGRESS_RATE, 
+            30 * WorldTime::HOUR_SIZE * GroupAction::BASE_PROGRESS_RATE, 
             false,
             &GroupActionValidator::CanSearch, 
             &GroupActionPerformer::Search
@@ -113,7 +113,7 @@ namespace world::group
     {
         static GroupAction action = {
             GroupActions::TRAVEL, 
-            36 * GroupAction::BASE_PROGRESS_RATE,
+            6 * WorldTime::HOUR_SIZE * GroupAction::BASE_PROGRESS_RATE,
             true, 
             &GroupActionValidator::CanTravel, 
             &GroupActionPerformer::Travel, 
@@ -165,7 +165,7 @@ namespace world::group
         durationModifier += group.travelActionData.Source->GetTravelPenalty().Value;
         durationModifier += group.travelActionData.Destination->GetTravelPenalty().Value;
 
-        return group.action->BaseDuration + durationModifier * 6 * GroupAction::BASE_PROGRESS_RATE;
+        return group.action->BaseDuration + durationModifier * WorldTime::HOUR_SIZE * GroupAction::BASE_PROGRESS_RATE;
     }
 
     GroupActionResult GroupActionPerformer::TakeShortRest(Group& group)
@@ -264,7 +264,56 @@ namespace world::group
 
     GroupActionResult GroupActionPerformer::Search(Group& group)
     {
+        if(group.actionProgress == group.action->BaseDuration)
+        {
+            group.CancelAction();
+
+            return {};
+        }
+
         auto &groups = WorldScene::Get()->GetGroups();
+
+        if(groups.GetSize() == 1)
+            return {};
+
+        auto spottedGroup = [&]
+        {
+            while(true)
+            {
+                auto other = groups.GetRandom();
+
+                if(other != &group)
+                    return other;
+            }
+        } ();
+
+        auto perceptionBonus = INT_MIN;
+        for(auto &character : group.characters)
+        {
+            auto bonus = character.GetPerceptionProficiencyBonus();
+            if(bonus > perceptionBonus)
+                perceptionBonus = bonus;
+        }
+
+        auto stealthBonus = INT_MAX;
+        for(auto &character : spottedGroup->characters)
+        {
+            auto bonus = character.GetAbility(character::AbilityTypes::DEXTERITY).Modifier;
+            if(bonus < stealthBonus)
+                stealthBonus = bonus;
+        }
+
+        auto modifier = perceptionBonus - stealthBonus;
+
+        auto perceptionCheck = utility::RollD20Dice(GROUP_SEARCH_DC, modifier);
+        if(perceptionCheck.IsAnySuccess() == true)
+        {
+            return {perceptionCheck, SkillTypes::PERCEPTION, spottedGroup};
+        }
+
+        return {};
+
+        /*auto &groups = WorldScene::Get()->GetGroups();
         auto other = groups.GetRandom();
 
         if(other == &group)
@@ -302,7 +351,7 @@ namespace world::group
 
         WorldScene::Get()->InitiateEncounter(&group, other);
 
-        return {};
+        return {};*/
     }
 
     GroupActionResult GroupActionPerformer::Fight(Group& group)

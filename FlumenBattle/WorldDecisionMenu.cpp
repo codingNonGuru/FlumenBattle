@@ -168,6 +168,10 @@ void WorldDecisionMenu::HandleActionSelected()
         {
             case SkillTypes::SURVIVAL:
                 return "Survival";
+            case SkillTypes::PERCEPTION:
+                return "Perception";
+            case SkillTypes::PERSUASION:
+                return "Persuasion";
             default:
                 return "Skill";
         }

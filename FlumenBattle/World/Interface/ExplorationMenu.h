@@ -3,9 +3,12 @@
 #include "FlumenEngine/Interface/Element.hpp"
 
 class Text;
+class LayoutGroup;
 
 namespace world::interface
 {
+    class SpottingItem;
+
     class ExplorationMenu : public Element
     {
         Element *border;
@@ -16,6 +19,10 @@ namespace world::interface
 
         Text *tabLabel;
 
+        LayoutGroup *spottingGroup;
+
+        container::Array <SpottingItem *> spottingItems;
+
         void HandleConfigure() override;
 
         void HandleUpdate() override;
@@ -23,5 +30,9 @@ namespace world::interface
         void HandleSettlementEntered();
 
         void HandleSettlementExited();
+
+        void HandleGroupSpotted();
+
+        void HandleGroupFaded();
     };
 }

@@ -25,6 +25,7 @@ namespace utility
 namespace world::group
 {
     struct GroupActionResult;
+    struct GroupSpotting;
 
     class HumanMind : public GroupMind, public core::Singleton <HumanMind>
     {
@@ -79,6 +80,10 @@ namespace world::group
 
         Delegate *OnSettlementExited;
 
+        Delegate *OnGroupSpotted;
+
+        Delegate *OnGroupFaded;
+
         void EnableInput();
 
         void DisableInput();
@@ -96,5 +101,7 @@ namespace world::group
         world::WorldTile *GetFinalDestination() const;
 
         bool IsSellModeActive() const {return isSellModeActive;}
+
+        const GroupSpotting &GetLatestGroupSpotting() const;
     };  
 };
