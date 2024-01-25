@@ -5,10 +5,15 @@
 #include "FlumenBattle/World/WorldBiome.h"
 #include "FlumenBattle/World/WorldRelief.h"
 #include "FlumenBattle/World/Settlement/Path.h"
+#include "FlumenBattle/World/WorldScene.h"
 
 using namespace world;
 
 static constexpr auto VARIATION_FACTOR = 0.07f;
+
+const auto SEASONAL_TEMPERATURE_SWING = 17.0f;
+
+const auto DIURNAL_TEMPERATURE_SWING = 1.5f;
 
 WorldTile::WorldTile(Position2 position, Integer2 squareCoordinates) : Position(position), SquareCoordinates(squareCoordinates), 
 group(nullptr), settlement(nullptr), owner(nullptr), isBorderingOwnedTile(false)
@@ -201,4 +206,41 @@ settlement::PathSegment * WorldTile::GetLinkTo(WorldTile *tile)
     }
     
     return nullptr;
+}
+
+int WorldTile::GetSeasonalTemperature() const
+{
+    auto swing = WorldTile::GetSeasonalTemperatureSwing();
+
+    return Heat + int(swing);
+}
+
+int WorldTile::GetActualTemperature() const
+{
+    return Heat + int(WorldTile::GetSeasonalTemperatureSwing() + WorldTile::GetDiurnalTemperatureSwing());
+}
+
+float WorldTile::GetSeasonalTemperatureSwing() 
+{
+    static auto &worldTime = WorldScene::Get()->GetTime();
+
+    auto timeFactor = float(worldTime.TotalMinuteCount) / float(WorldTime::MINUTES_IN_YEAR);
+    timeFactor *= TWO_PI;
+
+    auto swing = -cos(timeFactor) * SEASONAL_TEMPERATURE_SWING;
+
+    return swing;
+}
+
+float WorldTile::GetDiurnalTemperatureSwing() 
+{
+    static auto &worldTime = WorldScene::Get()->GetTime();
+
+    auto timeFactor = float(worldTime.TotalMinuteCount) / float(WorldTime::MINUTES_IN_DAYS);
+    timeFactor *= TWO_PI;
+    timeFactor += HALF_PI;
+
+    auto swing = -cos(timeFactor) * DIURNAL_TEMPERATURE_SWING;
+
+    return swing;
 }

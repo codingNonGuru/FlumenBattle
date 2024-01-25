@@ -32,10 +32,6 @@
 
 const Float CAMERA_SHIFT_DURATION = 0.5f;
 
-const auto SEASONAL_SWING_FACTOR = 0.17f;
-
-const auto DIURNAL_SWING_FACTOR = 0.01f;
-
 static Camera* camera = nullptr;
 
 static Float shadeTimer = 0.0f;
@@ -469,20 +465,13 @@ void WorldTileModel::RenderSnow()
 
     snowShader->SetConstant(WORLD_TILE_SIZE, "hexSize");
 
-    auto &worldTime = worldScene->GetTime();
-    
-    auto timeFactor = float(worldTime.TotalMinuteCount) / float(WorldTime::MINUTES_IN_YEAR);
-    timeFactor *= TWO_PI;
+    static auto &worldTime = worldScene->GetTime();
 
-    auto weatherFactor = -cos(timeFactor) * SEASONAL_SWING_FACTOR;
+    auto seasonalFactor = WorldTile::GetSeasonalTemperatureSwing() / 100.0f;
 
-    timeFactor = float(worldTime.TotalMinuteCount) / float(WorldTime::MINUTES_IN_DAYS);
-    timeFactor *= TWO_PI;
-    timeFactor += HALF_PI;
+    auto diurnalFactor = WorldTile::GetDiurnalTemperatureSwing() / 100.0f;
 
-    auto dayNightFactor = -cos(timeFactor) * DIURNAL_SWING_FACTOR;
-
-    snowShader->SetConstant(weatherFactor + dayNightFactor, "weatherFactor");
+    snowShader->SetConstant(seasonalFactor + diurnalFactor, "weatherFactor");
 
     positionBuffer->Bind(0);
 

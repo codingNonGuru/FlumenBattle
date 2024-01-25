@@ -164,5 +164,13 @@ namespace world
         const WorldMap *GetMap() const {return map;}
 
         void SetResource(settlement::ResourceTypes type, ResourceAmount amount) {*resources[(int)type] = amount;}
+
+        int GetSeasonalTemperature() const;
+
+        int GetActualTemperature() const;
+
+        static float GetSeasonalTemperatureSwing();
+
+        static float GetDiurnalTemperatureSwing();
     };
 }
