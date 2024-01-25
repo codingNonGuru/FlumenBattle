@@ -13,6 +13,8 @@
 
 #define ITEMS_PER_GROUP 64
 
+static auto lastUniqueId = 0;
+
 namespace world::group
 {
     void GroupAllocator::PreallocateMaximumMemory()
@@ -42,6 +44,9 @@ namespace world::group
     Group * GroupAllocator::Allocate()
     {
         auto group = groups.Add();
+
+        group->uniqueId = lastUniqueId;
+        lastUniqueId++;
 
         group->characters.Initialize(characterAllocator);
 

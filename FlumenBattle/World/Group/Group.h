@@ -74,6 +74,8 @@ namespace world::group
 
         friend class world::WorldTileModel;
 
+        int uniqueId;
+
         Word name;
 
         const GroupType *type;
@@ -141,6 +143,10 @@ namespace world::group
 
     public:
         Group();
+
+        int GetUniqueId() const {return uniqueId;}
+
+        bool HasUniqueId(int id) const {return uniqueId == id;}
         
         bool IsAlive();
 

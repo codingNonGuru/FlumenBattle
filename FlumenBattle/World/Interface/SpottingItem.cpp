@@ -5,6 +5,7 @@
 #include "FlumenBattle/World/Group/GroupSpotting.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/GroupType.h"
+#include "FlumenBattle/World/Character/Character.h"
 
 using namespace world::interface;
 
@@ -14,7 +15,7 @@ static const auto TEXT_COLOR = Color::RED * 0.5f;
 
 void SpottingItem::HandleConfigure()
 {
-    size_ = Size(200, 35);
+    size_ = Size(280, 35);
 
     opacity_ = Opacity(0.6f);
 
@@ -30,16 +31,20 @@ void SpottingItem::HandleConfigure()
 
 void SpottingItem::HandleUpdate()
 {
-    switch(spotting->Group->GetClass())
+    auto string = Word() << [&]
     {
-        case group::GroupClasses::MERCHANT:
-            nameLabel->Setup("Merchants");
-            break;
-        case group::GroupClasses::ADVENTURER:
-            nameLabel->Setup("Adventurers");
-            break;
-        case group::GroupClasses::BANDIT:
-            nameLabel->Setup("Bandits");
-            break;
-    }
+        switch(spotting->Group->GetClass())
+        {
+            case group::GroupClasses::MERCHANT:
+                return "Merchants";
+            case group::GroupClasses::ADVENTURER:
+                return "Adventurers";
+            case group::GroupClasses::BANDIT:
+                return "Bandits";
+        }
+    } ();
+
+    string << " " << spotting->Group->GetLeader()->GetName();
+
+    nameLabel->Setup(string);
 }
