@@ -90,6 +90,7 @@ void ExplorationMenu::HandleConfigure()
                 {"panel-border-007", true},
             }
         );
+        (*itemIterator)->SetInteractivity(true);
         (*itemIterator)->Disable();
     }
 

@@ -158,6 +158,8 @@ namespace world::group
 
         WorldTile * GetTile() const {return tile;}
 
+        settlement::Settlement *GetHome() const {return home;}
+
         const GroupAction * GetAction() const {return action;}
 
         bool IsDoing(GroupActions actionType) const;

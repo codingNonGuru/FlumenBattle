@@ -94,6 +94,8 @@ namespace world::group
 
         void SellItem(character::Item *);
 
+        void PursueSighting(const GroupSpotting &);
+
         const GroupActionResult & GetSelectedActionResult();
 
         const GroupActionResult & GetPerformedActionResult();

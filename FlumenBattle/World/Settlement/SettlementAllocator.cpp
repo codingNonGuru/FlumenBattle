@@ -38,6 +38,8 @@ using namespace world::settlement;
 
 void SettlementAllocator::PreallocateMaximumMemory()
 {
+    std::cout<<"Memory size of a Settlement is "<<sizeof(Settlement)<<"\n";
+
     auto worldGenerator = WorldGenerator::Get();
 
     auto settlementCount = worldGenerator->GetMaximumSettlementCount(MAXIMUM_WORLD_SIZE);

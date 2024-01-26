@@ -132,6 +132,8 @@ namespace world
 
         int GetTimeSpeed() const {return time;}
 
+        group::Group *GetGroup(int);
+
         void InitiateEncounter(group::Group *, group::Group *);
 
         void InitiatePlayerPersuasion();

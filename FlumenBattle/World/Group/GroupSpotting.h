@@ -23,6 +23,8 @@ namespace world::group
 
         Word LeaderName;
 
+        Word OriginName;
+
         int TimeInHours;
 
         bool IsQuality;

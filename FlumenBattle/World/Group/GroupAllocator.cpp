@@ -19,6 +19,10 @@ namespace world::group
 {
     void GroupAllocator::PreallocateMaximumMemory()
     {
+        std::cout<<"Memory size of a Character is "<<sizeof(character::Character)<<"\n";
+        std::cout<<"Memory size of a Group is "<<sizeof(Group)<<"\n";
+        std::cout<<"Memory size of a Group + dependencies is "<<sizeof(Group) + sizeof(character::Character) * CHARACTERS_PER_GROUP + sizeof(character::Item) * ITEMS_PER_GROUP<<"\n";
+
         auto groupCount = WorldGenerator::Get()->GetMaximumGroupCount(MAXIMUM_WORLD_SIZE);
         groupMemory = container::Pool <Group>::PreallocateMemory(groupCount);
 

@@ -9,7 +9,7 @@
 #include "FlumenBattle/Utility/Utility.h"
 #include "FlumenBattle/Config.h"
 
-#define GROUP_SEARCH_DC 18
+#define GROUP_SEARCH_DC 19
 
 static const auto NOURISHED_DURATION = 8 * 6;
 

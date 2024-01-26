@@ -148,6 +148,7 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
                     spottedGroup->GetUniqueId(),
                     spottedGroup->GetClass(),
                     spottedGroup->GetLeader()->GetName(),
+                    spottedGroup->GetHome()->GetName(),
                     worldTime.TotalHourCount, 
                     result.Success.IsCriticalSuccess(), 
                     group.GetTile()->GetDistanceTo(*spottedGroup->GetTile())
@@ -163,6 +164,7 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
                     spottedGroup->GetUniqueId(),
                     spottedGroup->GetClass(),
                     spottedGroup->GetLeader()->GetName(),
+                    spottedGroup->GetHome()->GetName(),
                     worldTime.TotalHourCount, 
                     result.Success.IsCriticalSuccess(), 
                     group.GetTile()->GetDistanceTo(*spottedGroup->GetTile())
@@ -426,7 +428,7 @@ void HumanMind::HandleSellModeExited()
 
 void HumanMind::BuyFood()
 {
-    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    static auto playerGroup = WorldScene::Get()->GetPlayerGroup();
 
     auto playerSettlement = playerGroup->GetCurrentSettlement();
 
@@ -444,13 +446,29 @@ void HumanMind::BuyFood()
 
 void HumanMind::SellItem(character::Item *item)
 {
-    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    static auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     playerGroup->RemoveItem(item);
 
     playerGroup->money += item->Type->Value * item->Amount;
 
     auto sound = COIN_SOUNDS.GetRandom();
     engine::SoundManager::Get()->PlaySound(*sound);
+}
+
+void HumanMind::PursueSighting(const GroupSpotting &spotting)
+{  
+    auto group = WorldScene::Get()->GetGroup(spotting.GroupUniqueId);
+    if(group == nullptr)
+        return;
+
+    if(group->IsAlive() == false)
+        return;
+
+    if(group->IsDoing(GroupActions::ENGAGE) || group->IsDoing(GroupActions::FIGHT))
+        return;
+
+    static auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    WorldScene::Get()->InitiateEncounter(group, playerGroup);
 }
 
 const utility::PathData <world::WorldTile> HumanMind::GetFullPathData()

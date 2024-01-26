@@ -431,4 +431,15 @@ namespace world
     {
         return worldMap->tiles;
     }
+
+    group::Group *WorldScene::GetGroup(int uniqueId)
+    {
+        for(auto &group : *groups)
+        {
+            if(group.GetUniqueId() == uniqueId)
+                return &group;
+        }
+
+        return nullptr;
+    }
 }

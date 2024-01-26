@@ -27,6 +27,8 @@ namespace world::interface
 
         void HandleDisable() override {spotting = nullptr;}
 
+        void HandleLeftClick() override;
+
     public:
         bool HasContent() const {return spotting != nullptr;}
 
