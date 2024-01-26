@@ -10,8 +10,6 @@ namespace world::character
 
     class ProficiencyHandler
     {
-        Proficiency perception;
-
         Proficiency magicalTradition;
 
         container::SmartBlock <Proficiency, 3> savingThrows;
@@ -26,8 +24,6 @@ namespace world::character
 
     public:
         void Initialize();
-
-        Integer GetPerceptionBonus(const Character &);
 
         Integer GetSaveBonus(const Character &, SavingThrows);
 

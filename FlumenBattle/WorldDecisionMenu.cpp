@@ -166,11 +166,11 @@ void WorldDecisionMenu::HandleActionSelected()
     text << [&result] {
         switch(result.Skill)
         {
-            case SkillTypes::SURVIVAL:
+            case character::SkillTypes::SURVIVAL:
                 return "Survival";
-            case SkillTypes::PERCEPTION:
+            case character::SkillTypes::PERCEPTION:
                 return "Perception";
-            case SkillTypes::PERSUASION:
+            case character::SkillTypes::PERSUASION:
                 return "Persuasion";
             default:
                 return "Skill";

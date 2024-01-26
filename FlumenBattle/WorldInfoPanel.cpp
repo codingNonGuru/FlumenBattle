@@ -8,6 +8,7 @@
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/World/Character/CharacterClass.h"
 #include "FlumenBattle/World/Interface/ResourceCounter.h"
+#include "FlumenBattle/World/Character/Types.h"
 
 void * WorldInfoPanel::CharacterItem::operator new(size_t size)
 {
@@ -113,14 +114,14 @@ void WorldInfoPanel::HandleConfigure()
     speedLabel->Enable();
 
     moneyCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
-        {drawOrder_ + 1, {this}}
+        {drawOrder_, {this}}
     );
     auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
     moneyCounter->Setup("Coin", &playerGroup->GetMoney());
     moneyCounter->Enable();
 
     foodCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
-        {drawOrder_ + 1, {Position2(70.0f, 0.0f), this}}
+        {drawOrder_, {Position2(70.0f, 0.0f), this}}
     );
     foodCounter->Setup(
         "Radish", 
@@ -134,6 +135,40 @@ void WorldInfoPanel::HandleConfigure()
         )
     );
     foodCounter->Enable();
+
+    perceptionCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
+        {drawOrder_, {Position2(140.0f, 0.0f), this}}
+    );
+    perceptionCounter->Setup(
+        "SunRays", 
+        std::function <int(void)> (
+            [] -> int 
+            {
+                auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
+
+                return playerGroup->GetMostSkilledMember(world::character::SkillTypes::PERCEPTION).Bonus;
+            }
+        )
+    );
+    perceptionCounter->MakeSignSensitive();
+    perceptionCounter->Enable();
+
+    weightCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
+        {drawOrder_, {Position2(210.0f, 0.0f), this}}
+    );
+    weightCounter->Setup(
+        "CrateShadowed", 
+        std::function <int(void)> (
+            [] -> int 
+            {
+                auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
+
+                return playerGroup->GetCarriedWeight();
+            }
+        )
+    );
+    weightCounter->SetOffset(3.0f);
+    weightCounter->Enable();
 }
 
 void WorldInfoPanel::SelectCharacter(int index, bool isInInventoryMode)

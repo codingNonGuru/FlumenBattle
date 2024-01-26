@@ -70,7 +70,7 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
         //character->AddWeapon(WeaponFactory::BuildGreatSword());
         //character->AddWeapon(WeaponFactory::BuildHatchet());
 
-        character->AddProficiency(ProficiencyFactory::BuildPerceptionProficiency(ProficiencyLevels::APPRENTICE));
+        //character->AddProficiency(ProficiencyFactory::BuildPerceptionProficiency(ProficiencyLevels::APPRENTICE));
 
         character->AddProficiency(ProficiencyFactory::BuildReflexSaveProficiency(ProficiencyLevels::APPRENTICE));
         character->AddProficiency(ProficiencyFactory::BuildFortitudeSaveProficiency(ProficiencyLevels::TRAINED));
@@ -79,6 +79,8 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
         character->AddProficiency(ProficiencyFactory::BuildSimpleWeaponsProficiency(ProficiencyLevels::TRAINED));
         character->AddProficiency(ProficiencyFactory::BuildMartialWeaponsProficiency(ProficiencyLevels::APPRENTICE));
         character->AddProficiency(ProficiencyFactory::BuildUnarmedCombatProficiency(ProficiencyLevels::TRAINED));
+
+        character->AddProficiency(ProficiencyFactory::BuildSkillProficiency(SkillTypes::PERCEPTION, ProficiencyLevels::APPRENTICE));
         break;
     case CharacterClasses::RANGER:
         character->abilities.SetScore(AbilityTypes::DEXTERITY, abilityScores[0]);
@@ -97,7 +99,7 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
         //character->AddWeapon(WeaponFactory::BuildLongBow());
         //character->AddWeapon(WeaponFactory::BuildShortSword());
 
-        character->AddProficiency(ProficiencyFactory::BuildPerceptionProficiency(ProficiencyLevels::TRAINED));
+        //character->AddProficiency(ProficiencyFactory::BuildPerceptionProficiency(ProficiencyLevels::TRAINED));
 
         character->AddProficiency(ProficiencyFactory::BuildReflexSaveProficiency(ProficiencyLevels::TRAINED));
         character->AddProficiency(ProficiencyFactory::BuildFortitudeSaveProficiency(ProficiencyLevels::APPRENTICE));
@@ -108,6 +110,7 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
         character->AddProficiency(ProficiencyFactory::BuildUnarmedCombatProficiency(ProficiencyLevels::APPRENTICE));
 
         character->AddProficiency(ProficiencyFactory::BuildSkillProficiency(SkillTypes::SURVIVAL, ProficiencyLevels::TRAINED));
+        character->AddProficiency(ProficiencyFactory::BuildSkillProficiency(SkillTypes::PERCEPTION, ProficiencyLevels::APPRENTICE));
         break;
     case CharacterClasses::CLERIC:
         character->abilities.SetScore(AbilityTypes::WISDOM, abilityScores[0]);
@@ -127,7 +130,7 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
 
         //character->AddWeapon(WeaponFactory::BuildMace());
 
-        character->AddProficiency(ProficiencyFactory::BuildPerceptionProficiency(ProficiencyLevels::APPRENTICE));
+        //character->AddProficiency(ProficiencyFactory::BuildPerceptionProficiency(ProficiencyLevels::APPRENTICE));
 
         character->AddProficiency(ProficiencyFactory::BuildReflexSaveProficiency(ProficiencyLevels::APPRENTICE));
         character->AddProficiency(ProficiencyFactory::BuildFortitudeSaveProficiency(ProficiencyLevels::APPRENTICE));
@@ -137,6 +140,8 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
         character->AddProficiency(ProficiencyFactory::BuildUnarmedCombatProficiency(ProficiencyLevels::APPRENTICE));
 
         character->AddProficiency(ProficiencyFactory::BuildDivineMagicProficiency(ProficiencyLevels::TRAINED));
+
+        character->AddProficiency(ProficiencyFactory::BuildSkillProficiency(SkillTypes::PERCEPTION, ProficiencyLevels::APPRENTICE));
         break;
     case CharacterClasses::WIZARD:
         character->abilities.SetScore(AbilityTypes::INTELLIGENCE, abilityScores[0]);
@@ -155,7 +160,7 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
 
         //character->AddWeapon(WeaponFactory::BuildStaff());
 
-        character->AddProficiency(ProficiencyFactory::BuildPerceptionProficiency(ProficiencyLevels::APPRENTICE));
+        //character->AddProficiency(ProficiencyFactory::BuildPerceptionProficiency(ProficiencyLevels::APPRENTICE));
 
         character->AddProficiency(ProficiencyFactory::BuildReflexSaveProficiency(ProficiencyLevels::APPRENTICE));
         character->AddProficiency(ProficiencyFactory::BuildFortitudeSaveProficiency(ProficiencyLevels::APPRENTICE));
@@ -164,6 +169,8 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
         character->AddProficiency(ProficiencyFactory::BuildSimpleWeaponsProficiency(ProficiencyLevels::APPRENTICE));
 
         character->AddProficiency(ProficiencyFactory::BuildArcaneMagicProficiency(ProficiencyLevels::TRAINED));
+
+        character->AddProficiency(ProficiencyFactory::BuildSkillProficiency(SkillTypes::PERCEPTION, ProficiencyLevels::APPRENTICE));
         break;
     }
 

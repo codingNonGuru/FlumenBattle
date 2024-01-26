@@ -7,16 +7,6 @@
 
 namespace world::character
 {
-    enum class ProficiencyLevels
-    {
-        UNTRAINED, APPRENTICE, TRAINED, EXPERIENCED, MASTER, LEGENDARY
-    };
-
-    enum class ProficiencyClasses
-    {
-        SAVE, PERCEPTION, WEAPON, ARMOR, MAGIC, SKILL
-    };
-
     union ProficiencyIdentifier
     {
         MagicTraditions MagicTradition;
@@ -46,9 +36,16 @@ namespace world::character
         bool operator== (SkillTypes skillType) const {return SkillType == skillType;}
     };
 
+    struct CheckType
+    {
+        CheckClasses Class;
+
+        ProficiencyIdentifier Identifier;
+    };
+
     struct ProficiencyType
     {
-        ProficiencyClasses Class;
+        CheckClasses Class;
 
         Word Name;
 
@@ -56,13 +53,13 @@ namespace world::character
 
         AbilityTypes AssociatedAbility;
 
-        ProficiencyType(ProficiencyClasses proficiencyClass, Word name, ProficiencyIdentifier identifier, AbilityTypes ability) :
+        ProficiencyType(CheckClasses proficiencyClass, Word name, ProficiencyIdentifier identifier, AbilityTypes ability) :
             Class(proficiencyClass), Name(name), Identifier(identifier), AssociatedAbility(ability) {}
 
-        ProficiencyType(ProficiencyClasses proficiencyClass, Word name, ProficiencyIdentifier identifier) :
+        ProficiencyType(CheckClasses proficiencyClass, Word name, ProficiencyIdentifier identifier) :
             Class(proficiencyClass), Name(name), Identifier(identifier) {}
 
-        ProficiencyType(ProficiencyClasses proficiencyClass, Word name) :
+        ProficiencyType(CheckClasses proficiencyClass, Word name) :
             Class(proficiencyClass), Name(name) {}
     };
 

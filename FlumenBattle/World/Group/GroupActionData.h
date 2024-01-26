@@ -1,6 +1,7 @@
 #pragma once
 
 #include "FlumenBattle/Types.hpp"
+#include "FlumenBattle/World/Character/Types.h"
 #include "FlumenBattle/Utility/Utility.h"
 
 namespace world
@@ -31,17 +32,17 @@ namespace world::group
 
         utility::Success Success;
 
-        SkillTypes Skill;
+        character::SkillTypes Skill;
 
         union SpecificContent
         {
             Group *spottedGroup;
         } Content;
 
-        GroupActionResult(utility::Success success, SkillTypes skill) : 
+        GroupActionResult(utility::Success success, character::SkillTypes skill) : 
         HasRolled(true), Success(success), Skill(skill) {}
 
-        GroupActionResult(utility::Success success, SkillTypes skill, Group *spottedGroup) : 
+        GroupActionResult(utility::Success success, character::SkillTypes skill, Group *spottedGroup) : 
         HasRolled(true), Success(success), Skill(skill), Content{spottedGroup} {}
 
         GroupActionResult() : HasRolled(false) {}

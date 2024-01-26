@@ -20,4 +20,19 @@ namespace world::character
     {
         STRENGTH, DEXTERITY, CONSTITUTION, INTELLIGENCE, WISDOM, CHARISMA
     };
+
+    enum class CheckClasses
+    {
+        SAVE, /*PERCEPTION,*/ WEAPON, ARMOR, MAGIC, SKILL
+    };
+
+    enum class ProficiencyLevels
+    {
+        UNTRAINED, APPRENTICE, TRAINED, EXPERIENCED, MASTER, LEGENDARY
+    };
+
+    enum class SkillTypes
+    {
+        ACROBATICS, ATHLETICS, CRAFTING, DECEPTION, INTIMIDATION, LORE, PERFORMANCE, PERSUASION, STEALTH, SURVIVAL, PERCEPTION, NONE
+    };
 }

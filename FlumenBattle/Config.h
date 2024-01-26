@@ -12,5 +12,6 @@ namespace game
         static constexpr auto WINTER_FROSTBITE_DC = "WINTER_FROSTBITE_DC";
         static constexpr auto GROUP_SPOTTING_LIMIT = "GROUP_SPOTTING_LIMIT";
         static constexpr auto MAXIMUM_SPOTTING_LIFETIME = "MAXIMUM_SPOTTING_LIFETIME";
+        static constexpr auto GROUP_SEARCH_BASE_DC = "GROUP_SEARCH_BASE_DC";
     };
 }

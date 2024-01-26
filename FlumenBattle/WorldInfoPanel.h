@@ -57,6 +57,10 @@ class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
 
     world::interface::ResourceCounter *foodCounter;
 
+    world::interface::ResourceCounter *perceptionCounter;
+
+    world::interface::ResourceCounter *weightCounter;
+
     Array <CharacterItem> items;
 
     int selectionIndex {-1};

@@ -362,6 +362,38 @@ namespace world::group
         return characters.Get(index);
     }
 
+    SkillData Group::GetMostSkilledMember(SkillTypes skill) const
+    {
+        int bonus = INT_MIN;
+        character::Character *mostSkilledMember = nullptr;
+        for(auto &character : characters)
+        {
+            if(character.GetSkillProficiency(skill) > bonus)
+            {
+                bonus = character.GetSkillProficiency(skill);
+                mostSkilledMember = &character;
+            }
+        }
+
+        return {mostSkilledMember, bonus};
+    }
+
+    SkillData Group::GetLeastSkilledMember(SkillTypes skill) const
+    {
+        int bonus = INT_MAX;
+        character::Character *mostSkilledMember = nullptr;
+        for(auto &character : characters)
+        {
+            if(character.GetSkillProficiency(skill) < bonus)
+            {
+                bonus = character.GetSkillProficiency(skill);
+                mostSkilledMember = &character;
+            }
+        }
+
+        return {mostSkilledMember, bonus};
+    }
+
     Group *Group::GetOther()
     {
         if(encounter == nullptr)

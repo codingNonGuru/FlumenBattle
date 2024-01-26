@@ -48,6 +48,13 @@ namespace world::group
     class HumanMind;
     enum class GroupClasses;
 
+    struct SkillData
+    {
+        character::Character *Character;
+
+        int Bonus;
+    };
+
     class Group
     {
         friend class container::Pool <Group>;
@@ -171,6 +178,10 @@ namespace world::group
         character::Character *GetCharacter(int index);
 
         character::Character *GetLeader() const {return leader;}
+
+        SkillData GetMostSkilledMember(character::SkillTypes) const;
+
+        SkillData GetLeastSkilledMember(character::SkillTypes) const;
 
         Group *GetOther();
 

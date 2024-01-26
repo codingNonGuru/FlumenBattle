@@ -21,14 +21,6 @@ Integer ProficiencyHandler::GetLevelModifier(Proficiency proficiency)
     return (int)proficiency.Level;
 }
 
-Integer ProficiencyHandler::GetPerceptionBonus(const Character &character)
-{
-    auto levelModifier = character.level / 6;
-    auto perceptionModifier = GetLevelModifier(perception);
-    auto abilityModifier = character.GetAbility(AbilityTypes::WISDOM).Modifier;
-    return abilityModifier + perceptionModifier + levelModifier;
-}
-
 Integer ProficiencyHandler::GetWeaponBonus(const Character &character)
 {
     //auto weapon = character.GetSelectedWeapon();
@@ -106,22 +98,19 @@ void ProficiencyHandler::AddProficiency(Proficiency proficiency)
 {
     switch(proficiency.Type->Class)
     {
-        case ProficiencyClasses::PERCEPTION:
-            perception = proficiency;
-            break;
-        case ProficiencyClasses::MAGIC:
+        case CheckClasses::MAGIC:
             magicalTradition = proficiency;
             break;
-        case ProficiencyClasses::SAVE:
+        case CheckClasses::SAVE:
             *savingThrows.Add() = proficiency;
             break;
-        case ProficiencyClasses::WEAPON:
+        case CheckClasses::WEAPON:
             *weaponClasses.Add() = proficiency;
             break;
-        case ProficiencyClasses::ARMOR:
+        case CheckClasses::ARMOR:
             *armorClasses.Add() = proficiency;
             break;
-        case ProficiencyClasses::SKILL:
+        case CheckClasses::SKILL:
             *skills.Add() = proficiency;
             break;
     }

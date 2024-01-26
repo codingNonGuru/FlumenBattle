@@ -11,86 +11,92 @@ namespace world::character
     {
         static const ProficiencyType & BuildSurvivalSkill()
         {
-            static const ProficiencyType type = {ProficiencyClasses::SKILL, "Survival", SkillTypes::SURVIVAL, AbilityTypes::WISDOM};
+            static const ProficiencyType type = {CheckClasses::SKILL, "Survival", SkillTypes::SURVIVAL, AbilityTypes::WISDOM};
             return type;
         }
 
         static const ProficiencyType & BuildPersuasionSkill()
         {
-            static const ProficiencyType type = {ProficiencyClasses::SKILL, "Persuasion", SkillTypes::PERSUASION, AbilityTypes::CHARISMA};
+            static const ProficiencyType type = {CheckClasses::SKILL, "Persuasion", SkillTypes::PERSUASION, AbilityTypes::CHARISMA};
+            return type;
+        }
+
+        static const ProficiencyType & BuildPerceptionSkill()
+        {
+            static const ProficiencyType type = {CheckClasses::SKILL, "Perception", SkillTypes::PERCEPTION, AbilityTypes::WISDOM};
+            return type;
+        }
+
+        static const ProficiencyType & BuildStealthSkill()
+        {
+            static const ProficiencyType type = {CheckClasses::SKILL, "Stealth", SkillTypes::STEALTH, AbilityTypes::DEXTERITY};
             return type;
         }
 
     public:
-        static Proficiency BuildPerceptionProficiency(ProficiencyLevels level)
-        {
-            static ProficiencyType type = {ProficiencyClasses::PERCEPTION, "Perception"};
-            return {level, &type};
-        }
-
         static Proficiency BuildReflexSaveProficiency(ProficiencyLevels level)
         {
-            static ProficiencyType type = {ProficiencyClasses::SAVE, "Reflex save", SavingThrows::REFLEX_SAVE};
+            static ProficiencyType type = {CheckClasses::SAVE, "Reflex save", SavingThrows::REFLEX_SAVE};
             return {level, &type};
         }
 
         static Proficiency BuildFortitudeSaveProficiency(ProficiencyLevels level)
         {
-            static ProficiencyType type = {ProficiencyClasses::SAVE, "Fortitude save", SavingThrows::FORTITUDE_SAVE};
+            static ProficiencyType type = {CheckClasses::SAVE, "Fortitude save", SavingThrows::FORTITUDE_SAVE};
             return {level, &type};
         }
 
         static Proficiency BuildWillSaveProficiency(ProficiencyLevels level)
         {
-            static ProficiencyType type = {ProficiencyClasses::SAVE, "Will save", SavingThrows::WILL_SAVE};
+            static ProficiencyType type = {CheckClasses::SAVE, "Will save", SavingThrows::WILL_SAVE};
             return {level, &type};
         }
 
         static Proficiency BuildSimpleWeaponsProficiency(ProficiencyLevels level)
         {
-            static ProficiencyType type = {ProficiencyClasses::WEAPON, "Simple weapons", WeaponClasses::SIMPLE_WEAPONS};
+            static ProficiencyType type = {CheckClasses::WEAPON, "Simple weapons", WeaponClasses::SIMPLE_WEAPONS};
             return {level, &type};
         }
 
         static Proficiency BuildMartialWeaponsProficiency(ProficiencyLevels level)
         {
-            static ProficiencyType type = {ProficiencyClasses::WEAPON, "Martial weapons", WeaponClasses::MARTIAL_WEAPONS};
+            static ProficiencyType type = {CheckClasses::WEAPON, "Martial weapons", WeaponClasses::MARTIAL_WEAPONS};
             return {level, &type};
         }
 
         static Proficiency BuildAdvancedWeaponsProficiency(ProficiencyLevels level)
         {
-            static ProficiencyType type = {ProficiencyClasses::WEAPON, "Advanced weapons", WeaponClasses::ADVANCED_WEAPONS};
+            static ProficiencyType type = {CheckClasses::WEAPON, "Advanced weapons", WeaponClasses::ADVANCED_WEAPONS};
             return {level, &type};
         }
 
         static Proficiency BuildUnarmedCombatProficiency(ProficiencyLevels level)
         {
-            static ProficiencyType type = {ProficiencyClasses::WEAPON, "Unarmed combat", WeaponClasses::UNARMED_COMBAT};
+            static ProficiencyType type = {CheckClasses::WEAPON, "Unarmed combat", WeaponClasses::UNARMED_COMBAT};
             return {level, &type};
         }
 
         static Proficiency BuildArcaneMagicProficiency(ProficiencyLevels level)
         {
-            static ProficiencyType type = {ProficiencyClasses::MAGIC, "Arcane magic", MagicTraditions::ARCANE_MAGIC};
+            static ProficiencyType type = {CheckClasses::MAGIC, "Arcane magic", MagicTraditions::ARCANE_MAGIC};
             return {level, &type};
         }
 
         static Proficiency BuildDivineMagicProficiency(ProficiencyLevels level)
         {
-            static ProficiencyType type = {ProficiencyClasses::MAGIC, "Divine magic", MagicTraditions::DIVINE_MAGIC};
+            static ProficiencyType type = {CheckClasses::MAGIC, "Divine magic", MagicTraditions::DIVINE_MAGIC};
             return {level, &type};
         }
 
         static Proficiency BuildOccultMagicProficiency(ProficiencyLevels level)
         {
-            static ProficiencyType type = {ProficiencyClasses::MAGIC, "Occult magic", MagicTraditions::OCCULT_MAGIC};
+            static ProficiencyType type = {CheckClasses::MAGIC, "Occult magic", MagicTraditions::OCCULT_MAGIC};
             return {level, &type};
         }
 
         static Proficiency BuildPrimalMagicProficiency(ProficiencyLevels level)
         {
-            static ProficiencyType type = {ProficiencyClasses::MAGIC, "Primal magic", MagicTraditions::PRIMAL_MAGIC};
+            static ProficiencyType type = {CheckClasses::MAGIC, "Primal magic", MagicTraditions::PRIMAL_MAGIC};
             return {level, &type};
         }
 
@@ -100,6 +106,12 @@ namespace world::character
             switch(type)
             {
                 case SkillTypes::SURVIVAL:
+                    return {level, skillType};
+                case SkillTypes::PERSUASION:
+                    return {level, skillType};
+                case SkillTypes::PERCEPTION:
+                    return {level, skillType};
+                case SkillTypes::STEALTH:
                     return {level, skillType};
                 default:
                     return {level, nullptr};
@@ -114,8 +126,12 @@ namespace world::character
                     return BuildSurvivalSkill();
                 case SkillTypes::PERSUASION:
                     return BuildPersuasionSkill();
+                case SkillTypes::PERCEPTION:
+                    return BuildPerceptionSkill();
+                case SkillTypes::STEALTH:
+                    return BuildStealthSkill();
                 default:
-                    return {ProficiencyClasses::SKILL, "None", SkillTypes::NONE, AbilityTypes::STRENGTH};
+                    return {CheckClasses::SKILL, "None", SkillTypes::NONE, AbilityTypes::STRENGTH};
             }
         }
     };

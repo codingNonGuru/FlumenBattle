@@ -9,8 +9,6 @@
 #include "FlumenBattle/Utility/Utility.h"
 #include "FlumenBattle/Config.h"
 
-#define GROUP_SEARCH_DC 19
-
 static const auto NOURISHED_DURATION = 8 * 6;
 
 namespace world::group
@@ -210,23 +208,18 @@ namespace world::group
         auto isWinter = group.GetTile()->IsWinter();
         if(isWinter == true && group.GetCurrentSettlement() == nullptr)
         {
-            int survivalBonus = INT_MIN;
-            for(auto &character : group.characters)
-            {
-                if(character.GetSkillProficiency(SkillTypes::SURVIVAL) > survivalBonus)
-                    survivalBonus = character.GetSkillProficiency(SkillTypes::SURVIVAL);
-            }
+            auto survivalBonus = group.GetMostSkilledMember(character::SkillTypes::SURVIVAL).Bonus;
 
-            static const auto survivalDC = engine::ConfigManager::Get()->GetValue(game::ConfigValues::WINTER_SURVIVAL_DC).Integer;
-            auto success = utility::RollD20Dice(survivalDC, survivalBonus);
-            if(success.IsAnyFailure() == true)
+            static const auto WINTER_SURVIVAL_DC = engine::ConfigManager::Get()->GetValue(game::ConfigValues::WINTER_SURVIVAL_DC).Integer;
+            auto survivalCheck = utility::RollD20Dice(WINTER_SURVIVAL_DC, survivalBonus);
+            if(survivalCheck.IsAnyFailure() == true)
             {
                 for(auto &character : group.characters)
                 {
                     auto fortitudeBonus = character.GetFortitudeSaveBonus();
 
-                    static const auto frostBiteDC = engine::ConfigManager::Get()->GetValue(game::ConfigValues::WINTER_FROSTBITE_DC).Integer;
-                    auto frostBiteCheck = utility::RollD20Dice(frostBiteDC, fortitudeBonus);
+                    static const auto WINTER_FROSTBITE_DC = engine::ConfigManager::Get()->GetValue(game::ConfigValues::WINTER_FROSTBITE_DC).Integer;
+                    auto frostBiteCheck = utility::RollD20Dice(WINTER_FROSTBITE_DC, fortitudeBonus);
                     if(frostBiteCheck.IsCriticalSuccess() == false)
                     {
                         auto damage = utility::RollDice({utility::RollDies::D4, 1, 0});
@@ -245,14 +238,10 @@ namespace world::group
                     }
                 }
             }
-            else
-            {
-                
-            }
 
             group.CancelAction();
 
-            return {success, SkillTypes::SURVIVAL};
+            return {survivalCheck, character::SkillTypes::SURVIVAL};
         }
         else
         {
@@ -287,28 +276,17 @@ namespace world::group
             }
         } ();
 
-        auto perceptionBonus = INT_MIN;
-        for(auto &character : group.characters)
-        {
-            auto bonus = character.GetPerceptionProficiencyBonus();
-            if(bonus > perceptionBonus)
-                perceptionBonus = bonus;
-        }
+        auto perceptionBonus = group.GetMostSkilledMember(character::SkillTypes::PERCEPTION).Bonus;
 
-        auto stealthBonus = INT_MAX;
-        for(auto &character : spottedGroup->characters)
-        {
-            auto bonus = character.GetAbility(character::AbilityTypes::DEXTERITY).Modifier;
-            if(bonus < stealthBonus)
-                stealthBonus = bonus;
-        }
+        auto stealthBonus = group.GetLeastSkilledMember(character::SkillTypes::STEALTH).Bonus;
 
         auto modifier = perceptionBonus - stealthBonus;
 
-        auto perceptionCheck = utility::RollD20Dice(GROUP_SEARCH_DC, modifier);
+        static const auto GROUP_SEARCH_BASE_DC = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_SEARCH_BASE_DC).Integer;
+        auto perceptionCheck = utility::RollD20Dice(GROUP_SEARCH_BASE_DC, modifier);
         if(perceptionCheck.IsAnySuccess() == true)
         {
-            return {perceptionCheck, SkillTypes::PERCEPTION, spottedGroup};
+            return {perceptionCheck, character::SkillTypes::PERCEPTION, spottedGroup};
         }
 
         return {};
@@ -398,12 +376,7 @@ namespace world::group
             difficultyClass += group.travelActionData.Source->GetTravelPenalty().Value;
             difficultyClass += group.travelActionData.Destination->GetTravelPenalty().Value;
 
-            int survivalBonus = -100;
-            for(auto &character : group.characters)
-            {
-                if(character.GetSkillProficiency(SkillTypes::SURVIVAL) > survivalBonus)
-                    survivalBonus = character.GetSkillProficiency(SkillTypes::SURVIVAL);
-            }
+            auto survivalBonus = group.GetMostSkilledMember(character::SkillTypes::SURVIVAL).Bonus;
 
             auto roadBonus = group.travelActionData.Source->IsLinkedTo(group.travelActionData.Destination) ? 4 : 0;
 
@@ -417,7 +390,7 @@ namespace world::group
                 group.travelActionData.IsLost = false;
             }
 
-            return {success, SkillTypes::SURVIVAL};
+            return {success, character::SkillTypes::SURVIVAL};
         }
 
         if(group.travelActionData.Progress < group.action->GetDuration(group) / 2)
@@ -453,7 +426,7 @@ namespace world::group
     {
         auto difficultyClass = 10 + group.GetOther()->GetLeader()->GetWillSaveBonus();
 
-        auto modifier = group.GetLeader()->GetSkillProficiency(SkillTypes::PERSUASION);
+        auto modifier = group.GetLeader()->GetSkillProficiency(character::SkillTypes::PERSUASION);
 
         auto success = utility::RollD20Dice(difficultyClass, modifier);
 
@@ -466,7 +439,7 @@ namespace world::group
 
         group.SelectAction(GroupActions::ENGAGE, {true});
 
-        return {success, SkillTypes::PERSUASION};
+        return {success, character::SkillTypes::PERSUASION};
     }
 
     bool GroupActionValidator::CanTakeShortRest(Group &group, const GroupActionData &)
