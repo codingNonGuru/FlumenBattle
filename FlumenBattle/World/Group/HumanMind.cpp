@@ -151,7 +151,8 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
                     spottedGroup->GetHome()->GetName(),
                     worldTime.TotalHourCount, 
                     result.Success.IsCriticalSuccess(), 
-                    group.GetTile()->GetDistanceTo(*spottedGroup->GetTile())
+                    group.GetTile()->GetDistanceTo(*spottedGroup->GetTile()),
+                    spottedGroup->GetVisualPosition()
                 };
 
                 latestGroupSpotting = newSpotting;
@@ -167,7 +168,8 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
                     spottedGroup->GetHome()->GetName(),
                     worldTime.TotalHourCount, 
                     result.Success.IsCriticalSuccess(), 
-                    group.GetTile()->GetDistanceTo(*spottedGroup->GetTile())
+                    group.GetTile()->GetDistanceTo(*spottedGroup->GetTile()),
+                    spottedGroup->GetVisualPosition()
                 };
 
                 latestGroupSpotting = existingSpotting;                
@@ -516,4 +518,9 @@ const GroupSpotting &HumanMind::GetLatestGroupSpotting() const
 const container::Array <GroupSpotting *> &HumanMind::GetLatestFadings() const
 {
     return latestFadings;
+}
+
+const container::Pool <GroupSpotting> &HumanMind::GetGroupSightings() const
+{
+    return groupSpottings;
 }

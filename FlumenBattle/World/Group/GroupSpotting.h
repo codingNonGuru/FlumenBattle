@@ -31,6 +31,8 @@ namespace world::group
 
         int Distance;
 
+        Position2 VisualPosition;
+
         bool operator== (const int otherGroupId) {return otherGroupId == GroupUniqueId;}
     };
 }

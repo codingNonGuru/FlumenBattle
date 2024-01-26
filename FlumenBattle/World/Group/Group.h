@@ -182,6 +182,8 @@ namespace world::group
 
         settlement::Settlement *GetHome() const {return home;}
 
+        Position2 GetVisualPosition() const;
+
         const GroupAction * GetAction() const {return action;}
 
         bool IsDoing(GroupActions actionType) const;

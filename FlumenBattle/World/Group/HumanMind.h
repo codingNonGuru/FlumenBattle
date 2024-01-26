@@ -109,5 +109,7 @@ namespace world::group
         const GroupSpotting &GetLatestGroupSpotting() const;
 
         const container::Array <GroupSpotting *> &GetLatestFadings() const;
+
+        const container::Pool <GroupSpotting> &GetGroupSightings() const;
     };  
 };

@@ -189,6 +189,8 @@ void BattleTileModel::RenderCombatants()
 
     massShader->SetConstant(1.0f, "opacity");
 
+    massShader->SetConstant(Scale2(0.25f, 0.5f), "textureScale");
+
     massShader->SetConstant(115.0f, "spriteSize");
 
     combatantPositionBuffer->Bind(0);

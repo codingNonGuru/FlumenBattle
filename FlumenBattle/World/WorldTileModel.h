@@ -43,6 +43,8 @@ namespace world
 
         void RenderPlayerPath();
 
+        void RenderGroupSightings();
+
     public:
         void Initialize() override;
 

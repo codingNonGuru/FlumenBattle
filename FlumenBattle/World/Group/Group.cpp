@@ -479,4 +479,20 @@ namespace world::group
     {
         return GetCarriedWeight() > GetCarryCapacity();
     }
+
+    Position2 Group::GetVisualPosition() const
+    {
+        if(GetDestination() != nullptr)
+        {   
+            auto progress = GetTravelProgress();
+
+            auto startPosition = GetDestination()->Position;
+            auto endPosition = GetTravelStartPoint()->Position;
+            return endPosition * (1.0f - progress) + startPosition * progress;
+        }
+        else
+        {
+            return tile->Position;
+        }
+    }
 }

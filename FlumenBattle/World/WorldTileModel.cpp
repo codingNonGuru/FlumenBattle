@@ -27,6 +27,8 @@
 #include "FlumenBattle/World/Polity.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
+#include "FlumenBattle/World/Group/GroupSpotting.h"
+#include "FlumenBattle/Config.h"
 
 #define WORLD_TILE_SIZE WorldMap::WORLD_TILE_SIZE
 
@@ -518,6 +520,101 @@ void WorldTileModel::RenderPlayerPath()
     }
 }
 
+void WorldTileModel::RenderGroupSightings()
+{
+    static const auto GROUP_VISUAL_SCALE = Scale2(0.35f);
+
+    static const auto GROUP_VISUAL_OFFSET = Position2(0.0f, -15.0f);
+
+    static const auto GROUP_SPOTTING_LIMIT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_SPOTTING_LIMIT).Integer;
+
+    static DataBuffer *sightingPositionBuffer = nullptr;
+
+    static DataBuffer *sightingOffsetBuffer = nullptr;
+
+    static DataBuffer *sightingOpacityBuffer = nullptr;
+
+    static auto positions = container::Array <Position2> (GROUP_SPOTTING_LIMIT);
+
+    static auto offsets = container::Array <Position2> (GROUP_SPOTTING_LIMIT);
+
+    static auto opacities = container::Array <float> (GROUP_SPOTTING_LIMIT);
+
+    if(sightingPositionBuffer == nullptr)
+    {
+        sightingPositionBuffer = new DataBuffer(positions.GetMemoryCapacity(), positions.GetStart());
+
+        sightingOffsetBuffer = new DataBuffer(offsets.GetMemoryCapacity(), offsets.GetStart());
+
+        sightingOpacityBuffer = new DataBuffer(opacities.GetMemoryCapacity(), opacities.GetStart());
+    }
+
+    static auto massShader = ShaderManager::GetShader("ComplexMassSprite");
+
+    static auto sightingSprite = new Sprite(massShader, "MerryFellow");
+
+    positions.Reset();
+
+    offsets.Reset();
+
+    opacities.Reset();
+
+    auto &sightings = group::HumanMind::Get()->GetGroupSightings();
+
+    for(auto &sighting : sightings)
+    {
+        *positions.Add() = sighting.VisualPosition + GROUP_VISUAL_OFFSET;
+
+        *offsets.Add() = Position2(0.0f);
+
+        static auto &worldTime = WorldScene::Get()->GetTime();
+        auto hoursElapsed = worldTime.TotalHourCount - sighting.TimeInHours;
+
+        static const auto MAXIMUM_SPOTTING_LIFETIME = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_SPOTTING_LIFETIME).Integer;
+
+        float opacityFactor = (float)hoursElapsed / (float)MAXIMUM_SPOTTING_LIFETIME;
+
+        *opacities.Add() = 1.0f - opacityFactor;
+    }
+
+    sightingPositionBuffer->UploadData(positions.GetStart(), positions.GetMemorySize());
+
+    sightingOffsetBuffer->UploadData(offsets.GetStart(), offsets.GetMemorySize());
+
+    sightingOpacityBuffer->UploadData(opacities.GetStart(), opacities.GetMemorySize());
+
+    massShader->Bind();
+
+    massShader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	massShader->SetConstant(0.0f, "depth");
+
+    massShader->SetConstant(GROUP_VISUAL_SCALE.x, "spriteSize");
+
+    massShader->SetConstant(Scale2(1.0f), "textureScale");
+
+    sightingPositionBuffer->Bind(0);
+
+    sightingOffsetBuffer->Bind(1);
+
+    sightingOpacityBuffer->Bind(2);
+
+    sightingSprite->BindDefaultTextures();
+
+    glDrawArrays(GL_TRIANGLES, 0, 6 * positions.GetSize());
+
+    massShader->Unbind();
+
+    static auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+    static auto playerSprite = new Sprite(ShaderManager::GetShader("Sprite"), "MerryFellowBlueGlow");
+
+    playerSprite->Draw(
+        camera, 
+        {playerGroup->GetVisualPosition() + GROUP_VISUAL_OFFSET, GROUP_VISUAL_SCALE, Opacity(1.0f), DrawOrder(-1)}
+        );
+}
+
 void WorldTileModel::Render() 
 {
     auto startClock = high_resolution_clock::now();
@@ -577,26 +674,13 @@ void WorldTileModel::Render()
         }
     }
 
-    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    RenderGroupSightings();
+
+    /*auto playerGroup = WorldScene::Get()->GetPlayerGroup();
 
     for(auto &group : *worldScene->groups)
     {
-        auto position = [&] ()
-        { 
-            if(group.GetDestination() != nullptr)
-            {   
-                auto progress = group.GetTravelProgress();
-
-                auto startPosition = group.GetDestination()->Position;
-                auto endPosition = group.GetTravelStartPoint()->Position;
-                return endPosition * (1.0f - progress) + startPosition * progress;
-            }
-            else
-            {
-                return group.GetTile()->Position;
-            }
-        } ();
-
+        auto position = group.GetVisualPosition();
         position += Position2(0, -15);
 
         groupSprite->Draw(
@@ -612,7 +696,7 @@ void WorldTileModel::Render()
             auto tile = group.travelActionData.Route[i];
             dotSprite->Draw(camera, {tile->Position, Scale2(0.75f, 0.75f), Opacity(0.6f), DrawOrder(-2)});
         }
-    }
+    }*/
 
     RenderPlayerPath();
 

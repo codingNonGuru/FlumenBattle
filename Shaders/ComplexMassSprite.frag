@@ -2,7 +2,7 @@
 
 precision highp float;
 
-layout (location = 3) uniform float opacity;
+//layout (location = 3) uniform float opacity;
 
 // TEXTURES
 
@@ -12,9 +12,11 @@ layout (location = 0) out vec4 fragment;
 
 in vec2 textureCoordinates;
 
+in float opacity;
+
 void main()
 {	
 	fragment = texture(diffuse, textureCoordinates).rgba;
 	
-	//fragment.a *= opacity;
+	fragment.a *= opacity;
 }
