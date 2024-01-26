@@ -130,7 +130,22 @@ namespace world::group
 
         bool hasAttemptedPersuasion;
 
-        WorldTile *tile;
+        struct GroupLocation
+        {
+            friend class Group;
+
+        private:
+            WorldTile *Tile;
+
+            GroupLocation &operator =(WorldTile *tile) {Tile = tile;}
+
+        public:
+            operator WorldTile *() {return Tile;}
+
+            WorldTile *operator ->() {return Tile;}
+        };
+
+        GroupLocation tile;
 
         settlement::Settlement *home;
 

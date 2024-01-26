@@ -65,10 +65,10 @@ static container::Array <GroupSpotting *> latestFadings;
 
 HumanMind::HumanMind()
 {
-    static const auto spottingCount = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_SPOTTING_LIMIT).Integer;
-    groupSpottings.Initialize(spottingCount);
+    static const auto SPOTTING_COUNT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_SPOTTING_LIMIT).Integer;
+    groupSpottings.Initialize(SPOTTING_COUNT);
 
-    latestFadings.Initialize(spottingCount);
+    latestFadings.Initialize(SPOTTING_COUNT);
 
     OnActionSelected = new Delegate();
 
@@ -233,7 +233,7 @@ void HumanMind::DisableInput()
 
 void HumanMind::HandleSceneUpdate()
 {
-    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    static auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     if(playerGroup->GetCurrentSettlement() != previousSettlement)
     {
         if(playerGroup->GetCurrentSettlement() != nullptr)
@@ -290,7 +290,7 @@ const GroupActionResult & HumanMind::GetPerformedActionResult()
 
 void HumanMind::HandleSearch()
 {
-    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    static auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     if(playerGroup->ValidateAction(GroupActions::SEARCH))
     {
         playerGroup->SelectAction(GroupActions::SEARCH);
@@ -299,7 +299,7 @@ void HumanMind::HandleSearch()
 
 void HumanMind::HandleTakeQuickRest()
 {
-    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    static auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     if(playerGroup->ValidateAction(GroupActions::TAKE_SHORT_REST))
     {
         playerGroup->SelectAction(GroupActions::TAKE_SHORT_REST);
@@ -308,7 +308,7 @@ void HumanMind::HandleTakeQuickRest()
 
 void HumanMind::HandleTakeLongRest()
 {
-    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    static auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     if(playerGroup->ValidateAction(GroupActions::TAKE_LONG_REST))
     {
         playerGroup->SelectAction(GroupActions::TAKE_LONG_REST);
@@ -321,7 +321,7 @@ void HumanMind::HandleTravel()
     if(plannedPath.Tiles.GetSize() == 0)
         return;
 
-    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    static auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     if(playerGroup->ValidateAction(GroupActions::TRAVEL, {*plannedPath.Tiles[1]}) == false)
         return;
 
@@ -368,7 +368,7 @@ void HumanMind::HandleTravel()
 
 void HumanMind::HandleResumeTravel()
 {
-    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    static auto playerGroup = WorldScene::Get()->GetPlayerGroup();
 
     if(playerGroup->travelActionData.IsOnRoute == false)
         return;
@@ -378,8 +378,10 @@ void HumanMind::HandleResumeTravel()
 
 void HumanMind::HandleCancelTravel()
 {
-    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
-    if(playerGroup->travelActionData.IsOnRoute && playerGroup->GetTravelProgress() >= 0.5f)
+    static auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+    auto isHalfwayThrough = playerGroup->GetTravelProgress() >= 0.5f;
+    if(playerGroup->travelActionData.IsOnRoute && isHalfwayThrough == true)
         return;
 
     if(playerGroup->IsDoing(GroupActions::TRAVEL) == true)

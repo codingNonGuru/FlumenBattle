@@ -8,6 +8,8 @@
 #include "FlumenBattle/World/Character/CharacterAllocator.h"
 #include "FlumenBattle/World/Group/Encounter.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Group/GroupBatchMap.h"
+#include "FlumenBattle/World/Group/GroupBatch.h"
 
 #define CHARACTERS_PER_GROUP 16
 
@@ -42,7 +44,7 @@ namespace world::group
 
         battles = container::Pool <Encounter> (groupCount, battleMemory);
 
-        itemAllocator = container::PoolAllocator <character::Item> (groupCount, ITEMS_PER_GROUP);
+        itemAllocator = container::PoolAllocator <character::Item> (groupCount, ITEMS_PER_GROUP, itemMemory);
     }
 
     Group * GroupAllocator::Allocate()
@@ -61,6 +63,12 @@ namespace world::group
 
     void GroupAllocator::Free(Group *group, bool willRemoveFromHome)
     {
+        auto batch = GroupBatchMap::Get()->GetBatch(group->GetTile());
+        if(batch != nullptr)
+        {
+            batch->Remove(group);
+        }
+
         if(group->home != nullptr && willRemoveFromHome == true)
         {
             group->home->RemoveGroup(*group);

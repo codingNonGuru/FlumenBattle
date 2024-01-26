@@ -13,5 +13,7 @@ namespace game
         static constexpr auto GROUP_SPOTTING_LIMIT = "GROUP_SPOTTING_LIMIT";
         static constexpr auto MAXIMUM_SPOTTING_LIFETIME = "MAXIMUM_SPOTTING_LIFETIME";
         static constexpr auto GROUP_SEARCH_BASE_DC = "GROUP_SEARCH_BASE_DC";
+        static constexpr auto GROUP_BATCH_TILE_SIZE = "GROUP_BATCH_TILE_SIZE";
+        static constexpr auto GROUPS_PER_BATCH = "GROUPS_PER_BATCH";
     };
 }

@@ -13,6 +13,8 @@
 #include "FlumenBattle/World/Group/GroupMind.h"
 #include "FlumenBattle/World/Group/GroupAllocator.h"
 #include "FlumenBattle/World/Group/Types.h"
+#include "FlumenBattle/World/Group/GroupBatch.h"
+#include "FlumenBattle/World/Group/GroupBatchMap.h"
 
 using namespace world::character;
 
@@ -51,7 +53,7 @@ namespace world::group
 
         actionProgress = 0;
 
-        timeSinceLongRest = 100;
+        timeSinceLongRest = 0;
 
         action = nullptr;
         encounter = nullptr;
@@ -283,9 +285,21 @@ namespace world::group
         encounter = nullptr;
     }
 
-    void Group::SetTile(WorldTile *tile)
+    void Group::SetTile(WorldTile *newTile)
     {
-        this->tile = tile;
+        if(this->tile == newTile)
+            return;
+
+        auto oldBatch = GroupBatchMap::Get()->GetBatch(this->tile);
+        if(oldBatch != nullptr)
+        {
+            oldBatch->Remove(this);
+        }
+
+        auto newBatch = GroupBatchMap::Get()->GetBatch(newTile);
+        newBatch->Add(this);
+
+        this->tile = newTile;
     }
 
     void Group::AddItem(character::ItemTypes type, int amount)

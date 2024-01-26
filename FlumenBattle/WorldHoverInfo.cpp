@@ -10,6 +10,8 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Polity.h"
 #include "FlumenBattle/World/Science/Technology.h"
+#include "FlumenBattle/World/Group/GroupBatch.h"
+#include "FlumenBattle/World/Group/GroupBatchMap.h"
 
 using namespace world;
 
@@ -77,7 +79,19 @@ void WorldHoverInfo::DisplayWorldInfo()
     Phrase text;
     text << "Settlements: " << world->GetSettlements().GetSize() << "\n";
     text << "Polities: " << world->GetPolities().GetSize() << "\n";
-    text << "Groups: " << world->GetGroups().GetSize();
+    text << "Groups: " << world->GetGroups().GetSize() << "\n";
+    text << "Groups locations: " << [&]
+    {
+        static auto &batches = group::GroupBatchMap::Get()->GetBatches();
+
+        auto count = 0;
+        for(auto batch = batches.GetStart(); batch != batches.GetEnd(); ++batch)
+        {
+            count += batch->GetGroupCount();
+        }
+
+        return count;
+    } ();
 
     infoLabel->Setup(text);
 

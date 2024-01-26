@@ -24,6 +24,8 @@ namespace world
     namespace group
     {
         class GroupDynamics;
+        class GroupBatch;
+        class Group;
     }
 
     class WorldAllocator : public core::Singleton <WorldAllocator>
@@ -43,6 +45,13 @@ namespace world
         container::Grid <WorldTile>::Memory worldTileMemory;
 
         container::Grid <SimulationDomain>::Memory simulationMemory;
+
+        container::Grid <group::GroupBatch>::Memory batchMemory;
+
+        container::PoolAllocator <group::Group *>::Memory groupBatchMemory;
+
+
+        container::PoolAllocator <group::Group *> groupBatchAllocator;
 
         void AllocateMap(WorldMap &, container::SmartBlock< container::Array <WorldTilePointer>, 4> &, int);
 
