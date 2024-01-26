@@ -22,6 +22,8 @@ namespace world::group
 
         void Remove(Group *);
 
+        const container::Pool <Group *> &GetGroups() {return groups;}
+
         int GetGroupCount() const {return groups.GetSize();}
     };
 

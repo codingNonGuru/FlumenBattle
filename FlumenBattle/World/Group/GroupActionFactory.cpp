@@ -1,6 +1,7 @@
 #include "FlumenBattle/World/Group/GroupActionFactory.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupBatchMap.h"
 #include "FlumenBattle/World/Group/Encounter.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldTile.h"
@@ -260,16 +261,16 @@ namespace world::group
             return {};
         }
 
-        auto &groups = WorldScene::Get()->GetGroups();
-
-        if(groups.GetSize() == 1)
+        auto nearbyGroups = WorldScene::Get()->GetNearbyGroups(group.GetTile());
+        
+        if(nearbyGroups.Groups.GetSize() == 1)
             return {};
 
         auto spottedGroup = [&]
         {
             while(true)
             {
-                auto other = groups.GetRandom();
+                auto other = *nearbyGroups.Groups.GetRandom();
 
                 if(other != &group)
                     return other;

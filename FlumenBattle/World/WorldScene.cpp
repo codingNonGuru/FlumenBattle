@@ -13,6 +13,7 @@
 #include "FlumenBattle/World/Disaster/Earthquake.h"
 #include "FlumenBattle/World/Group/GroupAllocator.h"
 #include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupBatchMap.h"
 #include "FlumenBattle/World/Group/GroupFactory.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/Path.h"
@@ -441,5 +442,10 @@ namespace world
         }
 
         return nullptr;
+    }
+
+    const group::GroupBuffer WorldScene::GetNearbyGroups(WorldTile *tile, int range)
+    {
+        return group::GroupBatchMap::Get()->GetNearbyGroups(tile, range);
     }
 }

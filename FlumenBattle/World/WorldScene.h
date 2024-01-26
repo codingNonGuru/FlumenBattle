@@ -28,6 +28,7 @@ namespace world
     {
         class Group;
         class Encounter;
+        struct GroupBuffer;
     }
 
     class WorldScene : Scene
@@ -133,6 +134,8 @@ namespace world
         int GetTimeSpeed() const {return time;}
 
         group::Group *GetGroup(int);
+
+        const group::GroupBuffer GetNearbyGroups(WorldTile *, int = 1);
 
         void InitiateEncounter(group::Group *, group::Group *);
 
