@@ -534,11 +534,15 @@ void WorldTileModel::RenderGroupSightings()
 
     static DataBuffer *sightingOpacityBuffer = nullptr;
 
+    static DataBuffer *sightingFlipBuffer = nullptr;
+
     static auto positions = container::Array <Position2> (GROUP_SPOTTING_LIMIT);
 
     static auto offsets = container::Array <Position2> (GROUP_SPOTTING_LIMIT);
 
     static auto opacities = container::Array <float> (GROUP_SPOTTING_LIMIT);
+
+    static auto flipStates = container::Array <int> (GROUP_SPOTTING_LIMIT);
 
     if(sightingPositionBuffer == nullptr)
     {
@@ -547,6 +551,8 @@ void WorldTileModel::RenderGroupSightings()
         sightingOffsetBuffer = new DataBuffer(offsets.GetMemoryCapacity(), offsets.GetStart());
 
         sightingOpacityBuffer = new DataBuffer(opacities.GetMemoryCapacity(), opacities.GetStart());
+
+        sightingFlipBuffer = new DataBuffer(flipStates.GetMemoryCapacity(), flipStates.GetStart());
     }
 
     static auto massShader = ShaderManager::GetShader("ComplexMassSprite");
@@ -558,6 +564,8 @@ void WorldTileModel::RenderGroupSightings()
     offsets.Reset();
 
     opacities.Reset();
+
+    flipStates.Reset();
 
     auto &sightings = group::HumanMind::Get()->GetGroupSightings();
 
@@ -575,6 +583,8 @@ void WorldTileModel::RenderGroupSightings()
         float opacityFactor = (float)hoursElapsed / (float)MAXIMUM_SPOTTING_LIFETIME;
 
         *opacities.Add() = 1.0f - opacityFactor;
+
+        *flipStates.Add() = (int)sighting.IsFacingRightwards;
     }
 
     sightingPositionBuffer->UploadData(positions.GetStart(), positions.GetMemorySize());
@@ -582,6 +592,8 @@ void WorldTileModel::RenderGroupSightings()
     sightingOffsetBuffer->UploadData(offsets.GetStart(), offsets.GetMemorySize());
 
     sightingOpacityBuffer->UploadData(opacities.GetStart(), opacities.GetMemorySize());
+
+    sightingFlipBuffer->UploadData(flipStates.GetStart(), flipStates.GetMemorySize());
 
     massShader->Bind();
 
@@ -598,6 +610,8 @@ void WorldTileModel::RenderGroupSightings()
     sightingOffsetBuffer->Bind(1);
 
     sightingOpacityBuffer->Bind(2);
+
+    sightingFlipBuffer->Bind(3);
 
     sightingSprite->BindDefaultTextures();
 

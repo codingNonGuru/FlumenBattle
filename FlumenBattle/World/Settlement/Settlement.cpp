@@ -342,7 +342,7 @@ void Settlement::DecideProduction()
     {
         *currentProduction = SettlementProductionFactory::Get()->Create(SettlementProductionOptions::PATROL);
     }
-    else if(population >= 30 && hasAvailableColonySpots == true)
+    else if(population >= 5 && hasAvailableColonySpots == true)
     {
         auto colonySpot = FindColonySpot();
         if(colonySpot != nullptr)

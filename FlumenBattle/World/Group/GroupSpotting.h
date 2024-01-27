@@ -33,6 +33,8 @@ namespace world::group
 
         Position2 VisualPosition;
 
+        bool IsFacingRightwards;
+
         bool operator== (const int otherGroupId) {return otherGroupId == GroupUniqueId;}
     };
 }

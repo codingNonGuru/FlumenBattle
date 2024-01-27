@@ -142,38 +142,26 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
             if(existingSpotting == nullptr)
             {
                 auto newSpotting = groupSpottings.Add();
-                *newSpotting = 
-                {
-                    spottedGroup, 
-                    spottedGroup->GetUniqueId(),
-                    spottedGroup->GetClass(),
-                    spottedGroup->GetLeader()->GetName(),
-                    spottedGroup->GetHome()->GetName(),
-                    worldTime.TotalHourCount, 
-                    result.Success.IsCriticalSuccess(), 
-                    group.GetTile()->GetDistanceTo(*spottedGroup->GetTile()),
-                    spottedGroup->GetVisualPosition()
-                };
-
                 latestGroupSpotting = newSpotting;
             }
             else
             {
-                *existingSpotting = 
-                {
-                    spottedGroup, 
-                    spottedGroup->GetUniqueId(),
-                    spottedGroup->GetClass(),
-                    spottedGroup->GetLeader()->GetName(),
-                    spottedGroup->GetHome()->GetName(),
-                    worldTime.TotalHourCount, 
-                    result.Success.IsCriticalSuccess(), 
-                    group.GetTile()->GetDistanceTo(*spottedGroup->GetTile()),
-                    spottedGroup->GetVisualPosition()
-                };
-
                 latestGroupSpotting = existingSpotting;                
             }
+
+            *latestGroupSpotting = 
+            {
+                spottedGroup, 
+                spottedGroup->GetUniqueId(),
+                spottedGroup->GetClass(),
+                spottedGroup->GetLeader()->GetName(),
+                spottedGroup->GetHome()->GetName(),
+                worldTime.TotalHourCount, 
+                result.Success.IsCriticalSuccess(), 
+                group.GetTile()->GetDistanceTo(*spottedGroup->GetTile()),
+                spottedGroup->GetVisualPosition(),
+                spottedGroup->GetDestination() != nullptr ? (spottedGroup->GetDestination()->Position - spottedGroup->GetTravelStartPoint()->Position).x < 0.0f : true
+            };
 
             OnGroupSpotted->Invoke();
         }
