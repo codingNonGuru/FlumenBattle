@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.28)
 set(CMAKE_BUILD_TYPE None)
 #set(CMAKE_CXX_SCAN_FOR_MODULES ON)
 #set(CXX_SCAN_FOR_MODULES ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -fpermissive -g -w")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -fpermissive -w -g")
 
 set(CMAKE_CXX_STANDARD 20)
 

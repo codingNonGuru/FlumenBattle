@@ -6,67 +6,9 @@
 #include "FlumenBattle/World/WorldMap.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/WorldAllocator.h"
+#include "FlumenBattle/World/TileBufferManager.h"
 
 using namespace world;
-
-#define TILES_PER_BUFFER 1024
-
-#define TILE_BUFFERS_PER_THREAD 8
-
-TileBuffer::TileBuffer() : Tiles(TILES_PER_BUFFER) {}
-
-void TileBuffer::Initialize(TileBufferBatch *batch) {Batch = batch;}
-
-TileBuffer::~TileBuffer()
-{
-    Batch->Buffers.Remove(Tiles.GetStart());
-}
-
-TileBufferBatch::TileBufferBatch() : Buffers(TILE_BUFFERS_PER_THREAD)
-{
-    for(int i = 0; i < Buffers.GetCapacity(); ++i)
-    {
-        auto buffer = Buffers.Add();
-
-        buffer->Initialize(this);
-    }
-
-    Buffers.Reset();
-}
-
-TileBufferBatch bufferBatches[engine::ThreadManager::GetThreadCount() + 2];
-
-static auto bufferBatchMap = container::StaticMap <TileBufferBatch *, std::thread::id> (engine::ThreadManager::GetThreadCount() + 2);
-
-auto lastBatchIndex = 0;
-
-TileBuffer *GetUsableBuffer()
-{
-    const auto threadId = std::this_thread::get_id();
-
-    auto batchPointer = bufferBatchMap.Get(threadId);
-    if(batchPointer != nullptr)
-    {
-        auto batch = *batchPointer;
-
-        auto buffer = batch->Buffers.Add();
-        buffer->Tiles.Reset();
-
-        return buffer;
-    }
-
-    batchPointer = bufferBatchMap.Add(threadId);
-
-    *batchPointer = &bufferBatches[lastBatchIndex];
-    lastBatchIndex++;
-
-    auto batch = *batchPointer;
-        
-    auto buffer = batch->Buffers.Add();
-    buffer->Tiles.Reset();
-
-    return buffer;
-}
 
 WorldMap::WorldMap(Length size) 
 {
@@ -93,9 +35,9 @@ WorldMap::WorldMap(Length size)
     }
 }
 
-const TileBuffer WorldMap::GetTileRing(WorldTile* tile, Integer range)
+const TileBuffer <WorldTile> WorldMap::GetTileRing(WorldTile* tile, Integer range)
 {
-    auto buffer = GetUsableBuffer();
+    auto buffer = TileBufferManager <WorldTile>::Get()->GetUsableBuffer();
 
     for(Integer x = -range; x <= range; ++x)
     {
@@ -118,9 +60,9 @@ const TileBuffer WorldMap::GetTileRing(WorldTile* tile, Integer range)
     return std::move(*buffer);
 }
 
-const TileBuffer WorldMap::GetNearbyTiles(WorldTile* tile, Integer range)
+const TileBuffer <WorldTile> WorldMap::GetNearbyTiles(WorldTile* tile, Integer range)
 {
-    auto buffer = GetUsableBuffer();
+    auto buffer = TileBufferManager <WorldTile>::Get()->GetUsableBuffer();
 
     for(Integer x = -range; x <= range; ++x)
     {

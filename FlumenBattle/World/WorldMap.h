@@ -3,46 +3,14 @@
 #include "FlumenCore/Conventions.hpp"
 #include "FlumenCore/Container/Block.hpp"
 
+#include "FlumenBattle/World/TileBuffer.h"
+
 namespace world
 {
     struct WorldTile;
+
+    template <typename TileType>
     struct TileBuffer;
-
-    struct TileBufferBatch
-    {
-        container::Pool <TileBuffer> Buffers;
-
-        TileBufferBatch();
-    };
-
-    struct TileBuffer
-    {
-        container::Array <WorldTile *> Tiles;
-
-        TileBufferBatch *Batch;
-
-        TileBuffer();
-
-        void Initialize(TileBufferBatch *);
-
-        ~TileBuffer();
-
-        TileBuffer(const TileBuffer &) = delete;
-
-        TileBuffer& operator=(TileBuffer &buffer) = delete;
-
-        TileBuffer(TileBuffer &&buffer) {Tiles = buffer.Tiles; Batch = buffer.Batch;}
-
-        TileBuffer& operator=(TileBuffer &&buffer) {Tiles = buffer.Tiles; Batch = buffer.Batch;}
-
-        bool operator== (WorldTile **tileStart) {return Tiles.GetStart() == tileStart;}
-
-        int GetSize() const {return Tiles.GetSize();}
-
-        auto begin() {return container::Array <WorldTile *>::Iterator <WorldTile *> {Tiles, Tiles.GetStart()};}
-
-        auto end() {return container::Array <WorldTile *>::Iterator <WorldTile *> {Tiles, Tiles.GetEnd()};}
-    };
 
     class WorldMap
     {
@@ -85,11 +53,11 @@ namespace world
 
         WorldTile* GetEmptyTileAroundTile(WorldTile *, Integer);
 
-        const TileBuffer GetNearbyTiles(WorldTile*, Integer);
+        const TileBuffer <WorldTile> GetNearbyTiles(WorldTile*, Integer);
 
         const container::Block <WorldTile *, 6> GetNearbyTiles(WorldTile*);
 
-        const TileBuffer GetTileRing(WorldTile*, Integer);
+        const TileBuffer <WorldTile> GetTileRing(WorldTile*, Integer);
 
         const int GetSize() const {return tiles.GetWidth();}
 

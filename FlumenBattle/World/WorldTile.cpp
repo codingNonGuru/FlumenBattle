@@ -77,7 +77,7 @@ void WorldTile::Initialize()
     Shade = color;
 }
 
-const TileBuffer WorldTile::GetNearbyTiles(Integer range)
+const TileBuffer <WorldTile> WorldTile::GetNearbyTiles(Integer range)
 {
     return map->GetNearbyTiles(this, range);
 }
@@ -87,7 +87,7 @@ const container::Block <WorldTile *, 6> WorldTile::GetNearbyTiles()
     return map->GetNearbyTiles(this);
 }
 
-const TileBuffer WorldTile::GetTileRing(Integer range)
+const TileBuffer <WorldTile> WorldTile::GetTileRing(Integer range)
 {
     return map->GetTileRing(this, range);
 }

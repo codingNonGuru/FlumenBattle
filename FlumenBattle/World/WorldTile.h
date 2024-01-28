@@ -28,6 +28,7 @@ namespace world
 
 namespace world
 {
+    template <typename TileType>
     struct TileBuffer; 
 
     struct WorldTile
@@ -113,11 +114,11 @@ namespace world
             return angle;//angle + angle > 0 ? angle : (TWO_PI + angle);
         }
 
-        const TileBuffer GetNearbyTiles(Integer);
+        const TileBuffer <WorldTile> GetNearbyTiles(Integer);
 
         const container::Block <WorldTile *, 6> GetNearbyTiles();
 
-        const TileBuffer GetTileRing(Integer);
+        const TileBuffer <WorldTile> GetTileRing(Integer);
 
         WorldTile * GetEmptyTileInRange(Integer);
 
