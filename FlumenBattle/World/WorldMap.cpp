@@ -34,9 +34,9 @@ TileBufferBatch::TileBufferBatch() : Buffers(TILE_BUFFERS_PER_THREAD)
     Buffers.Reset();
 }
 
-TileBufferBatch bufferBatches[engine::ThreadManager::GetThreadCount() + 1];
+TileBufferBatch bufferBatches[engine::ThreadManager::GetThreadCount() + 2];
 
-static auto bufferBatchMap = container::StaticMap <TileBufferBatch *, std::thread::id> (engine::ThreadManager::GetThreadCount() + 1);
+static auto bufferBatchMap = container::StaticMap <TileBufferBatch *, std::thread::id> (engine::ThreadManager::GetThreadCount() + 2);
 
 auto lastBatchIndex = 0;
 

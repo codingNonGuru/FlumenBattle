@@ -210,27 +210,28 @@ namespace world
                     for(auto &settlement : input.Settlements)
                     {
                         output.Value++;
-                        //settlement->Update();
+                        settlement->Update();
+
                     }
                 }, buffers[i], results);
             }
 
             engine::ThreadManager::Get()->AwaitThreadFinish();
 
-            std::cout << settlements->GetSize() << " ---- ";
-            for(auto i = 0; i < threadCount; ++i)
-                std::cout << results.GetResult(i).Value << " ";
-            std::cout<<"\n";
+            //std::cout << settlements->GetSize() << " ---- ";
+            //for(auto i = 0; i < threadCount; ++i)
+                //std::cout << results.GetResult(i).Value << " ";
+            //std::cout<<"\n";
         };
 
         auto refreshSettlements = [this]
         {
-            auto startClock = high_resolution_clock::now();
+            
 
-            for(auto &settlement : *settlements)
+            /*for(auto &settlement : *settlements)
             {
                 settlement.Update();
-            }
+            }*/
 
             for(auto &settlement : *settlements)
             {
@@ -247,14 +248,31 @@ namespace world
                 settlement.UpdatePolitics();
             }
 
-            auto stop = high_resolution_clock::now();
-            auto duration = duration_cast<microseconds>(stop - startClock);
-            //std::cout << "settlement refresh duration " << duration.count() << "\n";
+
         };
 
-        //refreshSettlementsThreaded();
+        static auto index = 0;
+        static auto durationSum = 0;
+
+        auto startClock = high_resolution_clock::now();
+
+        refreshSettlementsThreaded();
 
         refreshSettlements();
+
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<microseconds>(stop - startClock);
+
+        durationSum += duration.count();
+        index++;
+
+        if(index == 60)
+        {
+            std::cout << "settlement refresh duration " << durationSum / 60 << ", per settlement: " << float(durationSum / 60) / float(settlements->GetSize()) << "\n";
+
+            index = 0;
+            durationSum = 0;
+        }
 
         if(time.IsNewDay == true)
         {

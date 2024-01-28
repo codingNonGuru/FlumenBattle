@@ -167,6 +167,7 @@ world::WorldTile * Settlement::FindColonySpot()
 
     if(bestTile == nullptr)
     {
+        mutex.unlock();
         return nullptr;
     }
 
@@ -279,6 +280,10 @@ void Settlement::GrowBorders()
     if(areNearbyTilesTaken == true)
         return;
 
+    static std::mutex mutex;
+
+    mutex.lock();
+
     auto findNewTileInRing = [this] (int distance) -> WorldTile *
     {
         auto tileRing = location->GetTileRing(distance);
@@ -314,10 +319,6 @@ void Settlement::GrowBorders()
 
         return newTile;
     };
-
-    static std::mutex mutex;
-
-    mutex.lock();
 
     auto newTile = findNewTileInRing(2);
     if(newTile != nullptr)

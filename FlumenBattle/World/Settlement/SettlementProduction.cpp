@@ -1,3 +1,5 @@
+#include <mutex>
+
 #include "SettlementProduction.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Group/GroupDynamics.h"
@@ -112,6 +114,9 @@ void SettlementProductionFinisher::FinishFarm(Settlement &settlement)
 
 void SettlementProductionFinisher::FinishSettlers(Settlement &settlement)
 {
+    static std::mutex mutex;
+    mutex.lock();
+
     auto polity = settlement.polity;
     auto target = settlement.currentProduction->data.colonizationTarget;
 
@@ -142,6 +147,8 @@ void SettlementProductionFinisher::FinishSettlers(Settlement &settlement)
             settlement.KillPopulation();
         }
     }
+
+    mutex.unlock();
 }
 
 void SettlementProductionFinisher::FinishIrrigation(Settlement &settlement)

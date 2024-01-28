@@ -441,7 +441,7 @@ namespace utility
             //std::cout<<"length "<<startTile->GetDistanceTo(*endTile)<<"\n";
             auto stop = high_resolution_clock::now();
             auto duration = duration_cast<microseconds>(stop - start);
-            std::cout <<"duration " << duration.count() << "\n";
+            //std::cout <<"duration " << duration.count() << "\n";
 
             auto complexity = championPath->Content.Distance;
             visitedTiles.Reset();
