@@ -49,12 +49,12 @@ WorldAllocator::WorldAllocator()
     world::character::CharacterAllocator::Get()->PreallocateMaximumMemory();
 }
 
-void WorldAllocator::AllocateMap(WorldMap &map, container::SmartBlock< container::Array <WorldTilePointer>, 4> &nearbyTileBuffers, int size)
+void WorldAllocator::AllocateMap(WorldMap &map/*, container::SmartBlock< container::Array <WorldTilePointer>, 4> &nearbyTileBuffers*/, int size)
 {
-    for(int i = 0; i < 4; ++i)
+    /*for(int i = 0; i < 4; ++i)
     {
         nearbyTileBuffers.Get(i)->Initialize(size * size, nearbyTileMemories[i]);
-    }
+    }*/
 
     auto height = size;
     map.tiles.Initialize(size, height, worldTileMemory);

@@ -23,6 +23,12 @@ namespace world::group
 
         ~GroupBuffer();
 
+        GroupBuffer(const GroupBuffer &) = delete;
+
+        GroupBuffer(GroupBuffer &&buffer) {Groups = buffer.Groups;}
+
+        GroupBuffer& operator=(GroupBuffer &&buffer) {Groups = buffer.Groups;}
+
         bool operator== (Group **groupStart) {return Groups.GetStart() == groupStart;}
     };
 

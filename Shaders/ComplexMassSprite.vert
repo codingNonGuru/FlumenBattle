@@ -44,14 +44,6 @@ out float opacity;
 
 void main()
 {	
-	/*vec2 vertices[6] = vec2[6](
-		vec2(-0.5f, -0.5f), 
-		vec2(0.5f, -0.5f), 
-		vec2(0.5f, 0.5f), 
-		vec2(-0.5f, -0.5f), 
-		vec2(0.5f, 0.5f), 
-		vec2(-0.5f, 0.5f));*/
-
 	vec2 vertices[4] = vec2[4](
 		vec2(-0.5f, -0.5f), 
 		vec2(0.5f, -0.5f), 

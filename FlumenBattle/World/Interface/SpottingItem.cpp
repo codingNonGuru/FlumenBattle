@@ -75,6 +75,18 @@ void SpottingItem::HandleUpdate()
     {
         opacity_ = BASE_OPACITY;
     }
+
+    if(isHovered_ == true)
+    {
+        group::HumanMind::Get()->SetHoveredSpotting(spotting);
+    }
+    else
+    {
+        if(group::HumanMind::Get()->GetHoveredSpotting() == spotting)
+        {
+            group::HumanMind::Get()->SetHoveredSpotting(nullptr);
+        }
+    }
 }
 
 void SpottingItem::HandleLeftClick()

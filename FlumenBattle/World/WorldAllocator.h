@@ -53,7 +53,7 @@ namespace world
 
         container::PoolAllocator <group::Group *> groupBatchAllocator;
 
-        void AllocateMap(WorldMap &, container::SmartBlock< container::Array <WorldTilePointer>, 4> &, int);
+        void AllocateMap(WorldMap &/*, container::SmartBlock< container::Array <WorldTilePointer>, 4> &*/, int);
 
         void AllocateSociety(int);
 

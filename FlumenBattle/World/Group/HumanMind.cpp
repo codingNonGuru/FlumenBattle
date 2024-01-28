@@ -63,6 +63,8 @@ static GroupSpotting *latestGroupSpotting = nullptr;
 
 static container::Array <GroupSpotting *> latestFadings;
 
+static const GroupSpotting *hoveredGroupSpotting = nullptr;
+
 HumanMind::HumanMind()
 {
     static const auto SPOTTING_COUNT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_SPOTTING_LIMIT).Integer;
@@ -511,4 +513,14 @@ const container::Array <GroupSpotting *> &HumanMind::GetLatestFadings() const
 const container::Pool <GroupSpotting> &HumanMind::GetGroupSightings() const
 {
     return groupSpottings;
+}
+
+const GroupSpotting *HumanMind::GetHoveredSpotting() const
+{
+    return hoveredGroupSpotting;
+}
+
+void HumanMind::SetHoveredSpotting(const GroupSpotting *sighting)
+{
+    hoveredGroupSpotting = sighting;
 }

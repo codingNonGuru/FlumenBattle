@@ -94,7 +94,7 @@ namespace utility
         {
             auto start = steady_clock::now();
 
-            auto &tiles = centerTile->GetNearbyTiles(range);
+            auto tiles = centerTile->GetNearbyTiles(range);
             for(auto &tile : tiles)
             {
                 tile->PathData.IsVisited = false;
@@ -119,7 +119,7 @@ namespace utility
                     if(tile.Tile->PathData.IsVisited == false)
                         continue;
 
-                    auto &nearbyTiles = tile.Tile->GetNearbyTiles();
+                    auto nearbyTiles = tile.Tile->GetNearbyTiles();
                     for(auto &nearbyTile : nearbyTiles)
                     {
                         if(nearbyTile->PathData.IsVisited == false && nearbyTile->PathData.IsToBeVisited == true)
@@ -155,7 +155,7 @@ namespace utility
         {
             auto start = high_resolution_clock::now();
 
-            auto &tiles = centerTile->GetNearbyTiles(range);
+            auto tiles = centerTile->GetNearbyTiles(range);
             for(auto &tile : tiles)
             {
                 tile->PathData.IsVisited = false;
@@ -181,7 +181,7 @@ namespace utility
                     if(tile.Tile->PathData.IsVisited == false)
                         continue;
 
-                    auto &nearbyTiles = tile.Tile->GetNearbyTiles();
+                    auto nearbyTiles = tile.Tile->GetNearbyTiles();
                     for(auto &nearbyTile : nearbyTiles)
                     {
                         if(nearbyTile->PathData.IsVisited == false && nearbyTile->PathData.IsToBeVisited == true)
@@ -225,7 +225,7 @@ namespace utility
         {
             auto start = high_resolution_clock::now();
 
-            auto &tiles = centerTile->GetNearbyTiles(range);
+            auto tiles = centerTile->GetNearbyTiles(range);
             for(auto &tile : tiles)
             {
                 tile->PathData.IsVisited = false;
@@ -257,7 +257,7 @@ namespace utility
 
                     auto visitedNeighbourCount = 0;
 
-                    auto &nearbyTiles = tile.Tile->GetNearbyTiles();
+                    auto nearbyTiles = tile.Tile->GetNearbyTiles();
                     for(auto &nearbyTile : nearbyTiles)
                     {
                         if(nearbyTile->PathData.IsVisited == false && nearbyTile->PathData.IsToBeVisited == true)
@@ -327,7 +327,7 @@ namespace utility
             auto coordinates = (startTile->HexCoordinates + endTile->HexCoordinates) / 2;
             TileType *middleTile = startTile->GetNeighbor(endTile->HexCoordinates - coordinates);
 
-            auto &tiles = middleTile->GetNearbyTiles(range);
+            auto tiles = middleTile->GetNearbyTiles(range);
             for(auto &tile : tiles)
             {
                 tile->PathData.IsVisited = false;
@@ -335,7 +335,7 @@ namespace utility
                 tile->PathData.IsTotallyVisited = false;
             }
 
-            auto &ring = middleTile->GetTileRing(range + 1);
+            auto ring = middleTile->GetTileRing(range + 1);
             for(auto &tile : ring)
             {
                 tile->PathData.IsVisited = true;
@@ -368,8 +368,6 @@ namespace utility
                 typename TileGraph::Node *bestNode = nullptr;
                 TileType *bestTile = nullptr;
 
-                auto aloha = startTile->GetNearbyTiles();
-                
                 for(auto &tile : visitedTiles)
                 {
                     if(tile.Tile->PathData.IsVisited == false)
@@ -381,7 +379,6 @@ namespace utility
                     auto visitedNeighbourCount = 0;
 
                     auto &nearbyTiles = tile.Tile->GetNearbyTiles();
-                    aloha = nearbyTiles;
                     for(auto &nearbyTile : nearbyTiles)
                     {
                         if(nearbyTile->PathData.IsVisited == false && nearbyTile->PathData.IsToBeVisited == true)

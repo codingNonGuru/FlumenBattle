@@ -54,7 +54,7 @@ const GroupBuffer GroupBatchMap::GetNearbyGroups(WorldTile *tile, int range) con
         }   
     }
 
-    return *newBuffer;
+    return std::move(*newBuffer);
 }
 
 GroupBuffer::GroupBuffer() : Groups(GROUPS_PER_VICINITY_BUFFER) {}

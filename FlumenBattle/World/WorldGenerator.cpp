@@ -144,10 +144,9 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::G
                 continue;
 
             auto mountainCount = 0;
-            auto &nearbyTiles = tile->GetNearbyTiles(1);
-            for(auto nearbyTileIterator = nearbyTiles.GetStart(); nearbyTileIterator != nearbyTiles.GetEnd(); ++nearbyTileIterator)
+            auto nearbyTiles = tile->GetNearbyTiles();
+            for(auto &nearbyTile : nearbyTiles)
             {
-                auto nearbyTile = *nearbyTileIterator;
                 if(nearbyTile->HasRelief(WorldReliefs::MOUNTAINS))
                     mountainCount++;
             }
@@ -189,10 +188,9 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::G
                 continue;
 
             auto mountainCount = 0;
-            auto &nearbyTiles = tile->GetNearbyTiles(1);
-            for(auto nearbyTileIterator = nearbyTiles.GetStart(); nearbyTileIterator != nearbyTiles.GetEnd(); ++nearbyTileIterator)
+            auto nearbyTiles = tile->GetNearbyTiles(1);
+            for(auto &nearbyTile : nearbyTiles)
             {
-                auto nearbyTile = *nearbyTileIterator;
                 if(nearbyTile->HasRelief(WorldReliefs::MOUNTAINS))
                     mountainCount++;
             }
@@ -261,7 +259,7 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::G
                     auto nearbyMountainCount = [&] ()
                     {
                         auto count = 0;
-                        auto &nearbyTiles = tile->GetNearbyTiles(1);
+                        auto nearbyTiles = tile->GetNearbyTiles(1);
                         for(auto &tile : nearbyTiles)
                         {
                             if(tile->HasRelief(WorldReliefs::MOUNTAINS))
@@ -271,7 +269,7 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::G
                     } ();
 
                     auto farawayMountainCount = 0;
-                    auto &nearbyTiles = tile->GetNearbyTiles(2);
+                    auto nearbyTiles = tile->GetNearbyTiles(2);
                     for(auto &tile : nearbyTiles)
                     {
                         if(tile->HasRelief(WorldReliefs::MOUNTAINS))

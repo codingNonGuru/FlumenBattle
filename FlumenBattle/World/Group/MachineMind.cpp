@@ -134,10 +134,10 @@ namespace world::group
                 {
                     if(group.tile == group.home->GetLocation())
                     {
-                        auto &nearbyTiles = group.tile->GetTileRing(3);
+                        auto nearbyTiles = group.tile->GetTileRing(3);
                         while(true)
                         {
-                            auto randomTile = *nearbyTiles.GetRandom();
+                            auto randomTile = *nearbyTiles.Tiles.GetRandom();
                             if(randomTile->HasRelief(world::WorldReliefs::SEA) == false)
                                 return randomTile;
                         }

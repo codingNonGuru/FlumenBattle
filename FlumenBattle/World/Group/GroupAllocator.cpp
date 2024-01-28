@@ -1,3 +1,5 @@
+#include <mutex>
+
 #include "FlumenCore/Container/Array.hpp"
 
 #include "FlumenBattle/World/Group/GroupAllocator.h"
@@ -49,6 +51,10 @@ namespace world::group
 
     Group * GroupAllocator::Allocate()
     {
+        static std::mutex mutex;
+
+        mutex.lock();
+
         auto group = groups.Add();
 
         group->uniqueId = lastUniqueId;
@@ -58,11 +64,17 @@ namespace world::group
 
         character::ItemAllocator::Allocate(itemAllocator, group->items);
 
+        mutex.unlock();
+
         return group;
     }
 
     void GroupAllocator::Free(Group *group, bool willRemoveFromHome)
     {
+        static std::mutex mutex;
+
+        mutex.lock();
+
         auto batch = GroupBatchMap::Get()->GetBatch(group->GetTile());
         if(batch != nullptr)
         {
@@ -84,6 +96,8 @@ namespace world::group
         character::ItemAllocator::Free(itemAllocator, group->items);
 
         groups.RemoveAt(group);
+
+        mutex.unlock();
     }
 
     void GroupAllocator::PerformCleanup()

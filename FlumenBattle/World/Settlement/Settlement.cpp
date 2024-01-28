@@ -1,3 +1,5 @@
+#include <mutex>
+
 #include "FlumenCore/Utility/Utility.hpp"
 #include "FlumenCore/Container/Map.hpp"
 
@@ -32,6 +34,8 @@ using namespace world::settlement;
 
 #define SHIPMENT_VOLUME_LOSS 3
 
+#define POPULATION_COLONIZATION_THRESHOLD 5
+
 bool Link::operator== (const settlement::Path &path) const 
 {
     return *Path == path;
@@ -64,14 +68,14 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
     tile->IsWorked = true;
     tile->IsBuilt = false;
 
-    auto &nearbyTiles = location->GetNearbyTiles(1);
-    for(auto nearbyTile = nearbyTiles.GetStart(); nearbyTile != nearbyTiles.GetEnd(); ++nearbyTile)
+    auto nearbyTiles = location->GetNearbyTiles(1);
+    for(auto &nearbyTile : nearbyTiles)
     {
-        if(*nearbyTile == this->location)
+        if(nearbyTile == this->location)
             continue;
 
         tile = tiles.Add();
-        tile->Tile = *nearbyTile;
+        tile->Tile = nearbyTile;
         tile->IsWorked = false;
         tile->IsBuilt = false;
     }
@@ -129,16 +133,18 @@ static Array <world::WorldTile *> candidateTiles = Array <world::WorldTile *> (1
 
 world::WorldTile * Settlement::FindColonySpot()
 {
+    static std::mutex mutex;
+    mutex.lock();
+
     candidateTiles.Reset();
 
     auto bestChance = INT_MAX;
     WorldTile *bestTile = nullptr;
     for(int i = MINIMUM_COLONIZATION_RANGE; i <= MAXIMUM_COLONIZATION_RANGE; ++i)
     {
-        auto &tileRing = location->GetTileRing(i);
-        for(auto tileIterator = tileRing.GetStart(); tileIterator != tileRing.GetEnd(); ++tileIterator)
+        auto tileRing = location->GetTileRing(i);
+        for(auto &tile : tileRing)
         {
-            auto tile = *tileIterator;
             if(tile->IsBorderingOwnedTile())
                 continue;
 
@@ -166,10 +172,9 @@ world::WorldTile * Settlement::FindColonySpot()
 
     for(int i = MINIMUM_COLONIZATION_RANGE; i <= MAXIMUM_COLONIZATION_RANGE; ++i)
     {
-        auto &tileRing = location->GetTileRing(i);
-        for(auto tileIterator = tileRing.GetStart(); tileIterator != tileRing.GetEnd(); ++tileIterator)
+        auto tileRing = location->GetTileRing(i);
+        for(auto &tile : tileRing)
         {
-            auto tile = *tileIterator;
             if(tile->IsBorderingOwnedTile())
                 continue;
 
@@ -188,6 +193,8 @@ world::WorldTile * Settlement::FindColonySpot()
             }
         }
     }
+
+    mutex.unlock();
 
     auto candidate = candidateTiles.GetRandom();
     if(candidate == nullptr)
@@ -274,13 +281,12 @@ void Settlement::GrowBorders()
 
     auto findNewTileInRing = [this] (int distance) -> WorldTile *
     {
-        auto &tileRing = location->GetTileRing(distance);
+        auto tileRing = location->GetTileRing(distance);
 
-        auto findNewTile = [this, tileRing] (world::WorldBiomes biomeType) -> WorldTile *
+        auto findNewTile = [this, &tileRing] (world::WorldBiomes biomeType) -> WorldTile *
         {
-            for(auto tileIterator = tileRing.GetStart(); tileIterator != tileRing.GetEnd(); ++tileIterator)
+            for(auto &tile : tileRing)
             {
-                auto tile = *tileIterator;
                 if(tile->IsOwned())
                     continue;
 
@@ -305,7 +311,13 @@ void Settlement::GrowBorders()
                 }
             }
         }
+
+        return newTile;
     };
+
+    static std::mutex mutex;
+
+    mutex.lock();
 
     auto newTile = findNewTileInRing(2);
     if(newTile != nullptr)
@@ -334,6 +346,8 @@ void Settlement::GrowBorders()
             areNearbyTilesTaken = true;
         }
     }
+
+    mutex.unlock();
 }
 
 void Settlement::DecideProduction()
@@ -342,7 +356,7 @@ void Settlement::DecideProduction()
     {
         *currentProduction = SettlementProductionFactory::Get()->Create(SettlementProductionOptions::PATROL);
     }
-    else if(population >= 5 && hasAvailableColonySpots == true)
+    else if(population >= POPULATION_COLONIZATION_THRESHOLD && hasAvailableColonySpots == true)
     {
         auto colonySpot = FindColonySpot();
         if(colonySpot != nullptr)
@@ -406,17 +420,6 @@ Pool <SettlementTile> & Settlement::GetTiles()
 Integer Settlement::GetIndustrialProduction() const
 {
     auto production = GetPopulation();
-    /*for(auto &tile : tiles)
-    {
-        if(tile.IsWorked == false)
-            continue;
-
-        production += tile.Tile->GetIndustry();
-        if(tile.IsBuilt)
-        {
-            production++;
-        }
-    }*/
 
     return production;
 }
@@ -517,7 +520,7 @@ void Settlement::ProcessEarthquake(const disaster::Earthquake &earthquake)
 
 void Settlement::Update()
 {
-    auto &worldTime = world::WorldScene::Get()->GetTime();
+    static const auto &worldTime = world::WorldScene::Get()->GetTime();
 
     auto updateModifiers = [this]
     {
@@ -578,7 +581,7 @@ void Settlement::Update()
 
     cultureGrowth++;
 
-    if(cultureGrowth >= 100)
+    if(cultureGrowth >= 200)
     {
         cultureGrowth = 0;
 

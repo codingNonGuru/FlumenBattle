@@ -150,7 +150,7 @@ namespace world
         }
         else
         {
-            auto &nearbyTiles = tile->GetNearbyTiles(1);
+            auto nearbyTiles = tile->GetNearbyTiles(1);
 
             auto mesh = MeshManager::GetMesh("Hex"); 
             for(auto &nearbyTile : nearbyTiles)

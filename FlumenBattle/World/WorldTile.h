@@ -28,6 +28,8 @@ namespace world
 
 namespace world
 {
+    struct TileBuffer; 
+
     struct WorldTile
     {
         friend class world::WorldMap;
@@ -111,11 +113,11 @@ namespace world
             return angle;//angle + angle > 0 ? angle : (TWO_PI + angle);
         }
 
-        const Array <WorldTile*> & GetNearbyTiles(Integer, int = 0);
+        const TileBuffer GetNearbyTiles(Integer);
 
         const container::Block <WorldTile *, 6> GetNearbyTiles();
 
-        const Array <WorldTile*> & GetTileRing(Integer);
+        const TileBuffer GetTileRing(Integer);
 
         WorldTile * GetEmptyTileInRange(Integer);
 

@@ -1,7 +1,10 @@
+#include <mutex>
+
 #include "FlumenCore/Delegate/Delegate.hpp"
 #include "FlumenCore/Time.hpp"
 
 #include "FlumenEngine/Core/InputHandler.hpp"
+#include "FlumenEngine/Thread/ThreadManager.h"
 
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/WorldInterface.h"
@@ -91,6 +94,20 @@ namespace world
 
     static auto factionDecisions = container::Array <polity::FactionDecision> (64);
 
+    struct SettlementBuffer
+    {
+        container::Array <settlement::Settlement *> Settlements;
+
+        SettlementBuffer() {}
+
+        SettlementBuffer(int capacity) : Settlements(capacity) {}
+    };
+
+    struct ResultData
+    {
+        int Value {0};
+    };
+
     void WorldScene::Refresh()
     {
         time++;
@@ -147,11 +164,67 @@ namespace world
 
         refreshGroups();
 
+        auto refreshSettlementsThreaded = [this]
+        {
+            constexpr auto threadCount = engine::ThreadManager::GetThreadCount();
+
+            static auto bufferCapacity = (settlements->GetCapacity() / threadCount) + 1;
+
+            static SettlementBuffer buffers[threadCount];
+            static auto bufferInitialize = [&] -> bool {
+                for(auto &buffer : buffers)
+                    buffer.Settlements.Initialize(bufferCapacity);
+
+                return;
+            } ();
+
+            for(auto &buffer : buffers)
+                buffer.Settlements.Reset();
+
+            const auto sizePerBuffer = settlements->GetSize() / threadCount;
+            auto sizeToBeCovered = sizePerBuffer;
+
+            auto index = 0;
+            auto bufferIndex = 0;
+            for(auto &settlement : *settlements)
+            {
+                if(index == sizeToBeCovered)
+                {
+                    sizeToBeCovered += sizePerBuffer + 1;
+                    bufferIndex++;
+                }
+
+                *buffers[bufferIndex].Settlements.Add() = &settlement;
+
+                index++;
+            }
+
+            static engine::ThreadResultData <ResultData> results;
+            for(auto i = 0; i < threadCount; ++i)
+                results.GetResult(i).Value = 0;
+
+            for(int i = 0; i < threadCount; ++i)
+            {
+                engine::ThreadManager::Get()->LaunchSyncThread([] (const SettlementBuffer &input, ResultData &output) 
+                {
+                    for(auto &settlement : input.Settlements)
+                    {
+                        output.Value++;
+                        //settlement->Update();
+                    }
+                }, buffers[i], results);
+            }
+
+            engine::ThreadManager::Get()->AwaitThreadFinish();
+
+            std::cout << settlements->GetSize() << " ---- ";
+            for(auto i = 0; i < threadCount; ++i)
+                std::cout << results.GetResult(i).Value << " ";
+            std::cout<<"\n";
+        };
+
         auto refreshSettlements = [this]
         {
-            //if(time.MinuteCount != 0)
-                //return;
-
             auto startClock = high_resolution_clock::now();
 
             for(auto &settlement : *settlements)
@@ -176,8 +249,10 @@ namespace world
 
             auto stop = high_resolution_clock::now();
             auto duration = duration_cast<microseconds>(stop - startClock);
-            //std::cout <<"settlement refresh duration " << duration.count() << "\n";
+            //std::cout << "settlement refresh duration " << duration.count() << "\n";
         };
+
+        //refreshSettlementsThreaded();
 
         refreshSettlements();
 
@@ -278,6 +353,9 @@ namespace world
 
     settlement::Settlement * WorldScene::FoundSettlement(WorldTile *location, settlement::Settlement *mother)
     {
+        static std::mutex mutex;
+        mutex.lock();
+
         auto settlement = settlement::SettlementFactory::Create({location});
 
         auto polity = mother != nullptr ? mother->GetPolity() : nullptr;
@@ -295,7 +373,7 @@ namespace world
             ForgePath(settlement, mother);
         }
 
-        auto &tiles = location->GetNearbyTiles(MAXIMUM_COLONIZATION_RANGE, 3);
+        auto tiles = location->GetNearbyTiles(MAXIMUM_COLONIZATION_RANGE);
         for(auto &tile : tiles)
         {
             if(tile == location)
@@ -327,6 +405,8 @@ namespace world
 
         foundedSettlement = settlement;
         OnSettlementFounded->Invoke();
+
+        mutex.unlock();
     }
 
     settlement::Settlement *WorldScene::ForgePath(settlement::Settlement *from, settlement::Settlement *to, int complexityLimit)

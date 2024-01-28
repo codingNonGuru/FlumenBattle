@@ -15,7 +15,7 @@ Earthquake::Earthquake(WorldTile *tile, int strength)
 
 void Earthquake::ApplyEffect() const
 {
-    auto &nearbyTiles = epicenter->GetNearbyTiles(10);
+    auto nearbyTiles = epicenter->GetNearbyTiles(10);
     for(auto &tile : nearbyTiles)
     {
         auto settlement = tile->GetSettlement();

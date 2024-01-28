@@ -111,5 +111,9 @@ namespace world::group
         const container::Array <GroupSpotting *> &GetLatestFadings() const;
 
         const container::Pool <GroupSpotting> &GetGroupSightings() const;
+
+        const GroupSpotting *GetHoveredSpotting() const;
+
+        void SetHoveredSpotting(const GroupSpotting *);
     };  
 };

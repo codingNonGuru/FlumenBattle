@@ -46,10 +46,10 @@ void WorldTile::Initialize()
         if(HasRelief(WorldReliefs::MOUNTAINS))
         {
             auto count = 0;
-            auto &nearbyTiles = map->GetNearbyTiles(this, 1);
-            for(auto tile = nearbyTiles.GetStart(); tile != nearbyTiles.GetEnd(); ++tile)
+            auto nearbyTiles = map->GetNearbyTiles(this, 1);
+            for(auto &tile : nearbyTiles)
             {
-                if((*tile)->HasRelief(WorldReliefs::MOUNTAINS) == false)
+                if(tile->HasRelief(WorldReliefs::MOUNTAINS) == false)
                     return ROCK_COLOR;
             }
 
@@ -77,9 +77,9 @@ void WorldTile::Initialize()
     Shade = color;
 }
 
-const Array <WorldTile*> & WorldTile::GetNearbyTiles(Integer range, int bufferIndex)
+const TileBuffer WorldTile::GetNearbyTiles(Integer range)
 {
-    return map->GetNearbyTiles(this, range, bufferIndex);
+    return map->GetNearbyTiles(this, range);
 }
 
 const container::Block <WorldTile *, 6> WorldTile::GetNearbyTiles()
@@ -87,7 +87,7 @@ const container::Block <WorldTile *, 6> WorldTile::GetNearbyTiles()
     return map->GetNearbyTiles(this);
 }
 
-const Array <WorldTile*> & WorldTile::GetTileRing(Integer range)
+const TileBuffer WorldTile::GetTileRing(Integer range)
 {
     return map->GetTileRing(this, range);
 }
@@ -174,10 +174,10 @@ void WorldTile::AssertOwnership(settlement::Settlement *owner)
 {
     this->owner = owner;
 
-    auto &nearbyTiles = GetNearbyTiles(2);
-    for(auto tile = nearbyTiles.GetStart(); tile != nearbyTiles.GetEnd(); ++tile)
+    auto nearbyTiles = GetNearbyTiles(2);
+    for(auto &tile : nearbyTiles)
     {
-        (*tile)->isBorderingOwnedTile = true;
+        tile->isBorderingOwnedTile = true;
     }
 }
 

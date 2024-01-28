@@ -1,19 +1,76 @@
 #include "FlumenCore/Utility/Utility.hpp"
 #include "FlumenCore/Container/SmartBlock.hpp"
 
+#include "FlumenEngine/Thread/ThreadManager.h"
+
 #include "FlumenBattle/World/WorldMap.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/WorldAllocator.h"
 
 using namespace world;
 
-static container::SmartBlock <Array <WorldTile*>, 4> nearbyTileBuffers;
+#define TILES_PER_BUFFER 1024
 
-//static Array <WorldTile*> nearbyTilesBackup;
+#define TILE_BUFFERS_PER_THREAD 8
+
+TileBuffer::TileBuffer() : Tiles(TILES_PER_BUFFER) {}
+
+void TileBuffer::Initialize(TileBufferBatch *batch) {Batch = batch;}
+
+TileBuffer::~TileBuffer()
+{
+    Batch->Buffers.Remove(Tiles.GetStart());
+}
+
+TileBufferBatch::TileBufferBatch() : Buffers(TILE_BUFFERS_PER_THREAD)
+{
+    for(int i = 0; i < Buffers.GetCapacity(); ++i)
+    {
+        auto buffer = Buffers.Add();
+
+        buffer->Initialize(this);
+    }
+
+    Buffers.Reset();
+}
+
+TileBufferBatch bufferBatches[engine::ThreadManager::GetThreadCount() + 1];
+
+static auto bufferBatchMap = container::StaticMap <TileBufferBatch *, std::thread::id> (engine::ThreadManager::GetThreadCount() + 1);
+
+auto lastBatchIndex = 0;
+
+TileBuffer *GetUsableBuffer()
+{
+    const auto threadId = std::this_thread::get_id();
+
+    auto batchPointer = bufferBatchMap.Get(threadId);
+    if(batchPointer != nullptr)
+    {
+        auto batch = *batchPointer;
+
+        auto buffer = batch->Buffers.Add();
+        buffer->Tiles.Reset();
+
+        return buffer;
+    }
+
+    batchPointer = bufferBatchMap.Add(threadId);
+
+    *batchPointer = &bufferBatches[lastBatchIndex];
+    lastBatchIndex++;
+
+    auto batch = *batchPointer;
+        
+    auto buffer = batch->Buffers.Add();
+    buffer->Tiles.Reset();
+
+    return buffer;
+}
 
 WorldMap::WorldMap(Length size) 
 {
-    WorldAllocator::Get()->AllocateMap(*this, nearbyTileBuffers, size);
+    WorldAllocator::Get()->AllocateMap(*this, size);
 
     tiles.Bound();
 
@@ -36,9 +93,9 @@ WorldMap::WorldMap(Length size)
     }
 }
 
-const Array<WorldTile*> & WorldMap::GetTileRing(WorldTile* tile, Integer range)
+const TileBuffer WorldMap::GetTileRing(WorldTile* tile, Integer range)
 {
-    nearbyTileBuffers[0]->Reset();
+    auto buffer = GetUsableBuffer();
 
     for(Integer x = -range; x <= range; ++x)
     {
@@ -51,21 +108,19 @@ const Array<WorldTile*> & WorldMap::GetTileRing(WorldTile* tile, Integer range)
                     auto nearbyTile = GetTile(tile->HexCoordinates + Integer3(x, y, z));
                     if(nearbyTile != nullptr)
                     {
-                        *nearbyTileBuffers[0]->Allocate() = nearbyTile;
+                        *buffer->Tiles.Add() = nearbyTile;
                     }
                 }
             }
         }
     }
 
-    return *nearbyTileBuffers[0];
+    return std::move(*buffer);
 }
 
-const Array<WorldTile*> & WorldMap::GetNearbyTiles(WorldTile* tile, Integer range, int bufferIndex)
+const TileBuffer WorldMap::GetNearbyTiles(WorldTile* tile, Integer range)
 {
-    auto *nearbyTiles = nearbyTileBuffers[bufferIndex];
-
-    nearbyTiles->Reset();
+    auto buffer = GetUsableBuffer();
 
     for(Integer x = -range; x <= range; ++x)
     {
@@ -78,14 +133,14 @@ const Array<WorldTile*> & WorldMap::GetNearbyTiles(WorldTile* tile, Integer rang
                     auto nearbyTile = GetTile(tile->HexCoordinates + Integer3(x, y, z));
                     if(nearbyTile != nullptr)
                     {
-                        *nearbyTiles->Allocate() = nearbyTile;
+                        *buffer->Tiles.Add() = nearbyTile;
                     }
                 }
             }
         }
     }
 
-    return *nearbyTiles;
+    return std::move(*buffer);
 }
 
 const container::Block <WorldTile *, 6> WorldMap::GetNearbyTiles(WorldTile* tile)
@@ -174,11 +229,11 @@ WorldTile* WorldMap::GetEmptyRandomTile(bool isLand)
 
 WorldTile* WorldMap::GetEmptyTileAroundTile(WorldTile * tile, Integer range)
 {
-    auto& nearbyTiles = tile->GetNearbyTiles(range);
+    auto nearbyTiles = tile->GetNearbyTiles(range);
     while(true)
     {
         auto index = utility::GetRandom(0, nearbyTiles.GetSize() - 1);
-        auto otherTile = *nearbyTiles.Get(index);
+        auto otherTile = *nearbyTiles.Tiles.Get(index);
         //if(otherTile->Combatant == nullptr)
         //{
             return otherTile;

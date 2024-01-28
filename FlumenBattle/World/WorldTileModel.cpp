@@ -627,6 +627,29 @@ void WorldTileModel::RenderGroupSightings()
         camera, 
         {playerGroup->GetVisualPosition() + GROUP_VISUAL_OFFSET, GROUP_VISUAL_SCALE, Opacity(1.0f), DrawOrder(-1)}
         );
+
+    static auto hoveredSightingSprite = new Sprite(ShaderManager::GetShader("Sprite"), "OrangeEdgedMerryFellow");
+
+    static auto hoveredSightingSpriteFlipped = new Sprite(ShaderManager::GetShader("Sprite"), "OrangeEdgedMerryFellowFlip");
+
+    auto hoveredSighting = group::HumanMind::Get()->GetHoveredSpotting();
+    if(hoveredSighting != nullptr)
+    {
+        if(hoveredSighting->IsFacingRightwards == true)
+        {
+            hoveredSightingSpriteFlipped->Draw(
+                camera, 
+                {hoveredSighting->VisualPosition + GROUP_VISUAL_OFFSET, GROUP_VISUAL_SCALE, Opacity(1.0f), DrawOrder(-1)}
+                );
+        }
+        else
+        {
+            hoveredSightingSprite->Draw(
+                camera, 
+                {hoveredSighting->VisualPosition + GROUP_VISUAL_OFFSET, GROUP_VISUAL_SCALE, Opacity(1.0f), DrawOrder(-1)}
+                );
+        }
+    }
 }
 
 void WorldTileModel::Render() 
