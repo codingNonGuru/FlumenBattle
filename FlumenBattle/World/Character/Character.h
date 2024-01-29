@@ -94,7 +94,7 @@ namespace world::character
 
         const Race *race;
 
-        const render::Texture *avatar;
+        const ::render::Texture *avatar;
 
         Word name;
 
@@ -151,7 +151,7 @@ namespace world::character
 
         world::group::Group * GetGroup() const {return group;}
 
-        const render::Texture *GetAvatar() const {return avatar;}
+        const ::render::Texture *GetAvatar() const {return avatar;}
 
         const Word GetName() const {return name;}
 

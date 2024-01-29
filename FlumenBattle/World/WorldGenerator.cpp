@@ -280,8 +280,8 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::G
                     {
                         tile->Biome = WorldBiomeFactory::BuildBiome(WorldBiomes::WOODS);
 
-                        tile->SetResource(settlement::ResourceTypes::FOOD, 1);
-                        tile->SetResource(settlement::ResourceTypes::TIMBER, utility::GetRandom(1, 100) < 50 ? 1 : 2);
+                        tile->SetResource(settlement::ResourceTypes::FOOD, utility::RollD100Dice() < 50 ? 1 : 0);
+                        tile->SetResource(settlement::ResourceTypes::TIMBER, utility::GetRandom(1, 100) < 50 ? 2 : 3);
                     }
                     else
                     {

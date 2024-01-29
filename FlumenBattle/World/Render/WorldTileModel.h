@@ -7,10 +7,13 @@
 
 class Shader;
 
-namespace world 
+namespace world
 {
     class WorldScene;
+}
 
+namespace world::render 
+{
     class WorldTileModel : public Model, public core::Singleton <WorldTileModel>
     {
         friend class Singleton;
@@ -19,7 +22,7 @@ namespace world
 
         Shader *groupShader;
 
-        WorldScene *worldScene;
+        world::WorldScene *worldScene;
 
         WorldTileModel();
 
@@ -28,8 +31,6 @@ namespace world
         void RenderSnow();
 
         void RenderPaths();
-
-        void RenderBorders();
 
         void RenderPoliticalOverlay();
 

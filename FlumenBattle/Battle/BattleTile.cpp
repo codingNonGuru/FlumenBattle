@@ -48,7 +48,7 @@ const Array <BattleTile *> &BattleTile::GetNearbyTiles(Integer range)
     return Map->GetNearbyTiles(this, range);
 }
 
-const container::Block <BattleTile *, 6> BattleTile::GetNearbyTiles()
+container::Block <BattleTile *, 6> BattleTile::GetNearbyTiles()
 {
     return Map->GetNearbyTiles(this);
 }

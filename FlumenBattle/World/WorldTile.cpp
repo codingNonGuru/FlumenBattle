@@ -82,7 +82,7 @@ const TileBuffer <WorldTile> WorldTile::GetNearbyTiles(Integer range)
     return map->GetNearbyTiles(this, range);
 }
 
-const container::Block <WorldTile *, 6> WorldTile::GetNearbyTiles()
+container::Block <WorldTile *, 6> WorldTile::GetNearbyTiles()
 {
     return map->GetNearbyTiles(this);
 }

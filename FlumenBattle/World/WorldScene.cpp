@@ -12,7 +12,7 @@
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/WorldBiome.h"
 #include "FlumenBattle/World/WorldGenerator.h"
-#include "FlumenBattle/World/WorldTileModel.h"
+#include "FlumenBattle/World/Render/WorldTileModel.h"
 #include "FlumenBattle/World/Disaster/Earthquake.h"
 #include "FlumenBattle/World/Group/GroupAllocator.h"
 #include "FlumenBattle/World/Group/Group.h"
@@ -110,6 +110,11 @@ namespace world
 
     void WorldScene::Refresh()
     {
+        static auto index = 0;
+        static auto durationSum = 0;
+
+        auto startClock = high_resolution_clock::now();
+
         time++;
 
         auto refreshBattles = [this] 
@@ -226,8 +231,6 @@ namespace world
 
         auto refreshSettlements = [this]
         {
-            
-
             /*for(auto &settlement : *settlements)
             {
                 settlement.Update();
@@ -251,28 +254,9 @@ namespace world
 
         };
 
-        static auto index = 0;
-        static auto durationSum = 0;
-
-        auto startClock = high_resolution_clock::now();
-
         refreshSettlementsThreaded();
 
         refreshSettlements();
-
-        auto stop = high_resolution_clock::now();
-        auto duration = duration_cast<microseconds>(stop - startClock);
-
-        durationSum += duration.count();
-        index++;
-
-        if(index == 60)
-        {
-            std::cout << "settlement refresh duration " << durationSum / 60 << ", per settlement: " << float(durationSum / 60) / float(settlements->GetSize()) << "\n";
-
-            index = 0;
-            durationSum = 0;
-        }
 
         if(time.IsNewDay == true)
         {
@@ -314,6 +298,20 @@ namespace world
         refreshPolities();
 
         SimulationMap::Get()->Update();
+
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<microseconds>(stop - startClock);
+
+        durationSum += duration.count();
+        index++;
+
+        if(index == 60)
+        {
+            std::cout << "update average duration " << durationSum / 60 << ", per settlement: " << float(durationSum / 60) / float(settlements->GetSize()) << "\n";
+
+            index = 0;
+            durationSum = 0;
+        }
     }
 
     void WorldScene::InitiateEncounter(group::Group *first, group::Group *second)
@@ -500,7 +498,7 @@ namespace world
 
     void WorldScene::Render()
     {
-        WorldTileModel::Get()->Render();
+        render::WorldTileModel::Get()->Render();
     }
 
     void WorldScene::HandleEnable() 

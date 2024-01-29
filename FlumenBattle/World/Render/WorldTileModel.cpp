@@ -12,7 +12,8 @@
 #include "FlumenEngine/Render/TextureManager.hpp"
 #include "FlumenEngine/Render/DataBuffer.hpp"
 
-#include "FlumenBattle/World/WorldTileModel.h"
+#include "FlumenBattle/World/Render/WorldTileModel.h"
+#include "FlumenBattle/World/Render/BorderModel.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/World/WorldMap.h"
@@ -48,9 +49,9 @@ static Sprite *dotSprite = nullptr;
 
 static Sprite *xSprite = nullptr;
 
-using namespace world;
+using namespace world::render;
 
-static WorldController * worldController = nullptr;
+static world::WorldController * worldController = nullptr;
 
 WorldTileModel::WorldTileModel()
 {
@@ -63,19 +64,21 @@ WorldTileModel::WorldTileModel()
 
     groupSprite = new Sprite(groupShader);
 
-    bootSprite = new Sprite(groupShader, render::TextureManager::GetTexture("TravelBoot")); 
+    bootSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("TravelBoot")); 
 
-    metalSprite = new Sprite(groupShader, render::TextureManager::GetTexture("Metal"));
+    metalSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("Metal"));
 
-    dotSprite = new Sprite(groupShader, render::TextureManager::GetTexture("Dot")); 
+    dotSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("Dot")); 
 
-    xSprite = new Sprite(groupShader, render::TextureManager::GetTexture("X")); 
+    xSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("X")); 
 
     worldScene = WorldScene::Get();
 
     worldController = WorldController::Get();
 
     CreateCamera();
+
+    BorderModel::Get()->Initialize();
 }
 
 void WorldTileModel::Initialize()
@@ -87,6 +90,7 @@ void WorldTileModel::Initialize()
 void WorldTileModel::CreateCamera()
 {
     auto screen = Engine::GetScreen();
+
 	camera = new Camera(screen);
 	RenderManager::AddCamera(Cameras::WORLD, camera);
 
@@ -172,7 +176,7 @@ void WorldTileModel::RenderTiles()
 	shader->SetConstant(0.0f, "depth");
 
     auto map = worldScene->GetWorldMap();
-    for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
+    for(auto tile = map->GetTiles().GetStart(); tile != map->GetTiles().GetEnd(); ++tile)
     {
         shader->SetConstant(tile->Position, "hexPosition");
 
@@ -224,87 +228,6 @@ void WorldTileModel::RenderPaths()
     squareShader->Unbind();
 }
 
-void WorldTileModel::RenderBorders()
-{
-    auto squareShader = ShaderManager::GetShader("Square");
-    squareShader->Bind();
-
-    squareShader->SetConstant(camera->GetMatrix(), "viewMatrix");
-
-	squareShader->SetConstant(1.0f, "opacity");
-
-	squareShader->SetConstant(0.0f, "depth");
-
-    auto map = worldScene->GetWorldMap();
-    for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
-    {
-        if(tile->IsOwned() == false)
-            continue;
-
-        auto nearbyTiles = tile->GetNearbyTiles();
-        for(auto &neighbour : nearbyTiles)
-        {
-            if(neighbour->IsOwned() == true && tile->GetOwner() == neighbour->GetOwner())
-                continue;
-
-            bool isHardBorder = neighbour->IsOwned() == false || neighbour->GetOwner()->GetPolity() != tile->GetOwner()->GetPolity();
-
-            auto position = (tile->Position + neighbour->Position) / 2.0f;
-            if(isHardBorder == true)
-            {
-                position = (position + tile->Position * 0.5f) / 1.5f;
-            }
-            squareShader->SetConstant(position, "hexPosition");
-        
-            Scale2 scale = Scale2(WORLD_TILE_SIZE * 1.0f, isHardBorder ? 20.0f : 3.0f);
-            squareShader->SetConstant(scale, "hexSize");
-
-            auto orientation = tile->Position - neighbour->Position;
-            auto rotation = atan2(orientation.y, orientation.x) + 1.5707f;
-            squareShader->SetConstant(rotation, "rotation");
-
-            squareShader->SetConstant(tile->GetOwner()->GetRulerBanner(), "color");
-
-            glDrawArrays(GL_TRIANGLES, 0, 6);
-
-            if(isHardBorder)
-            {
-                for(auto &secondaryNeighbour : nearbyTiles)
-                {
-                    if(secondaryNeighbour->GetDistanceTo(*neighbour) != 1)
-                        continue;
-
-                    if(secondaryNeighbour->IsOwned() == false)
-                        continue;
-
-                    if(neighbour->IsOwned() && secondaryNeighbour->GetOwner()->GetPolity() == neighbour->GetOwner()->GetPolity())
-                        continue;
-
-                    if(tile->GetOwner()->GetPolity() != secondaryNeighbour->GetOwner()->GetPolity())
-                        continue;
-
-                    auto position = (tile->Position + neighbour->Position + secondaryNeighbour->Position) / 3.0f;
-                    position = (position + tile->Position * 0.36f + secondaryNeighbour->Position * 0.36f) / 1.72f;
-                    squareShader->SetConstant(position, "hexPosition");
-                
-                    Scale2 scale = Scale2(WORLD_TILE_SIZE * 0.57f, 20.0f);
-                    squareShader->SetConstant(scale, "hexSize");
-
-                    auto orientation = tile->Position - secondaryNeighbour->Position;
-                    auto rotation = atan2(orientation.y, orientation.x);
-                    squareShader->SetConstant(rotation, "rotation");
-
-                    squareShader->SetConstant(tile->GetOwner()->GetRulerBanner(), "color");
-
-                    glDrawArrays(GL_TRIANGLES, 0, 6);
-                }
-            }
-        }
-    }
-
-	squareShader->Unbind();
-}
-
 void WorldTileModel::RenderPoliticalOverlay()
 {
     shader->Bind();
@@ -316,7 +239,7 @@ void WorldTileModel::RenderPoliticalOverlay()
 	shader->SetConstant(0.0f, "depth");
 
     auto map = worldScene->GetWorldMap();
-    for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
+    for(auto tile = map->GetTiles().GetStart(); tile != map->GetTiles().GetEnd(); ++tile)
     {
         if(tile->IsOwned() == false)
             continue;
@@ -654,6 +577,9 @@ void WorldTileModel::RenderGroupSightings()
 
 void WorldTileModel::Render() 
 {
+    static auto index = 0;
+    static auto durationSum = 0;
+
     auto startClock = high_resolution_clock::now();
 
     auto map = worldScene->GetWorldMap();
@@ -666,7 +592,7 @@ void WorldTileModel::Render()
 
         static auto temperatures = container::Array <Float> (map->GetTileCount());
 
-        for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
+        for(auto tile = map->GetTiles().GetStart(); tile != map->GetTiles().GetEnd(); ++tile)
         {
             *positions.Add() = tile->Position;
 
@@ -687,9 +613,11 @@ void WorldTileModel::Render()
 
     RenderSnow();
 
-    RenderPaths();
+    //RenderPaths();
 
-    RenderBorders();
+    BorderModel::Get()->Render();
+
+    //RenderBorders();
 
     //RenderPoliticalOverlay();
 
@@ -702,7 +630,7 @@ void WorldTileModel::Render()
     if(WorldController::Get()->ShouldDisplayResources() == true)
     {
         auto map = worldScene->GetWorldMap();
-        for(auto tile = map->tiles.GetStart(); tile != map->tiles.GetEnd(); ++tile)
+        for(auto tile = map->GetTiles().GetStart(); tile != map->GetTiles().GetEnd(); ++tile)
         {
             if(tile->GetResource(settlement::ResourceTypes::METAL) == 0)
                 continue;
@@ -739,5 +667,15 @@ void WorldTileModel::Render()
 
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - startClock);
-    //std::cout <<"world render duration " << duration.count() << "\n";
+
+    durationSum += duration.count();
+    index++;
+
+    if(index == 60)
+    {
+        std::cout << "render average duration " << durationSum / 60 << "\n";
+
+        index = 0;
+        durationSum = 0;
+    }
 }

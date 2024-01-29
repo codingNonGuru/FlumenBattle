@@ -378,8 +378,8 @@ namespace utility
 
                     auto visitedNeighbourCount = 0;
 
-                    auto &nearbyTiles = tile.Tile->GetNearbyTiles();
-                    for(auto &nearbyTile : nearbyTiles)
+                    auto nearbyTiles = tile.Tile->GetNearbyTiles();
+                    for(auto nearbyTile : nearbyTiles)
                     {
                         if(nearbyTile->PathData.IsVisited == false && nearbyTile->PathData.IsToBeVisited == true)
                         {                               

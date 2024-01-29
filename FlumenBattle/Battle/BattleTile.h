@@ -76,7 +76,7 @@ namespace battle
 
         const Array <BattleTile *> &GetNearbyTiles(Integer);
 
-        const container::Block <BattleTile *, 6> GetNearbyTiles();
+        container::Block <BattleTile *, 6> GetNearbyTiles();
 
         BattleTile * GetEmptyTileInRange(Integer);
 

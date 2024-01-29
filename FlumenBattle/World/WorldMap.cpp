@@ -37,7 +37,8 @@ WorldMap::WorldMap(Length size)
 
 const TileBuffer <WorldTile> WorldMap::GetTileRing(WorldTile* tile, Integer range)
 {
-    auto buffer = TileBufferManager <WorldTile>::Get()->GetUsableBuffer();
+    static const auto bufferManager = TileBufferManager <WorldTile>::Get();
+    auto buffer = bufferManager->GetUsableBuffer();
 
     for(Integer x = -range; x <= range; ++x)
     {
@@ -62,7 +63,8 @@ const TileBuffer <WorldTile> WorldMap::GetTileRing(WorldTile* tile, Integer rang
 
 const TileBuffer <WorldTile> WorldMap::GetNearbyTiles(WorldTile* tile, Integer range)
 {
-    auto buffer = TileBufferManager <WorldTile>::Get()->GetUsableBuffer();
+    static const auto bufferManager = TileBufferManager <WorldTile>::Get();
+    auto buffer = bufferManager->GetUsableBuffer();
 
     for(Integer x = -range; x <= range; ++x)
     {
@@ -85,7 +87,7 @@ const TileBuffer <WorldTile> WorldMap::GetNearbyTiles(WorldTile* tile, Integer r
     return std::move(*buffer);
 }
 
-const container::Block <WorldTile *, 6> WorldMap::GetNearbyTiles(WorldTile* tile)
+container::Block <WorldTile *, 6> WorldMap::GetNearbyTiles(WorldTile* tile)
 {
     auto nearbyTiles = container::Block <WorldTile *, 6>();
 

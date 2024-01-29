@@ -116,7 +116,7 @@ namespace world
 
         const TileBuffer <WorldTile> GetNearbyTiles(Integer);
 
-        const container::Block <WorldTile *, 6> GetNearbyTiles();
+        container::Block <WorldTile *, 6> GetNearbyTiles();
 
         const TileBuffer <WorldTile> GetTileRing(Integer);
 

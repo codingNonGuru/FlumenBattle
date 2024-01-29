@@ -60,7 +60,7 @@ const Array<BattleTile*> & BattleMap::GetNearbyTiles(BattleTile* tile, Integer r
     return nearbyTiles;
 }
 
-const container::Block <BattleTile *, 6> BattleMap::GetNearbyTiles(BattleTile* tile)
+container::Block <BattleTile *, 6> BattleMap::GetNearbyTiles(BattleTile* tile)
 {
     auto buffer = container::Block <BattleTile *, 6>();
 

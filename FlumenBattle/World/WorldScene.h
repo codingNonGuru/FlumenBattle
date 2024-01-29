@@ -31,13 +31,18 @@ namespace world
         struct GroupBuffer;
     }
 
+    namespace render
+    {
+        class WorldTileModel;
+    }
+
     class WorldScene : Scene
     {
         friend class WorldState;
 
         friend class WorldController;
 
-        friend class WorldTileModel;
+        friend class render::WorldTileModel;
 
         friend class WorldGenerator;
 
