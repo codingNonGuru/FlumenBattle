@@ -34,33 +34,15 @@ static constexpr auto EXTERNAL_BORDER_THICKNESS = 12.0f;
 
 void BorderModel::Initialize()
 {
+    camera = RenderManager::GetCamera(Cameras::WORLD);
+
     buffers_.Initialize(BUFFER_COUNT);
 
     static auto worldMap = WorldScene::Get()->GetWorldMap();
-    
-    positions.Initialize(worldMap->GetTileCount() * 3);
-
-    rotations.Initialize(worldMap->GetTileCount() * 3);
-
-    lengths.Initialize(worldMap->GetTileCount() * 3);
-
-    thicknesses.Initialize(worldMap->GetTileCount() * 3);
-
-    colors.Initialize(worldMap->GetTileCount() * 3);
-
-    *buffers_.Add("Position") = new DataBuffer(positions.GetMemoryCapacity(), positions.GetStart());
-
-    *buffers_.Add("Rotation") = new DataBuffer(rotations.GetMemoryCapacity(), rotations.GetStart());
-
-    *buffers_.Add("Lengths") = new DataBuffer(lengths.GetMemoryCapacity(), lengths.GetStart());
-
-    *buffers_.Add("Thickness") = new DataBuffer(thicknesses.GetMemoryCapacity(), thicknesses.GetStart());
-
-    *buffers_.Add("Color") = new DataBuffer(colors.GetMemoryCapacity(), colors.GetStart());
-
-    camera = RenderManager::GetCamera(Cameras::WORLD);
 
     tiles.Initialize(worldMap->GetTiles().GetWidth(), worldMap->GetTiles().GetHeight());
+
+    tiles.AddEdges();
 
     auto worldTile = worldMap->GetTiles().GetStart();
     for(auto hexTile = tiles.GetTiles().GetStart(); hexTile != tiles.GetTiles().GetEnd(); ++hexTile, ++worldTile)
@@ -82,8 +64,6 @@ void BorderModel::Initialize()
             index++;
         }
     }
-
-    tiles.AddEdges();
 
     edgeValidators.Initialize(tiles.GetEdges().GetWidth(), tiles.GetEdges().GetHeight());
     for(auto validator = edgeValidators.GetStart(); validator != edgeValidators.GetEnd(); ++validator)
@@ -118,6 +98,28 @@ void BorderModel::Initialize()
             }
         }
     }
+
+    auto &edges = tiles.GetEdges();
+
+    positions.Initialize(edges.GetObjectCount());
+
+    rotations.Initialize(edges.GetObjectCount());
+
+    lengths.Initialize(edges.GetObjectCount());
+
+    thicknesses.Initialize(edges.GetObjectCount());
+
+    colors.Initialize(edges.GetObjectCount());
+
+    *buffers_.Add("Position") = new DataBuffer(positions.GetMemoryCapacity(), positions.GetStart());
+
+    *buffers_.Add("Rotation") = new DataBuffer(rotations.GetMemoryCapacity(), rotations.GetStart());
+
+    *buffers_.Add("Lengths") = new DataBuffer(lengths.GetMemoryCapacity(), lengths.GetStart());
+
+    *buffers_.Add("Thickness") = new DataBuffer(thicknesses.GetMemoryCapacity(), thicknesses.GetStart());
+
+    *buffers_.Add("Color") = new DataBuffer(colors.GetMemoryCapacity(), colors.GetStart());
 
     pregame::PreGameState::Get()->OnWorldGenerationFinished += {this, &BorderModel::HandleWorldGenerated};
 }

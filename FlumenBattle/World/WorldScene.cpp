@@ -490,6 +490,16 @@ namespace world
 
         polity::PolityAllocator::Get()->FreeFaction(polity, faction);
 
+        for(auto &settlement : newPolity->GetSettlements())
+        {
+            auto &tiles = settlement->GetTiles();
+
+            for(auto &tile : tiles)
+            {
+                UpdateOwnershipChangeQueue(tile.Tile);
+            }
+        }
+
         return newPolity;
     }
 
