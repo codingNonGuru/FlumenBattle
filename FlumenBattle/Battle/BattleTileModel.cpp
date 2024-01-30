@@ -187,7 +187,7 @@ void BattleTileModel::RenderCombatants()
         {
             auto character = combatant.GetCharacter();
 
-            *positions.Add() = combatant.GetTile()->Position;
+            *positions.Add() = combatant.position;
 
             *offsets.Add() = character->GetClass()->TextureData.Offset;
 
@@ -237,7 +237,7 @@ void BattleTileModel::RenderCombatants()
 
         flipStates.Reset();
 
-        *positions.Add() = selectedCombatant->GetTile()->Position;
+        *positions.Add() = selectedCombatant->GetPosition();
 
         *offsets.Add() = selectedCombatant->GetCharacter()->GetClass()->TextureData.Offset;
 

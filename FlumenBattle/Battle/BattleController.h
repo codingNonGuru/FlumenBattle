@@ -59,6 +59,8 @@ namespace battle
 
         void EndTurn();
 
+        void HandleMoveAnimationFinished();
+
     public:
         Delegate OnCharacterActed;
 

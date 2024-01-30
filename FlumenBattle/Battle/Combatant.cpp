@@ -27,7 +27,9 @@ void Combatant::Initialize(CombatGroup *_group, world::character::Character *_ch
 {
     group = _group;
     character = _character;
-    tile = _tile;
+
+    tile = nullptr;
+    SetTile(_tile);
 
     movement = 0;
 
@@ -73,7 +75,7 @@ bool Combatant::HasDisadvantage() const
 
 Position2 Combatant::GetPosition()
 {
-    return tile->Position;
+    return position;
 }
 
 Integer Combatant::GetDistanceTo(Combatant *other) const
@@ -131,9 +133,9 @@ Integer Combatant::RollInitiative() const
     return initiative;
 }
 
-bool Combatant::CanMove() const
+bool Combatant::CanMove(BattleTile *destination) const
 {
-    return character->IsAlive();
+    return character->IsAlive() && movement > 0 && destination->GetDistanceTo(*tile) <= movement;
 }
 
 bool Combatant::CanTarget() const
@@ -282,7 +284,7 @@ bool Combatant::Move(BattleTile *destination)
     if(destination->Combatant != nullptr)
         return false;
 
-    if(CanMove() == false)
+    if(CanMove(destination) == false)
         return false;
 
     auto distance = tile->GetDistanceTo(*destination);
@@ -291,11 +293,23 @@ bool Combatant::Move(BattleTile *destination)
 
     movement -= distance;
 
-    tile->Combatant = nullptr;
-    tile = destination;
-    destination->Combatant = this;
+    SetTile(destination);
 
     return true;
+}
+
+void Combatant::SetTile(BattleTile *newTile)
+{
+    if(tile != nullptr)
+    {
+        tile->Combatant = nullptr;
+    }
+
+    tile = newTile;
+
+    tile->Combatant = this;
+
+    position = tile->Position;
 }
 
 void Combatant::SaveAgainstDeath()

@@ -11,6 +11,7 @@
 #include "FlumenBattle/Battle/ArtificialController.h"
 #include "FlumenBattle/Battle/HumanController.h"
 #include "FlumenBattle/Battle/BattleScene.h"
+#include "FlumenBattle/Battle/BattleAnimator.h"
 #include "FlumenBattle/Battle/Combatant.h"
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/World/Group/Group.h"
@@ -86,6 +87,14 @@ void BattleController::Move()
     if(battleScene->IsCharactersTurn(selectedCombatant) == false)
         return;
 
+    if(selectedCombatant->CanMove(targetedTile) == false)
+        return;
+
+    BattleAnimator::Get()->FollowPathMovement({this, &BattleController::HandleMoveAnimationFinished});
+}
+
+void BattleController::HandleMoveAnimationFinished()
+{
     selectedCombatant->Move(targetedTile);
 }
 

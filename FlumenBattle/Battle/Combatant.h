@@ -69,7 +69,9 @@ namespace battle
 
         Integer deathThrowFailureCount; 
 
-        BattleTile *tile; 
+        BattleTile *tile;
+
+        Position2 position; 
 
         //Pool <world::character::Condition> conditions;
 
@@ -91,7 +93,7 @@ namespace battle
 
         bool HasDisadvantage() const;
 
-        bool CanMove() const;
+        bool CanMove(BattleTile *) const;
 
         bool CanTarget() const;
 
@@ -116,6 +118,8 @@ namespace battle
         CharacterActionData Dodge();
 
         CharacterActionData Dash();
+
+        void SetTile(BattleTile *);
 
         bool Move(BattleTile *);
 
@@ -153,5 +157,7 @@ namespace battle
         const Integer &GetMovement() const;
 
         bool IsWithinActionRange(BattleTile *);
+
+        void SetPosition(Position2 newPosition) {position = newPosition;}
     };
 }
