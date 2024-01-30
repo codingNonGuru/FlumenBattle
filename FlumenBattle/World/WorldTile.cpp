@@ -179,6 +179,8 @@ void WorldTile::AssertOwnership(settlement::Settlement *owner)
     {
         tile->isBorderingOwnedTile = true;
     }
+
+    WorldScene::Get()->UpdateOwnershipChangeQueue(this);
 }
 
 bool WorldTile::IsLinkedTo(WorldTile *tile) 

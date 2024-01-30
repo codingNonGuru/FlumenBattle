@@ -68,6 +68,8 @@ namespace world
 
         Pool <settlement::PathSegment> *pathSegments;
 
+        Array <WorldTile *> ownershipChangeQueue;
+
         WorldScene();
 
         void Initialize() override;
@@ -159,5 +161,9 @@ namespace world
         polity::Polity *FoundPolity(settlement::Settlement *);
 
         polity::Polity *SplitPolity(polity::Faction *);
+
+        void UpdateOwnershipChangeQueue(WorldTile *);
+
+        const Array <WorldTile *> &GetOwnershipChangeQueue() const {return ownershipChangeQueue;}
     };
 }

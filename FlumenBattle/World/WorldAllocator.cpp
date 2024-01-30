@@ -17,6 +17,8 @@
 
 using namespace world;
 
+#define OWNERSHIP_QUEUE_SIZE_FACTOR 16
+
 WorldAllocator::WorldAllocator()
 {
     std::cout<<"Memory size of a World Tile is "<<sizeof(WorldTile)<<"\n";
@@ -40,6 +42,8 @@ WorldAllocator::WorldAllocator()
 
     groupBatchMemory = container::PoolAllocator <group::Group *>::PreallocateMemory(size * size, GROUPS_PER_BATCH);
 
+    ownershipChangeMemory = container::Array <WorldTile *>::PreallocateMemory(size * size / OWNERSHIP_QUEUE_SIZE_FACTOR);
+
     polity::PolityAllocator::Get()->PreallocateMaximumMemory();
 
     settlement::SettlementAllocator::Get()->PreallocateMaximumMemory();
@@ -55,6 +59,9 @@ void WorldAllocator::AllocateMap(WorldMap &map/*, container::SmartBlock< contain
     {
         nearbyTileBuffers.Get(i)->Initialize(size * size, nearbyTileMemories[i]);
     }*/
+
+    const auto CHANGE_QUEUE_SIZE = size * size / OWNERSHIP_QUEUE_SIZE_FACTOR;
+    WorldScene::Get()->ownershipChangeQueue.Initialize(CHANGE_QUEUE_SIZE, ownershipChangeMemory);
 
     auto height = size;
     map.tiles.Initialize(size, height, worldTileMemory);

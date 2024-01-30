@@ -96,6 +96,8 @@ namespace world::render
 
         void TransferData();
 
+        void HandleWorldGenerated();
+
     public:
         void Initialize() override;
 

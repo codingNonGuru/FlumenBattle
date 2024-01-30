@@ -90,6 +90,8 @@ namespace pregame
         generatorPopup->Disable();
 
         generatedWorldMenu->Enable();
+
+        OnWorldGenerationFinished.Invoke();
     }
 
     void PreGameState::StartGame()

@@ -10,6 +10,7 @@
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/PreGame/PreGameState.h"
 
 using namespace world::render;
 
@@ -125,11 +126,20 @@ void BorderModel::Initialize()
         }
     }
 
+    pregame::PreGameState::Get()->OnWorldGenerationFinished += {this, &BorderModel::HandleWorldGenerated};
+}
+
+void BorderModel::HandleWorldGenerated()
+{
+    world::WorldScene::Get()->GetOwnershipChangeQueue();
+
     Update();
 }
 
 void BorderModel::Update()
 {
+    auto &changeQueue = world::WorldScene::Get()->GetOwnershipChangeQueue();
+
     auto &edges = tiles.GetEdges();
     //std::cout<<edges.GetWidth()<<"-----"<<edges.GetHeight()<<"\n";
     /*for(auto y = 0; y < edges.GetHeight(); ++y)
@@ -145,51 +155,51 @@ void BorderModel::Update()
         std::cout<<"\n";
     }*/
 
-    for(auto border = edges.GetStart(); border != edges.GetEnd(); ++border)
+    for(auto &tile : changeQueue)
     {
-        if(border->First == nullptr)
-            continue;
+        auto borderTile = tiles.GetTile(tile->HexCoordinates);
 
-        auto firstTile = border->First->Tile;
-        auto secondTile = border->Second->Tile;
-
-        //tiles.GetEdge(border->First, border->Second);
-
-        auto determineBorder = [border] (WorldTile *firstTile, WorldTile *secondTile, BorderData &borderData)
+        for(auto &neighbour : borderTile->Neighbours)
         {
-            /*auto position = (firstTile->Position + secondTile->Position) / 2.0f;
-            auto length = WorldMap::WORLD_TILE_SIZE * 1.0f;
-            auto thickness = 5.0f;
-            auto rotation = border->Rotation;
-            auto color = Color::RED;
-            borderData = {position, rotation, thickness, length, color, true};*/
-
-            if(firstTile->IsOwned() == false)
-                return;
-
-            if(secondTile->IsOwned() == true && firstTile->GetOwner() == secondTile->GetOwner())
-                return;
-
-            bool isHardBorder = secondTile->IsOwned() == false || secondTile->GetOwner()->GetPolity() != firstTile->GetOwner()->GetPolity();
-
-            auto position = (firstTile->Position + secondTile->Position) / 2.0f;
-            if(isHardBorder == true)
+            if(neighbour.Border == nullptr)
+                continue;
+            
+            auto border = neighbour.Border;
+            auto determineBorder = [border] (WorldTile *firstTile, WorldTile *secondTile, BorderData &borderData)
             {
-                position = (position + firstTile->Position * 0.5f) / 1.5f;
-            }
-            
-            auto length = WorldMap::WORLD_TILE_SIZE * 1.0f;
-            auto thickness = isHardBorder == true ? 12.0f : 3.0f;
+                if(firstTile->IsOwned() == false)
+                {
+                    borderData.IsInitialized = false;
+                    return;
+                }
 
-            auto rotation = border->Rotation;
-            
-            auto color = firstTile->GetOwner()->GetRulerBanner();
+                if(secondTile->IsOwned() == true && firstTile->GetOwner() == secondTile->GetOwner())
+                {
+                    borderData.IsInitialized = false;
+                    return;
+                }
 
-            borderData = {position, rotation, thickness, length, color, true};
-        };
+                bool isHardBorder = secondTile->IsOwned() == false || secondTile->GetOwner()->GetPolity() != firstTile->GetOwner()->GetPolity();
 
-        determineBorder(firstTile, secondTile, border->FirstData);
-        determineBorder(secondTile, firstTile, border->SecondData);
+                auto position = (firstTile->Position + secondTile->Position) / 2.0f;
+                if(isHardBorder == true)
+                {
+                    position = (position + firstTile->Position * 0.5f) / 1.5f;
+                }
+                
+                auto length = WorldMap::WORLD_TILE_SIZE * 1.0f;
+                auto thickness = isHardBorder == true ? 12.0f : 5.0f;
+
+                auto rotation = border->Rotation;
+                
+                auto color = firstTile->GetOwner()->GetRulerBanner();
+
+                borderData = {position, rotation, thickness, length, color, true};
+            };
+
+            determineBorder(tile, neighbour.Neighbour->Tile, border->FirstData);
+            determineBorder(neighbour.Neighbour->Tile, tile, border->SecondData);
+        }
     }
 }
 
@@ -250,7 +260,7 @@ void BorderModel::Render()
 
     lineShader->SetConstant(camera->GetMatrix(), "viewMatrix");
 
-	lineShader->SetConstant(1.0f, "opacity");
+	lineShader->SetConstant(0.5f, "opacity");
 
 	lineShader->SetConstant(0.0f, "depth");
 

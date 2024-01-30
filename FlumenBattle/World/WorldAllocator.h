@@ -50,6 +50,8 @@ namespace world
 
         container::PoolAllocator <group::Group *>::Memory groupBatchMemory;
 
+        container::Array <WorldTile *>::Memory ownershipChangeMemory;
+
 
         container::PoolAllocator <group::Group *> groupBatchAllocator;
 

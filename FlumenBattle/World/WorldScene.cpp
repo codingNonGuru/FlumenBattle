@@ -85,6 +85,8 @@ namespace world
 
         AWAIT(time.GetStep())
 
+        ownershipChangeQueue.Reset();
+
         auto refreshCount = time.FlowSpeed == 5 ? 2 : 1;
         for(int i = 0; i < refreshCount; ++i)
         {
@@ -543,5 +545,10 @@ namespace world
     const group::GroupBuffer WorldScene::GetNearbyGroups(WorldTile *tile, int range)
     {
         return group::GroupBatchMap::Get()->GetNearbyGroups(tile, range);
+    }
+
+    void WorldScene::UpdateOwnershipChangeQueue(WorldTile *tile)
+    {
+        *ownershipChangeQueue.Add() = tile;
     }
 }

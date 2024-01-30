@@ -1,5 +1,7 @@
 #pragma once
 
+#include "FlumenCore/Observer.h"
+
 #include "FlumenEngine/Core/State.hpp"
 
 #include "FlumenBattle/PreGame/Types.h"
@@ -43,6 +45,8 @@ namespace pregame
         void HandleExit() override;
 
     public:
+        Delegate OnWorldGenerationFinished;
+
         void OpenMainMenu();
 
         void OpenNewWorldMenu();
