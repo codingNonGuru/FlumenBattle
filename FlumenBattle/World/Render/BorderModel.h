@@ -90,6 +90,8 @@ namespace world::render
 
         container::EdgyHexGrid <BorderHex, Border> tiles;
 
+        container::Grid <bool> edgeValidators;
+
         Camera *camera;
 
         void Update();
@@ -97,6 +99,8 @@ namespace world::render
         void TransferData();
 
         void HandleWorldGenerated();
+
+        Rectangle GetFrustum();
 
     public:
         void Initialize() override;
