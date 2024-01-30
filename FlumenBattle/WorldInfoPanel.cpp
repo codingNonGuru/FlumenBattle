@@ -25,7 +25,15 @@ void WorldInfoPanel::CharacterItem::SetCharacter(world::character::Character *_c
     icon->GetSprite()->SetTexture(character->GetAvatar());
 }
 
-static Color BORDER_COLOR = Color::RED * 0.5f;
+static const Color BORDER_COLOR = Color::RED * 0.25f;
+
+static const Color TEXT_COLOR = Color::RED * 0.5f;
+
+static const auto SELECTED_OPACITY = Opacity(1.0f);
+
+static const auto UNSELECTED_OPACITY = Opacity(0.5f);
+
+static const auto MAXIMUM_CONDITIONS_PER_ITEM = 4;
 
 void WorldInfoPanel::CharacterItem::ToggleSelection() 
 {
@@ -33,11 +41,11 @@ void WorldInfoPanel::CharacterItem::ToggleSelection()
 
     if(isSelected)
     {
-        border->Enable();
+        border->SetOpacity(SELECTED_OPACITY);
     }
     else
     {
-        border->Disable();
+        border->SetOpacity(UNSELECTED_OPACITY);
     }
 }
 
@@ -45,7 +53,7 @@ void WorldInfoPanel::CharacterItem::ForceSelection()
 {
     isSelected = true;
 
-    border->Enable();
+    border->SetOpacity(SELECTED_OPACITY);
 }
 
 void WorldInfoPanel::CharacterItem::HandleConfigure()
@@ -58,33 +66,43 @@ void WorldInfoPanel::CharacterItem::HandleConfigure()
 
     healthLabel = ElementFactory::BuildText(
         {drawOrder_ + 1, {Position2(0.0f, 20.0f), this}}, 
-        {{"Medium"}, BORDER_COLOR}
+        {{"Medium"}, TEXT_COLOR}
     );
     healthLabel->Enable();
 
     conditionsLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {Position2(3.0f, 47.0f), this}}, 
-        {{"VerySmall"}, BORDER_COLOR, "F C S"}
+        {drawOrder_ + 1, {Position2(10.0f, -5.0f), ElementAnchors::LOWER_LEFT, ElementPivots::LOWER_LEFT, this}}, 
+        {{"VerySmall"}, TEXT_COLOR, "F C S"}
     );
     conditionsLabel->SetAlignment(Text::Alignments::LEFT);
     conditionsLabel->Enable();
 
     border = ElementFactory::BuildElement <Element>(
-        {size_, drawOrder_ + 1, {this}, {"panel-border-019", true}}
+        {size_, drawOrder_ + 1, {this}, {"panel-border-007", true}, UNSELECTED_OPACITY}
     );
     border->GetSprite()->SetColor(&BORDER_COLOR);
-    border->Disable();
+    border->Enable();
 }
 
 void WorldInfoPanel::CharacterItem::HandleUpdate()
 {
-    /*auto className = character->GetClass()->Name;
-    classLabel->Setup(className.GetFirstCharacter());*/
-
     auto string = Word() << character->GetCurrentHitPoints() << "/" << character->GetMaximumHitPoints();
     healthLabel->Setup(string);
 
-    string = Word() << (character->HasCondition(world::character::Conditions::FATIGUE) ? "F" : "");
+    auto &conditions = character->GetConditions();
+    string.Clear();
+
+    auto index = 0;
+    for(auto &condition : conditions)
+    {
+        string << condition.Type->Name.GetFirstCharacter();
+
+        index++;
+        if(index == MAXIMUM_CONDITIONS_PER_ITEM)
+        {
+            break;
+        }
+    }
     conditionsLabel->Setup(string);
 }
 
@@ -97,7 +115,7 @@ void WorldInfoPanel::HandleConfigure()
     for(Index i = 0; i < items.GetCapacity(); ++i, position += Direction2(80.0f, 0.0f))
     {
         auto item = ElementFactory::BuildElement <CharacterItem>(
-            {Size(70, 105), drawOrder_ + 1, {position, ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}, {"panel-019", true}, Opacity(0.5f)}
+            {Size(70, 110), drawOrder_ + 1, {position, ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}, {false}, Opacity(0.5f)}
         );
     }
 

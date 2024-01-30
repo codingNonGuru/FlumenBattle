@@ -37,7 +37,7 @@ class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
 
         void HandleConfigure() override;    
 
-        void HandleUpdate() override;    
+        void HandleUpdate() override;  
 
     public:
         void * operator new(size_t size);

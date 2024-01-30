@@ -138,6 +138,10 @@ static DataBuffer *combatantPositionBuffer = nullptr;
 
 static DataBuffer *combatantTextureOffsetBuffer = nullptr;
 
+static DataBuffer *combatantOpacityBuffer = nullptr;
+
+static DataBuffer *combatantFlipBuffer = nullptr;
+
 static const auto MAXIMUM_COMBATANTS_PER_SCENE = 32;
 
 void BattleTileModel::RenderCombatants()
@@ -146,11 +150,19 @@ void BattleTileModel::RenderCombatants()
 
     static auto offsets = container::Array <Position2> (MAXIMUM_COMBATANTS_PER_SCENE);
 
+    static auto opacities = container::Array <float> (MAXIMUM_COMBATANTS_PER_SCENE);
+
+    static auto flipStates = container::Array <int> (MAXIMUM_COMBATANTS_PER_SCENE);
+
     if(combatantPositionBuffer == nullptr)
     {
         combatantPositionBuffer = new DataBuffer(positions.GetMemoryCapacity(), positions.GetStart());
 
         combatantTextureOffsetBuffer = new DataBuffer(offsets.GetMemoryCapacity(), offsets.GetStart());
+
+        combatantOpacityBuffer = new DataBuffer(opacities.GetMemoryCapacity(), opacities.GetStart());
+
+        combatantFlipBuffer = new DataBuffer(flipStates.GetMemoryCapacity(), flipStates.GetStart());
     }
 
     static auto massShader = ShaderManager::GetShader("ComplexMassSprite");
@@ -163,6 +175,10 @@ void BattleTileModel::RenderCombatants()
 
     offsets.Reset();
 
+    opacities.Reset();
+
+    flipStates.Reset();
+
     auto playerGroup = BattleScene::Get()->GetPlayerGroup();
     auto computerGroup = BattleScene::Get()->GetComputerGroup();
     for(auto group : {playerGroup, computerGroup})
@@ -174,6 +190,10 @@ void BattleTileModel::RenderCombatants()
             *positions.Add() = combatant.GetTile()->Position;
 
             *offsets.Add() = character->GetClass()->TextureData.Offset;
+
+            *opacities.Add() = 1.0f;
+
+            *flipStates.Add() = 0;
         }
     }
 
@@ -181,21 +201,27 @@ void BattleTileModel::RenderCombatants()
 
     combatantTextureOffsetBuffer->UploadData(offsets.GetStart(), offsets.GetMemorySize());
 
+    combatantOpacityBuffer->UploadData(opacities.GetStart(), opacities.GetMemorySize());
+
+    combatantFlipBuffer->UploadData(flipStates.GetStart(), flipStates.GetMemorySize());
+
     massShader->Bind();
 
     massShader->SetConstant(camera->GetMatrix(), "viewMatrix");
 
 	massShader->SetConstant(0.0f, "depth");
 
-    massShader->SetConstant(1.0f, "opacity");
-
     massShader->SetConstant(Scale2(0.25f, 0.5f), "textureScale");
 
-    massShader->SetConstant(115.0f, "spriteSize");
+    massShader->SetConstant(0.5f, "spriteSize");
 
     combatantPositionBuffer->Bind(0);
 
     combatantTextureOffsetBuffer->Bind(1);
+
+    combatantOpacityBuffer->Bind(2);
+
+    combatantFlipBuffer->Bind(3);
 
     unborderedSprite->BindDefaultTextures();
 
@@ -207,13 +233,25 @@ void BattleTileModel::RenderCombatants()
 
         offsets.Reset();
 
+        opacities.Reset();
+
+        flipStates.Reset();
+
         *positions.Add() = selectedCombatant->GetTile()->Position;
 
         *offsets.Add() = selectedCombatant->GetCharacter()->GetClass()->TextureData.Offset;
 
+        *opacities.Add() = 1.0f;
+
+        *flipStates.Add() = 0;
+
         combatantPositionBuffer->UploadData(positions.GetStart(), positions.GetMemorySize());
 
         combatantTextureOffsetBuffer->UploadData(offsets.GetStart(), offsets.GetMemorySize());
+
+        combatantOpacityBuffer->UploadData(opacities.GetStart(), opacities.GetMemorySize());
+
+        combatantFlipBuffer->UploadData(flipStates.GetStart(), flipStates.GetMemorySize());
 
         borderedSprite->BindDefaultTextures();
 
