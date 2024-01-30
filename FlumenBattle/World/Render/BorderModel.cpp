@@ -29,15 +29,15 @@ void BorderModel::Initialize()
 
     static auto worldMap = WorldScene::Get()->GetWorldMap();
     
-    positions.Initialize(worldMap->GetTileCount());
+    positions.Initialize(worldMap->GetTileCount() * 10);
 
-    rotations.Initialize(worldMap->GetTileCount());
+    rotations.Initialize(worldMap->GetTileCount() * 10);
 
-    lengths.Initialize(worldMap->GetTileCount());
+    lengths.Initialize(worldMap->GetTileCount() * 10);
 
-    thicknesses.Initialize(worldMap->GetTileCount());
+    thicknesses.Initialize(worldMap->GetTileCount() * 10);
 
-    colors.Initialize(worldMap->GetTileCount());
+    colors.Initialize(worldMap->GetTileCount() * 10);
 
     *buffers_.Add("Position") = new DataBuffer(positions.GetMemoryCapacity(), positions.GetStart());
 
@@ -74,9 +74,9 @@ void BorderModel::Initialize()
         }
     }
 
-    borders.Initialize(worldMap->GetTileCount() * 4);
+    tiles.AddEdges();
 
-    for(auto hexTile = tiles.GetTiles().GetStart(); hexTile != tiles.GetTiles().GetEnd(); ++hexTile)
+    /*for(auto hexTile = tiles.GetTiles().GetStart(); hexTile != tiles.GetTiles().GetEnd(); ++hexTile)
     {
         for(auto &neighbour : hexTile->Neighbours)
         {
@@ -94,6 +94,35 @@ void BorderModel::Initialize()
                 newBorder->Rotation = rotation;
             }
         }
+    }*/
+
+    for(auto hexTile = tiles.GetTiles().GetStart(); hexTile != tiles.GetTiles().GetEnd(); ++hexTile)
+    {
+        for(auto &neighbour : hexTile->Neighbours)
+        {
+            if(neighbour.Border == nullptr)
+            {
+                if(abs(hexTile->Tile->SquareCoordinates.x - neighbour.Neighbour->Tile->SquareCoordinates.x) > 1)
+                    continue;
+
+                if(abs(hexTile->Tile->SquareCoordinates.y - neighbour.Neighbour->Tile->SquareCoordinates.y) > 1)
+                    continue;
+
+                //std::cout<<hexTile->Tile->SquareCoordinates.x<<" "<<hexTile->Tile->SquareCoordinates.y<<" -- ";
+                //std::cout<<neighbour.Neighbour->Tile->SquareCoordinates.x<<" "<<neighbour.Neighbour->Tile->SquareCoordinates.y<<" -------- ";
+
+                auto border = tiles.GetEdge(hexTile, neighbour.Neighbour);
+                *border = {hexTile, neighbour.Neighbour};
+
+                neighbour.Border = border;
+                neighbour.Neighbour->AddBorder(hexTile, border);
+
+                auto orientation = hexTile->Tile->Position - neighbour.Neighbour->Tile->Position;
+                auto rotation = atan2(orientation.y, orientation.x);
+
+                border->Rotation = rotation;
+            }
+        }
     }
 
     Update();
@@ -101,13 +130,40 @@ void BorderModel::Initialize()
 
 void BorderModel::Update()
 {
-    for(auto &border : borders)
+    auto &edges = tiles.GetEdges();
+    //std::cout<<edges.GetWidth()<<"-----"<<edges.GetHeight()<<"\n";
+    /*for(auto y = 0; y < edges.GetHeight(); ++y)
     {
-        auto firstTile = border.First->Tile;
-        auto secondTile = border.Second->Tile;
+        for(auto x = 0; x < edges.GetWidth(); ++x)
+        {
+            auto edge = edges.Get(x, y);
+            if(edge->First != nullptr)
+                std::cout<<"x";
+            else
+                std::cout<<"-";
+        }
+        std::cout<<"\n";
+    }*/
+
+    for(auto border = edges.GetStart(); border != edges.GetEnd(); ++border)
+    {
+        if(border->First == nullptr)
+            continue;
+
+        auto firstTile = border->First->Tile;
+        auto secondTile = border->Second->Tile;
+
+        //tiles.GetEdge(border->First, border->Second);
 
         auto determineBorder = [border] (WorldTile *firstTile, WorldTile *secondTile, BorderData &borderData)
         {
+            /*auto position = (firstTile->Position + secondTile->Position) / 2.0f;
+            auto length = WorldMap::WORLD_TILE_SIZE * 1.0f;
+            auto thickness = 5.0f;
+            auto rotation = border->Rotation;
+            auto color = Color::RED;
+            borderData = {position, rotation, thickness, length, color, true};*/
+
             if(firstTile->IsOwned() == false)
                 return;
 
@@ -125,15 +181,15 @@ void BorderModel::Update()
             auto length = WorldMap::WORLD_TILE_SIZE * 1.0f;
             auto thickness = isHardBorder == true ? 12.0f : 3.0f;
 
-            auto rotation = border.Rotation;
+            auto rotation = border->Rotation;
             
             auto color = firstTile->GetOwner()->GetRulerBanner();
 
             borderData = {position, rotation, thickness, length, color, true};
         };
 
-        determineBorder(firstTile, secondTile, border.FirstData);
-        determineBorder(secondTile, firstTile, border.SecondData);
+        determineBorder(firstTile, secondTile, border->FirstData);
+        determineBorder(secondTile, firstTile, border->SecondData);
     }
 }
 
@@ -149,7 +205,7 @@ void BorderModel::TransferData()
 
     colors.Reset();
 
-    for(auto &border : borders)
+    for(auto border = tiles.GetEdges().GetStart(); border != tiles.GetEdges().GetEnd(); ++border)
     {
         auto fetchData = [] (BorderData &data)
         {
@@ -167,8 +223,8 @@ void BorderModel::TransferData()
             *colors.Add() = data.Color;
         };
 
-        fetchData(border.FirstData);
-        fetchData(border.SecondData);
+        fetchData(border->FirstData);
+        fetchData(border->SecondData);
     }
 
     (*buffers_.Get("Position"))->UploadData(positions.GetStart(), positions.GetMemorySize());
@@ -185,7 +241,7 @@ void BorderModel::TransferData()
 void BorderModel::Render()
 {
     Update(); 
-    
+
     TransferData();
 
     static auto lineShader = ShaderManager::GetShader("Line");

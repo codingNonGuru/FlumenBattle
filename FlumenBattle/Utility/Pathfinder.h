@@ -384,7 +384,7 @@ namespace utility
                         if(nearbyTile->PathData.IsVisited == false && nearbyTile->PathData.IsToBeVisited == true)
                         {                               
                             auto nearbyTileNode = nodeMap.GetTile(nearbyTile->HexCoordinates);
-                            auto &nearbyNodeMappings = nodeMap.GetNearbyTiles(nearbyTileNode);
+                            auto nearbyNodeMappings = nodeMap.GetNearbyTiles(nearbyTileNode);
                             for(auto &nearbyNodeMapping : nearbyNodeMappings)
                             {
                                 if(nearbyNodeMapping == nearbyTileNode)

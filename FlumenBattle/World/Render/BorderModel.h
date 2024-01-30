@@ -15,40 +15,8 @@ namespace world
 
 namespace world::render
 {
-    struct BorderHex;
-
-    struct BorderData
-    {
-        Position2 Position;
-
-        float Rotation;
-
-        float Thickness;
-
-        float Length;
-
-        Float4 Color;
-
-        bool IsInitialized {false};
-    };
-
-    struct Border
-    {
-        BorderHex *First;
-
-        BorderHex *Second;
-
-        BorderData FirstData;
-
-        BorderData SecondData;
-
-        Float Rotation;
-
-        Border() {}
-
-        Border(BorderHex *first, BorderHex *second) : First(first), Second(second) {}
-    };
-
+    struct Border;
+    
     struct BorderHex : public core::hex::Tile
     {
         struct NeighbourData
@@ -88,13 +56,39 @@ namespace world::render
         }
     };
 
+    struct BorderData
+    {
+        Position2 Position;
+
+        float Rotation;
+
+        float Thickness;
+
+        float Length;
+
+        Float4 Color;
+
+        bool IsInitialized {false};
+    };
+
+    struct Border : public core::hex::HexEdge <BorderHex>
+    {
+        BorderData FirstData;
+
+        BorderData SecondData;
+
+        Float Rotation;
+
+        Border() {}
+
+        Border(BorderHex *first, BorderHex *second) : core::hex::HexEdge <BorderHex> {first, second} {}// First(first), Second(second) {}
+    };
+
     class BorderModel : public core::Singleton <BorderModel>, public Model
     {
         friend class core::Singleton <BorderModel>;
 
-        container::HexGrid <BorderHex> tiles;
-
-        container::Array <Border> borders;
+        container::EdgyHexGrid <BorderHex, Border> tiles;
 
         Camera *camera;
 
