@@ -13,6 +13,7 @@
 #include "FlumenBattle/Battle/CombatGroup.h"
 #include "FlumenBattle/World/Character/CharacterClass.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
+#include "FlumenBattle/Battle/BattleAnimator.h"
 
 namespace battle
 {
@@ -56,9 +57,13 @@ namespace battle
         operator class Combatant *() {return Combatant;}
     };
 
+    using PathData = utility::PathData <BattleTile>;
+
     struct ActionData
     {
         Combatant *Target;
+
+        PathData *Path;
 
         BattleTile *Destination;
 
@@ -74,23 +79,14 @@ namespace battle
 
         ActionData(BattleTile *destination) : Action(world::character::CharacterActions::MOVE), Destination(destination) {}
 
+        ActionData(PathData *path, BattleTile *destination) : Action(world::character::CharacterActions::MOVE), Path(path), Destination(destination) {}
+
         ActionData(Combatant *target, WeaponTypes weaponType) :
             Target(target), WeaponType(weaponType), Action(world::character::CharacterActions::ATTACK) {}
 
         ActionData(Combatant *target, SpellTypes spellType) :
             Target(target), SpellType(spellType), Action(world::character::CharacterActions::CAST_SPELL) {}
     };
-
-    struct TileMoveData
-    {
-        BattleTile *Tile;
-
-        Integer Distance;
-
-        bool operator < (const TileMoveData &other) {return this->Distance < other.Distance;}
-    };
-
-    Array <TileMoveData> tileMoveDatas = Array <TileMoveData> (64);
 
     BattleController *battleController = nullptr;
 
@@ -106,54 +102,7 @@ namespace battle
 
     static Integer currentActionIndex = 0;
 
-    static utility::PathData <BattleTile> plannedPathData;
-
-    BattleTile * ArtificialController::FindClosestFreeTile(BattleTile *source, BattleTile *destination)
-    {
-        auto &nearbyTiles = source->GetNearbyTiles(1);
-        for(auto tileIterator = nearbyTiles.GetStart(); tileIterator != nearbyTiles.GetEnd(); ++tileIterator)
-        {
-            auto tile = *tileIterator;
-            if(tile->Combatant != nullptr)
-                continue;
-
-            bool hasVisited = false;
-            for(auto action = actionQueue.GetStart(); action != actionQueue.GetEnd(); ++action)
-            {
-                if(action->Action == world::character::CharacterActions::MOVE && action->Destination == tile)
-                {
-                    hasVisited = true;
-                    break;
-                }
-            }
-
-            if(hasVisited)
-                continue;
-
-            Integer distance = tile->GetDistanceTo(*destination);
-
-            *tileMoveDatas.Allocate() = {tile, distance};
-        }
-
-        tileMoveDatas.SortAscendantly();
-
-        Integer closestDistance = tileMoveDatas.GetStart()->Distance;
-        Index dataIndex = 0;
-        for(auto data = tileMoveDatas.GetStart(); data != tileMoveDatas.GetEnd(); ++data, ++dataIndex)
-        {
-            if(data->Distance > closestDistance)
-            {
-                break;
-            }
-        }
-
-        dataIndex = utility::GetRandom(0, dataIndex - 1);
-        BattleTile *targetedTile = tileMoveDatas.Get(dataIndex)->Tile;
-
-        tileMoveDatas.Reset();
-
-        return targetedTile;
-    }
+    static auto pathDatas = Array <PathData> (16);
 
     CombatantData ArtificialController::FindCombatant(FilterList filterData, SinglingCriteria singlingCriterion)
     {
@@ -276,21 +225,32 @@ namespace battle
 
         bool hasReached = false; 
 
-        while(true)
-        {
-            startTile = FindClosestFreeTile(startTile, destination);
+        auto pathData = utility::Pathfinder <BattleTile>::Get()->FindPathAsGeneric(destination, startTile, 20);
 
-            *actionQueue.Allocate() = {startTile};
+        auto newPathData = pathDatas.Add();
+        newPathData->Tiles.Clear();
+        newPathData->Length = 0;
+
+        auto endTile = *pathData.Tiles[pathData.Tiles.GetSize() - 1];
+        for(int i = 0; i < pathData.Tiles.GetSize(); ++i)
+        {
+            *newPathData->Tiles.Add() = *pathData.Tiles[i];
+
+            newPathData->Length++;
+
+            if(i == 0)
+                continue;
 
             virtualMovement--;
-            
-            hasReached = startTile->GetDistanceTo(*destination) == range;
-
-            if(virtualMovement == 0 || hasReached)
+            if(virtualMovement == 0 || (*pathData.Tiles[i])->GetDistanceTo(*destination) == range)
             {
+                endTile = *pathData.Tiles[i];
+                hasReached = true;
                 break;
             }
         }
+
+        *actionQueue.Allocate() = {newPathData, endTile};
 
         return hasReached;
     }
@@ -314,6 +274,8 @@ namespace battle
         virtualMovement = selectedCombatant->GetMovement();
 
         actionQueue.Reset();
+
+        pathDatas.Reset();
 
         switch(selectedCombatant->character->type->Class)
         {
@@ -363,6 +325,7 @@ namespace battle
                 else
                 {
                     *actionQueue.Allocate() = {world::character::CharacterActions::DASH};
+
                     virtualMovement += selectedCombatant->GetMovement();
 
                     ApproachTile(closestEnemy.Combatant->GetTile(), 1);
@@ -677,7 +640,7 @@ namespace battle
         {
             battleController->TargetTile(action->Destination);
 
-            battleController->Move(plannedPathData);
+            battleController->Move(*action->Path);
         }
     }
 
@@ -691,9 +654,13 @@ namespace battle
 
         auto action = actionQueue.Get(currentActionIndex);
 
+        auto jumpDelay = 0.0f;
+
         if(action->Action == world::character::CharacterActions::MOVE)
         {
             MoveCharacter();
+
+            jumpDelay = BattleAnimator::Get()->GetAnimationLength();
         }
         else
         {
@@ -719,15 +686,15 @@ namespace battle
 
         if(currentActionIndex == actionQueue.GetSize() && !isPlanningAhead)
         {
-            TaskManager::Add({0.7f, {battleController, &BattleController::EndTurn}});
+            TaskManager::Add({jumpDelay + 0.7f, {battleController, &BattleController::EndTurn}});
         }
         else if(!isPlanningAhead)
         {
-            TaskManager::Add({0.1f, {this, &ArtificialController::PerformAction}});
+            TaskManager::Add({jumpDelay + 0.1f, {this, &ArtificialController::PerformAction}});
         }
         else
         {
-            TaskManager::Add({0.1f, {this, &ArtificialController::RepeatActionCycle}});
+            TaskManager::Add({jumpDelay + 0.1f, {this, &ArtificialController::RepeatActionCycle}});
         }
     }
 

@@ -15,7 +15,9 @@ namespace battle
 
         float time {0.0f};
 
-        float timeSpeedFactor;
+        float jumpLength;
+
+        float totalLength;
 
         Event OnFinished;
 
@@ -31,5 +33,7 @@ namespace battle
         void FollowPathMovement(Event);
 
         bool IsWorking() const {return isAnimating;}
+
+        float GetAnimationLength() const;
     };
 }

@@ -15,8 +15,6 @@ namespace battle
     {
         friend class BattleController;
 
-        BattleTile * FindClosestFreeTile(BattleTile *, BattleTile *);
-
         CombatantData FindCombatant(FilterList, SinglingCriteria);
 
         bool ApproachTile(BattleTile *, Integer);

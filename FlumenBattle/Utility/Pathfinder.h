@@ -470,29 +470,5 @@ namespace utility
         PathData() {}
 
         PathData(GenericPathData *);
-
-        /*PathData(const utility::PathData <TileType> &pathData)
-        {
-            for(auto &tile : pathData.Tiles)
-            {
-                *Tiles.Add() = tile.Tile;
-            }
-
-            Complexity = pathData.Complexity;
-
-            Length = pathData.Length;
-        }*/
-
-        /*PathData(const utility::PathData <TileType> &pathData)
-        {
-            for(auto &tile : pathData.Tiles)
-            {
-                *Tiles.Add() = tile.Tile;
-            }
-
-            Complexity = pathData.Complexity;
-
-            Length = pathData.Length;
-        }*/
     };
 }

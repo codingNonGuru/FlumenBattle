@@ -64,6 +64,11 @@ void BattleAnimator::Advance()
     followPathData.EndPosition = followPathData.NextTile->Position;
 }
 
+float BattleAnimator::GetAnimationLength() const
+{
+    return totalLength;
+}
+
 void BattleAnimator::FollowPathMovement(Event onFinished)
 {
     static const auto battleController = BattleController::Get();
@@ -99,7 +104,9 @@ void BattleAnimator::FollowPathMovement(Event onFinished)
 
     jumpsLeft = jumpCount;
 
-    timeSpeedFactor = float(jumpCount);
+    totalLength = JUMP_TIME_LENGTH;
+
+    jumpLength = JUMP_TIME_LENGTH / (float)jumpCount;
 }
 
 void BattleAnimator::Update()
@@ -107,9 +114,9 @@ void BattleAnimator::Update()
     if(isAnimating == false)
         return;
 
-    time += Time::GetDelta() * timeSpeedFactor;
+    time += Time::GetDelta();
 
-    auto timeFactor = time / JUMP_TIME_LENGTH;
+    auto timeFactor = time / jumpLength;
 
     auto oldPosition = followPathData.Combatant->GetPosition();
 
@@ -121,7 +128,7 @@ void BattleAnimator::Update()
     auto newRotation = atan2(direction.y, direction.x);
     followPathData.Combatant->SetRotation(newRotation);
 
-    if(time > JUMP_TIME_LENGTH)
+    if(time > jumpLength)
     {
         jumpsLeft--;
 
