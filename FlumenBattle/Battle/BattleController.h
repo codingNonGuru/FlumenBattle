@@ -9,7 +9,11 @@ namespace world::character
     class Character;
 }
 
-class Group;
+namespace utility
+{
+    template <typename TileType>
+    struct PathData;
+}
 
 namespace battle
 {
@@ -47,7 +51,7 @@ namespace battle
 
         void DetermineCharacterController();
 
-        void Move();
+        void Move(utility::PathData <battle::BattleTile>);
 
         void CheckTileSelection();
 
@@ -93,5 +97,9 @@ namespace battle
         void ExitBattle();
 
         static BattleController * Get();
+
+        const utility::PathData <battle::BattleTile> &GetPathData() const;
+
+        bool IsAnimationOngoing() const;
     };
 }

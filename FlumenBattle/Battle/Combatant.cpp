@@ -42,6 +42,8 @@ void Combatant::Initialize(CombatGroup *_group, world::character::Character *_ch
     isSavingAgainstDeath = false;
 
     armorClass = character->type->ArmorClass;
+
+    rotation = 0.0f;
 }
 
 bool Combatant::HasAdvantage() const

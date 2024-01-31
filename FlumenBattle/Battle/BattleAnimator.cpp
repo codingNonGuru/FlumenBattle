@@ -6,6 +6,7 @@
 #include "FlumenBattle/Battle/BattleTile.h"
 #include "FlumenBattle/Battle/BattleScene.h"
 #include "FlumenBattle/Battle/Combatant.h"
+#include "FlumenBattle/Utility/Pathfinder.h"
 
 using namespace battle;
 
@@ -16,26 +17,87 @@ struct FollowPathData
     Position2 EndPosition;
 
     Combatant *Combatant;
+
+    BattleTile *CurrentTile;
+
+    BattleTile *NextTile;
 } followPathData;
+
+auto jumpsLeft = 0;
+
+static constexpr auto JUMP_TIME_LENGTH = 0.5f;
 
 BattleAnimator::BattleAnimator()
 {
     BattleScene::Get()->OnUpdate += {this, &BattleAnimator::Update};
 }
 
+BattleTile *BattleAnimator::GetNextTile()
+{
+    static const auto battleController = BattleController::Get();
+
+    auto &pathData = battleController->GetPathData();
+
+    auto index = 0;
+    for(auto &tile : pathData.Tiles)
+    {
+        if(tile == followPathData.CurrentTile)
+        {
+            if(index == pathData.Length - 1)
+                return nullptr;
+            else 
+                return *pathData.Tiles[index + 1];
+        }
+
+        index++;
+    }
+}
+
+void BattleAnimator::Advance()
+{
+    followPathData.CurrentTile = followPathData.NextTile;
+
+    followPathData.NextTile = GetNextTile();
+
+    followPathData.StartPosition = followPathData.CurrentTile->Position;
+
+    followPathData.EndPosition = followPathData.NextTile->Position;
+}
+
 void BattleAnimator::FollowPathMovement(Event onFinished)
 {
+    static const auto battleController = BattleController::Get();
+
     isAnimating = true;
 
     time = 0.0f;
 
-    followPathData.StartPosition = BattleController::Get()->GetSelectedCombatant()->GetTile()->Position;
+    followPathData.Combatant = battleController->GetSelectedCombatant();
 
-    followPathData.EndPosition = BattleController::Get()->GetTargetedTile()->Position;
+    followPathData.CurrentTile = followPathData.Combatant->GetTile();
 
-    followPathData.Combatant = BattleController::Get()->GetSelectedCombatant();
+    followPathData.NextTile = GetNextTile();
+
+    followPathData.StartPosition = followPathData.CurrentTile->Position;
+
+    followPathData.EndPosition = followPathData.NextTile->Position;
 
     OnFinished = onFinished;
+
+    auto &pathData = battleController->GetPathData();
+
+    auto jumpCount = 0;
+    for(auto &tile : pathData.Tiles)
+    {
+        if(tile == battleController->GetTargetedTile())
+        {
+            break;
+        }
+
+        jumpCount++;
+    }
+
+    jumpsLeft = jumpCount;
 }
 
 void BattleAnimator::Update()
@@ -45,13 +107,26 @@ void BattleAnimator::Update()
 
     time += Time::GetDelta();
 
-    auto updatedPosition = followPathData.StartPosition * (1.0f - time) + followPathData.EndPosition * time;
+    auto timeFactor = time / JUMP_TIME_LENGTH;
+
+    auto updatedPosition = followPathData.StartPosition * (1.0f - timeFactor) + followPathData.EndPosition * timeFactor;
     followPathData.Combatant->SetPosition(updatedPosition);
 
-    if(time > 1.0f)
+    if(time > JUMP_TIME_LENGTH)
     {
-        isAnimating = false;
+        jumpsLeft--;
 
-        OnFinished.Invoke();
+        if(jumpsLeft == 0)
+        {
+            isAnimating = false;
+
+            OnFinished.Invoke();
+        }
+        else
+        {
+            time = 0.0f;
+
+            Advance();
+        }
     }
 }

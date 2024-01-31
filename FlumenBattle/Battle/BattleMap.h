@@ -40,5 +40,7 @@ namespace battle
         container::Block <BattleTile *, 6> GetNearbyTiles(BattleTile*);
 
         const Array<BattleTile *> &GetTileRing(BattleTile *, Integer);
+
+        const Grid <BattleTile> &GetTiles() const {return tiles;}
     };
 }

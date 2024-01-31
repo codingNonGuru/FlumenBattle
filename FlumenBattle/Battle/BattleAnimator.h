@@ -5,6 +5,8 @@
 
 namespace battle
 {
+    struct BattleTile;
+
     class BattleAnimator : public core::Singleton <BattleAnimator>
     {
         friend class core::Singleton <BattleAnimator>;
@@ -19,7 +21,13 @@ namespace battle
 
         void Update();
 
+        BattleTile *GetNextTile();
+
+        void Advance();
+
     public:
         void FollowPathMovement(Event);
+
+        bool IsWorking() const {return isAnimating;}
     };
 }

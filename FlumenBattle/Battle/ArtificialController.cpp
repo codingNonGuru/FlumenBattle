@@ -12,6 +12,7 @@
 #include "FlumenBattle/World/Character/Spell.h"
 #include "FlumenBattle/Battle/CombatGroup.h"
 #include "FlumenBattle/World/Character/CharacterClass.h"
+#include "FlumenBattle/Utility/Pathfinder.h"
 
 namespace battle
 {
@@ -104,6 +105,8 @@ namespace battle
     static Array <ActionData> actionQueue = Array <ActionData> (32);
 
     static Integer currentActionIndex = 0;
+
+    static utility::PathData <BattleTile> plannedPathData;
 
     BattleTile * ArtificialController::FindClosestFreeTile(BattleTile *source, BattleTile *destination)
     {
@@ -673,7 +676,8 @@ namespace battle
         if(action->Destination != nullptr)
         {
             battleController->TargetTile(action->Destination);
-            battleController->Move();
+
+            battleController->Move(plannedPathData);
         }
     }
 

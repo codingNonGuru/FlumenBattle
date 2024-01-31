@@ -12,7 +12,7 @@
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/Battle/CharacterInfo.h"
 #include "FlumenBattle/Battle/Combatant.h"
-#include "FlumenBattle/Battle/BattleTileModel.h"
+#include "FlumenBattle/Battle/Render/BattleTileModel.h"
 #include "FlumenBattle/Battle/BattleMap.h"
 #include "FlumenBattle/Battle/BattleTile.h"
 #include "FlumenBattle/Battle/CombatGroup.h"
@@ -207,7 +207,7 @@ namespace battle
 
     void BattleScene::Render()
     {
-        BattleTileModel::Get()->Render();
+        render::BattleTileModel::Get()->Render();
     }
 
     void BattleScene::HandleDisable()

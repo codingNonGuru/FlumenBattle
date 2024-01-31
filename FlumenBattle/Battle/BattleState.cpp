@@ -2,12 +2,12 @@
 #include "FlumenBattle/Battle/BattleScene.h"
 #include "FlumenBattle/Battle/BattleController.h"
 #include "FlumenBattle/Battle/BattleInterface.h"
-#include "FlumenBattle/Battle/BattleTileModel.h"
+#include "FlumenBattle/Battle/Render/BattleTileModel.h"
 #include "FlumenBattle/Battle/Sound/BattleMixer.h"
 
 using namespace battle;
 
-static BattleTileModel *tileModel = nullptr;
+static render::BattleTileModel *tileModel = nullptr;
 
 BattleState::BattleState()
 {
@@ -15,7 +15,7 @@ BattleState::BattleState()
 
     controller = BattleController::Get();
 
-    tileModel = BattleTileModel::Get();
+    tileModel = render::BattleTileModel::Get();
 
     interface = BattleInterface::Get();
 }

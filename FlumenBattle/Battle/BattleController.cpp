@@ -76,7 +76,12 @@ void BattleController::DetermineCharacterController()
     }
 }
 
-void BattleController::Move()
+const utility::PathData <battle::BattleTile> &BattleController::GetPathData() const
+{
+    return pathData;
+}
+
+void BattleController::Move(utility::PathData <battle::BattleTile> newPathData)
 {
     if(targetedTile == nullptr)
         return;
@@ -89,6 +94,8 @@ void BattleController::Move()
 
     if(selectedCombatant->CanMove(targetedTile) == false)
         return;
+
+    pathData = newPathData;
 
     BattleAnimator::Get()->FollowPathMovement({this, &BattleController::HandleMoveAnimationFinished});
 }
@@ -260,4 +267,9 @@ BattleController * BattleController::Get()
     }
 
     return instance;
+}
+
+bool BattleController::IsAnimationOngoing() const
+{
+    return BattleAnimator::Get()->IsWorking() == true;
 }

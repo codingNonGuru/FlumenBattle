@@ -88,7 +88,7 @@ void HumanController::CheckCharacterMovement()
 
     battleController->TargetTile(hoveredTile);
 
-    battleController->Move();
+    battleController->Move(hoveredPathData);
 }
 
 void HumanController::CheckTileSelection()
@@ -175,6 +175,9 @@ void HumanController::ChangeActionSelection(Integer actionIndex)
 
 void HumanController::HandleMPressed()
 {
+    if(BattleController::Get()->IsAnimationOngoing() == true)
+        return;
+        
     if(isInitiatingMove)
     {
         isInitiatingMove = false;

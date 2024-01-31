@@ -13,10 +13,14 @@ namespace battle
 {
     class Combatant;
     class CombatGroup;
-    class BattleTileModel;
     class BattleMap;
     class BattleTile;
     class BattleInterface;
+
+    namespace render
+    {
+        class BattleTileModel;
+    }
 
     struct Turn
     {
@@ -34,13 +38,13 @@ namespace battle
     {
         friend class BattleInterface;
 
-        friend class BattleTileModel;
+        friend class render::BattleTileModel;
 
         friend class BattleState;
 
         friend class BattleController;
 
-        BattleTileModel *battleTileModel;
+        render::BattleTileModel *battleTileModel;
 
         BattleMap *battleMap;
 

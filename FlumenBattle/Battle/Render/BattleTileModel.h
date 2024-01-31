@@ -9,7 +9,10 @@ class Shader;
 namespace battle
 {
     class BattleScene;
+}
 
+namespace battle::render
+{
     class BattleTileModel : public Model, public core::Singleton <BattleTileModel>
     {
         friend class core::Singleton <BattleTileModel>;
@@ -21,8 +24,6 @@ namespace battle
         BattleTileModel();
 
         void RenderActionRange();
-
-        void RenderCombatants();
 
         void RenderPath();
 

@@ -73,13 +73,13 @@ namespace battle
 
         Position2 position; 
 
+        float rotation;
+
         //Pool <world::character::Condition> conditions;
 
         Combatant();
 
         void Initialize(CombatGroup *, world::character::Character *, BattleTile *);
-
-        Position2 GetPosition();
 
         Integer GetDistanceTo(Combatant *) const;
 
@@ -151,6 +151,8 @@ namespace battle
         Float GetHealth() const;
 
         BattleTile *GetTile() const {return tile;}
+
+        Position2 GetPosition();
 
         const Integer &GetRemainingActionCount() const {return remainingActionCount;}
 
