@@ -98,6 +98,8 @@ void BattleAnimator::FollowPathMovement(Event onFinished)
     }
 
     jumpsLeft = jumpCount;
+
+    timeSpeedFactor = float(jumpCount);
 }
 
 void BattleAnimator::Update()
@@ -105,12 +107,19 @@ void BattleAnimator::Update()
     if(isAnimating == false)
         return;
 
-    time += Time::GetDelta();
+    time += Time::GetDelta() * timeSpeedFactor;
 
     auto timeFactor = time / JUMP_TIME_LENGTH;
 
-    auto updatedPosition = followPathData.StartPosition * (1.0f - timeFactor) + followPathData.EndPosition * timeFactor;
-    followPathData.Combatant->SetPosition(updatedPosition);
+    auto oldPosition = followPathData.Combatant->GetPosition();
+
+    auto newPosition = followPathData.StartPosition * (1.0f - timeFactor) + followPathData.EndPosition * timeFactor;
+    followPathData.Combatant->SetPosition(newPosition);
+
+    auto direction = newPosition - oldPosition;
+
+    auto newRotation = atan2(direction.y, direction.x);
+    followPathData.Combatant->SetRotation(newRotation);
 
     if(time > JUMP_TIME_LENGTH)
     {

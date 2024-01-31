@@ -92,7 +92,7 @@ void BattleController::Move(utility::PathData <battle::BattleTile> newPathData)
     if(battleScene->IsCharactersTurn(selectedCombatant) == false)
         return;
 
-    if(selectedCombatant->CanMove(targetedTile) == false)
+    if(selectedCombatant->CanMove(newPathData.Length - 1) == false)
         return;
 
     pathData = newPathData;
@@ -102,7 +102,7 @@ void BattleController::Move(utility::PathData <battle::BattleTile> newPathData)
 
 void BattleController::HandleMoveAnimationFinished()
 {
-    selectedCombatant->Move(targetedTile);
+    selectedCombatant->Move(targetedTile, pathData.Length - 1);
 }
 
 void BattleController::SelectSubaction(Integer actionIndex)

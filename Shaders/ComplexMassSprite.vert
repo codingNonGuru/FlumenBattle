@@ -8,7 +8,11 @@ layout (location = 1) uniform vec2 textureScale;
 
 layout (location = 2) uniform float spriteSize;
 
+layout (location = 3) uniform int hasRotation;
+
 layout (location = 4) uniform float depth;  
+
+layout (location = 5) uniform int hasOpacity;
 
 // DATA BUFFERS
 
@@ -30,6 +34,11 @@ layout (std430, binding = 2) buffer OPACITIES
 layout (std430, binding = 3) buffer FLIP_STATES
 {
 	int isFlipped[];	
+};
+
+layout (std430, binding = 4) buffer ROTATIONS
+{
+	float rotations[];	
 };
 
 // TEXTURES
@@ -64,10 +73,28 @@ void main()
 
 	textureCoordinates += textureOffsets[objectIndex];
 
+    vec2 position = vertices[indices[vertexIndex]];
+    
+	if(hasRotation == 1)
+	{
+		float rotation = rotations[objectIndex];
+
+		float s = sin(rotation);
+		float c = cos(rotation);
+
+		float xnew = position.x * c - position.y * s;
+		float ynew = position.x * s + position.y * c;
+
+		position = vec2(xnew, ynew);
+	}
+
 	ivec2 size = textureSize(diffuse, 0);
-	vec2 position = vertices[indices[vertexIndex]] * vec2(float(size.x), float(size.y)) * textureScale * spriteSize + positions[objectIndex];
+	position = position * vec2(float(size.x), float(size.y)) * textureScale * spriteSize + positions[objectIndex];
 
 	gl_Position = viewMatrix * vec4(position.x, position.y, depth, 1.0f);
 
-	opacity = opacities[objectIndex];
+	if(hasOpacity == 1)
+	{
+		opacity = opacities[objectIndex];
+	}
 }

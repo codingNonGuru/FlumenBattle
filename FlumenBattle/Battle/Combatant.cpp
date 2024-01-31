@@ -75,9 +75,14 @@ bool Combatant::HasDisadvantage() const
     return false;
 }
 
-Position2 Combatant::GetPosition()
+Position2 Combatant::GetPosition() const
 {
     return position;
+}
+
+float Combatant::GetRotation() const
+{
+    return rotation;
 }
 
 Integer Combatant::GetDistanceTo(Combatant *other) const
@@ -135,9 +140,9 @@ Integer Combatant::RollInitiative() const
     return initiative;
 }
 
-bool Combatant::CanMove(BattleTile *destination) const
+bool Combatant::CanMove(int distance) const
 {
-    return character->IsAlive() && movement > 0 && destination->GetDistanceTo(*tile) <= movement;
+    return character->IsAlive() && movement > 0 && distance <= movement;
 }
 
 bool Combatant::CanTarget() const
@@ -281,15 +286,14 @@ bool Combatant::CanDash() const
     return character->IsAlive() && remainingActionCount > 0;
 }
 
-bool Combatant::Move(BattleTile *destination)
+bool Combatant::Move(BattleTile *destination, int distance)
 {
     if(destination->Combatant != nullptr)
         return false;
 
-    if(CanMove(destination) == false)
+    if(CanMove(distance) == false)
         return false;
 
-    auto distance = tile->GetDistanceTo(*destination);
     if(distance > movement)
         return false;
 

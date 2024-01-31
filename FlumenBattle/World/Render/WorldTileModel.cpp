@@ -528,6 +528,10 @@ void WorldTileModel::RenderGroupSightings()
 
     massShader->SetConstant(Scale2(1.0f), "textureScale");
 
+    massShader->SetConstant(0, "hasRotation");
+
+    massShader->SetConstant(1, "hasOpacity");
+
     sightingPositionBuffer->Bind(0);
 
     sightingOffsetBuffer->Bind(1);

@@ -93,7 +93,7 @@ namespace battle
 
         bool HasDisadvantage() const;
 
-        bool CanMove(BattleTile *) const;
+        bool CanMove(int) const;
 
         bool CanTarget() const;
 
@@ -121,7 +121,7 @@ namespace battle
 
         void SetTile(BattleTile *);
 
-        bool Move(BattleTile *);
+        bool Move(BattleTile *, int);
 
         bool SufferDamage(Integer);
 
@@ -152,7 +152,9 @@ namespace battle
 
         BattleTile *GetTile() const {return tile;}
 
-        Position2 GetPosition();
+        Position2 GetPosition() const;
+
+        float GetRotation() const;
 
         const Integer &GetRemainingActionCount() const {return remainingActionCount;}
 
@@ -161,5 +163,7 @@ namespace battle
         bool IsWithinActionRange(BattleTile *);
 
         void SetPosition(Position2 newPosition) {position = newPosition;}
+
+        void SetRotation(float newRotation) {rotation = newRotation;}
     };
 }

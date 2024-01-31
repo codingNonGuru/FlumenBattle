@@ -15,6 +15,8 @@ namespace battle
 
         float time {0.0f};
 
+        float timeSpeedFactor;
+
         Event OnFinished;
 
         BattleAnimator();

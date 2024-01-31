@@ -38,6 +38,8 @@ static HumanController * humanController = nullptr;
 
 static Float shadeTimer = 0.0f;
 
+static const auto BACKGROUND_COLOR = Color(0.1f, 0.1f, 0.7f, 1.0f);
+
 BattleTileModel::BattleTileModel()
 {
     auto hexMesh = MeshManager::GetMeshes().Add("Hex"); 
@@ -60,8 +62,7 @@ BattleTileModel::BattleTileModel()
 
 void BattleTileModel::Initialize()
 {   
-    auto backgroundColor = Color(0.1f, 0.1f, 0.7f, 1.0f);
-	RenderManager::SetBackgroundColor(backgroundColor);
+	RenderManager::SetBackgroundColor(BACKGROUND_COLOR);
 }
 
 void BattleTileModel::CreateCamera()
@@ -72,7 +73,7 @@ void BattleTileModel::CreateCamera()
 
     auto centerTile = battleScene->GetBattleMap()->GetCenterTile();
     camera->SetTarget(Position3(centerTile->Position, 0.0f));
-    camera->Zoom(2.0f);
+    
     camera->EnableDynamicZooming();
 }
 

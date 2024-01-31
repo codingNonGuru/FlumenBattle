@@ -2,7 +2,7 @@
 
 precision highp float;
 
-//layout (location = 3) uniform float opacity;
+layout (location = 5) uniform int hasOpacity;
 
 // TEXTURES
 
@@ -18,5 +18,8 @@ void main()
 {	
 	fragment = texture(diffuse, textureCoordinates).rgba;
 	
-	fragment.a *= opacity;
+	if(hasOpacity == 1)
+	{
+		fragment.a *= opacity;
+	}
 }
