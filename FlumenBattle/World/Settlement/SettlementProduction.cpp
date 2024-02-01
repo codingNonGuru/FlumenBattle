@@ -51,19 +51,19 @@ const SettlementProductionType * SettlementProductionFactory::BuildProductionTyp
 
 const SettlementProductionType * SettlementProductionFactory::BuildPatrolProduction()
 {
-    static const SettlementProductionType productionType = {SettlementProductionOptions::PATROL, "Patrol", 100, &SettlementProductionFinisher::FinishPatrol};
+    static const SettlementProductionType productionType = {SettlementProductionOptions::PATROL, "Patrol", 200, &SettlementProductionFinisher::FinishPatrol};
     return &productionType;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildFarmProduction()
 {
-    static const SettlementProductionType productionType = {SettlementProductionOptions::FARM, "Farm", 200, &SettlementProductionFinisher::FinishFarm};
+    static const SettlementProductionType productionType = {SettlementProductionOptions::FARM, "Farm", 300, &SettlementProductionFinisher::FinishFarm};
     return &productionType;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildSettlersProduction()
 {
-    static const SettlementProductionType productionType = {SettlementProductionOptions::SETTLERS, "Settlers", 100, &SettlementProductionFinisher::FinishSettlers};
+    static const SettlementProductionType productionType = {SettlementProductionOptions::SETTLERS, "Settlers", 500, &SettlementProductionFinisher::FinishSettlers};
     return &productionType;
 }
 

@@ -418,6 +418,11 @@ Pool <SettlementTile> & Settlement::GetTiles()
     return tiles;
 }
 
+const container::Pool <Building> &Settlement::GetBuildings() const 
+{
+    return buildingManager->GetBuildings();
+}
+
 Integer Settlement::GetIndustrialProduction() const
 {
     auto production = GetPopulation();

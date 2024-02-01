@@ -50,22 +50,19 @@ Building BuildingFactory::Create(BuildingTypes type)
     case BuildingTypes::LIBRARY:
         return 
         {
-            [&] {static const auto buildingType = Library(type, 200); return &buildingType;} (), 
-            false,
-            true
+            [&] {static const auto buildingType = Library(type, 200, true); return &buildingType;} (), 
+            false
         };
     case BuildingTypes::SEWAGE:
         return 
         {
-            [&] {static const auto buildingType = Sewage(type, 200); return &buildingType;} (), 
-            false,
+            [&] {static const auto buildingType = Sewage(type, 200, false); return &buildingType;} (), 
             false
         };
     case BuildingTypes::IRRIGATION:
         return 
         {
-            [&] {static const auto buildingType = Irrigation(type, 200); return &buildingType;} (), 
-            false,
+            [&] {static const auto buildingType = Irrigation(type, 200, false); return &buildingType;} (), 
             false
         };
     }
@@ -78,23 +75,46 @@ void BuildingManager::Initialize(Settlement *settlement)
 
 bool BuildingManager::HasBuilding(BuildingTypes type) const
 {
-    return buildingSet.buildings.Find(type) != nullptr;
+    return GetBuildingCount(type) > 0;
+}
+
+int BuildingManager::GetBuildingCount(BuildingTypes type) const
+{
+    auto building = buildingSet.buildings.Find(type);
+    if(building == nullptr)
+    {
+        return 0;
+    }
+    else
+    {
+        return building->GetAmount();
+    }
 }
 
 void BuildingManager::AddBuilding(BuildingTypes type)
 {
-    const auto &building = BuildingFactory::Get()->Create(type);
+    auto building = buildingSet.buildings.Find(type);
+    if(building == nullptr)
+    {
+        const auto &building = BuildingFactory::Get()->Create(type);
 
-    auto buildingPointer = buildingSet.buildings.Add();
+        auto buildingPointer = buildingSet.buildings.Add();
 
-    *buildingPointer = building;
+        *buildingPointer = building;
+    }
+    else
+    {
+        building->IncreaseAmount();
+    }
 }
 
 void BuildingManager::RemoveBuilding(BuildingTypes type)
 {
     auto buildingPointer = buildingSet.buildings.Find(type);
 
-    buildingSet.buildings.RemoveAt(buildingPointer);
+    buildingPointer->Destroy();
+
+    //buildingSet.buildings.RemoveAt(buildingPointer);
 }
 
 void BuildingManager::ApplyModifiers(Settlement &settlement) const

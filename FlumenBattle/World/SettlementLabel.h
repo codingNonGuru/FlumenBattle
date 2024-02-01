@@ -72,6 +72,8 @@ namespace world::settlement
 
         Text * groupLabel;
 
+        Text * buildingLabel;
+
         const Settlement *settlement;
 
         LayoutGroup *storageLayout;

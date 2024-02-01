@@ -14,6 +14,7 @@
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Settlement/Affliction.h"
 #include "FlumenBattle/World/Settlement/Condition.h"
+#include "FlumenBattle/World/Settlement/Building.h"
 #include "FlumenBattle/World/Group/GroupDynamics.h"
 #include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
@@ -181,6 +182,14 @@ void HoverExtension::HandleConfigure()
     );
     factionLabel->SetAlignment(Text::Alignments::LEFT);
     factionLabel->Enable();
+    basePosition.y += 20.0f;
+
+    buildingLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
+        {{"Small"}, color, "Built:"}
+    );
+    buildingLabel->SetAlignment(Text::Alignments::LEFT);
+    buildingLabel->Enable();
     basePosition.y += 10.0f;
 
     storageLayout = ElementFactory::BuildElement <LayoutGroup>(
@@ -366,6 +375,44 @@ void HoverExtension::HandleUpdate()
         text << "-";
     }
     factionLabel->Setup(text);
+
+    text = "Built:";
+    for(auto &building : settlement->GetBuildings())
+    {
+        text << " ";
+
+        if(building.GetAmount() == 0)
+            continue;
+
+        switch(building.GetType())
+        {
+        case BuildingTypes::SEWAGE:
+            text << "S";
+            break;
+        case BuildingTypes::GRANARY:
+            text << "G";
+            break;
+        case BuildingTypes::IRRIGATION:
+            text << "I";
+            break;
+        case BuildingTypes::LIBRARY:
+            text << "L";
+            break;
+        }
+    }
+
+    auto improvementCount = 0;
+    for(auto &tile : settlement->GetTiles())
+    {
+        if(tile.IsBuilt)
+            improvementCount++;
+    }
+
+    if(improvementCount > 0)
+    {
+        text << " " << improvementCount << "F";
+    }
+    buildingLabel->Setup(text);
 
     text = "Building: ";
     text << settlement->GetCurrentProduction()->GetName();

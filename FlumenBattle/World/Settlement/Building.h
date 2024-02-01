@@ -21,7 +21,9 @@ namespace world::settlement
 
         int Cost;
 
-        explicit BuildingType(BuildingTypes type, int cost) : Type(type), Cost(cost) {}
+        bool IsTall;
+
+        explicit BuildingType(BuildingTypes type, int cost, bool isTall) : Type(type), Cost(cost), IsTall(isTall) {}
 
         virtual void HandleApplyEffect(Settlement &) const = 0;
     };
@@ -32,21 +34,28 @@ namespace world::settlement
 
         bool isDamaged;
 
-        bool isTall;
+        int amount {1};
 
     public:
-        Building() : type(nullptr), isDamaged(false), isTall(false) {}
+        Building() : type(nullptr), isDamaged(false) {}
 
-        Building(const BuildingType *type, bool isDamaged, bool isTall) : 
+        Building(const BuildingType *type, bool isDamaged) : 
         type(type), 
-        isDamaged(isDamaged), 
-        isTall(isTall) {} 
+        isDamaged(isDamaged) {} 
 
         void ApplyEffect(Settlement &) const;
 
         bool operator ==(BuildingTypes buildingType) const {return this->type->Type == buildingType;}
 
-        bool IsTall() const {return isTall;}
+        bool IsTall() const {return type->IsTall;}
+
+        void IncreaseAmount() {amount++;}
+
+        void Destroy() {amount--;}
+
+        int GetAmount() const {return amount;}
+
+        BuildingTypes GetType() const {return type->Type;}
     };
 
     class BuildingSet
@@ -89,6 +98,10 @@ namespace world::settlement
         void ApplyModifiers(Settlement &) const;
 
         void Update();
+
+        int GetBuildingCount(BuildingTypes) const;
+
+        const container::Pool <Building> &GetBuildings() const {return buildingSet.Get();}
     };
 
     class BuildingSetAllocator

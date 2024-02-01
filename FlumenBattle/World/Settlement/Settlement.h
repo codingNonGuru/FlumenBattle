@@ -45,6 +45,7 @@ namespace world::settlement
     class BuildingManager;
     class Path;
     struct Condition;
+    class Building;
 
     struct SettlementTile
     {
@@ -201,6 +202,8 @@ namespace world::settlement
         int GetStock(ResourceTypes type) const {return resourceHandler.Get(type)->Storage;}
 
         SettlementProduction *GetCurrentProduction() const {return currentProduction;}
+
+        const container::Pool <Building> &GetBuildings() const;
 
         polity::Faction *GetFaction() const {return faction;}
 
