@@ -49,20 +49,6 @@ namespace world
         HUNGER
     };
 
-    enum class SettlementProductionOptions
-    {
-        NONE,
-        PATROL,
-        FARM,
-        SETTLERS,
-        MONUMENT,
-        WALLS,
-        GRANARY,
-        SEWAGE,
-        IRRIGATION,
-        LIBRARY
-    };
-
     enum class AfflictionResultTypes
     {
         NONE,

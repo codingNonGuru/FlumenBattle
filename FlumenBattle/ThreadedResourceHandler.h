@@ -7,13 +7,14 @@
 
 #include "FlumenEngine/Thread/ThreadManager.h"
 
-namespace world
+namespace game
 {
     template <typename ResourceType>
     class ThreadedResourceHandler : public core::Singleton <ThreadedResourceHandler <ResourceType>>
     {
         friend class core::Singleton <ThreadedResourceHandler>;
 
+    public:
         ResourceType resources[engine::ThreadManager::GetThreadCount() + 2];
 
         container::StaticMap <ResourceType *, std::thread::id> resourceMap {engine::ThreadManager::GetThreadCount() + 2};
@@ -21,7 +22,7 @@ namespace world
         int lastBatchIndex {0};
 
     public:
-        ResourceType *GetUsableBuffer()
+        ResourceType *GetUsableResource()
         {
             const auto threadId = std::this_thread::get_id();
 

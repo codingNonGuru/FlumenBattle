@@ -371,9 +371,6 @@ namespace world
 
     settlement::Settlement * WorldScene::FoundSettlement(WorldTile *location, settlement::Settlement *mother)
     {
-        static std::mutex mutex;
-        mutex.lock();
-
         auto settlement = settlement::SettlementFactory::Create({location});
 
         auto polity = mother != nullptr ? mother->GetPolity() : nullptr;
@@ -423,8 +420,6 @@ namespace world
 
         foundedSettlement = settlement;
         OnSettlementFounded->Invoke();
-
-        mutex.unlock();
     }
 
     settlement::Settlement *WorldScene::ForgePath(settlement::Settlement *from, settlement::Settlement *to, int complexityLimit)

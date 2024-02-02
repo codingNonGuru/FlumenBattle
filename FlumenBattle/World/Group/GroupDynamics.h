@@ -54,5 +54,9 @@ namespace world::group
         int GetAdventurerStrength();
 
         int GetMerchantStrength();
+
+        int GetPatrolStrength() const {return patrolStrength;}
+
+        int GetBanditStrength() const {return banditStrength;}
     };
 }

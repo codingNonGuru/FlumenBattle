@@ -6,6 +6,20 @@
 
 namespace world::settlement
 {
+    enum class ProductionOptions
+    {
+        NONE,
+        PATROL,
+        FARM,
+        SETTLERS,
+        MONUMENT,
+        WALLS,
+        GRANARY,
+        SEWAGE,
+        IRRIGATION,
+        LIBRARY
+    };
+
     enum class BuildingTypes
     {
         SEWAGE,

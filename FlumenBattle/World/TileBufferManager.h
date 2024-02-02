@@ -1,5 +1,7 @@
 #pragma once
 
+#include <mutex>
+
 #include "FlumenCore/Container/Pool.hpp"
 #include "FlumenCore/Container/Array.hpp"
 #include "FlumenCore/Container/Map.hpp"
@@ -38,10 +40,15 @@ namespace world
                 return buffer;
             }
 
+            std::mutex mutex;
+            mutex.lock();
+
             batchPointer = bufferBatchMap.Add(threadId);
 
             *batchPointer = &bufferBatches[lastBatchIndex];
             lastBatchIndex++;
+
+            mutex.unlock();
 
             auto batch = *batchPointer;
                 

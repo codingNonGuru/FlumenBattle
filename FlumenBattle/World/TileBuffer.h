@@ -35,7 +35,7 @@ namespace world
     {
         container::Array <TileType *> Tiles;
 
-        TileBufferBatch <TileType> *Batch;
+        TileBufferBatch <TileType> *Batch {nullptr};
 
         TileBuffer() : Tiles(TILES_PER_BUFFER) {}
 
@@ -43,7 +43,9 @@ namespace world
 
         ~TileBuffer()
         {
+            std::cout<<this<<" "<<Batch<<" "<< Tiles.GetStart() <<" "<<Batch->Buffers.GetSize()<<"\n";
             Batch->Buffers.Remove(Tiles.GetStart());
+            std::cout<<this<<" "<<Batch<<" "<< Tiles.GetStart() <<" "<<Batch->Buffers.GetSize()<<"\n\n";
         }
 
         TileBuffer(const TileBuffer &) = delete;
@@ -52,7 +54,7 @@ namespace world
 
         TileBuffer(TileBuffer &&buffer) {Tiles = buffer.Tiles; Batch = buffer.Batch;}
 
-        TileBuffer& operator=(TileBuffer &&buffer) {Tiles = buffer.Tiles; Batch = buffer.Batch;}
+        TileBuffer& operator=(TileBuffer &&buffer) {Tiles = buffer.Tiles; Batch = buffer.Batch; return *this;}
 
         bool operator== (TileType **tileStart) {return Tiles.GetStart() == tileStart;}
 

@@ -23,6 +23,7 @@
 #include "FlumenBattle/Utility/Pathfinder.h"
 #include "FlumenBattle/Utility/SettlementPathfinder.h"
 #include "FlumenBattle/Config.h"
+#include "FlumenBattle/ThreadedResourceHandler.h"
 
 using namespace world::settlement;
 
@@ -61,7 +62,7 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
 
     this->cultureGrowth = 0;
 
-    *this->currentProduction = SettlementProductionFactory::Get()->Create(SettlementProductionOptions::NONE);
+    *this->currentProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
 
     auto tile = tiles.Add();
     tile->Tile = location;
@@ -351,56 +352,97 @@ void Settlement::GrowBorders()
     mutex.unlock();
 }
 
+struct NecessityMap
+{
+    container::StaticMap <int, ProductionOptions> Factors {16};
+
+    container::Array <ProductionOptions> ExcludedOptions {16};
+};
+
 void Settlement::DecideProduction()
 {
-    if(groupDynamics->patrolStrength - groupDynamics->banditStrength < 1)
+    static const ProductionOptions options[] = {
+        ProductionOptions::PATROL, 
+        ProductionOptions::SETTLERS, 
+        ProductionOptions::IRRIGATION, 
+        ProductionOptions::LIBRARY,
+        ProductionOptions::FARM
+        };
+
+    auto resourceHandler = game::ThreadedResourceHandler <NecessityMap>::Get();
+    const auto necessityMap = resourceHandler->GetUsableResource();
+
+    necessityMap->Factors.Reset();
+
+    necessityMap->ExcludedOptions.Reset();
+
+    for(auto &option : options)
     {
-        *currentProduction = SettlementProductionFactory::Get()->Create(SettlementProductionOptions::PATROL);
-    }
-    else if(population >= POPULATION_COLONIZATION_THRESHOLD && hasAvailableColonySpots == true)
-    {
-        auto colonySpot = FindColonySpot();
-        if(colonySpot != nullptr)
-        {
-            *currentProduction = SettlementProductionFactory::Get()->Create(SettlementProductionOptions::SETTLERS, {colonySpot});
-        }
+        *necessityMap->Factors.Add(option) = SettlementProduction::GetNecessity(*this, option);
     }
 
-    if(currentProduction->Is(SettlementProductionOptions::NONE))
+    auto findHighestViableOption = [&] -> container::StaticMap <int, ProductionOptions>::Iterator
     {
-        if(buildingManager->HasBuilding(BuildingTypes::SEWAGE) == false)
+        auto chosenKey = ProductionOptions::NONE;
+        auto highestValue = INT_MIN;
+
+        auto value = necessityMap->Factors.GetStart();
+        for(auto key = necessityMap->Factors.GetFirstKey(); key != necessityMap->Factors.GetLastKey(); ++key, ++value)
         {
-            *currentProduction = SettlementProductionFactory::Get()->Create(SettlementProductionOptions::SEWAGE);
-        }
-        else
-        {
-            SettlementTile * improvementTarget = nullptr;
-            for(auto &tile : tiles)
+            if(*value == 0)
+                continue;
+
+            bool isExcluded = false;
+            for(auto &option : necessityMap->ExcludedOptions)
             {
-                if(tile.Tile->Biome->Type == world::WorldBiomes::STEPPE && tile.IsBuilt == false)
+                if(*key == option)
                 {
-                    improvementTarget = &tile;
+                    isExcluded = true;
+                    break;
                 }
             }
 
-            if(improvementTarget != nullptr)
+            if(isExcluded == true)
+                continue;
+
+            if(*value > highestValue)
             {
-                *currentProduction = SettlementProductionFactory::Get()->Create(SettlementProductionOptions::FARM, {improvementTarget});
+                highestValue = *value;
+                chosenKey = *key;
             }
         }
 
-        if(currentProduction->Is(SettlementProductionOptions::NONE))
+        return {highestValue, chosenKey};
+    };
+
+    auto index = 0;
+    while(true)
+    {
+        auto proposedOption = findHighestViableOption();
+
+        if(proposedOption.Key_ == ProductionOptions::NONE)
         {
-            if(buildingManager->HasBuilding(BuildingTypes::IRRIGATION) == false)
+            *currentProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
+            break;
+        }
+        else
+        {
+            auto inquiry = SettlementProduction::CanProduce(*this, proposedOption.Key_);
+            if(inquiry.CanProduce == true)
             {
-                *currentProduction = SettlementProductionFactory::Get()->Create(SettlementProductionOptions::IRRIGATION);
+                *currentProduction = SettlementProductionFactory::Get()->Create(proposedOption.Key_, inquiry.Data);
+                break;
             }
             else
             {
-                *currentProduction = SettlementProductionFactory::Get()->Create(SettlementProductionOptions::PATROL);
+                *necessityMap->ExcludedOptions.Add() = proposedOption.Key_;
             }
         }
+
+        index++;
     }
+
+    //std::cout<<index<<"\n";
 }
 
 Color Settlement::GetRulerBanner() const
@@ -421,6 +463,11 @@ Pool <SettlementTile> & Settlement::GetTiles()
 const container::Pool <Building> &Settlement::GetBuildings() const 
 {
     return buildingManager->GetBuildings();
+}
+
+bool Settlement::HasBuilding(BuildingTypes type) const
+{
+    return buildingManager->HasBuilding(type);
 }
 
 Integer Settlement::GetIndustrialProduction() const
@@ -614,13 +661,13 @@ void Settlement::Update()
 
     WorkNewTile();
 
-    currentProduction->AddProgress(GetIndustrialProduction());
+    currentProduction->AddProgress(currentProduction->Is(ProductionOptions::NONE) ? 1 : GetIndustrialProduction());
     
     if(currentProduction->IsDone())
     {
         currentProduction->Finish(*this);
 
-        *currentProduction = SettlementProductionFactory::Get()->Create(SettlementProductionOptions::NONE);
+        *currentProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
 
         DecideProduction();
     }

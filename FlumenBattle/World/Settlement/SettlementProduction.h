@@ -5,6 +5,7 @@
 #include "FlumenCore/Singleton.h"
 
 #include "FlumenBattle/World/Types.h"
+#include "FlumenBattle/World/Settlement/Types.h"
 
 namespace world
 {
@@ -25,17 +26,22 @@ namespace world::settlement
         friend class SettlementProductionFactory;
 
     private:
-        SettlementProductionType(SettlementProductionOptions type, Integer cost, void (*onFinish) (Settlement &)) : Type(type), Cost(cost), OnFinish(onFinish) {}
+        SettlementProductionType(ProductionOptions type, Integer cost, void (*onFinish) (Settlement &)) : Type(type), Cost(cost), OnFinish(onFinish) {}
 
-        SettlementProductionType(SettlementProductionOptions type, Word name, Integer cost, void (*onFinish) (Settlement &)) : Type(type), Name(name), Cost(cost), OnFinish(onFinish) {}
+        SettlementProductionType(ProductionOptions type, Word name, Integer cost, void (*onFinish) (Settlement &)) : Type(type), Name(name), Cost(cost), OnFinish(onFinish) {}
 
-        SettlementProductionOptions Type;
+        SettlementProductionType(ProductionOptions type, Word name, Integer cost, void (*onFinish) (Settlement &), void (*onInitialize) (Settlement &)) : 
+            Type(type), Name(name), Cost(cost), OnFinish(onFinish), OnInitialize(onInitialize) {}
+
+        ProductionOptions Type;
 
         Word Name;
 
         Integer Cost;
 
         void (*OnFinish) (Settlement &);
+
+        void (*OnInitialize) (Settlement &);
 
         SettlementProductionType(const SettlementProductionType &) = delete;
 
@@ -56,9 +62,16 @@ namespace world::settlement
         ProductionData(world::WorldTile *target) : colonizationTarget(target) {}
     };
 
+    struct ProductionInquiry
+    {
+        bool CanProduce;
+
+        ProductionData Data;
+    };
+
     class SettlementProduction
     {
-        friend class SettlementProductionFinisher;
+        friend class ProductionFinisher;
 
         const SettlementProductionType* type;
 
@@ -73,7 +86,7 @@ namespace world::settlement
 
         bool IsDone() const {return progress >= GetCost();}
 
-        bool Is(SettlementProductionOptions option) const {return GetType() == option;}
+        bool Is(ProductionOptions option) const {return GetType() == option;}
 
         void AddProgress(Integer progress) {this->progress += progress;}
 
@@ -81,7 +94,7 @@ namespace world::settlement
 
         Integer GetCost() const {return type->Cost;}
 
-        SettlementProductionOptions GetType() const {return type->Type;}
+        ProductionOptions GetType() const {return type->Type;}
 
         Word GetName() const {return type->Name;}
 
@@ -94,11 +107,15 @@ namespace world::settlement
                 type->OnFinish(settlement);
             }
         }
+
+        static int GetNecessity(Settlement &, ProductionOptions);
+
+        static ProductionInquiry CanProduce(Settlement &, ProductionOptions);
     };
 
     class SettlementProductionFactory : public core::Singleton <SettlementProductionFactory>
     {
-        const SettlementProductionType *BuildProductionType(SettlementProductionOptions);
+        const SettlementProductionType *BuildProductionType(ProductionOptions);
 
         const SettlementProductionType *BuildPatrolProduction();
 
@@ -115,10 +132,10 @@ namespace world::settlement
         const SettlementProductionType *BuildNoneProduction();
 
     public:
-        SettlementProduction Create(SettlementProductionOptions, ProductionData = ProductionData());
+        SettlementProduction Create(ProductionOptions, ProductionData = ProductionData());
     };
 
-    class SettlementProductionFinisher
+    class ProductionFinisher
     {
         friend class SettlementProductionFactory;
 

@@ -5,114 +5,146 @@
 #include "FlumenBattle/World/Group/GroupDynamics.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/Settlement/ProductionEvaluator.h"
 
 using namespace world::settlement;
 
-SettlementProduction SettlementProductionFactory::Create(SettlementProductionOptions option, ProductionData data)
+SettlementProduction SettlementProductionFactory::Create(ProductionOptions option, ProductionData data)
 {
     return {BuildProductionType(option), 0, data};
-    /*switch(option)
-    {
-    case SettlementProductionOptions::FARM:
-        return {BuildProductionType(option), 0, data};
-    case SettlementProductionOptions::PATROL:
-        return {BuildProductionType(option), 0, data};
-    case SettlementProductionOptions::SETTLERS:
-        return {BuildProductionType(option), 0, data};
-    case SettlementProductionOptions::SEWAGE:
-        return {BuildProductionType(option), 0, data};
-    case SettlementProductionOptions::IRRIGATION:
-        return {BuildProductionType(option), 0, data};
-    case SettlementProductionOptions::NONE:
-        return {BuildProductionType(option), 0, data};
-    }*/
 }
 
-const SettlementProductionType * SettlementProductionFactory::BuildProductionType(SettlementProductionOptions option)
+int SettlementProduction::GetNecessity(Settlement &settlement, ProductionOptions option)
+{
+    return ProductionEvaluator::GetNecessity(settlement, option);
+}
+
+ProductionInquiry SettlementProduction::CanProduce(Settlement &settlement, ProductionOptions option)
 {
     switch(option)
     {
-        case SettlementProductionOptions::PATROL:
+    case ProductionOptions::SETTLERS:
+    {
+        auto colonySpot = settlement.FindColonySpot();
+        if(colonySpot == nullptr)
+        {
+            return {false};
+        }
+        else
+        {
+            return {true, {colonySpot}};
+        }
+    }
+    case ProductionOptions::FARM:
+    {
+        SettlementTile *improvementTarget = nullptr;
+        for(auto &tile : settlement.GetTiles())
+        {
+            if(tile.Tile->HasBiome(world::WorldBiomes::STEPPE) && tile.IsBuilt == false)
+            {
+                improvementTarget = &tile;
+            }
+        }
+
+        if(improvementTarget == nullptr)
+        {
+            return {false};
+        }
+        else
+        {
+            return {true, {improvementTarget}};
+        }
+    }
+    default:
+        return {true};
+    }
+}
+
+const SettlementProductionType * SettlementProductionFactory::BuildProductionType(ProductionOptions option)
+{
+    switch(option)
+    {
+        case ProductionOptions::PATROL:
             return BuildPatrolProduction();
-        case SettlementProductionOptions::FARM:
+        case ProductionOptions::FARM:
             return BuildFarmProduction();
-        case SettlementProductionOptions::SETTLERS:
+        case ProductionOptions::SETTLERS:
             return BuildSettlersProduction();
-        case SettlementProductionOptions::SEWAGE:
+        case ProductionOptions::SEWAGE:
             return BuildSewageProduction();
-        case SettlementProductionOptions::IRRIGATION:
+        case ProductionOptions::IRRIGATION:
             return BuildIrrigationProduction();
-        case SettlementProductionOptions::LIBRARY:
+        case ProductionOptions::LIBRARY:
             return BuildLibraryProduction();
-        case SettlementProductionOptions::NONE:
+        case ProductionOptions::NONE:
             return BuildNoneProduction();
     }
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildPatrolProduction()
 {
-    static const SettlementProductionType productionType = {SettlementProductionOptions::PATROL, "Patrol", 200, &SettlementProductionFinisher::FinishPatrol};
+    static const SettlementProductionType productionType = {ProductionOptions::PATROL, "Patrol", 200, &ProductionFinisher::FinishPatrol};
     return &productionType;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildFarmProduction()
 {
-    static const SettlementProductionType productionType = {SettlementProductionOptions::FARM, "Farm", 300, &SettlementProductionFinisher::FinishFarm};
+    static const SettlementProductionType productionType = {ProductionOptions::FARM, "Farm", 300, &ProductionFinisher::FinishFarm};
     return &productionType;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildSettlersProduction()
 {
-    static const SettlementProductionType productionType = {SettlementProductionOptions::SETTLERS, "Settlers", 500, &SettlementProductionFinisher::FinishSettlers};
+    static const SettlementProductionType productionType = {ProductionOptions::SETTLERS, "Settlers", 500, &ProductionFinisher::FinishSettlers};
     return &productionType;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildSewageProduction()
 {
-    static const SettlementProductionType productionType = {SettlementProductionOptions::SEWAGE, "Sewage", 400, &SettlementProductionFinisher::FinishSewage};
+    static const SettlementProductionType productionType = {ProductionOptions::SEWAGE, "Sewage", 400, &ProductionFinisher::FinishSewage};
     return &productionType;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildIrrigationProduction()
 {
-    static const SettlementProductionType productionType = {SettlementProductionOptions::IRRIGATION, "Irrigation", 700, &SettlementProductionFinisher::FinishIrrigation};
+    static const SettlementProductionType productionType = {ProductionOptions::IRRIGATION, "Irrigation", 700, &ProductionFinisher::FinishIrrigation};
     return &productionType;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildLibraryProduction()
 {
-    static const SettlementProductionType productionType = {SettlementProductionOptions::LIBRARY, "Library", 500, &SettlementProductionFinisher::FinishLibrary};
+    static const SettlementProductionType productionType = {ProductionOptions::LIBRARY, "Library", 500, &ProductionFinisher::FinishLibrary};
     return &productionType;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildNoneProduction()
 {
-    static const SettlementProductionType productionType = {SettlementProductionOptions::NONE, "None", 0, nullptr};
+    static const SettlementProductionType productionType = {ProductionOptions::NONE, "None", 10, nullptr};
     return &productionType;
 }
 
-void SettlementProductionFinisher::FinishPatrol(Settlement &settlement)
+void ProductionFinisher::FinishPatrol(Settlement &settlement)
 {
     settlement.StrengthenPatrol();
 }
 
-void SettlementProductionFinisher::FinishSewage(Settlement &settlement)
+void ProductionFinisher::FinishSewage(Settlement &settlement)
 {
     settlement.AddBuilding(BuildingTypes::SEWAGE);
 }      
 
-void SettlementProductionFinisher::FinishLibrary(Settlement &settlement)
+void ProductionFinisher::FinishLibrary(Settlement &settlement)
 {
     settlement.AddBuilding(BuildingTypes::LIBRARY);
 }      
 
-void SettlementProductionFinisher::FinishFarm(Settlement &settlement)
+void ProductionFinisher::FinishFarm(Settlement &settlement)
 {
     auto target = settlement.currentProduction->data.improvementTarget;
     target->IsBuilt = true;
 }      
 
-void SettlementProductionFinisher::FinishSettlers(Settlement &settlement)
+void ProductionFinisher::FinishSettlers(Settlement &settlement)
 {
     static std::mutex mutex;
     mutex.lock();
@@ -151,7 +183,7 @@ void SettlementProductionFinisher::FinishSettlers(Settlement &settlement)
     mutex.unlock();
 }
 
-void SettlementProductionFinisher::FinishIrrigation(Settlement &settlement)
+void ProductionFinisher::FinishIrrigation(Settlement &settlement)
 {
     settlement.AddBuilding(BuildingTypes::IRRIGATION);
 }      

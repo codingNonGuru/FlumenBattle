@@ -81,7 +81,7 @@ namespace world::settlement
 
         friend struct EventGenerator;
 
-        friend class SettlementProductionFinisher;
+        friend class ProductionFinisher;
 
         friend class SettlementLabel;
 
@@ -158,8 +158,6 @@ namespace world::settlement
 
         void Initialize(Word, Color, world::WorldTile *);
 
-        world::WorldTile *FindColonySpot();
-
         void WorkNewTile();
 
         void GrowBorders();
@@ -189,6 +187,8 @@ namespace world::settlement
 
         Integer GetWorkedTiles() const;
 
+        const group::GroupDynamics &GetGroupDynamics() const {return *groupDynamics;}
+
         polity::Polity *GetPolity() const {return polity;}
 
         Settlement *GetRuler() const;
@@ -205,11 +205,15 @@ namespace world::settlement
 
         const container::Pool <Building> &GetBuildings() const;
 
+        bool HasBuilding(BuildingTypes) const;
+
         polity::Faction *GetFaction() const {return faction;}
 
         world::SimulationLevels GetSimulationLevel() const;
 
         void SetupSimulation();
+
+        world::WorldTile *FindColonySpot();
 
         void RemoveGroup(const group::Group &);
 

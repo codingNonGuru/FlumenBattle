@@ -419,7 +419,7 @@ void HoverExtension::HandleUpdate()
     productionLabel->Setup(text);
 
     auto progress = settlement->GetCurrentProduction()->GetProgressRatio();
-    if(settlement->GetCurrentProduction()->Is(SettlementProductionOptions::NONE) == true)
+    if(settlement->GetCurrentProduction()->Is(ProductionOptions::NONE) == true)
     {
         progress = 0.0f;
     }

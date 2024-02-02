@@ -239,7 +239,6 @@ void BorderModel::TransferData()
 
     colors.Reset();
 
-    auto index = 0;
     for(auto y = frustum.Position.y; y < frustum.Position.y + frustum.Size.y; ++y)
     {
         std::pair <int, int> ranges[2] = {
@@ -251,8 +250,6 @@ void BorderModel::TransferData()
         {
             for(auto x = range.first; x < range.second; ++x)
             {
-                index++;
-
                 if(*edgeValidators.Get(x, y) == false)
                     continue;
 
@@ -289,8 +286,6 @@ void BorderModel::TransferData()
     (*buffers_.Get("Thickness"))->UploadData(thicknesses.GetStart(), thicknesses.GetMemorySize());
 
     (*buffers_.Get("Color"))->UploadData(colors.GetStart(), colors.GetMemorySize());
-
-    std::cout<<index<<"\n";
 }
 
 void BorderModel::Render()
