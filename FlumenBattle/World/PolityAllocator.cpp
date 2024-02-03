@@ -40,7 +40,7 @@ void PolityAllocator::AllocateWorldMemory(int worldSize)
 
     factionAllocator = container::PoolAllocator <Faction> (polityCount, POLITY_FACTION_COUNT, factionMemory);
 
-    factionSettlementAllocator = container::PoolAllocator <settlement::Settlement *> (polityCount * POLITY_FACTION_COUNT, FACTION_MEMBERS_COUNT, politySettlementMemory);
+    factionSettlementAllocator = container::PoolAllocator <settlement::Settlement *> (polityCount * POLITY_FACTION_COUNT, FACTION_MEMBERS_COUNT, factionSettlementMemory);
 }
 
 Polity *PolityAllocator::AllocatePolity()
