@@ -119,7 +119,7 @@ const SettlementProductionType * SettlementProductionFactory::BuildLibraryProduc
 
 const SettlementProductionType * SettlementProductionFactory::BuildNoneProduction()
 {
-    static const SettlementProductionType productionType = {ProductionOptions::NONE, "None", 18, nullptr};
+    static const SettlementProductionType productionType = {ProductionOptions::NONE, "None", 6, nullptr};
     return &productionType;
 }
 

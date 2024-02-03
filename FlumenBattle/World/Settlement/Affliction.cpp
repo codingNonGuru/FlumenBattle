@@ -121,7 +121,7 @@ AfflictionResult AfflictionPerformer::PerformHunger(Settlement &settlement, Affl
 {
     auto result = AfflictionResultTypes::NONE;
 
-    auto foodSecurity = settlement.GetResource(ResourceTypes::FOOD)->Abundance;
+    auto foodSecurity = settlement.GetResource(ResourceTypes::FOOD)->ShortTermAbundance;
 
     if(foodSecurity == AbundanceLevels::SORELY_LACKING || foodSecurity == AbundanceLevels::LACKING)
     {

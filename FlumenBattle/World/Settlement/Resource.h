@@ -34,7 +34,9 @@ namespace world::settlement
 
         int Balance {0};
 
-        AbundanceLevels Abundance;
+        AbundanceLevels ShortTermAbundance;
+
+        AbundanceLevels LongTermAbundance;
 
         void Update(Settlement &);
 

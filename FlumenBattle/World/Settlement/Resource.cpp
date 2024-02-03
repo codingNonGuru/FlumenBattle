@@ -64,32 +64,60 @@ void Resource::Update(Settlement &settlement)
 
     auto consumption = settlement.population * Type->PopulationConsumption;
 
-    int availableAmount = Production + Storage;
+    int availableAmount = Production;
 
-    Abundance = AbundanceLevels();
+    LongTermAbundance = AbundanceLevels();
     if(availableAmount >= consumption * 3)
     {
-        Abundance = AbundanceLevels::CORNUCOPIA;
+        LongTermAbundance = AbundanceLevels::CORNUCOPIA;
     }
     else if(availableAmount >= consumption * 2)
     {
-        Abundance = AbundanceLevels::ABUNDANT;
+        LongTermAbundance = AbundanceLevels::ABUNDANT;
     }
     else if(availableAmount > consumption)
     {
-        Abundance = AbundanceLevels::ENOUGH;
+        LongTermAbundance = AbundanceLevels::ENOUGH;
     }
     else if(availableAmount == consumption)
     {
-        Abundance = AbundanceLevels::BARELY_AVAILABLE;
+        LongTermAbundance = AbundanceLevels::BARELY_AVAILABLE;
     }
     else if(availableAmount * 2 > consumption)
     {
-        Abundance = AbundanceLevels::LACKING;
+        LongTermAbundance = AbundanceLevels::LACKING;
     }
     else
     {
-        Abundance = AbundanceLevels::SORELY_LACKING;
+        LongTermAbundance = AbundanceLevels::SORELY_LACKING;
+    }
+
+    availableAmount += Storage;
+
+    ShortTermAbundance = AbundanceLevels();
+    if(availableAmount >= consumption * 3)
+    {
+        ShortTermAbundance = AbundanceLevels::CORNUCOPIA;
+    }
+    else if(availableAmount >= consumption * 2)
+    {
+        ShortTermAbundance = AbundanceLevels::ABUNDANT;
+    }
+    else if(availableAmount > consumption)
+    {
+        ShortTermAbundance = AbundanceLevels::ENOUGH;
+    }
+    else if(availableAmount == consumption)
+    {
+        ShortTermAbundance = AbundanceLevels::BARELY_AVAILABLE;
+    }
+    else if(availableAmount * 2 > consumption)
+    {
+        ShortTermAbundance = AbundanceLevels::LACKING;
+    }
+    else
+    {
+        ShortTermAbundance = AbundanceLevels::SORELY_LACKING;
     }
 
     Storage += Production - consumption;

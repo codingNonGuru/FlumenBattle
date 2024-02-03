@@ -86,6 +86,8 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
         tile.Tile->AssertOwnership(this);
     }
 
+    WorkNewTile();
+
     SetupSimulation();
 }
 
@@ -216,11 +218,23 @@ void Settlement::WorkNewTile()
 
     needsToReorganizeWork = false;
 
+    if(population == 0)
+    {
+        for(auto &tile : tiles)
+        {
+            if(tile.Tile == location)
+                continue;
+
+            tile.IsWorked = false;
+        }
+        return;
+    }
+
     if(population > tiles.GetSize())
         return;
 
     auto workedTileCount = GetWorkedTiles();
-    if(workedTileCount == population)
+    if(workedTileCount == population + 1)
         return;
 
     if(workedTileCount == tiles.GetSize())
@@ -234,7 +248,7 @@ void Settlement::WorkNewTile()
         tile.IsWorked = false;
     }
 
-    auto workerCount = population - 1;
+    auto workerCount = population;
     
     auto placeWorkersOnTilesOfType = [&] (world::WorldBiomes biomeType) -> bool
     {
@@ -267,53 +281,6 @@ void Settlement::WorkNewTile()
         return;
 
     placeWorkersOnTilesOfType(world::WorldBiomes::DESERT);
-    {
-        bool hasFoundSteppe = false;
-        for(auto &tile : tiles)
-        {
-            if(tile.IsWorked == true)
-                continue;
-
-            if(tile.Tile->Biome->Type != world::WorldBiomes::STEPPE)
-                continue;
-
-            hasFoundSteppe = true;
-            tile.IsWorked = true;
-            break;
-        }
-
-        if(hasFoundSteppe == false)
-        {
-            bool hasFoundWoods = false;
-            for(auto &tile : tiles)
-            {
-                if(tile.IsWorked == true)
-                    continue;
-
-                if(tile.Tile->Biome->Type != world::WorldBiomes::WOODS && tile.Tile->Biome->Type != world::WorldBiomes::SWAMP)
-                    continue;
-
-                hasFoundWoods = true;
-                tile.IsWorked = true;
-                break;
-            }
-
-            if(hasFoundWoods == false)
-            {
-                for(auto &tile : tiles)
-                {
-                    if(tile.IsWorked == true)
-                        continue;
-
-                    if(tile.Tile->Biome->Type != world::WorldBiomes::DESERT)
-                        continue;
-
-                    tile.IsWorked = true;
-                    break;
-                }    
-            }
-        }
-    }*/
 }
 
 void Settlement::GrowBorders() 
@@ -421,7 +388,9 @@ void Settlement::DecideProduction()
 
     for(auto &option : options)
     {
-        *necessityMap->Factors.Add(option) = SettlementProduction::GetNecessity(*this, option);
+        auto necessity = SettlementProduction::GetNecessity(*this, option);
+        //std::cout<<necessity<<"\n";
+        *necessityMap->Factors.Add(option) = necessity;
     }
 
     auto findHighestViableOption = [&] -> container::StaticMap <int, ProductionOptions>::Iterator
@@ -637,7 +606,7 @@ void Settlement::Update()
 
     resourceHandler.Update(*this);
 
-    auto foodSecurity = resourceHandler.Get(ResourceTypes::FOOD)->Abundance;
+    auto foodSecurity = resourceHandler.Get(ResourceTypes::FOOD)->ShortTermAbundance;
     switch(foodSecurity)
     {
     case AbundanceLevels::CORNUCOPIA:
@@ -716,14 +685,14 @@ void Settlement::Update()
     {
         currentProduction->Finish(*this);
 
-        *currentProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
-
-        DecideProduction();
+        if(currentProduction->Is(ProductionOptions::NONE) == true)
+            DecideProduction();
+        else
+            *currentProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
     }
 
     if(worldTime.MinuteCount == 0)
     {
-        return;
         groupDynamics->Update(*this);
 
         if(simulationLevel != simulationDomain->Level)

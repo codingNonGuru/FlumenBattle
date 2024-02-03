@@ -10,7 +10,7 @@ NecessityFactor ProductionEvaluator::GetPatrolNecessity(const Settlement &settle
     auto patrolDeficiency = groupDynamics.GetBanditStrength() - groupDynamics.GetPatrolStrength();
     if(patrolDeficiency >= 7)
     {
-        return 10;
+        return 9;
     }
     else if(patrolDeficiency >= 3)
     {
@@ -53,7 +53,7 @@ NecessityFactor ProductionEvaluator::GetSettlersNecessity(const Settlement &sett
 
     if(population >= 30)
     {
-        return 10;
+        return 8;
     }
     else if(population >= 15)
     {
@@ -75,7 +75,22 @@ NecessityFactor ProductionEvaluator::GetSettlersNecessity(const Settlement &sett
 
 NecessityFactor ProductionEvaluator::GetFarmNecessity(const Settlement &settlement)
 {
-    return 0;
+    auto foodSecurity = settlement.GetResource(ResourceTypes::FOOD)->LongTermAbundance;
+    switch(foodSecurity)
+    {
+    case AbundanceLevels::SORELY_LACKING:
+        return 10;
+    case AbundanceLevels::LACKING:
+        return 8;
+    case AbundanceLevels::BARELY_AVAILABLE:
+        return 7;
+    case AbundanceLevels::ENOUGH:
+        return 5;
+    case AbundanceLevels::ABUNDANT:
+        return 2;
+    case AbundanceLevels::CORNUCOPIA:
+        return 0;
+    }
 }
 
 NecessityFactor ProductionEvaluator::GetIrrigationNecessity(const Settlement &settlement)
