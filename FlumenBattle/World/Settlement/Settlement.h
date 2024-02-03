@@ -113,6 +113,8 @@ namespace world::settlement
 
         Integer cultureGrowth;
 
+        bool needsToReorganizeWork {true};
+
         bool areNearbyTilesTaken {false};
 
         bool hasAvailableColonySpots;

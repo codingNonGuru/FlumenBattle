@@ -211,8 +211,19 @@ world::WorldTile * Settlement::FindColonySpot()
 
 void Settlement::WorkNewTile()
 {
+    if(needsToReorganizeWork == false)
+        return;
+
+    needsToReorganizeWork = false;
+
+    if(population > tiles.GetSize())
+        return;
+
     auto workedTileCount = GetWorkedTiles();
     if(workedTileCount == population)
+        return;
+
+    if(workedTileCount == tiles.GetSize())
         return;
 
     for(auto &tile : tiles)
@@ -223,7 +234,39 @@ void Settlement::WorkNewTile()
         tile.IsWorked = false;
     }
 
-    for(auto i = 0; i < population - 1; ++i)
+    auto workerCount = population - 1;
+    
+    auto placeWorkersOnTilesOfType = [&] (world::WorldBiomes biomeType) -> bool
+    {
+        for(auto &tile : tiles)
+        {
+            if(tile.IsWorked == true)
+                continue;
+
+            if(tile.Tile->Biome->Type != biomeType)
+                continue;
+
+            tile.IsWorked = true;
+            workerCount--;
+
+            if(workerCount == 0)
+                return true;
+        }
+
+        return false;
+    };
+
+    auto hasUsedAllWorkers = placeWorkersOnTilesOfType(world::WorldBiomes::STEPPE);
+
+    if(hasUsedAllWorkers == true)
+        return;
+
+    hasUsedAllWorkers = placeWorkersOnTilesOfType(world::WorldBiomes::WOODS);
+
+    if(hasUsedAllWorkers == true)
+        return;
+
+    placeWorkersOnTilesOfType(world::WorldBiomes::DESERT);
     {
         bool hasFoundSteppe = false;
         for(auto &tile : tiles)
@@ -270,7 +313,7 @@ void Settlement::WorkNewTile()
                 }    
             }
         }
-    }
+    }*/
 }
 
 void Settlement::GrowBorders() 
@@ -542,6 +585,8 @@ void Settlement::KillPopulation()
     {
         population = 0;
     }
+
+    needsToReorganizeWork = true;
 }
 
 void Settlement::StrengthenPatrol()
@@ -626,6 +671,8 @@ void Settlement::Update()
     {
         growth = 0;
         population++;
+
+        needsToReorganizeWork = true;
     }
     else if(growth < 0)
     {
@@ -637,6 +684,8 @@ void Settlement::Update()
     if(cultureGrowth >= 200)
     {
         cultureGrowth = 0;
+
+        needsToReorganizeWork = true;
 
         GrowBorders();
     }
@@ -674,6 +723,7 @@ void Settlement::Update()
 
     if(worldTime.MinuteCount == 0)
     {
+        return;
         groupDynamics->Update(*this);
 
         if(simulationLevel != simulationDomain->Level)

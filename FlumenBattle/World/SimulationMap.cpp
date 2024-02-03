@@ -33,9 +33,9 @@ void SimulationMap::Update()
 
     auto playerCoordinates = playerLocation->SquareCoordinates / TILES_PER_SIMULATION_DOMAIN;
 
-    for(int x = 0; x < domains.GetWidth(); ++x)
+    for(int y = 0; y < domains.GetHeight(); ++y)
     {
-        for(int y = 0; y < domains.GetHeight(); ++y)
+        for(int x = 0; x < domains.GetWidth(); ++x)
         {
             auto width = x - playerCoordinates.x;
             auto height = y - playerCoordinates.y;

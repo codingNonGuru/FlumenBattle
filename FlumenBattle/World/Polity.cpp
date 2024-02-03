@@ -115,7 +115,6 @@ void Polity::UndergoDivision(Faction *faction)
 void Polity::MapInterest(settlement::Settlement *domain)
 {
     auto &mappedTiles = utility::Pathfinder <WorldTile>::Get()->MapArea(domain->GetLocation(), MAXIMUM_COLONIZATION_RANGE);
-    //std::cout<<"-----------\n";
 
     for(auto &tile : mappedTiles)
     {
@@ -294,7 +293,7 @@ container::Array <FactionDecision> &Polity::Update()
 {
     malariaDeathCount = 0;
 
-    for(auto settlement : settlements)
+    for(auto &settlement : settlements)
     {
         for(auto event : settlement->events)
         {

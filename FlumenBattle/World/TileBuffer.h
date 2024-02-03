@@ -43,9 +43,9 @@ namespace world
 
         ~TileBuffer()
         {
-            std::cout<<this<<" "<<Batch<<" "<< Tiles.GetStart() <<" "<<Batch->Buffers.GetSize()<<"\n";
+            //std::cout<<this<<" "<<Batch<<" "<< Tiles.GetStart() <<" "<<Batch->Buffers.GetSize()<<"\n";
             Batch->Buffers.Remove(Tiles.GetStart());
-            std::cout<<this<<" "<<Batch<<" "<< Tiles.GetStart() <<" "<<Batch->Buffers.GetSize()<<"\n\n";
+            //std::cout<<this<<" "<<Batch<<" "<< Tiles.GetStart() <<" "<<Batch->Buffers.GetSize()<<"\n\n";
         }
 
         TileBuffer(const TileBuffer &) = delete;

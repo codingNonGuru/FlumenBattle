@@ -119,7 +119,7 @@ const SettlementProductionType * SettlementProductionFactory::BuildLibraryProduc
 
 const SettlementProductionType * SettlementProductionFactory::BuildNoneProduction()
 {
-    static const SettlementProductionType productionType = {ProductionOptions::NONE, "None", 10, nullptr};
+    static const SettlementProductionType productionType = {ProductionOptions::NONE, "None", 18, nullptr};
     return &productionType;
 }
 
@@ -146,9 +146,6 @@ void ProductionFinisher::FinishFarm(Settlement &settlement)
 
 void ProductionFinisher::FinishSettlers(Settlement &settlement)
 {
-    static std::mutex mutex;
-    mutex.lock();
-
     auto polity = settlement.polity;
     auto target = settlement.currentProduction->data.colonizationTarget;
 
@@ -156,6 +153,9 @@ void ProductionFinisher::FinishSettlers(Settlement &settlement)
     {
         target = settlement.FindColonySpot();
     }
+
+    static std::mutex mutex;
+    mutex.lock();
 
     if(target != nullptr)
     {

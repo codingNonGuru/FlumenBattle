@@ -233,10 +233,10 @@ namespace world
 
         auto refreshSettlements = [this]
         {
-            /*for(auto &settlement : *settlements)
+            for(auto &settlement : *settlements)
             {
                 settlement.Update();
-            }*/
+            }
 
             for(auto &settlement : *settlements)
             {
@@ -256,7 +256,7 @@ namespace world
 
         };
 
-        refreshSettlementsThreaded();
+        //refreshSettlementsThreaded();
 
         refreshSettlements();
 
@@ -265,7 +265,7 @@ namespace world
             auto earthquakeCount = 10;
             for(int i = 0; i < earthquakeCount; ++i)
             {
-                disaster::EarthquakeGenerator::Get()->Generate();
+                //disaster::EarthquakeGenerator::Get()->Generate();
             }
         }
 

@@ -410,10 +410,10 @@ int WorldGenerator::GetMaximumPolityCount(int worldSize) const
 
 int WorldGenerator::GetMaximumSettlementCount(int worldSize) const
 {
-    return (worldSize * worldSize) / 15;
+    return (worldSize * worldSize) / 80;
 }
 
 int WorldGenerator::GetMaximumGroupCount(int worldSize) const
 {
-    return (worldSize * worldSize) / 20;
+    return (worldSize * worldSize) / 80;
 }

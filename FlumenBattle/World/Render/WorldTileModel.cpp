@@ -677,7 +677,7 @@ void WorldTileModel::Render()
 
     if(index == 60)
     {
-        std::cout << "render average duration " << durationSum / 60 << "\n";
+        //std::cout << "render average duration " << durationSum / 60 << "\n";
 
         index = 0;
         durationSum = 0;
