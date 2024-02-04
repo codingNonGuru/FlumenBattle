@@ -23,10 +23,7 @@ WorldAllocator::WorldAllocator()
 {
     std::cout<<"Memory size of a World Tile is "<<sizeof(WorldTile)<<"\n";
 
-    for(int i = 0; i < 4; ++i)
-    {
-        nearbyTileMemories[i] = container::Array <WorldTilePointer>::PreallocateMemory(MAXIMUM_WORLD_SIZE * MAXIMUM_WORLD_SIZE);
-    }
+    //nearbyTileMemories[i] = container::Array <WorldTilePointer>::PreallocateMemory(MAXIMUM_WORLD_SIZE * MAXIMUM_WORLD_SIZE);
 
     worldTileMemory = container::Grid <WorldTile>::PreallocateMemory(MAXIMUM_WORLD_SIZE * MAXIMUM_WORLD_SIZE);
 
@@ -53,13 +50,8 @@ WorldAllocator::WorldAllocator()
     world::character::CharacterAllocator::Get()->PreallocateMaximumMemory();
 }
 
-void WorldAllocator::AllocateMap(WorldMap &map/*, container::SmartBlock< container::Array <WorldTilePointer>, 4> &nearbyTileBuffers*/, int size)
+void WorldAllocator::AllocateMap(WorldMap &map, int size)
 {
-    /*for(int i = 0; i < 4; ++i)
-    {
-        nearbyTileBuffers.Get(i)->Initialize(size * size, nearbyTileMemories[i]);
-    }*/
-
     const auto CHANGE_QUEUE_SIZE = size * size / OWNERSHIP_QUEUE_SIZE_FACTOR;
     WorldScene::Get()->ownershipChangeQueue.Initialize(CHANGE_QUEUE_SIZE, ownershipChangeMemory);
 

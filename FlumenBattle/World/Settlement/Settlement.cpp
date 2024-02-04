@@ -80,7 +80,7 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
         tile = tiles.Add();
         tile->Tile = nearbyTile;
         tile->IsWorked = false;
-        tile->IsBuilt = false;
+        tile->IsBuilt = true;
     }
 
     for(auto &tile : tiles)
@@ -374,13 +374,13 @@ struct NecessityMap
 void Settlement::DecideProduction()
 {
     static const ProductionOptions options[] = {
-        ProductionOptions::PATROL, 
+        /*ProductionOptions::PATROL, 
         ProductionOptions::SETTLERS, 
         ProductionOptions::IRRIGATION, 
         ProductionOptions::LIBRARY,
-        ProductionOptions::FARM,
         ProductionOptions::SEWAGE,
-        ProductionOptions::HOUSING
+        ProductionOptions::HOUSING,*/
+        ProductionOptions::FARM
         };
 
     auto resourceHandler = game::ThreadedResourceHandler <NecessityMap>::Get();

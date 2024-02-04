@@ -27,6 +27,7 @@ namespace world
         controller->Initialize();
 
         tileModel = render::WorldTileModel::Get();
+        tileModel->Initialize();
     }
 
     void WorldState::HandleEnter()
@@ -37,7 +38,7 @@ namespace world
 
         controller->Enable();
 
-        tileModel->Initialize();
+        tileModel->Enable();
 
         Engine::OnInterfaceUpdateStarted += {interface, &WorldInterface::Update};
     }

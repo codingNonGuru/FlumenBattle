@@ -14,6 +14,8 @@ layout (location = 4) uniform float depth;
 
 layout (location = 5) uniform int hasOpacity;
 
+layout (location = 6) uniform int hasFlip;
+
 // DATA BUFFERS
 
 layout (std430, binding = 0) buffer POSITIONS
@@ -66,7 +68,12 @@ void main()
 	uint vertexIndex = uint(gl_VertexID % 6);
 	uint objectIndex = uint(gl_VertexID / 6);
 	
-	uint index = isFlipped[objectIndex] == 1 ? flippedIndices[vertexIndex] : indices[vertexIndex];
+	uint index;
+	if(hasFlip == 1)
+		index = isFlipped[objectIndex] == 1 ? flippedIndices[vertexIndex] : indices[vertexIndex];
+	else
+		index = indices[vertexIndex];
+
 	textureCoordinates = vertices[index] + vec2(0.5f, 0.5f);
 
 	textureCoordinates *= textureScale;

@@ -40,8 +40,6 @@ namespace world
 
         bool hasPreallocatedMaximumMemory {false};
 
-        container::Array <WorldTilePointer>::Memory nearbyTileMemories[4];
-
         container::Grid <WorldTile>::Memory worldTileMemory;
 
         container::Grid <SimulationDomain>::Memory simulationMemory;

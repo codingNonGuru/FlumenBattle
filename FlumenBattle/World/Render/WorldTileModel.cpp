@@ -14,6 +14,8 @@
 
 #include "FlumenBattle/World/Render/WorldTileModel.h"
 #include "FlumenBattle/World/Render/BorderModel.h"
+#include "FlumenBattle/World/Render/FarmModel.h"
+#include "FlumenBattle/World/Render/RendererAllocator.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/World/WorldMap.h"
@@ -83,6 +85,15 @@ WorldTileModel::WorldTileModel()
 
 void WorldTileModel::Initialize()
 {   
+    const auto size = worldScene->GetWorldMap()->GetSize();
+
+    RendererAllocator::Get()->Allocate(size);
+
+    FarmModel::Get()->Initialize();
+}
+
+void WorldTileModel::Enable()
+{
     auto backgroundColor = Color(0.0f, 0.0f, 0.0f, 1.0f);
 	RenderManager::SetBackgroundColor(backgroundColor);
 }
@@ -532,6 +543,8 @@ void WorldTileModel::RenderGroupSightings()
 
     massShader->SetConstant(1, "hasOpacity");
 
+    massShader->SetConstant(1, "hasFlip");
+
     sightingPositionBuffer->Bind(0);
 
     sightingOffsetBuffer->Bind(1);
@@ -614,6 +627,8 @@ void WorldTileModel::Render()
     }
 
     RenderTilesAdvanced();
+
+    FarmModel::Get()->Render();
 
     RenderSnow();
 

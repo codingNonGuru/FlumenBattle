@@ -49,6 +49,8 @@ namespace world::render
     public:
         void Initialize() override;
 
+        void Enable();
+
         void Render();
 
         void CreateCamera();
