@@ -100,8 +100,6 @@ namespace world::render
 
         void HandleWorldGenerated();
 
-        Rectangle GetFrustum();
-
     public:
         void Initialize() override;
 

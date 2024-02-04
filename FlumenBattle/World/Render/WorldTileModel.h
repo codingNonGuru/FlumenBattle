@@ -58,5 +58,7 @@ namespace world::render
         void HandleCharacterSelected();
 
         Color GetGlobalLightColor();
+
+        Rectangle GetFrustum();
     };
 }

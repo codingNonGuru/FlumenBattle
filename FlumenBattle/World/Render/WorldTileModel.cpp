@@ -11,6 +11,8 @@
 #include "FlumenEngine/Core/Engine.hpp"
 #include "FlumenEngine/Render/TextureManager.hpp"
 #include "FlumenEngine/Render/DataBuffer.hpp"
+#include "FlumenEngine/Core/Engine.hpp"
+#include "FlumenEngine/Render/Screen.hpp"
 
 #include "FlumenBattle/World/Render/WorldTileModel.h"
 #include "FlumenBattle/World/Render/BorderModel.h"
@@ -697,4 +699,33 @@ void WorldTileModel::Render()
         index = 0;
         durationSum = 0;
     }
+}
+
+Rectangle WorldTileModel::GetFrustum()
+{
+    static auto worldMap = worldScene->GetWorldMap();
+
+    const auto targetPosition =  camera->GetTarget();
+    const auto targetTile = worldMap->GetTile(Float2{targetPosition.x, targetPosition.y});
+
+    const auto coordinates = targetTile->SquareCoordinates;
+
+    static const auto CAMERA_TO_WORLD_FACTOR = 9.0f;
+
+    const auto zoomFactor = (0.0f + camera->GetZoomFactor()) * CAMERA_TO_WORLD_FACTOR;
+    const auto screenRatio = Engine::GetScreen()->GetRatio();
+
+    auto rectangle = Rectangle
+    {
+        {int((float)coordinates.x - zoomFactor * screenRatio), int((float)coordinates.y - zoomFactor)},
+        {int((1.0f + zoomFactor) * 2.0f * screenRatio), int((1.0f + zoomFactor) * 2.0f)}    
+    };
+
+    utility::Clamp(rectangle.Position.x, 0, worldMap->GetTiles().GetWidth() - 1);
+    utility::Clamp(rectangle.Position.y, 0, worldMap->GetTiles().GetHeight() - 1);
+
+    utility::Clamp(rectangle.Size.x, 0, worldMap->GetTiles().GetWidth());
+    utility::Clamp(rectangle.Size.y, 0, worldMap->GetTiles().GetHeight());
+
+    return rectangle;
 }

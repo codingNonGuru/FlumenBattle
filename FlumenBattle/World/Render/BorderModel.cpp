@@ -3,8 +3,6 @@
 #include "FlumenEngine/Render/Shader.hpp"
 #include "FlumenEngine/Render/RenderManager.hpp"
 #include "FlumenEngine/Render/Camera.hpp"
-#include "FlumenEngine/Core/Engine.hpp"
-#include "FlumenEngine/Render/Screen.hpp"
 
 #include "BorderModel.h"
 #include "FlumenBattle/World/WorldScene.h"
@@ -13,6 +11,7 @@
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/PreGame/PreGameState.h"
+#include "FlumenBattle/World/Render/WorldTileModel.h"
 
 using namespace world::render;
 
@@ -124,35 +123,6 @@ void BorderModel::Initialize()
     pregame::PreGameState::Get()->OnWorldGenerationFinished += {this, &BorderModel::HandleWorldGenerated};
 }
 
-Rectangle BorderModel::GetFrustum()
-{
-    static auto worldMap = WorldScene::Get()->GetWorldMap();
-
-    const auto targetPosition =  camera->GetTarget();
-    const auto targetTile = worldMap->GetTile(Float2{targetPosition.x, targetPosition.y});
-
-    const auto coordinates = targetTile->SquareCoordinates;
-
-    static const auto CAMERA_TO_WORLD_FACTOR = 9.0f;
-
-    const auto zoomFactor = (0.0f + camera->GetZoomFactor()) * CAMERA_TO_WORLD_FACTOR;
-    const auto screenRatio = Engine::GetScreen()->GetRatio();
-
-    auto rectangle = Rectangle
-    {
-        {int((float)coordinates.x - zoomFactor * screenRatio), int((float)coordinates.y - zoomFactor)},
-        {int((1.0f + zoomFactor) * 2.0f * screenRatio), int((1.0f + zoomFactor) * 2.0f)}    
-    };
-
-    utility::Clamp(rectangle.Position.x, 0, worldMap->GetTiles().GetWidth() - 1);
-    utility::Clamp(rectangle.Position.y, 0, worldMap->GetTiles().GetHeight() - 1);
-
-    utility::Clamp(rectangle.Size.x, 0, worldMap->GetTiles().GetWidth());
-    utility::Clamp(rectangle.Size.y, 0, worldMap->GetTiles().GetHeight());
-
-    return rectangle;
-}
-
 void BorderModel::HandleWorldGenerated()
 {
     world::WorldScene::Get()->GetOwnershipChangeQueue();
@@ -227,7 +197,7 @@ void BorderModel::Update()
 
 void BorderModel::TransferData()
 {
-    auto frustum = GetFrustum();
+    auto frustum = WorldTileModel::Get()->GetFrustum();
 
     positions.Reset();
 

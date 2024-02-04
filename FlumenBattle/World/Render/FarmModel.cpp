@@ -10,6 +10,7 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/WorldMap.h"
+#include "FlumenBattle/World/Render/WorldTileModel.h"
 
 using namespace world::render;
 
@@ -43,22 +44,23 @@ void FarmModel::Initialize()
     }
 }
 
-void FarmModel::Render()
+void FarmModel::TransferData()
 {
-    static const auto massShader = ShaderManager::GetShader("ComplexMassSprite");
-
-    static const auto sprite = new Sprite(massShader, "Farm");
-
     positions.Reset();
 
     textureOffsets.Reset();
     
     rotations.Reset();
 
+    const auto frustum = WorldTileModel::Get()->GetFrustum();
+
     auto &settlements = WorldScene::Get()->GetSettlements();
 
     for(auto &settlement : settlements)
     {
+        if(frustum.IsInside(settlement.GetLocation()->SquareCoordinates) == false)
+            continue;
+         
         for(auto tile : settlement.GetTiles())
         {
             if(tile.IsBuilt == false)
@@ -84,6 +86,15 @@ void FarmModel::Render()
     (*buffers_.Get(OFFSET_BUFFER_NAME))->UploadData(textureOffsets.GetStart(), textureOffsets.GetMemorySize());
 
     (*buffers_.Get(ROTATION_BUFFER_NAME))->UploadData(rotations.GetStart(), rotations.GetMemorySize());
+}
+
+void FarmModel::Render()
+{
+    TransferData();
+
+    static const auto massShader = ShaderManager::GetShader("ComplexMassSprite");
+
+    static const auto sprite = new Sprite(massShader, "Farm");
 
     massShader->Bind();
 

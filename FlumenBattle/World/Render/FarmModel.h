@@ -25,6 +25,8 @@ namespace world::render
 
         Camera* camera;
 
+        void TransferData();
+
     public:
         void Initialize() override;
 
