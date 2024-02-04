@@ -28,6 +28,9 @@ NecessityFactor ProductionEvaluator::GetPatrolNecessity(const Settlement &settle
 
 NecessityFactor ProductionEvaluator::GetSewageNecessity(const Settlement &settlement)
 {
+    if(settlement.HasBuilding(BuildingTypes::IRRIGATION) == true)
+        return 0;
+
     auto population = settlement.GetPopulation();
 
     if(population >= 10)
@@ -109,6 +112,23 @@ NecessityFactor ProductionEvaluator::GetLibraryNecessity(const Settlement &settl
         return 0;
 }
 
+NecessityFactor ProductionEvaluator::GetHousingNecessity(const Settlement &settlement)
+{
+    auto housingAdequacy = settlement.GetHousingAdequacy();
+
+    switch(housingAdequacy)
+    {
+    case AbundanceLevels::ENOUGH:
+        return 0;
+    case AbundanceLevels::BARELY_AVAILABLE:
+        return 2;
+    case AbundanceLevels::LACKING:
+        return 5;
+    case AbundanceLevels::SORELY_LACKING:
+        return 10;
+    }
+}
+
 NecessityFactor ProductionEvaluator::GetNecessity(const Settlement &settlement, ProductionOptions option)
 {
     switch(option)
@@ -125,6 +145,8 @@ NecessityFactor ProductionEvaluator::GetNecessity(const Settlement &settlement, 
         return GetPatrolNecessity(settlement);
     case ProductionOptions::SEWAGE:
         return GetSewageNecessity(settlement);
+    case ProductionOptions::HOUSING:
+        return GetHousingNecessity(settlement);
     default:
         abort();
     }

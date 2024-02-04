@@ -187,6 +187,8 @@ namespace world::settlement
 
         float GetGrowthRatio() const {return float(growth) / float(growthThreshold);}
 
+        AbundanceLevels GetHousingAdequacy() const;
+
         Integer GetWorkedTiles() const;
 
         const group::GroupDynamics &GetGroupDynamics() const {return *groupDynamics;}
@@ -208,6 +210,8 @@ namespace world::settlement
         const container::Pool <Building> &GetBuildings() const;
 
         bool HasBuilding(BuildingTypes) const;
+
+        int GetBuildingCount(BuildingTypes) const;
 
         polity::Faction *GetFaction() const {return faction;}
 

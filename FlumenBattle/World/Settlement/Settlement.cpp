@@ -37,6 +37,8 @@ using namespace world::settlement;
 
 #define POPULATION_COLONIZATION_THRESHOLD 5
 
+#define BORDER_GROWTH_THRESHOLD 400
+
 bool Link::operator== (const settlement::Path &path) const 
 {
     return *Path == path;
@@ -376,7 +378,9 @@ void Settlement::DecideProduction()
         ProductionOptions::SETTLERS, 
         ProductionOptions::IRRIGATION, 
         ProductionOptions::LIBRARY,
-        ProductionOptions::FARM
+        ProductionOptions::FARM,
+        ProductionOptions::SEWAGE,
+        ProductionOptions::HOUSING
         };
 
     auto resourceHandler = game::ThreadedResourceHandler <NecessityMap>::Get();
@@ -427,7 +431,6 @@ void Settlement::DecideProduction()
         return {highestValue, chosenKey};
     };
 
-    auto index = 0;
     while(true)
     {
         auto proposedOption = findHighestViableOption();
@@ -450,11 +453,7 @@ void Settlement::DecideProduction()
                 *necessityMap->ExcludedOptions.Add() = proposedOption.Key_;
             }
         }
-
-        index++;
     }
-
-    //std::cout<<index<<"\n";
 }
 
 Color Settlement::GetRulerBanner() const
@@ -480,6 +479,25 @@ const container::Pool <Building> &Settlement::GetBuildings() const
 bool Settlement::HasBuilding(BuildingTypes type) const
 {
     return buildingManager->HasBuilding(type);
+}
+
+int Settlement::GetBuildingCount(BuildingTypes type) const
+{
+    return buildingManager->GetBuildingCount(type);
+}
+
+AbundanceLevels Settlement::GetHousingAdequacy() const
+{
+    auto housingAmount = GetBuildingCount(BuildingTypes::HOUSING);
+
+    if(housingAmount > population)
+        return AbundanceLevels::ENOUGH;
+    else if(housingAmount == population)
+        return AbundanceLevels::BARELY_AVAILABLE;
+    else if(housingAmount * 2 > population)
+        return AbundanceLevels::LACKING;
+    else
+        return AbundanceLevels::SORELY_LACKING;
 }
 
 Integer Settlement::GetIndustrialProduction() const
@@ -607,35 +625,48 @@ void Settlement::Update()
     resourceHandler.Update(*this);
 
     auto foodSecurity = resourceHandler.Get(ResourceTypes::FOOD)->ShortTermAbundance;
-    switch(foodSecurity)
-    {
-    case AbundanceLevels::CORNUCOPIA:
-        growth += 5;
-        break;
-    case AbundanceLevels::ABUNDANT:
-        growth += 4;
-        break;
-    case AbundanceLevels::ENOUGH:
-        growth += 3;
-        break;
-    case AbundanceLevels::BARELY_AVAILABLE:
-        break;
-    case AbundanceLevels::LACKING:
-        growth -= 3;
-        break;
-    case AbundanceLevels::SORELY_LACKING:
-        growth -= 5;
-        break;
-    }
+    auto housingAdequacy = GetHousingAdequacy();
 
-    if(foodSecurity == AbundanceLevels::LACKING || foodSecurity == AbundanceLevels::SORELY_LACKING)
+    auto addedGrowth = [&]
     {
-        if(afflictions.Find(AfflictionTypes::HUNGER) == nullptr)
+        auto growthFromFood = [&]
         {
-            *afflictions.Add() = AfflictionFactory::Get()->Create(AfflictionTypes::HUNGER);
-        }
-    }
+            switch(foodSecurity)
+            {
+            case AbundanceLevels::CORNUCOPIA:
+                return 5;
+            case AbundanceLevels::ABUNDANT:
+                return 4;
+            case AbundanceLevels::ENOUGH:
+                return 3;
+            case AbundanceLevels::BARELY_AVAILABLE:
+                return 0;
+            case AbundanceLevels::LACKING:
+                return -5;
+            case AbundanceLevels::SORELY_LACKING:
+                return -7;
+            }
+        } ();
 
+        auto growthFromHousing = [&]
+        {
+            switch(housingAdequacy)
+            {
+            case AbundanceLevels::ENOUGH:
+                return 1;
+            case AbundanceLevels::BARELY_AVAILABLE:
+                return 0;
+            case AbundanceLevels::LACKING:
+                return -1;
+            case AbundanceLevels::SORELY_LACKING:
+                return -3;
+            }
+        } ();
+
+        return growthFromFood + growthFromHousing;
+    } ();
+
+    growth += addedGrowth;
     if(growth >= growthThreshold)
     {
         growth = 0;
@@ -649,14 +680,21 @@ void Settlement::Update()
     }
 
     cultureGrowth++;
-
-    if(cultureGrowth >= 200)
+    if(cultureGrowth >= BORDER_GROWTH_THRESHOLD)
     {
         cultureGrowth = 0;
 
         needsToReorganizeWork = true;
 
         GrowBorders();
+    }
+
+    if(foodSecurity == AbundanceLevels::LACKING || foodSecurity == AbundanceLevels::SORELY_LACKING)
+    {
+        if(afflictions.Find(AfflictionTypes::HUNGER) == nullptr)
+        {
+            *afflictions.Add() = AfflictionFactory::Get()->Create(AfflictionTypes::HUNGER);
+        }
     }
 
     if(worldTime.MinuteCount == 0)

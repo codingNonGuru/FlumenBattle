@@ -398,6 +398,10 @@ void HoverExtension::HandleUpdate()
         case BuildingTypes::LIBRARY:
             text << "L";
             break;
+        case BuildingTypes::HOUSING:
+            text << settlement->GetBuildingCount(BuildingTypes::HOUSING);
+            text << "H";
+            break;
         }
     }
 

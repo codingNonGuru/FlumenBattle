@@ -17,7 +17,8 @@ namespace world::settlement
         GRANARY,
         SEWAGE,
         IRRIGATION,
-        LIBRARY
+        LIBRARY,
+        HOUSING
     };
 
     enum class BuildingTypes
@@ -27,7 +28,8 @@ namespace world::settlement
         GRANARY,
         MONUMENT,
         IRRIGATION,
-        LIBRARY
+        LIBRARY,
+        HOUSING
     };
 
     enum class AbundanceLevels

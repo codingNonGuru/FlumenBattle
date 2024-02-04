@@ -40,7 +40,7 @@ ProductionInquiry SettlementProduction::CanProduce(Settlement &settlement, Produ
         SettlementTile *improvementTarget = nullptr;
         for(auto &tile : settlement.GetTiles())
         {
-            if(tile.Tile->HasBiome(world::WorldBiomes::STEPPE) && tile.IsBuilt == false)
+            if(tile.Tile->HasBiome(world::WorldBiomes::STEPPE) && tile.IsBuilt == false && tile.Tile != settlement.GetLocation())
             {
                 improvementTarget = &tile;
             }
@@ -76,6 +76,8 @@ const SettlementProductionType * SettlementProductionFactory::BuildProductionTyp
             return BuildIrrigationProduction();
         case ProductionOptions::LIBRARY:
             return BuildLibraryProduction();
+        case ProductionOptions::HOUSING:
+            return BuildHousingProduction();
         case ProductionOptions::NONE:
             return BuildNoneProduction();
     }
@@ -114,6 +116,12 @@ const SettlementProductionType * SettlementProductionFactory::BuildIrrigationPro
 const SettlementProductionType * SettlementProductionFactory::BuildLibraryProduction()
 {
     static const SettlementProductionType productionType = {ProductionOptions::LIBRARY, "Library", 500, &ProductionFinisher::FinishLibrary};
+    return &productionType;
+}
+
+const SettlementProductionType * SettlementProductionFactory::BuildHousingProduction()
+{
+    static const SettlementProductionType productionType = {ProductionOptions::HOUSING, "Housing", 300, &ProductionFinisher::FinishHousing};
     return &productionType;
 }
 
@@ -186,4 +194,9 @@ void ProductionFinisher::FinishSettlers(Settlement &settlement)
 void ProductionFinisher::FinishIrrigation(Settlement &settlement)
 {
     settlement.AddBuilding(BuildingTypes::IRRIGATION);
+}      
+
+void ProductionFinisher::FinishHousing(Settlement &settlement)
+{
+    settlement.AddBuilding(BuildingTypes::HOUSING);
 }      

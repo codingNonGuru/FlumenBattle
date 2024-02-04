@@ -36,6 +36,16 @@ namespace world::settlement
             settlement.AddModifier({Modifiers::FOOD_PRODUCTION_ON_DESERT_TILES, 1});
         }
     };
+
+    class Housing : public BuildingType
+    {
+        using BuildingType::BuildingType; 
+
+        void HandleApplyEffect(Settlement &settlement) const override
+        {
+            
+        }
+    };
 }
 
 void Building::ApplyEffect(Settlement &settlement) const
@@ -63,6 +73,12 @@ Building BuildingFactory::Create(BuildingTypes type)
         return 
         {
             [&] {static const auto buildingType = Irrigation(type, 200, false); return &buildingType;} (), 
+            false
+        };
+    case BuildingTypes::HOUSING:
+        return 
+        {
+            [&] {static const auto buildingType = Housing(type, 200, true); return &buildingType;} (), 
             false
         };
     }
