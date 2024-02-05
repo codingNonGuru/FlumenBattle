@@ -190,6 +190,14 @@ void HoverExtension::HandleConfigure()
     );
     buildingLabel->SetAlignment(Text::Alignments::LEFT);
     buildingLabel->Enable();
+    basePosition.y += 20.0f;
+
+    groupLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
+        {{"Small"}, color, "Groups:"}
+    );
+    groupLabel->SetAlignment(Text::Alignments::LEFT);
+    groupLabel->Enable();
     basePosition.y += 10.0f;
 
     storageLayout = ElementFactory::BuildElement <LayoutGroup>(
@@ -417,6 +425,14 @@ void HoverExtension::HandleUpdate()
         text << " " << improvementCount << "F";
     }
     buildingLabel->Setup(text);
+
+    text = "Groups: ";
+    auto &groupDynamics = settlement->GetGroupDynamics();
+    text << groupDynamics.GetPatrolStrength() << "P ";
+    text << groupDynamics.GetBanditStrength() << "B ";
+    text << groupDynamics.GetAdventurerStrength() << "A ";
+    text << groupDynamics.GetMerchantStrength() << "M";
+    groupLabel->Setup(text);
 
     text = "Building: ";
     text << settlement->GetCurrentProduction()->GetName();
