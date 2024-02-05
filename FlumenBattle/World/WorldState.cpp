@@ -7,7 +7,7 @@
 #include "FlumenBattle/World/Render/WorldTileModel.h"
 #include "FlumenBattle/WorldInterface.h"
 #include "FlumenBattle/World/WorldController.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Sound/WorldMixer.h"
 
 namespace world
 {
@@ -28,6 +28,8 @@ namespace world
 
         tileModel = render::WorldTileModel::Get();
         tileModel->Initialize();
+
+        sound::WorldMixer::Get();
     }
 
     void WorldState::HandleEnter()

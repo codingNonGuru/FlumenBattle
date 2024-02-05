@@ -80,13 +80,15 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
         tile = tiles.Add();
         tile->Tile = nearbyTile;
         tile->IsWorked = false;
-        tile->IsBuilt = true;
+        tile->IsBuilt = false;
     }
 
     for(auto &tile : tiles)
     {
         tile.Tile->AssertOwnership(this);
     }
+
+    AddBuilding(BuildingTypes::HOUSING);
 
     WorkNewTile();
 
