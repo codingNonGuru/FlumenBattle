@@ -36,8 +36,6 @@ static const auto TRAVEL_MODE_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_T;
 
 static const auto SCREEN_GRAB_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_LALT;
 
-static const auto CONSOLE_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_GRAVE;
-
 namespace world
 {
     WorldController::WorldController() {}
@@ -78,11 +76,6 @@ namespace world
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_5, {this, &WorldController::HandleCharacterSelected});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_6, {this, &WorldController::HandleCharacterSelected});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_I, {this, &WorldController::HandleInventoryPressed});
-
-        InputHandler::RegisterEvent(
-            CONSOLE_INPUT_KEY, 
-            {[] {Get()->onConsoleToggled.Invoke();}}
-            );
 
         InputHandler::RegisterContinualEvent(SCREEN_GRAB_INPUT_KEY, {this, &WorldController::HandleGrabPressed}, {this, &WorldController::HandleGrabReleased});
 
@@ -370,8 +363,6 @@ namespace world
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_5);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_6);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_I);
-
-        InputHandler::UnregisterEvent(CONSOLE_INPUT_KEY);
 
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LALT);
     }

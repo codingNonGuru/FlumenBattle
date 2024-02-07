@@ -52,8 +52,6 @@ namespace world
 
         Delegate onCharacterSelected;
 
-        Delegate onConsoleToggled;
-
         WorldController();
 
         void HandleSceneUpdate();

@@ -52,8 +52,6 @@ namespace world
 
         interface::ExplorationMenu *explorationMenu;
 
-        bool isInExplorationMode {false};
-
         container::Array <settlement::SettlementLabel *> settlementLabels;
 
         container::Array <PathLabel *> pathLabels;
@@ -83,8 +81,6 @@ namespace world
         void HandleCharacterSelected();
 
         void HandleSellModeEntered();
-
-        void HandleExplorationToggled();
 
         void HandleConsoleToggled();
 

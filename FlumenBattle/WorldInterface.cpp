@@ -32,7 +32,7 @@ using namespace world;
 
 WorldController *controller = nullptr;
 
-static const auto EXPLORATION_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_TAB;
+static const auto CONSOLE_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_GRAVE;
 
 WorldInterface::WorldInterface()
 {
@@ -88,12 +88,12 @@ WorldInterface::WorldInterface()
         {
             Size(320, 400), 
             DrawOrder(6), 
-            {Position2(5.0f, -5.0f), ElementAnchors::LOWER_LEFT, ElementPivots::LOWER_LEFT, canvas}, 
+            {Position2(-5.0f, -5.0f), ElementAnchors::LOWER_RIGHT, ElementPivots::LOWER_RIGHT, canvas}, 
             {false}, 
             Opacity(0.9f)
         }
     );
-    explorationMenu->Disable();
+    explorationMenu->Enable();
 
     settlementLabels.Initialize(128);
     for(int i = 0; i < settlementLabels.GetCapacity(); i++)
@@ -179,21 +179,19 @@ void WorldInterface::Initialize()
 
     controller->onCharacterSelected += {this, &WorldInterface::HandleCharacterSelected};
 
-    controller->onConsoleToggled += {this, &WorldInterface::HandleConsoleToggled};
-
     *group::HumanMind::Get()->OnSellModeEntered += {this, &WorldInterface::HandleSellModeEntered};
 }
 
 void WorldInterface::Enable()
 {
-    InputHandler::RegisterEvent(EXPLORATION_INPUT_KEY, {this, &WorldInterface::HandleExplorationToggled});
+    InputHandler::RegisterEvent(CONSOLE_INPUT_KEY, {this, &WorldInterface::HandleConsoleToggled});
 
     canvas->Enable();
 }
 
 void WorldInterface::Disable()
 {
-    InputHandler::UnregisterEvent(EXPLORATION_INPUT_KEY);
+    InputHandler::UnregisterEvent(CONSOLE_INPUT_KEY);
 
     canvas->Disable();
 }
@@ -207,21 +205,6 @@ void WorldInterface::HandleConsoleToggled()
     else
     {
         hoverInfo->Enable();
-    }
-}
-
-void WorldInterface::HandleExplorationToggled()
-{
-    isInExplorationMode = isInExplorationMode == true ? false : true;
-
-    if(isInExplorationMode)
-    {
-        explorationMenu->Enable();
-        settlementMenu->Disable();
-    }
-    else
-    {
-        explorationMenu->Disable();
     }
 }
 
@@ -341,20 +324,18 @@ void WorldInterface::Update()
         travelLabel->Disable();
     }
 
-    if(isInExplorationMode == false)
+    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    auto currentSettlement = playerGroup->GetCurrentSettlement();
+    if(currentSettlement == nullptr)
     {
-        auto playerGroup = WorldScene::Get()->GetPlayerGroup();
-        auto currentSettlement = playerGroup->GetCurrentSettlement();
-        if(currentSettlement == nullptr)
-        {
-            settlementMenu->Disable();
-            explorationMenu->Enable();
-        }
-        else
+        settlementMenu->Disable();
+    }
+    else
+    {
+        if(settlementMenu->IsLocallyActive() == false)
         {
             settlementMenu->Setup(currentSettlement);
             settlementMenu->Enable();
-            explorationMenu->Disable();
         }
     }
 
