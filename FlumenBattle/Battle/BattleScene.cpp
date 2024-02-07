@@ -36,7 +36,7 @@ static const Integer3 COMBAT_GROUP_OFFSET = {-4, 12, -8};
 
 static const Length BATTLE_MAP_SIZE = 55;
 
-static const auto screenGrabInputKey = SDL_Scancode::SDL_SCANCODE_LALT;
+static const auto SCREEN_GRAB_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_LALT;
 
 namespace battle
 {
@@ -78,7 +78,7 @@ namespace battle
 
         DetermineTurnOrder();
 
-        InputHandler::RegisterContinualEvent(screenGrabInputKey, {this, &BattleScene::HandleGrabPressed}, {this, &BattleScene::HandleGrabReleased});
+        InputHandler::RegisterContinualEvent(SCREEN_GRAB_INPUT_KEY, {this, &BattleScene::HandleGrabPressed}, {this, &BattleScene::HandleGrabReleased});
 
         OnEnabled.Invoke();
     }
@@ -217,7 +217,7 @@ namespace battle
             tile->Combatant = nullptr;
         }
 
-        InputHandler::UnregisterContinualEvent(screenGrabInputKey);
+        InputHandler::UnregisterContinualEvent(SCREEN_GRAB_INPUT_KEY);
     }
 
     bool BattleScene::IsCharactersTurn(Combatant *character) const

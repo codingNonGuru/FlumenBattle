@@ -86,6 +86,8 @@ namespace world
 
         void HandleExplorationToggled();
 
+        void HandleConsoleToggled();
+
         WorldInterface();
 
     public:

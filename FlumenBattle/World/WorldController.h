@@ -1,8 +1,7 @@
 #pragma once
 
 #include "FlumenCore/Singleton.h"
-
-class Delegate;
+#include "FlumenCore/Observer.h"
 
 namespace utility
 {
@@ -49,9 +48,11 @@ namespace world
             Integer Index;
         } characterSelection {false, 0};
 
-        Delegate *onInventoryPressed;
+        Delegate onInventoryPressed;
 
-        Delegate *onCharacterSelected;
+        Delegate onCharacterSelected;
+
+        Delegate onConsoleToggled;
 
         WorldController();
 

@@ -20,14 +20,14 @@ void WorldHoverInfo::HandleConfigure()
     static auto color = Color::RED * 0.5f;
     infoLabel = ElementFactory::BuildText(
         {Size(), drawOrder_ + 1, {Position2(5.0f, 5.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}},
-        {{"Large"}, color, "Pop 1"}
+        {{"Small"}, color, "Pop 1"}
     );
     infoLabel->SetAlignment(Text::Alignments::LEFT);
     infoLabel->LockWidth(size_.x - 10);
     infoLabel->Enable();
 
     scienceProgress = ElementFactory::BuildProgressBar <ProgressBar>(
-        {Size(256, 16), drawOrder_ + 1, {Position2(0.0f, 0.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, infoLabel}, {"Settings", true}},
+        {Size(256, 16), drawOrder_ + 1, {Position2(), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, infoLabel}, {"Settings", true}},
         {"SettingsBar", {20.0f, 8.0f}}
     );
     scienceProgress->Disable();

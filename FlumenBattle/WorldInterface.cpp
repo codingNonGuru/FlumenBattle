@@ -39,22 +39,22 @@ WorldInterface::WorldInterface()
     canvas = ElementFactory::BuildCanvas();
     canvas->SetInteractivity(true);
 
-    decisionMenu = ElementFactory::BuildElement<WorldDecisionMenu>(
+    decisionMenu = ElementFactory::BuildElement <WorldDecisionMenu>(
         {Size(1080, 220), DrawOrder(6), {Position2(0.0f, 420.0f), canvas}, {false}, Opacity(0.75f)}
     );
     decisionMenu->Enable();
 
-    infoPanel = ElementFactory::BuildElement<WorldInfoPanel>(
+    infoPanel = ElementFactory::BuildElement <WorldInfoPanel>(
         {Size(1900, 80), DrawOrder(6), {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, canvas}, {false}, Opacity(0.75f)}
     );
     infoPanel->Enable();
 
-    hoverInfo = ElementFactory::BuildElement<WorldHoverInfo>(
-        {Size(390, 590), DrawOrder(6), {Position2(760.0f, 240.0f), canvas}, {false}, Opacity(0.75f)}
+    hoverInfo = ElementFactory::BuildElement <WorldHoverInfo>(
+        {Size(540, 420), DrawOrder(6), {canvas}, {false}, Opacity(0.5f)}
     );
-    hoverInfo->Enable();
+    hoverInfo->Disable();
 
-    engageMenu = ElementFactory::BuildElement<GroupEngageMenu>(
+    engageMenu = ElementFactory::BuildElement <GroupEngageMenu>(
         {Size(900, 360), DrawOrder(6), {Position2(0.0f, -5.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, canvas}, {false}, Opacity(0.75f)}
     );
     engageMenu->Disable();
@@ -175,9 +175,11 @@ void WorldInterface::Initialize()
 
     controller = WorldController::Get();
 
-    *controller->onInventoryPressed += {this, &WorldInterface::HandleInventoryPressed};
+    controller->onInventoryPressed += {this, &WorldInterface::HandleInventoryPressed};
 
-    *controller->onCharacterSelected += {this, &WorldInterface::HandleCharacterSelected};
+    controller->onCharacterSelected += {this, &WorldInterface::HandleCharacterSelected};
+
+    controller->onConsoleToggled += {this, &WorldInterface::HandleConsoleToggled};
 
     *group::HumanMind::Get()->OnSellModeEntered += {this, &WorldInterface::HandleSellModeEntered};
 }
@@ -194,6 +196,18 @@ void WorldInterface::Disable()
     InputHandler::UnregisterEvent(EXPLORATION_INPUT_KEY);
 
     canvas->Disable();
+}
+
+void WorldInterface::HandleConsoleToggled()
+{
+    if(hoverInfo->IsLocallyActive() == true)
+    {
+        hoverInfo->Disable();
+    }
+    else
+    {
+        hoverInfo->Enable();
+    }
 }
 
 void WorldInterface::HandleExplorationToggled()

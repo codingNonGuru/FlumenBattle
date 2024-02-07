@@ -32,18 +32,15 @@ static Camera *camera = nullptr;
 
 const int PLANNED_PATH_MAXIMUM_SIZE = 12;
 
-static const auto travelModeInputKey = SDL_Scancode::SDL_SCANCODE_T;
+static const auto TRAVEL_MODE_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_T;
 
-static const auto screenGrabInputKey = SDL_Scancode::SDL_SCANCODE_LALT;
+static const auto SCREEN_GRAB_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_LALT;
+
+static const auto CONSOLE_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_GRAVE;
 
 namespace world
 {
-    WorldController::WorldController()
-    {
-        onInventoryPressed = new Delegate();
-
-        onCharacterSelected = new Delegate();
-    }
+    WorldController::WorldController() {}
 
     void WorldController::Initialize()
     {
@@ -82,7 +79,12 @@ namespace world
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_6, {this, &WorldController::HandleCharacterSelected});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_I, {this, &WorldController::HandleInventoryPressed});
 
-        InputHandler::RegisterContinualEvent(screenGrabInputKey, {this, &WorldController::HandleGrabPressed}, {this, &WorldController::HandleGrabReleased});
+        InputHandler::RegisterEvent(
+            CONSOLE_INPUT_KEY, 
+            {[] {Get()->onConsoleToggled.Invoke();}}
+            );
+
+        InputHandler::RegisterContinualEvent(SCREEN_GRAB_INPUT_KEY, {this, &WorldController::HandleGrabPressed}, {this, &WorldController::HandleGrabReleased});
 
         //InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_C, {this, &WorldController::HandleColonizationSwitch});
 
@@ -182,7 +184,7 @@ namespace world
             camera->ZoomDynamically(-zoomSpeed);
         }
 
-        if(InputHandler::IsPressed(travelModeInputKey) == true)
+        if(InputHandler::IsPressed(TRAVEL_MODE_INPUT_KEY) == true)
         {
             isTravelPlanActive = true;
         }
@@ -342,14 +344,14 @@ namespace world
             characterSelection.Index = index;
         }
 
-        onCharacterSelected->Invoke();
+        onCharacterSelected.Invoke();
     }
 
     void WorldController::HandleInventoryPressed()
     {
         characterSelection.IsSelected = true;
 
-        onInventoryPressed->Invoke();
+        onInventoryPressed.Invoke();
     }
 
     void WorldController::Disable()
@@ -368,6 +370,8 @@ namespace world
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_5);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_6);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_I);
+
+        InputHandler::UnregisterEvent(CONSOLE_INPUT_KEY);
 
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LALT);
     }
