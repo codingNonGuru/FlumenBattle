@@ -54,8 +54,6 @@ namespace world
 
         WorldController();
 
-        void HandleSceneUpdate();
-
         void CheckTileSelection();
 
         void HandleBattleStarted();
@@ -98,6 +96,8 @@ namespace world
 
     public:
         void Initialize();
+
+        void Update();
 
         void Enable();
 

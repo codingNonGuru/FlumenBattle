@@ -65,6 +65,8 @@ namespace world::group
 
         void HandleSellModeExited();
 
+        void HandleBattleEnded();
+
     public:
         Delegate *OnActionSelected;
 

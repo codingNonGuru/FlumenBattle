@@ -18,6 +18,8 @@
 #include "FlumenBattle/Config.h"
 #include "FlumenBattle/World/Group/GroupSpotting.h"
 #include "FlumenBattle/World/Character/Character.h"
+#include "FlumenBattle/World/Group/ReputationHandler.h"
+#include "FlumenBattle/World/Group/Encounter.h"
 
 using namespace world::group;
 
@@ -65,6 +67,8 @@ static container::Array <GroupSpotting *> latestFadings;
 
 static const GroupSpotting *hoveredGroupSpotting = nullptr;
 
+static ReputationHandler playerReputation;
+
 HumanMind::HumanMind()
 {
     static const auto SPOTTING_COUNT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_SPOTTING_LIMIT).Integer;
@@ -93,6 +97,8 @@ HumanMind::HumanMind()
     OnGroupFaded = new Delegate();
 
     *WorldScene::Get()->OnUpdateStarted += {this, &HumanMind::HandleSceneUpdate};
+
+    *WorldScene::Get()->OnPlayerBattleEnded += {this, &HumanMind::HandleBattleEnded};
 }
 
 void HumanMind::DetermineAction(Group &group) const 
@@ -418,6 +424,17 @@ void HumanMind::HandleSellModeEntered()
 void HumanMind::HandleSellModeExited()
 {
     isSellModeActive = false;
+}
+
+void HumanMind::HandleBattleEnded()
+{
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+    const auto playerEncounter = WorldController::Get()->GetPlayerBattle();
+
+    const auto enemy = playerEncounter->GetOtherThan(playerGroup);
+
+    playerReputation.AddFactor(enemy->GetHome(), -10);
 }
 
 void HumanMind::BuyFood()

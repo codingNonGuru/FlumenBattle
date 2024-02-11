@@ -1,5 +1,7 @@
 #pragma once
 
+#include "FlumenCore/Observer.h"
+
 #include "FlumenEngine/Core/State.hpp"
 
 namespace world
@@ -31,7 +33,11 @@ namespace world
 
         void HandleExit() override;
 
+        void Update() override;
+
     public:
+        Delegate OnUpdate;
+
         static WorldState * Get()
         {
             static WorldState state;

@@ -8,6 +8,7 @@
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/Encounter.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
+#include "FlumenBattle/World/Settlement/Settlement.h"
 
 using namespace world;
 
@@ -112,7 +113,9 @@ void GroupEngageMenu::RefreshOptions()
 
     if(encounter->HasBattleEnded() == true)
     {
-        descriptionLabel->Setup("My liege, we have made short-shrift of their wretched kin...");
+        Phrase text("My liege, we have made short-shrift of their wretched kin.\n");
+        //text << "Word will reach " << encounter->GetOtherThan(player)->GetHome()->GetName() << " that we are not to be trusted.";
+        descriptionLabel->Setup(text);
     }
     else
     {

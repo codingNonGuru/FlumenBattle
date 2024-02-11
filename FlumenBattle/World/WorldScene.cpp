@@ -78,12 +78,12 @@ namespace world
 
     void WorldScene::Update() 
     {
-        OnUpdateStarted->Invoke();
-
         if(!time)
             return;
 
         AWAIT(time.GetStep())
+
+        OnUpdateStarted->Invoke();
 
         ownershipChangeQueue.Reset();
 

@@ -42,8 +42,6 @@ namespace world
 
     void WorldController::Initialize()
     {
-        *WorldScene::Get()->OnUpdateStarted += {this, &WorldController::HandleSceneUpdate};
-
         *WorldScene::Get()->OnPlayerEncounterInitiated += {this, &WorldController::HandlePlayerEncounterInitiated};
 
         *WorldScene::Get()->OnPlayerEncounterFinished += {this, &WorldController::DisableEncounterMode};
@@ -162,7 +160,7 @@ namespace world
 
     static utility::PathData <WorldTile> plannedPath;
 
-    void WorldController::HandleSceneUpdate()
+    void WorldController::Update()
     {
         CheckTileSelection();
 

@@ -35,9 +35,11 @@ namespace world::group
 
         void EndFighting() {isBattle = false; hasBattleEnded = true;}
 
-        group::Group * GetFirst() const {return first;}
+        group::Group *GetFirst() const {return first;}
 
-        group::Group * GetSecond() const {return second;}
+        group::Group *GetSecond() const {return second;}
+
+        group::Group *GetOtherThan(group::Group *group) const {return group == first ? second : first;}
 
         bool IsOngoing() const {return isOngoing;}
 
