@@ -104,7 +104,6 @@ void GroupEngageMenu::HandleLeavePressed()
 
 void GroupEngageMenu::RefreshOptions()
 {
-    std::cout<<"refresh options\n";
     DisableInput();
 
     auto player = WorldScene::Get()->GetPlayerGroup();

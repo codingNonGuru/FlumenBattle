@@ -541,3 +541,8 @@ void HumanMind::SetHoveredSpotting(const GroupSpotting *sighting)
 {
     hoveredGroupSpotting = sighting;
 }
+
+const ReputationHandler &HumanMind::GetPlayerReputation() const
+{
+    return playerReputation;
+}

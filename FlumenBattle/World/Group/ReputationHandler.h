@@ -21,5 +21,7 @@ namespace world::group
         void AddFactor(settlement::Settlement *, int);
 
         int GetReputation(settlement::Settlement *) const;
+
+        const container::Pool <Reputation> &GetReputations() const {return reputations;}
     };
 }

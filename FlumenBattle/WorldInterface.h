@@ -20,6 +20,7 @@ namespace world
         class VendorCursor;
         class ItemHoverInfo;
         class ExplorationMenu;
+        class ReputationMenu;
     }
 
     namespace settlement
@@ -64,6 +65,8 @@ namespace world
 
         interface::ItemHoverInfo *itemHoverInfo;
 
+        interface::ReputationMenu *reputationMenu;
+
         void Update();
 
         void HandlePlayerEncounter();
@@ -83,6 +86,8 @@ namespace world
         void HandleSellModeEntered();
 
         void HandleConsoleToggled();
+
+        void HandleMenuCycled();
 
         WorldInterface();
 
