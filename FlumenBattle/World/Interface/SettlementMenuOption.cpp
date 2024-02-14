@@ -8,6 +8,8 @@
 #include "FlumenBattle/World/Character/Types.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Group/HumanMind.h"
+#include "FlumenBattle/World/Group/ReputationHandler.h"
 
 using namespace world::interface;
 
@@ -61,5 +63,23 @@ void SettlementMenuOption::HandleUpdate()
     else
     {
         SetOpacity(BASE_OPTION_OPACITY);
+    }
+
+    static const auto &reputationHandler = group::HumanMind::Get()->GetPlayerReputation();
+    const auto attitude = reputationHandler.GetAttitude(menu->GetCurrentSettlement());
+
+    if(attitude == settlement::SettlementAttitudes::HOSTILE || attitude == settlement::SettlementAttitudes::UNFRIENDLY)
+    {
+        SetInteractivity(false);
+
+        SetOpacity(BASE_OPTION_OPACITY);
+
+        label->SetOpacity(BASE_OPTION_OPACITY);
+    }
+    else
+    {
+        SetInteractivity(true);
+
+        label->SetOpacity(HOVERED_OPTION_OPACITY);
     }
 }

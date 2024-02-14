@@ -1,6 +1,7 @@
 #include "ReputationHandler.h"
 #include "FlumenBattle/World/Group/Reputation.h"
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/Settlement/Types.h"
 
 using namespace world::group;
 
@@ -39,4 +40,38 @@ int ReputationHandler::GetReputation(settlement::Settlement *settlement) const
     }
 
     return reputation->GetSum();
+}
+
+world::settlement::SettlementAttitudes ReputationHandler::GetAttitude(settlement::Settlement *settlement) const
+{
+    const auto reputation = GetReputation(settlement);
+
+    if(reputation <= -30)
+    {
+        return settlement::SettlementAttitudes::HOSTILE;
+    }
+    else if(reputation <= -15)
+    {
+        return settlement::SettlementAttitudes::UNFRIENDLY;
+    }
+    else if(reputation <= -5)
+    {
+        return settlement::SettlementAttitudes::COLD;
+    }
+    else if(reputation < 5)
+    {
+        return settlement::SettlementAttitudes::INDIFFERENT;
+    }
+    else if(reputation < 15)
+    {
+        return settlement::SettlementAttitudes::OPEN;
+    }
+    else if(reputation < 30)
+    {
+        return settlement::SettlementAttitudes::WELCOMING;
+    }
+    else
+    {
+        return settlement::SettlementAttitudes::FRIENDLY;
+    }
 }

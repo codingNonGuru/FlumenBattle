@@ -103,4 +103,15 @@ namespace world::settlement
         //TOBACCO
         //IVORY
     };
+
+    enum class SettlementAttitudes
+    {
+        HOSTILE,
+        UNFRIENDLY,
+        COLD,
+        INDIFFERENT,        
+        OPEN,
+        WELCOMING,
+        FRIENDLY
+    };
 }

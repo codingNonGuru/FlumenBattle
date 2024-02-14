@@ -3,6 +3,7 @@
 #include "FlumenCore/Utility/Utility.hpp"
 
 #include "FlumenBattle/Utility/Utility.h"
+#include "FlumenBattle/World/Settlement/Types.h"
 
 utility::Result utility::RollD4Dice()
 {
@@ -128,4 +129,25 @@ utility::Success utility::RollD20Dice(DifficultyClass difficultyClass, Bonus bon
     }
 
     return {success, diceRoll, bonus, difficultyClass};
+}
+
+const char *utility::GetAttitudeName(world::settlement::SettlementAttitudes attitude)
+{
+    switch(attitude)
+    {
+    case world::settlement::SettlementAttitudes::HOSTILE:
+        return "Hostile";
+    case world::settlement::SettlementAttitudes::UNFRIENDLY:
+        return "Unfriendly";
+    case world::settlement::SettlementAttitudes::COLD:
+        return "Cold";
+    case world::settlement::SettlementAttitudes::INDIFFERENT:
+        return "Indifferent";
+    case world::settlement::SettlementAttitudes::OPEN:
+        return "Open";
+    case world::settlement::SettlementAttitudes::WELCOMING:
+        return "Welcoming";
+    case world::settlement::SettlementAttitudes::FRIENDLY:
+        return "Friendly";
+    }
 }

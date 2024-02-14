@@ -69,6 +69,8 @@ static const GroupSpotting *hoveredGroupSpotting = nullptr;
 
 static ReputationHandler playerReputation;
 
+static constexpr auto REPUTATION_LOSS_ON_GROUP_ATTACK = -20;
+
 HumanMind::HumanMind()
 {
     static const auto SPOTTING_COUNT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_SPOTTING_LIMIT).Integer;
@@ -315,6 +317,9 @@ void HumanMind::HandleTakeLongRest()
 
 void HumanMind::HandleTravel()
 {
+    if(WorldController::Get()->IsTravelPlanActive() == false)
+        return;
+
     auto plannedPath = WorldController::Get()->GetPlannedPath();
     if(plannedPath.Tiles.GetSize() == 0)
         return;
@@ -434,7 +439,7 @@ void HumanMind::HandleBattleEnded()
 
     const auto enemy = playerEncounter->GetOtherThan(playerGroup);
 
-    playerReputation.AddFactor(enemy->GetHome(), -10);
+    playerReputation.AddFactor(enemy->GetHome(), REPUTATION_LOSS_ON_GROUP_ATTACK);
 }
 
 void HumanMind::BuyFood()
