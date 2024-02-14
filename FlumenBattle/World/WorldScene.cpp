@@ -547,9 +547,9 @@ namespace world
         return nullptr;
     }
 
-    const group::GroupBuffer WorldScene::GetNearbyGroups(WorldTile *tile, int range)
+    const group::GroupBuffer WorldScene::GetNearbyGroups(WorldTile *tile, int maximumGroupDistance)
     {
-        return group::GroupBatchMap::Get()->GetNearbyGroups(tile, range);
+        return group::GroupBatchMap::Get()->GetNearbyGroups(tile, maximumGroupDistance);
     }
 
     void WorldScene::UpdateOwnershipChangeQueue(WorldTile *tile)

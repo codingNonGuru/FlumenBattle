@@ -261,7 +261,9 @@ namespace world::group
             return {};
         }
 
-        auto nearbyGroups = WorldScene::Get()->GetNearbyGroups(group.GetTile());
+        static const auto MAXIMUM_GROUP_SPOTTING_DISTANCE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_GROUP_SPOTTING_DISTANCE).Integer;
+
+        auto nearbyGroups = WorldScene::Get()->GetNearbyGroups(group.GetTile(), MAXIMUM_GROUP_SPOTTING_DISTANCE);
         
         if(nearbyGroups.Groups.GetSize() == 1)
             return {};
@@ -279,11 +281,36 @@ namespace world::group
 
         auto perceptionBonus = group.GetMostSkilledMember(character::SkillTypes::PERCEPTION).Bonus;
 
-        auto stealthBonus = group.GetLeastSkilledMember(character::SkillTypes::STEALTH).Bonus;
+        const auto distance = group.GetDistanceTo(spottedGroup);
+        if(distance == 0)
+        {
+            perceptionBonus += 1;
+        }
+        else if(distance == MAXIMUM_GROUP_SPOTTING_DISTANCE)
+        {
+            perceptionBonus -= 2;
+        }
+
+        static const auto TERRAIN_PERCEPTION_PENALTY = engine::ConfigManager::Get()->GetValue(game::ConfigValues::TERRAIN_PERCEPTION_PENALTY).Integer;
+
+        auto stealthBonus = spottedGroup->GetLeastSkilledMember(character::SkillTypes::STEALTH).Bonus;
+        if(spottedGroup->GetTile()->HasBiome(WorldBiomes::WOODS) || spottedGroup->GetTile()->HasRelief(WorldReliefs::MOUNTAINS))
+        {
+            stealthBonus += TERRAIN_PERCEPTION_PENALTY;
+        }
+
+        static const auto NIGHT_PERCEPTION_PENALTY = engine::ConfigManager::Get()->GetValue(game::ConfigValues::NIGHT_PERCEPTION_PENALTY).Integer;
+
+        auto isNight = WorldScene::Get()->IsNightTime();
+        if(isNight == true)
+        {
+            stealthBonus += NIGHT_PERCEPTION_PENALTY;
+        }
 
         auto modifier = perceptionBonus - stealthBonus;
 
         static const auto GROUP_SEARCH_BASE_DC = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_SEARCH_BASE_DC).Integer;
+
         auto perceptionCheck = utility::RollD20Dice(GROUP_SEARCH_BASE_DC, modifier);
         if(perceptionCheck.IsAnySuccess() == true)
         {

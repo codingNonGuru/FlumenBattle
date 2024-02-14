@@ -165,5 +165,7 @@ namespace world
         void UpdateOwnershipChangeQueue(WorldTile *);
 
         const Array <WorldTile *> &GetOwnershipChangeQueue() const {return ownershipChangeQueue;}
+
+        bool IsNightTime() const {return time.HourCount < 6 || time.HourCount >= 22;}
     };
 }

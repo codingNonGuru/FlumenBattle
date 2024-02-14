@@ -506,4 +506,9 @@ namespace world::group
             return tile->Position;
         }
     }
+
+    int Group::GetDistanceTo(const Group *group) const
+    {
+        return tile->GetDistanceTo(*group->GetTile());
+    }
 }

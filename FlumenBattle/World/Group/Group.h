@@ -265,5 +265,7 @@ namespace world::group
         const int &GetMoney() const {return money;}
 
         settlement::Settlement *GetCurrentSettlement();
+
+        int GetDistanceTo(const Group *) const;
     };
 }
