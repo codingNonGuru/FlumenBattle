@@ -39,8 +39,6 @@ static const SDL_Scancode intensifyActionKey = SDL_Scancode::SDL_SCANCODE_RIGHTB
 
 static const SDL_Scancode sellInputKey = SDL_Scancode::SDL_SCANCODE_V;
 
-static const auto COIN_SOUNDS = container::Array {"Coin", "Coin2", "Coin3", "Coin4"};
-
 static const auto DICE_ROLL_SOUND = "DiceRoll";
 
 static const auto DICE_SOUND_INTERVAL = 1000;
@@ -87,6 +85,8 @@ HumanMind::HumanMind()
     OnSkillCheckRolled = new Delegate();
 
     OnItemAdded = new Delegate();
+
+    OnItemSold = new Delegate();
 
     OnSellModeEntered = new Delegate();
 
@@ -454,9 +454,6 @@ void HumanMind::BuyFood()
     playerGroup->money -= foodPrice;
     playerGroup->AddItem(character::ItemTypes::FOOD, VOLUME_PER_MARKET_ITEM);
 
-    auto sound = COIN_SOUNDS.GetRandom();
-    engine::SoundManager::Get()->PlaySound(*sound);
-
     OnItemAdded->Invoke();
 }
 
@@ -467,8 +464,7 @@ void HumanMind::SellItem(character::Item *item)
 
     playerGroup->money += item->Type->Value * item->Amount;
 
-    auto sound = COIN_SOUNDS.GetRandom();
-    engine::SoundManager::Get()->PlaySound(*sound);
+    OnItemSold->Invoke();
 }
 
 void HumanMind::PursueSighting(const GroupSpotting &spotting)

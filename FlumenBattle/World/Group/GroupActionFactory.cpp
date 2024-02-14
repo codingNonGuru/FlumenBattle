@@ -345,6 +345,15 @@ namespace world::group
 
     GroupActionResult GroupActionPerformer::Disengage(Group& group)
     {
+        if(group.encounter->IsWinner(&group) == true)
+        {
+            group.money += group.GetOther()->money;
+        }
+        else if(group.encounter->IsWinner(group.GetOther()) == true)
+        {
+            group.GetOther()->money += group.money;
+        }
+
         group.CancelAction();
 
         group.GetOther()->CancelAction();

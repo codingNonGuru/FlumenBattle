@@ -49,7 +49,18 @@ namespace world::group
         this->isAlive = true;
         this->hasAchievedObjective = false;
 
-        this->money = 150;
+        if(this->type->Class == GroupClasses::ADVENTURER)
+        {
+            this->money = utility::GetRandom(100, 150);
+        }
+        else if(this->type->Class == GroupClasses::MERCHANT)
+        {
+            this->money = utility::GetRandom(200, 300);
+        }
+        else if(this->type->Class == GroupClasses::PLAYER)
+        {
+            this->money = utility::GetRandom(100, 150);
+        }
 
         actionProgress = 0;
 

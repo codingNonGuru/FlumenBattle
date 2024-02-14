@@ -360,7 +360,7 @@ namespace world
     {
         playerGroup->SelectAction(group::GroupActions::DISENGAGE);
 
-        playerGroup->GetEncounter()->Finish();
+        playerGroup->GetEncounter()->Finish(playerGroup);
 
         OnPlayerEncounterFinished->Invoke();
 

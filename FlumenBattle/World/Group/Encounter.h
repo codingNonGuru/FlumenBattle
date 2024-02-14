@@ -24,6 +24,8 @@ namespace world::group
 
         Group *second;
 
+        Group *winner;
+
     public:
         Encounter() {}
 
@@ -47,6 +49,8 @@ namespace world::group
 
         bool HasBattleEnded() const {return hasBattleEnded;}
 
-        void Finish();
+        bool IsWinner(Group *group) const {return group == winner;}
+
+        void Finish(Group *);
     };
 }

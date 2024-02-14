@@ -79,6 +79,8 @@ namespace world::group
 
         Delegate *OnItemAdded;
 
+        Delegate *OnItemSold;
+
         Delegate *OnSellModeEntered;
 
         Delegate *OnSettlementEntered;
