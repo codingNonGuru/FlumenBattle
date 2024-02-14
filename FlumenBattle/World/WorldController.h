@@ -52,11 +52,7 @@ namespace world
 
         Delegate onCharacterSelected;
 
-        Delegate onConsoleToggled;
-
         WorldController();
-
-        void HandleSceneUpdate();
 
         void CheckTileSelection();
 
@@ -100,6 +96,8 @@ namespace world
 
     public:
         void Initialize();
+
+        void Update();
 
         void Enable();
 

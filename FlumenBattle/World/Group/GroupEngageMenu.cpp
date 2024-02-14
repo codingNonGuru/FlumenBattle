@@ -8,6 +8,7 @@
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/Encounter.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
+#include "FlumenBattle/World/Settlement/Settlement.h"
 
 using namespace world;
 
@@ -20,11 +21,29 @@ static auto TEXT_COLOR = Color::RED * 0.5f;
 void GroupEngageMenu::HandleConfigure()
 {
     descriptionLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {Position2(20.0f, 20.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}},
+        {Size(), drawOrder_ + 1, {Position2(20.0f, 20.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}},
         {{"Large"}, TEXT_COLOR, "You come across a band of travellers most merry..."}
     );
     descriptionLabel->SetAlignment(Text::Alignments::LEFT);
     descriptionLabel->Enable();
+
+    lootLabel = ElementFactory::BuildText(
+        {Size(), drawOrder_ + 1, {Position2(), ElementAnchors::LOWER_LEFT, ElementPivots::UPPER_LEFT, descriptionLabel}},
+        {{"Small"}, TEXT_COLOR, "You empty your foes pockets, bagging "}
+    );
+    lootLabel->SetAlignment(Text::Alignments::LEFT);
+    lootLabel->Disable();
+
+    coinIcon = ElementFactory::BuildElement <Element>
+    (
+        {
+            Size(64, 64), 
+            drawOrder_ + 1, 
+            {Position2(), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, lootLabel}, 
+            {"Coin", false}
+        }
+    );
+    coinIcon->Enable();
 
     border = ElementFactory::BuildElement <Element>
     (
@@ -40,7 +59,7 @@ void GroupEngageMenu::HandleConfigure()
 
     optionLabels.Initialize(MAXIMUM_OPTION_COUNT);
 
-    auto startPosition = Position2(45.0f, 85.0f);
+    auto startPosition = Position2(45.0f, 95.0f);
 
     for(int i = 0; i < MAXIMUM_OPTION_COUNT; ++i)
     {
@@ -103,20 +122,31 @@ void GroupEngageMenu::HandleLeavePressed()
 
 void GroupEngageMenu::RefreshOptions()
 {
-    std::cout<<"refresh options\n";
     DisableInput();
 
-    auto player = WorldScene::Get()->GetPlayerGroup();
+    static const auto player = WorldScene::Get()->GetPlayerGroup();
 
-    auto encounter = WorldController::Get()->GetPlayerBattle();
+    const auto encounter = WorldController::Get()->GetPlayerBattle();
 
     if(encounter->HasBattleEnded() == true)
     {
-        descriptionLabel->Setup("My liege, we have made short-shrift of their wretched kin...");
+        Phrase text("My liege, we have made short-shrift of their wretched kin.");
+        //text << "Word will reach " << encounter->GetOtherThan(player)->GetHome()->GetName() << " that we are not to be trusted.";
+        descriptionLabel->Setup(text);
+
+        const auto enemy = encounter->GetOtherThan(player);
+
+        text = "You empty your foes pockets, bagging ";
+        text << enemy->GetMoney();
+
+        lootLabel->Enable();
+        lootLabel->Setup(text);
     }
     else
     {
         descriptionLabel->Setup("You come across a band of travellers most merry...");
+
+        lootLabel->Disable();
     }
 
     for(auto label : optionLabels)

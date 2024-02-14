@@ -2,6 +2,7 @@
 #include "FlumenBattle/World/Group/GroupBatch.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/Config.h"
+#include "FlumenBattle/World/Group/Group.h"
 
 using namespace world::group;
 
@@ -26,7 +27,7 @@ GroupBatch *GroupBatchMap::GetBatch(world::WorldTile *tile)
     return batches.Get(x, y);
 }
 
-const GroupBuffer GroupBatchMap::GetNearbyGroups(WorldTile *tile, int range) const
+const GroupBuffer GroupBatchMap::GetNearbyGroups(WorldTile *tile, int maximumGroupDistance) const
 {
     static const auto GROUP_BATCH_TILE_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_BATCH_TILE_SIZE).Integer;
 
@@ -36,6 +37,8 @@ const GroupBuffer GroupBatchMap::GetNearbyGroups(WorldTile *tile, int range) con
 
     auto baseX = tile->SquareCoordinates.x / GROUP_BATCH_TILE_SIZE;
     auto baseY = tile->SquareCoordinates.y / GROUP_BATCH_TILE_SIZE;
+
+    const auto range = maximumGroupDistance % GROUP_BATCH_TILE_SIZE == 0 ? maximumGroupDistance / GROUP_BATCH_TILE_SIZE : (maximumGroupDistance / GROUP_BATCH_TILE_SIZE) + 1;
 
     for(int i = -range; i <= range; ++i)
     {
@@ -49,6 +52,10 @@ const GroupBuffer GroupBatchMap::GetNearbyGroups(WorldTile *tile, int range) con
             auto &groups = batch->GetGroups();
             for(auto &group : groups)
             {
+                auto distance = group->GetTile()->GetDistanceTo(*tile);
+                if(distance > maximumGroupDistance)
+                    continue;
+
                 *newBuffer->Groups.Add() = group;
             }
         }   

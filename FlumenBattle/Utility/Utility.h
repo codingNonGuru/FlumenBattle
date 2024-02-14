@@ -6,6 +6,11 @@
 
 #include "FlumenBattle/Utility/Types.h"
 
+namespace world::settlement
+{
+    enum class SettlementAttitudes;
+}
+
 namespace utility
 {
     typedef int Result;
@@ -77,4 +82,6 @@ namespace utility
     Success RollD20Dice(DifficultyClass, Bonus = 0);
 
     Result RollD100Dice();
+
+    const char *GetAttitudeName(world::settlement::SettlementAttitudes);
 }

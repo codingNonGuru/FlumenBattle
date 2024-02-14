@@ -14,6 +14,10 @@ namespace world
         
         Text *descriptionLabel;
 
+        Text *lootLabel;
+
+        Element *coinIcon;
+
         container::Array <Text *> optionLabels;
 
         void HandleConfigure() override;

@@ -21,6 +21,7 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Polity.h"
 #include "FlumenBattle/World/Interface/InventoryMenu.h"
+#include "FlumenBattle/World/Interface/ReputationMenu.h"
 #include "FlumenBattle/World/Interface/SettlementMenu.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
@@ -32,7 +33,9 @@ using namespace world;
 
 WorldController *controller = nullptr;
 
-static const auto EXPLORATION_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_TAB;
+static const auto CONSOLE_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_GRAVE;
+
+static const auto MENU_CYCLE_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_TAB;
 
 WorldInterface::WorldInterface()
 {
@@ -63,13 +66,25 @@ WorldInterface::WorldInterface()
     (
         {
             Size(480, 540), 
-            DrawOrder(4), 
+            DrawOrder(7), 
             {canvas}, 
             {false}, 
             Opacity(0.9f)
         }
     );
     inventoryMenu->Disable();
+
+    reputationMenu = ElementFactory::BuildElement <interface::ReputationMenu>
+    (
+        {
+            Size(480, 540), 
+            DrawOrder(7), 
+            {canvas}, 
+            {false}, 
+            Opacity(0.9f)
+        }
+    );
+    reputationMenu->Disable();
 
     settlementMenu = ElementFactory::BuildElement <interface::SettlementMenu>
     (
@@ -88,12 +103,12 @@ WorldInterface::WorldInterface()
         {
             Size(320, 400), 
             DrawOrder(6), 
-            {Position2(5.0f, -5.0f), ElementAnchors::LOWER_LEFT, ElementPivots::LOWER_LEFT, canvas}, 
+            {Position2(-5.0f, -5.0f), ElementAnchors::LOWER_RIGHT, ElementPivots::LOWER_RIGHT, canvas}, 
             {false}, 
             Opacity(0.9f)
         }
     );
-    explorationMenu->Disable();
+    explorationMenu->Enable();
 
     settlementLabels.Initialize(128);
     for(int i = 0; i < settlementLabels.GetCapacity(); i++)
@@ -131,7 +146,7 @@ WorldInterface::WorldInterface()
     vendorCursor = ElementFactory::BuildElement <interface::VendorCursor>
     (
         {
-            DrawOrder(7), 
+            inventoryMenu->GetDrawOrder() + 5, 
             {canvas}, 
             {"Coin", false}
         }
@@ -142,7 +157,7 @@ WorldInterface::WorldInterface()
     itemHoverInfo = ElementFactory::BuildElement <interface::ItemHoverInfo>
     (
         {
-            DrawOrder(8),
+            inventoryMenu->GetDrawOrder() + 5,
             {ElementAnchors::MIDDLE_CENTER, ElementPivots::UPPER_CENTER, canvas},
             {false},
             Opacity(0.5f)
@@ -179,21 +194,23 @@ void WorldInterface::Initialize()
 
     controller->onCharacterSelected += {this, &WorldInterface::HandleCharacterSelected};
 
-    controller->onConsoleToggled += {this, &WorldInterface::HandleConsoleToggled};
-
     *group::HumanMind::Get()->OnSellModeEntered += {this, &WorldInterface::HandleSellModeEntered};
 }
 
 void WorldInterface::Enable()
 {
-    InputHandler::RegisterEvent(EXPLORATION_INPUT_KEY, {this, &WorldInterface::HandleExplorationToggled});
+    InputHandler::RegisterEvent(CONSOLE_INPUT_KEY, {this, &WorldInterface::HandleConsoleToggled});
+
+    InputHandler::RegisterEvent(MENU_CYCLE_INPUT_KEY, {this, &WorldInterface::HandleMenuCycled});
 
     canvas->Enable();
 }
 
 void WorldInterface::Disable()
 {
-    InputHandler::UnregisterEvent(EXPLORATION_INPUT_KEY);
+    InputHandler::UnregisterEvent(CONSOLE_INPUT_KEY);
+
+    InputHandler::UnregisterEvent(MENU_CYCLE_INPUT_KEY);
 
     canvas->Disable();
 }
@@ -207,21 +224,6 @@ void WorldInterface::HandleConsoleToggled()
     else
     {
         hoverInfo->Enable();
-    }
-}
-
-void WorldInterface::HandleExplorationToggled()
-{
-    isInExplorationMode = isInExplorationMode == true ? false : true;
-
-    if(isInExplorationMode)
-    {
-        explorationMenu->Enable();
-        settlementMenu->Disable();
-    }
-    else
-    {
-        explorationMenu->Disable();
     }
 }
 
@@ -286,6 +288,11 @@ void WorldInterface::HandleInventoryPressed()
 
         auto character = WorldScene::Get()->GetPlayerGroup()->GetCharacter(selectionData.Index);
         inventoryMenu->SelectCharacter(character);
+
+        if(reputationMenu->IsLocallyActive() == true)
+        {
+            reputationMenu->Disable();
+        }
     }
 }
 
@@ -299,6 +306,26 @@ void WorldInterface::HandleCharacterSelected()
         auto selectionData = WorldController::Get()->GetSelectionData();
         auto character = WorldScene::Get()->GetPlayerGroup()->GetCharacter(selectionData.Index);
         inventoryMenu->SelectCharacter(character);
+    }
+}
+
+void WorldInterface::HandleMenuCycled()
+{
+    if(inventoryMenu->IsLocallyActive() == true)
+    {
+        inventoryMenu->Disable();
+
+        reputationMenu->Enable();
+
+        isInInventoryMode = false;
+    }
+    else if(reputationMenu->IsLocallyActive() == true)
+    {
+        inventoryMenu->Enable();
+
+        reputationMenu->Disable();
+
+        isInInventoryMode = true;
     }
 }
 
@@ -341,20 +368,18 @@ void WorldInterface::Update()
         travelLabel->Disable();
     }
 
-    if(isInExplorationMode == false)
+    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    auto currentSettlement = playerGroup->GetCurrentSettlement();
+    if(currentSettlement == nullptr)
     {
-        auto playerGroup = WorldScene::Get()->GetPlayerGroup();
-        auto currentSettlement = playerGroup->GetCurrentSettlement();
-        if(currentSettlement == nullptr)
-        {
-            settlementMenu->Disable();
-            explorationMenu->Enable();
-        }
-        else
+        settlementMenu->Disable();
+    }
+    else
+    {
+        if(settlementMenu->IsLocallyActive() == false)
         {
             settlementMenu->Setup(currentSettlement);
             settlementMenu->Enable();
-            explorationMenu->Disable();
         }
     }
 

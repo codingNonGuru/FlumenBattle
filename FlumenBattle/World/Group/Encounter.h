@@ -24,6 +24,8 @@ namespace world::group
 
         Group *second;
 
+        Group *winner;
+
     public:
         Encounter() {}
 
@@ -35,9 +37,11 @@ namespace world::group
 
         void EndFighting() {isBattle = false; hasBattleEnded = true;}
 
-        group::Group * GetFirst() const {return first;}
+        group::Group *GetFirst() const {return first;}
 
-        group::Group * GetSecond() const {return second;}
+        group::Group *GetSecond() const {return second;}
+
+        group::Group *GetOtherThan(group::Group *group) const {return group == first ? second : first;}
 
         bool IsOngoing() const {return isOngoing;}
 
@@ -45,6 +49,8 @@ namespace world::group
 
         bool HasBattleEnded() const {return hasBattleEnded;}
 
-        void Finish();
+        bool IsWinner(Group *group) const {return group == winner;}
+
+        void Finish(Group *);
     };
 }

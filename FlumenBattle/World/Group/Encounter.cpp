@@ -16,6 +16,8 @@ namespace world::group
 
         first->EngageGroup(this);
         second->EngageGroup(this);
+        
+        winner = nullptr;
     }
 
     void Encounter::Update()
@@ -23,9 +25,11 @@ namespace world::group
 
     }
 
-    void Encounter::Finish() 
+    void Encounter::Finish(Group *winner) 
     {
         isOngoing = false;
+
+        this->winner = winner;
 
         //first->ExitBattle();
         //second->ExitBattle();

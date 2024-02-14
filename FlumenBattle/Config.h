@@ -15,5 +15,8 @@ namespace game
         static constexpr auto GROUP_SEARCH_BASE_DC = "GROUP_SEARCH_BASE_DC";
         static constexpr auto GROUP_BATCH_TILE_SIZE = "GROUP_BATCH_TILE_SIZE";
         static constexpr auto GROUPS_PER_BATCH = "GROUPS_PER_BATCH";
+        static constexpr auto NIGHT_PERCEPTION_PENALTY = "NIGHT_PERCEPTION_PENALTY";
+        static constexpr auto TERRAIN_PERCEPTION_PENALTY = "TERRAIN_PERCEPTION_PENALTY";
+        static constexpr auto MAXIMUM_GROUP_SPOTTING_DISTANCE = "MAXIMUM_GROUP_SPOTTING_DISTANCE";
     };
 }

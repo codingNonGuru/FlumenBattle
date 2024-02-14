@@ -11,7 +11,9 @@ namespace world
 
         static constexpr auto DAYS_IN_YEAR = 365;
 
-        static constexpr auto MINUTES_IN_DAYS = 24 * 60;
+        static constexpr auto HOURS_IN_DAY = 24;
+
+        static constexpr auto MINUTES_IN_DAYS = HOURS_IN_DAY * 60;
 
         static constexpr auto MINUTES_IN_YEAR = DAYS_IN_YEAR * MINUTES_IN_DAYS;
 

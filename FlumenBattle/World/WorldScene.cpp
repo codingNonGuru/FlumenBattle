@@ -78,12 +78,12 @@ namespace world
 
     void WorldScene::Update() 
     {
-        OnUpdateStarted->Invoke();
-
         if(!time)
             return;
 
         AWAIT(time.GetStep())
+
+        OnUpdateStarted->Invoke();
 
         ownershipChangeQueue.Reset();
 
@@ -360,7 +360,7 @@ namespace world
     {
         playerGroup->SelectAction(group::GroupActions::DISENGAGE);
 
-        playerGroup->GetEncounter()->Finish();
+        playerGroup->GetEncounter()->Finish(playerGroup);
 
         OnPlayerEncounterFinished->Invoke();
 
@@ -547,9 +547,9 @@ namespace world
         return nullptr;
     }
 
-    const group::GroupBuffer WorldScene::GetNearbyGroups(WorldTile *tile, int range)
+    const group::GroupBuffer WorldScene::GetNearbyGroups(WorldTile *tile, int maximumGroupDistance)
     {
-        return group::GroupBatchMap::Get()->GetNearbyGroups(tile, range);
+        return group::GroupBatchMap::Get()->GetNearbyGroups(tile, maximumGroupDistance);
     }
 
     void WorldScene::UpdateOwnershipChangeQueue(WorldTile *tile)

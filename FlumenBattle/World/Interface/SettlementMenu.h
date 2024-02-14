@@ -14,25 +14,11 @@ namespace world::interface
 {
     class SettlementMenu : public Element
     {
-        class Option : public Element
-        {
-            Text *label;
-
-            SettlementMenu *menu;
-
-            void HandleConfigure() override;    
-
-            void HandleLeftClick() override;
-
-            void HandleUpdate() override;
-
-        public:
-            void Setup(SettlementMenu *newMenu) {menu = newMenu;}
-        };
-
         Element *border;
 
         Text *nameLabel;
+
+        Text *attitudeLabel;
 
         LayoutGroup *optionLayout;
 
@@ -46,5 +32,7 @@ namespace world::interface
         void Setup(settlement::Settlement *);
 
         void ProcessOptionInput();
+
+        settlement::Settlement *GetCurrentSettlement() const {return currentSettlement;}
     };
 }

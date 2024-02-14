@@ -26,6 +26,7 @@ namespace world::group
 {
     struct GroupActionResult;
     struct GroupSpotting;
+    class ReputationHandler;
 
     class HumanMind : public GroupMind, public core::Singleton <HumanMind>
     {
@@ -65,6 +66,8 @@ namespace world::group
 
         void HandleSellModeExited();
 
+        void HandleBattleEnded();
+
     public:
         Delegate *OnActionSelected;
 
@@ -75,6 +78,8 @@ namespace world::group
         Delegate *OnSkillCheckRolled;
 
         Delegate *OnItemAdded;
+
+        Delegate *OnItemSold;
 
         Delegate *OnSellModeEntered;
 
@@ -115,5 +120,7 @@ namespace world::group
         const GroupSpotting *GetHoveredSpotting() const;
 
         void SetHoveredSpotting(const GroupSpotting *);
+
+        const ReputationHandler &GetPlayerReputation() const;
     };  
 };

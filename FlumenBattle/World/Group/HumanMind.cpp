@@ -18,6 +18,8 @@
 #include "FlumenBattle/Config.h"
 #include "FlumenBattle/World/Group/GroupSpotting.h"
 #include "FlumenBattle/World/Character/Character.h"
+#include "FlumenBattle/World/Group/ReputationHandler.h"
+#include "FlumenBattle/World/Group/Encounter.h"
 
 using namespace world::group;
 
@@ -36,8 +38,6 @@ static const SDL_Scancode slackenActionKey = SDL_Scancode::SDL_SCANCODE_LEFTBRAC
 static const SDL_Scancode intensifyActionKey = SDL_Scancode::SDL_SCANCODE_RIGHTBRACKET;
 
 static const SDL_Scancode sellInputKey = SDL_Scancode::SDL_SCANCODE_V;
-
-static const auto COIN_SOUNDS = container::Array {"Coin", "Coin2", "Coin3", "Coin4"};
 
 static const auto DICE_ROLL_SOUND = "DiceRoll";
 
@@ -65,6 +65,10 @@ static container::Array <GroupSpotting *> latestFadings;
 
 static const GroupSpotting *hoveredGroupSpotting = nullptr;
 
+static ReputationHandler playerReputation;
+
+static constexpr auto REPUTATION_LOSS_ON_GROUP_ATTACK = -20;
+
 HumanMind::HumanMind()
 {
     static const auto SPOTTING_COUNT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_SPOTTING_LIMIT).Integer;
@@ -82,6 +86,8 @@ HumanMind::HumanMind()
 
     OnItemAdded = new Delegate();
 
+    OnItemSold = new Delegate();
+
     OnSellModeEntered = new Delegate();
 
     OnSettlementEntered = new Delegate();
@@ -93,6 +99,8 @@ HumanMind::HumanMind()
     OnGroupFaded = new Delegate();
 
     *WorldScene::Get()->OnUpdateStarted += {this, &HumanMind::HandleSceneUpdate};
+
+    *WorldScene::Get()->OnPlayerBattleEnded += {this, &HumanMind::HandleBattleEnded};
 }
 
 void HumanMind::DetermineAction(Group &group) const 
@@ -309,6 +317,9 @@ void HumanMind::HandleTakeLongRest()
 
 void HumanMind::HandleTravel()
 {
+    if(WorldController::Get()->IsTravelPlanActive() == false)
+        return;
+
     auto plannedPath = WorldController::Get()->GetPlannedPath();
     if(plannedPath.Tiles.GetSize() == 0)
         return;
@@ -420,6 +431,17 @@ void HumanMind::HandleSellModeExited()
     isSellModeActive = false;
 }
 
+void HumanMind::HandleBattleEnded()
+{
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+    const auto playerEncounter = WorldController::Get()->GetPlayerBattle();
+
+    const auto enemy = playerEncounter->GetOtherThan(playerGroup);
+
+    playerReputation.AddFactor(enemy->GetHome(), REPUTATION_LOSS_ON_GROUP_ATTACK);
+}
+
 void HumanMind::BuyFood()
 {
     static auto playerGroup = WorldScene::Get()->GetPlayerGroup();
@@ -432,9 +454,6 @@ void HumanMind::BuyFood()
     playerGroup->money -= foodPrice;
     playerGroup->AddItem(character::ItemTypes::FOOD, VOLUME_PER_MARKET_ITEM);
 
-    auto sound = COIN_SOUNDS.GetRandom();
-    engine::SoundManager::Get()->PlaySound(*sound);
-
     OnItemAdded->Invoke();
 }
 
@@ -445,8 +464,7 @@ void HumanMind::SellItem(character::Item *item)
 
     playerGroup->money += item->Type->Value * item->Amount;
 
-    auto sound = COIN_SOUNDS.GetRandom();
-    engine::SoundManager::Get()->PlaySound(*sound);
+    OnItemSold->Invoke();
 }
 
 void HumanMind::PursueSighting(const GroupSpotting &spotting)
@@ -523,4 +541,9 @@ const GroupSpotting *HumanMind::GetHoveredSpotting() const
 void HumanMind::SetHoveredSpotting(const GroupSpotting *sighting)
 {
     hoveredGroupSpotting = sighting;
+}
+
+const ReputationHandler &HumanMind::GetPlayerReputation() const
+{
+    return playerReputation;
 }

@@ -20,6 +20,7 @@ namespace world
         class VendorCursor;
         class ItemHoverInfo;
         class ExplorationMenu;
+        class ReputationMenu;
     }
 
     namespace settlement
@@ -52,8 +53,6 @@ namespace world
 
         interface::ExplorationMenu *explorationMenu;
 
-        bool isInExplorationMode {false};
-
         container::Array <settlement::SettlementLabel *> settlementLabels;
 
         container::Array <PathLabel *> pathLabels;
@@ -65,6 +64,8 @@ namespace world
         interface::VendorCursor *vendorCursor;
 
         interface::ItemHoverInfo *itemHoverInfo;
+
+        interface::ReputationMenu *reputationMenu;
 
         void Update();
 
@@ -84,9 +85,9 @@ namespace world
 
         void HandleSellModeEntered();
 
-        void HandleExplorationToggled();
-
         void HandleConsoleToggled();
+
+        void HandleMenuCycled();
 
         WorldInterface();
 

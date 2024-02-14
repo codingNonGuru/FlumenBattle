@@ -45,6 +45,11 @@ namespace world
         Engine::OnInterfaceUpdateStarted += {interface, &WorldInterface::Update};
     }
 
+    void WorldState::Update() 
+    {
+        controller->Update();
+    }
+
     void WorldState::HandleExit() 
     {
         scene->Disable();
