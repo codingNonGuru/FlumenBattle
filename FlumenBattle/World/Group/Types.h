@@ -8,6 +8,6 @@ namespace world::group
 
     enum class GroupClasses 
     {
-        PLAYER, MERCHANT, BANDIT, ADVENTURER, TRAVELLING_COURT
+        PLAYER, MERCHANT, BANDIT, ADVENTURER, TRAVELLING_COURT, PATROL
     };
 }

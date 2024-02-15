@@ -109,7 +109,7 @@ void InventorySlot::SetItem(world::character::Item *newItem)
 
 void InventoryMenu::HandleConfigure()
 {
-    *group::HumanMind::Get()->OnItemAdded += {this, &InventoryMenu::HandleItemAdded};
+    group::HumanMind::Get()->OnItemAdded += {this, &InventoryMenu::HandleItemAdded};
 
     playerGroup = world::WorldScene::Get()->GetPlayerGroup();
 

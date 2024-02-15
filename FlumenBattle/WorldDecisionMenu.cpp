@@ -71,9 +71,9 @@ void WorldDecisionMenu::HandleConfigure()
     );
     statusLabel->Enable();
 
-    *group::HumanMind::Get()->OnActionSelected += {this, &WorldDecisionMenu::HandleActionSelected};
+    group::HumanMind::Get()->OnActionSelected += {this, &WorldDecisionMenu::HandleActionSelected};
 
-    *group::HumanMind::Get()->OnSkillCheckRolled += {this, &WorldDecisionMenu::HandleActionSelected};
+    group::HumanMind::Get()->OnSkillCheckRolled += {this, &WorldDecisionMenu::HandleActionSelected};
 }
 
 void WorldDecisionMenu::HandleUpdate() 

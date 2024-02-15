@@ -76,28 +76,6 @@ HumanMind::HumanMind()
 
     latestFadings.Initialize(SPOTTING_COUNT);
 
-    OnActionSelected = new Delegate();
-
-    OnActionPerformed = new Delegate();
-
-    OnActionInitiated = new Delegate();
-
-    OnSkillCheckRolled = new Delegate();
-
-    OnItemAdded = new Delegate();
-
-    OnItemSold = new Delegate();
-
-    OnSellModeEntered = new Delegate();
-
-    OnSettlementEntered = new Delegate();
-
-    OnSettlementExited = new Delegate();
-
-    OnGroupSpotted = new Delegate();
-
-    OnGroupFaded = new Delegate();
-
     *WorldScene::Get()->OnUpdateStarted += {this, &HumanMind::HandleSceneUpdate};
 
     *WorldScene::Get()->OnPlayerBattleEnded += {this, &HumanMind::HandleBattleEnded};
@@ -173,18 +151,18 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
                 spottedGroup->GetDestination() != nullptr ? (spottedGroup->GetDestination()->Position - spottedGroup->GetTravelStartPoint()->Position).x < 0.0f : true
             };
 
-            OnGroupSpotted->Invoke();
+            OnGroupSpotted.Invoke();
         }
 
-        OnSkillCheckRolled->Invoke();
+        OnSkillCheckRolled.Invoke();
     }
 
-    OnActionPerformed->Invoke();
+    OnActionPerformed.Invoke();
 }
 
 void HumanMind::RegisterActionInitiation(Group &, GroupActionResult) const 
 {
-    OnActionInitiated->Invoke();
+    OnActionInitiated.Invoke();
 }
 
 void HumanMind::EnableInput()
@@ -238,11 +216,11 @@ void HumanMind::HandleSceneUpdate()
     {
         if(playerGroup->GetCurrentSettlement() != nullptr)
         {
-            OnSettlementEntered->Invoke();
+            OnSettlementEntered.Invoke();
         }
         else
         {
-            OnSettlementExited->Invoke();
+            OnSettlementExited.Invoke();
         }
     }
 
@@ -274,7 +252,7 @@ void HumanMind::UpdateSpottings()
 
     if(latestFadings.GetSize() > 0)
     {
-        OnGroupFaded->Invoke();
+        OnGroupFaded.Invoke();
     }
 }
 
@@ -423,7 +401,7 @@ void HumanMind::HandleSellModeEntered()
 
     isSellModeActive = true;
 
-    OnSellModeEntered->Invoke();
+    OnSellModeEntered.Invoke();
 }
 
 void HumanMind::HandleSellModeExited()
@@ -454,7 +432,7 @@ void HumanMind::BuyFood()
     playerGroup->money -= foodPrice;
     playerGroup->AddItem(character::ItemTypes::FOOD, VOLUME_PER_MARKET_ITEM);
 
-    OnItemAdded->Invoke();
+    OnItemAdded.Invoke();
 }
 
 void HumanMind::SellItem(character::Item *item)
@@ -464,7 +442,7 @@ void HumanMind::SellItem(character::Item *item)
 
     playerGroup->money += item->Type->Value * item->Amount;
 
-    OnItemSold->Invoke();
+    OnItemSold.Invoke();
 }
 
 void HumanMind::PursueSighting(const GroupSpotting &spotting)
@@ -541,6 +519,8 @@ const GroupSpotting *HumanMind::GetHoveredSpotting() const
 void HumanMind::SetHoveredSpotting(const GroupSpotting *sighting)
 {
     hoveredGroupSpotting = sighting;
+
+    OnSpottingHovered.Invoke();
 }
 
 const ReputationHandler &HumanMind::GetPlayerReputation() const

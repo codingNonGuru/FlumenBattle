@@ -458,7 +458,7 @@ void WorldTileModel::RenderPlayerPath()
 
 void WorldTileModel::RenderGroupSightings()
 {
-    static const auto GROUP_VISUAL_SCALE = Scale2(0.35f);
+    static const auto GROUP_VISUAL_SCALE = Scale2(0.25f);
 
     static const auto GROUP_VISUAL_OFFSET = Position2(0.0f, -15.0f);
 

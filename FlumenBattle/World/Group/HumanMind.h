@@ -1,10 +1,9 @@
 #pragma once
 
 #include "FlumenCore/Singleton.h"
+#include "FlumenCore/Observer.h"
 
 #include "FlumenBattle/World/Group/GroupMind.h"
-
-class Delegate;
 
 namespace world
 {
@@ -69,27 +68,29 @@ namespace world::group
         void HandleBattleEnded();
 
     public:
-        Delegate *OnActionSelected;
+        Delegate OnActionSelected;
 
-        Delegate *OnActionPerformed;
+        Delegate OnActionPerformed;
 
-        Delegate *OnActionInitiated;
+        Delegate OnActionInitiated;
 
-        Delegate *OnSkillCheckRolled;
+        Delegate OnSkillCheckRolled;
 
-        Delegate *OnItemAdded;
+        Delegate OnItemAdded;
 
-        Delegate *OnItemSold;
+        Delegate OnItemSold;
 
-        Delegate *OnSellModeEntered;
+        Delegate OnSellModeEntered;
 
-        Delegate *OnSettlementEntered;
+        Delegate OnSettlementEntered;
 
-        Delegate *OnSettlementExited;
+        Delegate OnSettlementExited;
 
-        Delegate *OnGroupSpotted;
+        Delegate OnGroupSpotted;
 
-        Delegate *OnGroupFaded;
+        Delegate OnGroupFaded;
+
+        Delegate OnSpottingHovered;
 
         void EnableInput();
 

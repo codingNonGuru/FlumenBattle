@@ -11,6 +11,11 @@ namespace world::settlement
     enum class SettlementAttitudes;
 }
 
+namespace world::group
+{
+    enum class GroupClasses;
+}
+
 namespace utility
 {
     typedef int Result;
@@ -84,4 +89,6 @@ namespace utility
     Result RollD100Dice();
 
     const char *GetAttitudeName(world::settlement::SettlementAttitudes);
+
+    const char *GetClassName(world::group::GroupClasses);
 }

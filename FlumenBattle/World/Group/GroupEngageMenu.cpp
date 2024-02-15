@@ -87,14 +87,14 @@ struct OptionData
 
 void GroupEngageMenu::HandleEnable()
 {
-    *group::HumanMind::Get()->OnSkillCheckRolled += {this, &GroupEngageMenu::RefreshOptions};
+    group::HumanMind::Get()->OnSkillCheckRolled += {this, &GroupEngageMenu::RefreshOptions};
 
     RefreshOptions();
 }
 
 void GroupEngageMenu::HandleDisable()
 {
-    *group::HumanMind::Get()->OnSkillCheckRolled -= {this, &GroupEngageMenu::RefreshOptions};
+    group::HumanMind::Get()->OnSkillCheckRolled -= {this, &GroupEngageMenu::RefreshOptions};
 
     DisableInput();
 }

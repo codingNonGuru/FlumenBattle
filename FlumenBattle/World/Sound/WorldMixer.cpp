@@ -23,12 +23,12 @@ WorldMixer::WorldMixer()
         engine::SoundManager::Get()->PlaySound(*sound);
     };
 
-    *group::HumanMind::Get()->OnItemAdded += [] {
+    group::HumanMind::Get()->OnItemAdded += [] {
         auto sound = COIN_SOUNDS.GetRandom();
         engine::SoundManager::Get()->PlaySound(*sound);
     };
 
-    *group::HumanMind::Get()->OnItemSold += [] {
+    group::HumanMind::Get()->OnItemSold += [] {
         auto sound = COIN_SOUNDS.GetRandom();
         engine::SoundManager::Get()->PlaySound(*sound);
     };

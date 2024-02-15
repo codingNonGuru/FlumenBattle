@@ -28,6 +28,7 @@
 #include "FlumenBattle/World/Interface/VendorCursor.h"
 #include "FlumenBattle/World/Interface/ItemHoverInfo.h"
 #include "FlumenBattle/World/Interface/ExplorationMenu.h"
+#include "FlumenBattle/World/Interface/GroupHoverInfo.h"
 
 using namespace world;
 
@@ -115,7 +116,7 @@ WorldInterface::WorldInterface()
     {
         auto settlementLabel = ElementFactory::BuildElement <settlement::SettlementLabel>
         (
-            {Size(220, 40), DrawOrder(3), {canvas}, {"panel-border-005", true}, Opacity(0.8f)}
+            {Size(220, 40), DrawOrder(3), {canvas}, {"panel-border-005", true}, Opacity(0.7f)}
         );
         settlementLabel->Disable();
         *settlementLabels.Add() = settlementLabel;
@@ -164,6 +165,19 @@ WorldInterface::WorldInterface()
         }
     );
     itemHoverInfo->Disable();
+
+    groupHoverInfo = ElementFactory::BuildElement <interface::GroupHoverInfo>
+    (
+        {
+            DrawOrder(5),
+            {ElementAnchors::MIDDLE_CENTER, ElementPivots::UPPER_CENTER, canvas},
+            {false},
+            Opacity(0.7f)
+        }
+    );
+    groupHoverInfo->Disable();
+
+    group::HumanMind::Get()->OnSpottingHovered += {this, &WorldInterface::HandleSpottingHovered};
 }
 
 void WorldInterface::Initialize()
@@ -194,7 +208,7 @@ void WorldInterface::Initialize()
 
     controller->onCharacterSelected += {this, &WorldInterface::HandleCharacterSelected};
 
-    *group::HumanMind::Get()->OnSellModeEntered += {this, &WorldInterface::HandleSellModeEntered};
+    group::HumanMind::Get()->OnSellModeEntered += {this, &WorldInterface::HandleSellModeEntered};
 }
 
 void WorldInterface::Enable()
@@ -326,6 +340,21 @@ void WorldInterface::HandleMenuCycled()
         reputationMenu->Disable();
 
         isInInventoryMode = true;
+    }
+}
+
+void WorldInterface::HandleSpottingHovered()
+{
+    auto hoveredSpotting = group::HumanMind::Get()->GetHoveredSpotting();
+
+    if(hoveredSpotting != nullptr)
+    {
+        groupHoverInfo->Setup(*hoveredSpotting);
+        groupHoverInfo->Enable();
+    }
+    else
+    {
+        groupHoverInfo->Disable();
     }
 }
 

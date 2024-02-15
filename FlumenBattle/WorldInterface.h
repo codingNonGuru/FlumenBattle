@@ -21,6 +21,7 @@ namespace world
         class ItemHoverInfo;
         class ExplorationMenu;
         class ReputationMenu;
+        class GroupHoverInfo;
     }
 
     namespace settlement
@@ -67,6 +68,8 @@ namespace world
 
         interface::ReputationMenu *reputationMenu;
 
+        interface::GroupHoverInfo *groupHoverInfo;
+
         void Update();
 
         void HandlePlayerEncounter();
@@ -88,6 +91,8 @@ namespace world
         void HandleConsoleToggled();
 
         void HandleMenuCycled();
+
+        void HandleSpottingHovered();
 
         WorldInterface();
 

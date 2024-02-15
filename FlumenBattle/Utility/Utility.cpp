@@ -4,6 +4,7 @@
 
 #include "FlumenBattle/Utility/Utility.h"
 #include "FlumenBattle/World/Settlement/Types.h"
+#include "FlumenBattle/World/Group/Types.h"
 
 utility::Result utility::RollD4Dice()
 {
@@ -149,5 +150,22 @@ const char *utility::GetAttitudeName(world::settlement::SettlementAttitudes atti
         return "Welcoming";
     case world::settlement::SettlementAttitudes::FRIENDLY:
         return "Friendly";
+    }
+}
+
+const char *utility::GetClassName(world::group::GroupClasses groupClass)
+{
+    switch(groupClass)
+    {
+    case world::group::GroupClasses::ADVENTURER:
+        return "Adventurer";
+    case world::group::GroupClasses::MERCHANT:
+        return "Trader";
+    case world::group::GroupClasses::BANDIT:
+        return "Bandit";
+    case world::group::GroupClasses::TRAVELLING_COURT:
+        return "Court";
+    case world::group::GroupClasses::PATROL:
+        return "Patrol";
     }
 }
