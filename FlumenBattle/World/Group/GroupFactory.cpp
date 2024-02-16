@@ -7,6 +7,7 @@
 #include "FlumenBattle/World/Group/GroupType.h"
 #include "FlumenBattle/World/Group/GroupAllocator.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/WorldTile.h"
 
 Array <Color> colors = {Color::RED, Color::GREEN, Color::CYAN, Color::RED * 0.5f, Color::GREEN * 0.5f, Color::GREEN, Color::BLUE};
 
@@ -42,7 +43,24 @@ namespace world::group
 
         group->SetHome(buildData.Home);
 
-        group->SetTile(buildData.Home->GetLocation());
+        if(buildData.Type == GroupClasses::BANDIT)
+        {
+            auto nearbyTiles = buildData.Home->GetLocation()->GetNearbyTiles(2);
+
+            while(true)
+            {
+                auto randomTile = *nearbyTiles.Tiles.GetRandom();
+                if(randomTile != buildData.Home->GetLocation())
+                {
+                    group->SetTile(randomTile);
+                    break;
+                }
+            }
+        }
+        else
+        {
+            group->SetTile(buildData.Home->GetLocation());
+        }
 
         nameIndex++;
 

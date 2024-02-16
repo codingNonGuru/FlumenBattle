@@ -24,17 +24,17 @@ namespace world::group
 
         int lastSpawnTime;
 
-        Integer banditStrength;
-
         Integer patrolStrength;
-
-        Integer merchantStrength;
 
         container::Pool <GroupEssence> adventurers;
 
         container::Pool <GroupEssence> merchants;
 
+        container::Pool <GroupEssence> bandits;
+
         void Update(settlement::Settlement &);
+
+        void UpdateEncounters(settlement::Settlement &);
 
         void StrengthenPatrol();
 
@@ -43,6 +43,8 @@ namespace world::group
         void AddAdventurer(settlement::Settlement &);
 
         void AddMerchant(settlement::Settlement &);
+
+        void AddBandit(settlement::Settlement &);
 
         void RemoveGroup(const group::Group &);
 
@@ -57,6 +59,6 @@ namespace world::group
 
         int GetPatrolStrength() const {return patrolStrength;}
 
-        int GetBanditStrength() const {return banditStrength;}
+        int GetBanditStrength() const;
     };
 }

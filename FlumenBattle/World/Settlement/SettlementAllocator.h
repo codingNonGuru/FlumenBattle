@@ -81,6 +81,8 @@ namespace world::settlement
 
         container::PoolAllocator <group::GroupEssence>::Memory merchantMemory;
 
+        container::PoolAllocator <group::GroupEssence>::Memory banditMemory;
+
 
         container::Pool <Settlement> settlements;
 
@@ -115,6 +117,8 @@ namespace world::settlement
         container::PoolAllocator <group::GroupEssence> adventurerAllocator;
 
         container::PoolAllocator <group::GroupEssence> merchantAllocator;
+
+        container::PoolAllocator <group::GroupEssence> banditAllocator;
 
 
         void PerformCleanup();

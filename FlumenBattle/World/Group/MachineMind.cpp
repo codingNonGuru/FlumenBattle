@@ -25,6 +25,10 @@ namespace world::group
         {
             DetermineActionAsAdventurer(group);
         }
+        else if(group.type->Class == GroupClasses::BANDIT)
+        {
+            DetermineActionAsBandit(group);
+        }
     }
 
     void MachineMind::DetermineActionAsMerchant(Group &group) const 
@@ -160,6 +164,48 @@ namespace world::group
                 group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
             }
             
+        }
+    }
+
+    void MachineMind::DetermineActionAsBandit(Group &group) const 
+    {
+        if(group.travelActionData.IsOnRoute)
+        {
+            if(group.GetDestination() == nullptr)
+            {
+                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+            }
+        }
+        else
+        {
+            if(group.timeSinceLongRest > 96)
+            {
+                group.SelectAction(GroupActions::TAKE_LONG_REST);
+            }
+            else
+            {
+                auto nearbyTiles = group.tile->GetNearbyTiles();
+                auto randomTile = *nearbyTiles.GetRandom();
+
+                auto distanceFromHome = group.tile->GetDistanceTo(*group.home->GetLocation());
+                auto randomTileDistanceFromHome = randomTile->GetDistanceTo(*group.home->GetLocation());
+
+                bool isTooNear = randomTileDistanceFromHome < 2 && randomTileDistanceFromHome < distanceFromHome;
+                bool isTooFar = randomTileDistanceFromHome > 3 && randomTileDistanceFromHome > distanceFromHome;
+                if(isTooNear || isTooFar)
+                {
+                    if(utility::RollD100Dice() > randomTileDistanceFromHome > 4 ? 0 : 30)
+                    {
+                        randomTile = *nearbyTiles.GetRandom();
+                    }
+                }
+
+                group.travelActionData.PlannedDestinationCount = 1;
+                group.travelActionData.Route[0] = randomTile;
+                group.travelActionData.IsOnRoute = true;
+
+                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+            }
         }
     }
 

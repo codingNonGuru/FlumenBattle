@@ -35,8 +35,6 @@ using namespace world::settlement;
 
 #define SHIPMENT_VOLUME_LOSS 3
 
-#define POPULATION_COLONIZATION_THRESHOLD 5
-
 #define BORDER_GROWTH_THRESHOLD 400
 
 bool Link::operator== (const settlement::Path &path) const 
@@ -376,12 +374,12 @@ struct NecessityMap
 void Settlement::DecideProduction()
 {
     static const ProductionOptions options[] = {
-        /*ProductionOptions::PATROL, 
+        ProductionOptions::PATROL, 
         ProductionOptions::SETTLERS, 
         ProductionOptions::IRRIGATION, 
         ProductionOptions::LIBRARY,
         ProductionOptions::SEWAGE,
-        ProductionOptions::HOUSING,*/
+        ProductionOptions::HOUSING,
         ProductionOptions::FARM
         };
 

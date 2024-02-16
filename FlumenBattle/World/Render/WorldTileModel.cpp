@@ -660,9 +660,9 @@ void WorldTileModel::Render()
         }
     }
 
-    RenderGroupSightings();
+    //RenderGroupSightings();
 
-    /*auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
 
     for(auto &group : *worldScene->groups)
     {
@@ -674,15 +674,15 @@ void WorldTileModel::Render()
             {position, Scale2(18, 30), Opacity(1.0f), DrawOrder(-1)}
             );
 
-        if(&group == playerGroup)
+        /*if(&group == playerGroup)
             continue;
 
         for(int i = 0; i < group.travelActionData.PlannedDestinationCount; ++i)
         {
             auto tile = group.travelActionData.Route[i];
             dotSprite->Draw(camera, {tile->Position, Scale2(0.75f, 0.75f), Opacity(0.6f), DrawOrder(-2)});
-        }
-    }*/
+        }*/
+    }
 
     RenderPlayerPath();
 

@@ -44,18 +44,7 @@ void SpottingItem::HandleConfigure()
 
 void SpottingItem::HandleUpdate()
 {
-    auto string = Word() << [&]
-    {
-        switch(spotting->GroupClass)
-        {
-            case group::GroupClasses::MERCHANT:
-                return "Merchants";
-            case group::GroupClasses::ADVENTURER:
-                return "Adventurers";
-            case group::GroupClasses::BANDIT:
-                return "Bandits";
-        }
-    } ();
+    auto string = Word() << utility::GetClassName(spotting->GroupClass) << "s";
 
     string << " of " << spotting->OriginName;
 
