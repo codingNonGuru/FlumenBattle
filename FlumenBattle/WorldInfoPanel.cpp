@@ -9,6 +9,7 @@
 #include "FlumenBattle/World/Character/CharacterClass.h"
 #include "FlumenBattle/World/Interface/ResourceCounter.h"
 #include "FlumenBattle/World/Character/Types.h"
+#include "FlumenBattle/Config.h"
 
 void * WorldInfoPanel::CharacterItem::operator new(size_t size)
 {
@@ -110,7 +111,8 @@ void WorldInfoPanel::HandleConfigure()
 {
     auto position = Position2(10.0f, 20.0f);
 
-    items.Initialize(16);
+    static const auto MAXIMUM_CHARACTERS_PER_GROUP = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_CHARACTERS_PER_GROUP).Integer;
+    items.Initialize(MAXIMUM_CHARACTERS_PER_GROUP);
 
     for(Index i = 0; i < items.GetCapacity(); ++i, position += Direction2(80.0f, 0.0f))
     {

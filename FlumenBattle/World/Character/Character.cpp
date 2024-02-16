@@ -79,7 +79,7 @@ namespace world::character
         }
     }
 
-    Word Character::GetClassName()
+    const Word &Character::GetClassName() const
     {
         return type->Name;
     }

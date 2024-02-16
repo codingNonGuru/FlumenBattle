@@ -8,6 +8,7 @@ namespace game
     {
         static constexpr auto DEFAULT_WORLD_SIZE = "DEFAULT_WORLD_SIZE";
         static constexpr auto SIMULATION_CHANGE_DELAY = "SIMULATION_CHANGE_DELAY";
+        static constexpr auto MAXIMUM_CHARACTERS_PER_GROUP = "MAXIMUM_CHARACTERS_PER_GROUP";
         static constexpr auto WINTER_SURVIVAL_DC = "WINTER_SURVIVAL_DC";
         static constexpr auto WINTER_FROSTBITE_DC = "WINTER_FROSTBITE_DC";
         static constexpr auto GROUP_SPOTTING_LIMIT = "GROUP_SPOTTING_LIMIT";

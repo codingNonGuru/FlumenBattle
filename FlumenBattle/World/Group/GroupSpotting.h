@@ -7,6 +7,7 @@
 namespace world::character
 {
     class Character;
+    enum class CharacterClasses;
 }
 
 namespace world::group
@@ -34,6 +35,8 @@ namespace world::group
         Position2 VisualPosition;
 
         bool IsFacingRightwards;
+
+        container::Array <character::CharacterClasses> Characters;
 
         bool operator== (const int otherGroupId) {return otherGroupId == GroupUniqueId;}
     };

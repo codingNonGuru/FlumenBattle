@@ -143,7 +143,7 @@ namespace world::character
 
         const Integer &GetMaximumHitPoints() const {return maximumHitPoints;}
 
-        Word GetClassName();
+        const Word &GetClassName() const;
 
         const Race * GetRace() const {return race;}
 

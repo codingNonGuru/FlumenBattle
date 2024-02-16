@@ -3,12 +3,15 @@
 #include "FlumenBattle/Battle/Combatant.h"
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/Battle/BattleTile.h"
+#include "FlumenBattle/Config.h"
 
 using namespace battle;
 
 CombatGroup::CombatGroup() : group(nullptr)
 {
-    combatants.Initialize(16);
+    static const auto MAXIMUM_CHARACTERS_PER_GROUP = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_CHARACTERS_PER_GROUP).Integer;
+
+    combatants.Initialize(MAXIMUM_CHARACTERS_PER_GROUP);
 }
 
 void CombatGroup::Initialize(world::group::Group *_group, BattleTile *_tile)

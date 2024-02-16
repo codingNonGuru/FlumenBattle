@@ -5,6 +5,7 @@
 #include "FlumenBattle/Utility/Utility.h"
 #include "FlumenBattle/World/Settlement/Types.h"
 #include "FlumenBattle/World/Group/Types.h"
+#include "FlumenBattle/World/Character/Types.h"
 
 utility::Result utility::RollD4Dice()
 {
@@ -167,5 +168,20 @@ const char *utility::GetClassName(world::group::GroupClasses groupClass)
         return "Court";
     case world::group::GroupClasses::PATROL:
         return "Patrol";
+    }
+}
+
+const char *utility::GetClassName(world::character::CharacterClasses characterClass)
+{
+    switch(characterClass)
+    {
+    case world::character::CharacterClasses::CLERIC:
+        return "Cleric";
+    case world::character::CharacterClasses::FIGHTER:
+        return "Fighter";
+    case world::character::CharacterClasses::RANGER:
+        return "Ranger";
+    case world::character::CharacterClasses::WIZARD:
+        return "Wizard";
     }
 }

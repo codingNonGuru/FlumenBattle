@@ -16,6 +16,11 @@ namespace world::group
     enum class GroupClasses;
 }
 
+namespace world::character
+{
+    enum class CharacterClasses;
+}
+
 namespace utility
 {
     typedef int Result;
@@ -91,4 +96,6 @@ namespace utility
     const char *GetAttitudeName(world::settlement::SettlementAttitudes);
 
     const char *GetClassName(world::group::GroupClasses);
+
+    const char *GetClassName(world::character::CharacterClasses);
 }

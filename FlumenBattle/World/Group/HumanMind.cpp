@@ -20,6 +20,7 @@
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/World/Group/ReputationHandler.h"
 #include "FlumenBattle/World/Group/Encounter.h"
+#include "FlumenBattle/World/Character/CharacterClass.h"
 
 using namespace world::group;
 
@@ -59,6 +60,8 @@ world::settlement::Settlement *previousSettlement = nullptr;
 
 static container::Pool <GroupSpotting> groupSpottings;
 
+static container::ArrayAllocator <world::character::CharacterClasses> groupSpottingCharacterArrays;
+
 static GroupSpotting *latestGroupSpotting = nullptr;
 
 static container::Array <GroupSpotting *> latestFadings;
@@ -73,6 +76,9 @@ HumanMind::HumanMind()
 {
     static const auto SPOTTING_COUNT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_SPOTTING_LIMIT).Integer;
     groupSpottings.Initialize(SPOTTING_COUNT);
+
+    static const auto MAXIMUM_CHARACTERS_PER_GROUP = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_CHARACTERS_PER_GROUP).Integer;
+    groupSpottingCharacterArrays = container::ArrayAllocator <world::character::CharacterClasses>(SPOTTING_COUNT, MAXIMUM_CHARACTERS_PER_GROUP);
 
     latestFadings.Initialize(SPOTTING_COUNT);
 
@@ -134,7 +140,9 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
             }
             else
             {
-                latestGroupSpotting = existingSpotting;                
+                latestGroupSpotting = existingSpotting;      
+
+                existingSpotting->Characters.Terminate(groupSpottingCharacterArrays);
             }
 
             *latestGroupSpotting = 
@@ -148,8 +156,15 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
                 result.Success.IsCriticalSuccess(), 
                 group.GetTile()->GetDistanceTo(*spottedGroup->GetTile()),
                 spottedGroup->GetVisualPosition(),
-                spottedGroup->GetDestination() != nullptr ? (spottedGroup->GetDestination()->Position - spottedGroup->GetTravelStartPoint()->Position).x < 0.0f : true
+                spottedGroup->GetDestination() != nullptr ? (spottedGroup->GetDestination()->Position - spottedGroup->GetTravelStartPoint()->Position).x < 0.0f : true,
+                groupSpottingCharacterArrays
             };
+
+            latestGroupSpotting->Characters;
+            for(auto &character : spottedGroup->characters)
+            {
+                *latestGroupSpotting->Characters.Add() = character.GetClass()->Class;
+            }
 
             OnGroupSpotted.Invoke();
         }
@@ -247,6 +262,8 @@ void HumanMind::UpdateSpottings()
 
     for(auto &spotting : latestFadings)
     {
+        spotting->Characters.Terminate(groupSpottingCharacterArrays);
+
         groupSpottings.RemoveAt(spotting);
     }
 

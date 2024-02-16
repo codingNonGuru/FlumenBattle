@@ -19,6 +19,8 @@ namespace world::interface
 
         Text *originLabel;
 
+        Text *compositionLabel;
+
         void HandleConfigure() override;
 
     public:
