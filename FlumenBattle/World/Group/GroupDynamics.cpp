@@ -126,6 +126,20 @@ void GroupDynamics::UpdateSimulationLevel(settlement::Settlement &settlement)
             merchant.Group = nullptr;
         }
     }
+
+    for(auto &bandit : bandits)
+    {
+        if(bandit.Group == nullptr && simulationLevel == SimulationLevels::ADVANCED)
+        {
+            bandit.Group = group::GroupFactory::Create({group::GroupClasses::BANDIT, RaceTypes::ORC, &settlement});
+        }
+        else if(bandit.Group != nullptr && simulationLevel != SimulationLevels::ADVANCED)
+        {
+            group::GroupAllocator::Get()->Free(bandit.Group, false);
+
+            bandit.Group = nullptr;
+        }
+    }
 }
 
 void GroupDynamics::AddAdventurer(settlement::Settlement &settlement)

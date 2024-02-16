@@ -26,7 +26,12 @@ static const auto MAXIMUM_TILE_ELEVATION = 100;
 
 static const auto SIZE_TO_GIRTH_FACTOR = 12.0f;
 
-int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::Grid <float> &perlinNoise, const container::Grid <float> &snowNoise)
+int WorldGenerator::GenerateWorld(
+    pregame::NewWorldData data, 
+    const container::Grid <float> &perlinNoise, 
+    const container::Grid <float> &snowNoise,
+    const container::Grid <float> &desertNoise
+    )
 {
     assert((data.Size % TILES_PER_SIMULATION_DOMAIN == 0) && "World generation size incompatible with simulation standard.\n");
 
@@ -227,6 +232,10 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::G
             auto heatFactor = snowFactor + (1.0f - snowFactor) * baseHeatFactor;
             heatFactor *= 0.5f + baseHeatFactor * 0.5f;
 
+            auto desertValue = *desertNoise.Get(tile->SquareCoordinates.x, tile->SquareCoordinates.y);
+
+            heatFactor = desertValue * heatFactor * 0.35f + heatFactor * 0.65f;
+
             tile->Heat = int(heatFactor * float(WorldTile::MAXIMUM_TILE_HEAT));
         }
     };
@@ -285,7 +294,7 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::G
                     }
                     else
                     {
-                        if(utility::GetRandom(1, 100) < 65)
+                        if(tile->Heat < 80)
                         {
                             tile->Biome = WorldBiomeFactory::BuildBiome(WorldBiomes::STEPPE);
 
@@ -326,9 +335,9 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::G
 
     uniteMountains();
 
-    generateBiomes();
-
     generateClimates();
+
+    generateBiomes();
 
     initializeTiles();
 
