@@ -60,7 +60,7 @@ void WorldTile::Initialize()
         switch(Biome->Type)
         {
             case WorldBiomes::DESERT:
-                if(Heat < 87)
+                if(Heat < 86)
                     return DIRT_COLOR;
                 else
                     return DESERT_COLOR;
