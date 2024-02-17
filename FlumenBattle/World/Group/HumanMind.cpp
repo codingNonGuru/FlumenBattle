@@ -471,7 +471,7 @@ void HumanMind::PursueSighting(const GroupSpotting &spotting)
     if(group->IsAlive() == false)
         return;
 
-    if(group->IsDoing(GroupActions::ENGAGE) || group->IsDoing(GroupActions::FIGHT))
+    if(group->IsInEncounter() == true)
         return;
 
     static auto playerGroup = WorldScene::Get()->GetPlayerGroup();

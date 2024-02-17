@@ -3,6 +3,7 @@
 #include "FlumenEngine/Core/Scene.hpp"
 
 #include "FlumenBattle/World/WorldTime.h"
+#include "FlumenBattle/World/Group/GroupBatchMap.h"
 
 class Delegate;
 

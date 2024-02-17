@@ -67,7 +67,7 @@ void WorldTile::Initialize()
             case WorldBiomes::STEPPE:
                 return DIRT_COLOR * 0.3f + GRASS_COLOR * 0.7f;
             case WorldBiomes::WOODS:
-                return GRASS_COLOR * 0.9f;
+                return GRASS_COLOR * 0.87f;
         }
     } ();
 

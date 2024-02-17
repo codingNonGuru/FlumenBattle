@@ -318,46 +318,6 @@ namespace world::group
         }
 
         return {};
-
-        /*auto &groups = WorldScene::Get()->GetGroups();
-        auto other = groups.GetRandom();
-
-        if(other == &group)
-            return {};
-
-        if(other->GetAction() && (other->GetAction()->Type == GroupActions::ENGAGE || other->GetAction()->Type == GroupActions::FIGHT))
-            return {};
-
-        auto perceptionBonus = INT_MIN;
-        for(auto &character : group.characters)
-        {
-            auto bonus = character.GetPerceptionProficiencyBonus();
-            if(bonus > perceptionBonus)
-                perceptionBonus = bonus;
-        }
-
-        auto stealthBonus = INT_MAX;
-        for(auto &character : group.characters)
-        {
-            auto bonus = character.GetAbility(character::AbilityTypes::DEXTERITY).Modifier;
-            if(bonus < stealthBonus)
-                stealthBonus = bonus;
-        }
-
-        auto modifier = perceptionBonus - stealthBonus;
-
-        auto perceptionCheck = utility::RollD20Dice(GROUP_SEARCH_DC, modifier);
-        if(perceptionCheck.IsAnyFailure() == true)
-            return {};
-
-        if(group.actionProgress < group.action->BaseDuration)
-            return {};
-
-        group.CancelAction();
-
-        WorldScene::Get()->InitiateEncounter(&group, other);
-
-        return {};*/
     }
 
     GroupActionResult GroupActionPerformer::Fight(Group& group)

@@ -7,6 +7,7 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/Path.h"
 #include "FlumenBattle/World/Character/Character.h"
+#include "FlumenBattle/World/WorldScene.h"
 
 namespace world::group
 {
@@ -15,6 +16,9 @@ namespace world::group
     void MachineMind::DetermineAction(Group &group) const 
     {
         if(group.isAlive == false)
+            return;
+
+        if(group.IsInEncounter() == true)
             return;
 
         if(group.type->Class == GroupClasses::MERCHANT)
@@ -28,6 +32,10 @@ namespace world::group
         else if(group.type->Class == GroupClasses::BANDIT)
         {
             DetermineActionAsBandit(group);
+        }
+        else if(group.type->Class == GroupClasses::PATROL)
+        {
+            DetermineActionAsPatrol(group);
         }
     }
 
@@ -195,6 +203,71 @@ namespace world::group
                 if(isTooNear || isTooFar)
                 {
                     if(utility::RollD100Dice() > randomTileDistanceFromHome > 4 ? 0 : 30)
+                    {
+                        randomTile = *nearbyTiles.GetRandom();
+                    }
+                }
+
+                group.travelActionData.PlannedDestinationCount = 1;
+                group.travelActionData.Route[0] = randomTile;
+                group.travelActionData.IsOnRoute = true;
+
+                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+            }
+        }
+    }
+
+    void MachineMind::DetermineActionAsPatrol(Group &group) const
+    {
+        if(group.IsDoing(GroupActions::TAKE_LONG_REST) == false)
+        {
+            if(group.timeSinceLongRest < 96)
+            {
+                auto nearbyGroups = WorldScene::Get()->GetNearbyGroups(group.GetTile(), 0);
+
+                for(auto &nearbyGroup : nearbyGroups.Groups)
+                {
+                    if(nearbyGroup->IsAlive() == false)
+                        continue;
+
+                    if(nearbyGroup->GetClass() != GroupClasses::BANDIT)
+                        continue;
+
+                    if(nearbyGroup->IsInEncounter() == true)
+                        continue;
+
+                    WorldScene::Get()->InitiateEncounter(&group, nearbyGroup);
+                    return;
+                }
+            }
+        }
+
+        if(group.travelActionData.IsOnRoute)
+        {
+            if(group.GetDestination() == nullptr)
+            {
+                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+            }
+        }
+        else
+        {
+            if(group.timeSinceLongRest >= 96)
+            {
+                group.SelectAction(GroupActions::TAKE_LONG_REST);
+            }
+            else
+            {
+                auto nearbyTiles = group.tile->GetNearbyTiles();
+                auto randomTile = *nearbyTiles.GetRandom();
+
+                auto distanceFromHome = group.tile->GetDistanceTo(*group.home->GetLocation());
+                auto randomTileDistanceFromHome = randomTile->GetDistanceTo(*group.home->GetLocation());
+
+                bool isTooNear = randomTileDistanceFromHome < 1 && randomTileDistanceFromHome < distanceFromHome;
+                bool isTooFar = randomTileDistanceFromHome > 2 && randomTileDistanceFromHome > distanceFromHome;
+                if(isTooNear || isTooFar)
+                {
+                    if(utility::RollD100Dice() > randomTileDistanceFromHome > 3 ? 0 : 20)
                     {
                         randomTile = *nearbyTiles.GetRandom();
                     }

@@ -382,6 +382,11 @@ namespace world::group
         return action != nullptr ? action->Type == actionType : false;
     }
 
+    bool Group::IsInEncounter() const
+    {
+        return IsDoing(GroupActions::ENGAGE) == true || IsDoing(GroupActions::FIGHT) == true;
+    }
+
     character::Character *Group::GetCharacter(int index) 
     {
         return characters.Get(index);

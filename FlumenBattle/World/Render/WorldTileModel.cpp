@@ -646,8 +646,6 @@ void WorldTileModel::Render()
 
     RenderSettlements();
 
-    RenderGlobalLight();
-
     if(WorldController::Get()->ShouldDisplayResources() == true)
     {
         auto map = worldScene->GetWorldMap();
@@ -669,9 +667,35 @@ void WorldTileModel::Render()
         auto position = group.GetVisualPosition();
         position += Position2(0, -15);
 
+        groupSprite->SetColor(&Color::WHITE);
         groupSprite->Draw(
             camera, 
             {position, Scale2(18, 30), Opacity(1.0f), DrawOrder(-1)}
+            );
+
+        if(group.GetClass() == group::GroupClasses::BANDIT)
+        {
+            groupSprite->SetColor(&Color::RED);
+        }
+        else if(group.GetClass() == group::GroupClasses::PATROL)
+        {
+            groupSprite->SetColor(&Color::BLUE);
+        }
+        else if(group.GetClass() == group::GroupClasses::MERCHANT)
+        {
+            groupSprite->SetColor(&Color::ORANGE);
+        }
+        else if(group.GetClass() == group::GroupClasses::ADVENTURER)
+        {
+            groupSprite->SetColor(&Color::GREEN);
+        }
+        else if(group.GetClass() == group::GroupClasses::PLAYER)
+        {
+            groupSprite->SetColor(&Color::MAGENTA);
+        }
+        groupSprite->Draw(
+            camera, 
+            {position, Scale2(12, 12), group.IsInEncounter() ? Opacity(1.0f) : Opacity(0.5f), DrawOrder(0)}
             );
 
         /*if(&group == playerGroup)
@@ -683,6 +707,8 @@ void WorldTileModel::Render()
             dotSprite->Draw(camera, {tile->Position, Scale2(0.75f, 0.75f), Opacity(0.6f), DrawOrder(-2)});
         }*/
     }
+
+    RenderGlobalLight();
 
     RenderPlayerPath();
 

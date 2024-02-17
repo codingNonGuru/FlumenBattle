@@ -57,6 +57,14 @@ namespace world::group
                 }
             }
         }
+        else if(buildData.Type == GroupClasses::PATROL)
+        {
+            auto nearbyTiles = buildData.Home->GetLocation()->GetNearbyTiles(2);
+
+            auto randomTile = *nearbyTiles.Tiles.GetRandom();
+            
+            group->SetTile(randomTile);
+        }
         else
         {
             group->SetTile(buildData.Home->GetLocation());

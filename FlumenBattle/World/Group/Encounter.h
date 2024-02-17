@@ -20,6 +20,8 @@ namespace world::group
 
         bool hasBattleEnded;
 
+        bool isPlayerInvolved;
+
         Group *first;
 
         Group *second;

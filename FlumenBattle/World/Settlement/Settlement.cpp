@@ -393,7 +393,7 @@ void Settlement::DecideProduction()
     for(auto &option : options)
     {
         auto necessity = SettlementProduction::GetNecessity(*this, option);
-        //std::cout<<necessity<<"\n";
+        
         *necessityMap->Factors.Add(option) = necessity;
     }
 
@@ -578,7 +578,7 @@ void Settlement::KillPopulation()
 
 void Settlement::StrengthenPatrol()
 {
-    groupDynamics->StrengthenPatrol();
+    groupDynamics->AddPatrol(*this);
 }
 
 void Settlement::AddModifier(Modifier modifier)

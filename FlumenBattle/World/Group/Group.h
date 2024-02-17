@@ -188,6 +188,8 @@ namespace world::group
 
         bool IsDoing(GroupActions actionType) const;
 
+        bool IsInEncounter() const;
+
         utility::Success GetActionSuccess() const {return actionSuccess;}
 
         Pool <character::Character> & GetCharacters() {return characters;}

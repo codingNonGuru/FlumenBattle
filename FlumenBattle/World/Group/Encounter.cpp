@@ -1,5 +1,6 @@
 #include "FlumenBattle/World/Group/Encounter.h"
 #include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/WorldScene.h"
 
 namespace world::group
 {
@@ -18,11 +19,16 @@ namespace world::group
         second->EngageGroup(this);
         
         winner = nullptr;
+
+        static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+        isPlayerInvolved = playerGroup == first || playerGroup == second;
     }
 
     void Encounter::Update()
     {
-
+        if(isPlayerInvolved == true)
+            return;
     }
 
     void Encounter::Finish(Group *winner) 

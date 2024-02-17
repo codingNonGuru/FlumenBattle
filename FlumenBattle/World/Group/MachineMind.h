@@ -16,6 +16,8 @@ namespace world::group
 
         void DetermineActionAsBandit(Group &) const;
 
+        void DetermineActionAsPatrol(Group &) const;
+
         void RegisterActionPerformance(Group &, GroupActionResult) const override;
     };
 }
