@@ -19,5 +19,6 @@ namespace game
         static constexpr auto NIGHT_PERCEPTION_PENALTY = "NIGHT_PERCEPTION_PENALTY";
         static constexpr auto TERRAIN_PERCEPTION_PENALTY = "TERRAIN_PERCEPTION_PENALTY";
         static constexpr auto MAXIMUM_GROUP_SPOTTING_DISTANCE = "MAXIMUM_GROUP_SPOTTING_DISTANCE";
+        static constexpr auto FATIGUE_ONSET_SINCE_REST = "FATIGUE_ONSET_SINCE_REST";
     };
 }

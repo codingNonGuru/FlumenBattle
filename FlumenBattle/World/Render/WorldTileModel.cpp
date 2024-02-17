@@ -632,13 +632,11 @@ void WorldTileModel::Render()
 
     FarmModel::Get()->Render();
 
-    RenderSnow();
+    //RenderSnow();
 
     //RenderPaths();
 
     BorderModel::Get()->Render();
-
-    //RenderBorders();
 
     //RenderPoliticalOverlay();
 
@@ -693,9 +691,46 @@ void WorldTileModel::Render()
         {
             groupSprite->SetColor(&Color::MAGENTA);
         }
+
+        auto opacity = Opacity(1.0f);
+        if(group.IsInEncounter() == false)
+        {
+            auto groupBuffer = WorldScene::Get()->GetNearbyGroups(group.GetTile(), 0);
+            if(groupBuffer.Groups.GetSize() > 1)
+            {
+                opacity = Opacity(0.6f);
+            }
+            else
+            {
+                opacity = Opacity(0.2f);
+            }
+        }
+
         groupSprite->Draw(
             camera, 
-            {position, Scale2(12, 12), group.IsInEncounter() ? Opacity(1.0f) : Opacity(0.5f), DrawOrder(0)}
+            {position, Scale2(12, 12), opacity, DrawOrder(0)}
+            );
+
+        if(group.IsDoingSomething() == false)
+        {
+            groupSprite->SetColor(&Color::MAGENTA);
+        }
+        else if(group.IsDoing(group::GroupActions::TAKE_LONG_REST))
+        {
+            groupSprite->SetColor(&Color::RED);
+        }
+        else if(group.IsDoing(group::GroupActions::TRAVEL))
+        {
+            groupSprite->SetColor(&Color::BLUE);
+        }
+        else if(group.IsDoing(group::GroupActions::ENGAGE))
+        {
+            groupSprite->SetColor(&Color::GREEN);
+        }
+
+        groupSprite->Draw(
+            camera, 
+            {position + Position2(0, -10), Scale2(6, 6), Opacity(1.0f), DrawOrder(0)}
             );
 
         /*if(&group == playerGroup)
@@ -708,7 +743,7 @@ void WorldTileModel::Render()
         }*/
     }
 
-    RenderGlobalLight();
+    //RenderGlobalLight();
 
     RenderPlayerPath();
 

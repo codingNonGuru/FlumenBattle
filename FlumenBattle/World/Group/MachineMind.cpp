@@ -8,6 +8,7 @@
 #include "FlumenBattle/World/Settlement/Path.h"
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/Config.h"
 
 namespace world::group
 {
@@ -50,7 +51,7 @@ namespace world::group
         }
         else
         {
-            if(group.timeSinceLongRest > 96)
+            if(NeedsRest(group) == true)
             {
                 group.SelectAction(GroupActions::TAKE_LONG_REST);
             }
@@ -136,7 +137,7 @@ namespace world::group
                 group.hasAchievedObjective = false;
             }
 
-            if(group.timeSinceLongRest > 96)
+            if(NeedsRest(group) == true)
             {
                 group.SelectAction(GroupActions::TAKE_LONG_REST);
             }
@@ -177,6 +178,15 @@ namespace world::group
 
     void MachineMind::DetermineActionAsBandit(Group &group) const 
     {
+        if(group.GetAction() == nullptr)
+        {
+            if(group.travelActionData.IsOnRoute)
+            {
+                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+                return;
+            }    
+        }
+
         if(group.travelActionData.IsOnRoute)
         {
             if(group.GetDestination() == nullptr)
@@ -186,7 +196,7 @@ namespace world::group
         }
         else
         {
-            if(group.timeSinceLongRest > 96)
+            if(NeedsRest(group) == true)
             {
                 group.SelectAction(GroupActions::TAKE_LONG_REST);
             }
@@ -219,26 +229,34 @@ namespace world::group
 
     void MachineMind::DetermineActionAsPatrol(Group &group) const
     {
-        if(group.IsDoing(GroupActions::TAKE_LONG_REST) == false)
+        bool mustResumeAction = group.GetAction() == nullptr;
+        if(mustResumeAction == true)
         {
-            if(group.timeSinceLongRest < 96)
+            if(group.travelActionData.IsOnRoute)
             {
-                auto nearbyGroups = WorldScene::Get()->GetNearbyGroups(group.GetTile(), 0);
+                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+                return;
+            }    
+        }
 
-                for(auto &nearbyGroup : nearbyGroups.Groups)
-                {
-                    if(nearbyGroup->IsAlive() == false)
-                        continue;
+        bool needsRestBeforeFighting = group.IsDoing(GroupActions::TAKE_LONG_REST) == true || NeedsRest(group) == true;
+        if(needsRestBeforeFighting == false)
+        {
+            auto nearbyGroups = WorldScene::Get()->GetNearbyGroups(group.GetTile(), 0);
 
-                    if(nearbyGroup->GetClass() != GroupClasses::BANDIT)
-                        continue;
+            for(auto &nearbyGroup : nearbyGroups.Groups)
+            {
+                if(nearbyGroup->IsAlive() == false)
+                    continue;
 
-                    if(nearbyGroup->IsInEncounter() == true)
-                        continue;
+                if(nearbyGroup->GetClass() != GroupClasses::BANDIT)
+                    continue;
 
-                    WorldScene::Get()->InitiateEncounter(&group, nearbyGroup);
-                    return;
-                }
+                if(nearbyGroup->IsInEncounter() == true)
+                    continue;
+
+                WorldScene::Get()->InitiateEncounter(&group, nearbyGroup);
+                return;
             }
         }
 
@@ -251,7 +269,7 @@ namespace world::group
         }
         else
         {
-            if(group.timeSinceLongRest >= 96)
+            if(NeedsRest(group) == true)
             {
                 group.SelectAction(GroupActions::TAKE_LONG_REST);
             }
@@ -285,5 +303,12 @@ namespace world::group
     void MachineMind::RegisterActionPerformance(Group &, GroupActionResult) const
     {
 
+    }
+
+    bool MachineMind::NeedsRest(const Group &group) const
+    {
+        static const auto FATIGUE_ONSET_SINCE_REST = engine::ConfigManager::Get()->GetValue(game::ConfigValues::FATIGUE_ONSET_SINCE_REST).Integer;
+
+        return group.timeSinceLongRest >= FATIGUE_ONSET_SINCE_REST * WorldTime::HOUR_SIZE;
     }
 }

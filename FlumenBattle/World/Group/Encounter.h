@@ -54,5 +54,7 @@ namespace world::group
         bool IsWinner(Group *group) const {return group == winner;}
 
         void Finish(Group *);
+
+        void Terminate();
     };
 }
