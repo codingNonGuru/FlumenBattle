@@ -22,6 +22,7 @@ namespace world
         class ExplorationMenu;
         class ReputationMenu;
         class GroupHoverInfo;
+        class QuestPopup;
     }
 
     namespace settlement
@@ -70,6 +71,8 @@ namespace world
 
         interface::GroupHoverInfo *groupHoverInfo;
 
+        interface::QuestPopup *questPopup;
+
         void Update();
 
         void HandlePlayerEncounter();
@@ -93,6 +96,8 @@ namespace world
         void HandleMenuCycled();
 
         void HandleSpottingHovered();
+
+        void HandleQuestStarted();
 
         WorldInterface();
 

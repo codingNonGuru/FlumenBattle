@@ -29,6 +29,7 @@
 #include "FlumenBattle/World/Interface/ItemHoverInfo.h"
 #include "FlumenBattle/World/Interface/ExplorationMenu.h"
 #include "FlumenBattle/World/Interface/GroupHoverInfo.h"
+#include "FlumenBattle/World/Interface/QuestPopup.h"
 
 using namespace world;
 
@@ -177,7 +178,21 @@ WorldInterface::WorldInterface()
     );
     groupHoverInfo->Disable();
 
+    questPopup = ElementFactory::BuildElement <interface::QuestPopup>
+    (
+        {
+            Size(480, 200), 
+            DrawOrder(6), 
+            {canvas}, 
+            {false}, 
+            Opacity(0.9f)
+        }
+    );
+    questPopup->Disable();
+
     group::HumanMind::Get()->OnSpottingHovered += {this, &WorldInterface::HandleSpottingHovered};
+
+    group::HumanMind::Get()->OnQuestStarted += {this, &WorldInterface::HandleQuestStarted};
 }
 
 void WorldInterface::Initialize()
@@ -356,6 +371,13 @@ void WorldInterface::HandleSpottingHovered()
     {
         groupHoverInfo->Disable();
     }
+}
+
+void WorldInterface::HandleQuestStarted()
+{
+    questPopup->Setup(group::HumanMind::Get()->GetLastQuest());
+
+    questPopup->Enable();
 }
 
 void WorldInterface::Update()

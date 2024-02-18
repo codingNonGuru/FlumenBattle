@@ -77,6 +77,8 @@ static constexpr auto REPUTATION_GAIN_ON_BANDIT_ATTACK = 10;
 
 static constexpr auto REPUTATION_GAIN_ON_ITEM_DELIVERY = 5;
 
+static const Quest *mostRecentQuest = nullptr;
+
 #define MAXIMUM_QUEST_COUNT 64
 
 HumanMind::HumanMind()
@@ -563,7 +565,13 @@ const ReputationHandler &HumanMind::GetPlayerReputation() const
 
 void HumanMind::AddQuest(Quest quest) 
 {
-    *playerQuests.Add() = quest;
+    auto newQuest = playerQuests.Add();
+    
+    *newQuest = quest;
+
+    mostRecentQuest = newQuest;
+
+    OnQuestStarted.Invoke();
 }
 
 void HumanMind::FinishQuest(QuestTypes type, settlement::Settlement *settlement)
@@ -593,4 +601,9 @@ void HumanMind::FinishQuest(QuestTypes type, settlement::Settlement *settlement)
         playerQuests.RemoveAt(&quest);
         break;
     }
+}
+
+const Quest &HumanMind::GetLastQuest() const
+{
+    return *mostRecentQuest;
 }

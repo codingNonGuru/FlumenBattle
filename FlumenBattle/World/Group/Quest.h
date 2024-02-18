@@ -20,6 +20,8 @@ namespace world::group
 
         settlement::Settlement *Origin;
 
+        int DayCount;
+
         union QuestData
         {
             settlement::Settlement *TargetSettlement;

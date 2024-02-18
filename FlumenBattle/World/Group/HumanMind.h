@@ -101,6 +101,8 @@ namespace world::group
 
         Delegate OnSpottingHovered;
 
+        Delegate OnQuestStarted;
+
         void EnableInput();
 
         void DisableInput();
@@ -138,5 +140,7 @@ namespace world::group
         void AddQuest(Quest);
 
         void FinishQuest(QuestTypes, settlement::Settlement *);
+
+        const Quest &GetLastQuest() const;
     };  
 };
