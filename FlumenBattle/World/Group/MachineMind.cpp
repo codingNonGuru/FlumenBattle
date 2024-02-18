@@ -12,6 +12,8 @@
 
 namespace world::group
 {
+    #define ADVENTURER_FIGHT_DC 18
+
     static auto nearbyPassableTiles = container::Array <WorldTile *> (6);
 
     void MachineMind::DetermineAction(Group &group) const 
@@ -112,7 +114,7 @@ namespace world::group
                 {
                     auto bonus = group.home->GetModifier(settlement::Modifiers::PATROL_ATTACK_ROLLS);
 
-                    auto fightAttempt = utility::RollD20Dice(20, bonus);
+                    auto fightAttempt = utility::RollD20Dice(ADVENTURER_FIGHT_DC, bonus);
                     if(fightAttempt.IsAnySuccess() == true)
                     {
                         group.hasAchievedObjective = true;
@@ -172,7 +174,6 @@ namespace world::group
 
                 group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
             }
-            
         }
     }
 

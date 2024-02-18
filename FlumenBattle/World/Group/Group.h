@@ -273,5 +273,7 @@ namespace world::group
         settlement::Settlement *GetCurrentSettlement();
 
         int GetDistanceTo(const Group *) const;
+
+        void AddMoney(int sum) {money += sum;}
     };
 }

@@ -374,13 +374,13 @@ struct NecessityMap
 void Settlement::DecideProduction()
 {
     static const ProductionOptions options[] = {
-        ProductionOptions::PATROL, 
+        //ProductionOptions::PATROL, 
         ProductionOptions::SETTLERS, 
-        ProductionOptions::IRRIGATION, 
+        /*ProductionOptions::IRRIGATION, 
         ProductionOptions::LIBRARY,
         ProductionOptions::SEWAGE,
         ProductionOptions::HOUSING,
-        ProductionOptions::FARM
+        ProductionOptions::FARM*/
         };
 
     auto resourceHandler = game::ThreadedResourceHandler <NecessityMap>::Get();

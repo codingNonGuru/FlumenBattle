@@ -12,6 +12,8 @@ namespace world::settlement
 
 namespace world::interface
 {
+    enum class SettlementMenuOptions;
+
     class SettlementMenu : public Element
     {
         Element *border;
@@ -31,7 +33,7 @@ namespace world::interface
     public:
         void Setup(settlement::Settlement *);
 
-        void ProcessOptionInput();
+        void ProcessOptionInput(SettlementMenuOptions);
 
         settlement::Settlement *GetCurrentSettlement() const {return currentSettlement;}
     };

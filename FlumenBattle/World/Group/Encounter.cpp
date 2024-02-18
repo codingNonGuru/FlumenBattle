@@ -83,6 +83,10 @@ namespace world::group
         isOngoing = false;
 
         this->winner = winner;
+
+        auto loser = GetOtherThan(winner);
+        
+        this->winner->AddMoney(loser->GetMoney());
     }
 
     void Encounter::Terminate()

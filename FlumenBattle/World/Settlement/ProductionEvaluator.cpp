@@ -72,7 +72,7 @@ NecessityFactor ProductionEvaluator::GetSettlersNecessity(const Settlement &sett
     }
     else
     {
-        return 0;
+        return 1;
     }
 }
 

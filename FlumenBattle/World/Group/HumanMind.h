@@ -13,6 +13,11 @@ namespace world
     {
         struct Item;
     }
+
+    namespace settlement
+    {
+        class Settlement;
+    }
 }
 
 namespace utility
@@ -26,12 +31,16 @@ namespace world::group
     struct GroupActionResult;
     struct GroupSpotting;
     class ReputationHandler;
+    struct Quest;
+    enum class QuestTypes;
 
     class HumanMind : public GroupMind, public core::Singleton <HumanMind>
     {
         friend class core::Singleton <HumanMind>;
 
         bool isSellModeActive {false};
+
+        container::Pool <Quest> playerQuests;
 
         HumanMind();
 
@@ -123,5 +132,11 @@ namespace world::group
         void SetHoveredSpotting(const GroupSpotting *);
 
         const ReputationHandler &GetPlayerReputation() const;
+
+        const container::Pool <Quest> &GetQuests() const {return playerQuests;}
+
+        void AddQuest(Quest);
+
+        void FinishQuest(QuestTypes, settlement::Settlement *);
     };  
 };

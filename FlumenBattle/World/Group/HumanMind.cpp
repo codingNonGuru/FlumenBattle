@@ -21,6 +21,7 @@
 #include "FlumenBattle/World/Group/ReputationHandler.h"
 #include "FlumenBattle/World/Group/Encounter.h"
 #include "FlumenBattle/World/Character/CharacterClass.h"
+#include "FlumenBattle/World/Group/Quest.h"
 
 using namespace world::group;
 
@@ -72,6 +73,12 @@ static ReputationHandler playerReputation;
 
 static constexpr auto REPUTATION_LOSS_ON_GROUP_ATTACK = -20;
 
+static constexpr auto REPUTATION_GAIN_ON_BANDIT_ATTACK = 10;
+
+static constexpr auto REPUTATION_GAIN_ON_ITEM_DELIVERY = 5;
+
+#define MAXIMUM_QUEST_COUNT 64
+
 HumanMind::HumanMind()
 {
     static const auto SPOTTING_COUNT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_SPOTTING_LIMIT).Integer;
@@ -81,6 +88,8 @@ HumanMind::HumanMind()
     groupSpottingCharacterArrays = container::ArrayAllocator <world::character::CharacterClasses>(SPOTTING_COUNT, MAXIMUM_CHARACTERS_PER_GROUP);
 
     latestFadings.Initialize(SPOTTING_COUNT);
+
+    playerQuests.Initialize(MAXIMUM_QUEST_COUNT);
 
     *WorldScene::Get()->OnUpdateStarted += {this, &HumanMind::HandleSceneUpdate};
 
@@ -434,7 +443,14 @@ void HumanMind::HandleBattleEnded()
 
     const auto enemy = playerEncounter->GetOtherThan(playerGroup);
 
-    playerReputation.AddFactor(enemy->GetHome(), REPUTATION_LOSS_ON_GROUP_ATTACK);
+    if(enemy->GetClass() == GroupClasses::BANDIT)
+    {
+        playerReputation.AddFactor(enemy->GetHome(), REPUTATION_GAIN_ON_BANDIT_ATTACK);
+    }
+    else
+    {
+        playerReputation.AddFactor(enemy->GetHome(), REPUTATION_LOSS_ON_GROUP_ATTACK);
+    }
 }
 
 void HumanMind::BuyFood()
@@ -543,4 +559,38 @@ void HumanMind::SetHoveredSpotting(const GroupSpotting *sighting)
 const ReputationHandler &HumanMind::GetPlayerReputation() const
 {
     return playerReputation;
+}
+
+void HumanMind::AddQuest(Quest quest) 
+{
+    *playerQuests.Add() = quest;
+}
+
+void HumanMind::FinishQuest(QuestTypes type, settlement::Settlement *settlement)
+{
+    for(auto &quest : playerQuests)
+    {
+        if(quest.Type != type)
+            continue;
+
+        bool isConditionMet = false;
+        if(type == QuestTypes::DELIVER_ITEM)
+        {
+            if(quest.Data.TargetSettlement == settlement)
+            {
+                isConditionMet = true;
+            }
+        }
+
+        if(isConditionMet == false)
+            continue;
+
+        if(type == QuestTypes::DELIVER_ITEM)
+        {
+            playerReputation.AddFactor(quest.Origin, REPUTATION_GAIN_ON_ITEM_DELIVERY);
+        }
+
+        playerQuests.RemoveAt(&quest);
+        break;
+    }
 }

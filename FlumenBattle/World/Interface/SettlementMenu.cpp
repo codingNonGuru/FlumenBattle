@@ -11,6 +11,7 @@
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Group/ReputationHandler.h"
 #include "FlumenBattle/Utility/Utility.h"
+#include "FlumenBattle/World/Group/Quest.h"
 
 using namespace world::interface;
 
@@ -68,21 +69,27 @@ void SettlementMenu::HandleConfigure()
     (
         {drawOrder_, {Position2(10.0f, 80.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}}
     );
+    optionLayout->SetDistancing(1, 5.0f);
     optionLayout->Enable();
 
-    auto optionItem = ElementFactory::BuildElement <SettlementMenuOption>
-    (
-        {
-            OPTION_ITEM_SIZE, 
-            drawOrder_ + 1, 
-            {optionLayout}, 
-            {"panel-border-001", true}
-        }
-    );
-    optionItem->SetSpriteColor(BORDER_COLOR);
-    optionItem->SetInteractivity(true);
-    optionItem->Setup(this);
-    optionItem->Enable();
+    auto options = {SettlementMenuOptions::BUY_FOOD, SettlementMenuOptions::SIGN_UP_TO_DELIVER_ITEM, SettlementMenuOptions::FINISH_ITEM_DELIVERY};
+
+    for(auto &option : options)
+    {
+        auto optionItem = ElementFactory::BuildElement <SettlementMenuOption>
+        (
+            {
+                OPTION_ITEM_SIZE, 
+                drawOrder_ + 1, 
+                {optionLayout}, 
+                {"panel-border-001", true}
+            }
+        );
+        optionItem->SetSpriteColor(BORDER_COLOR);
+        optionItem->SetInteractivity(true);
+        optionItem->Setup(this, option);
+        optionItem->Enable();
+    }
 }
 
 void SettlementMenu::HandleUpdate() 
@@ -105,10 +112,27 @@ void SettlementMenu::Setup(settlement::Settlement *newSettlement)
     currentSettlement = newSettlement;
 }
 
-void SettlementMenu::ProcessOptionInput()
+void SettlementMenu::ProcessOptionInput(SettlementMenuOptions option)
 {
-    if(WorldController::Get()->CanBuyFood() == true)
+    switch(option)
     {
-        WorldController::Get()->BuyFood();
+    case SettlementMenuOptions::BUY_FOOD:
+        if(WorldController::Get()->CanBuyFood() == true)
+        {
+            WorldController::Get()->BuyFood();
+        }
+        break;
+    case SettlementMenuOptions::SIGN_UP_TO_DELIVER_ITEM:
+        {
+            auto destination = currentSettlement->GetLinks().GetRandom()->Other;
+            std::cout<<"---------> "<<destination->GetName()<<"\n";
+            group::HumanMind::Get()->AddQuest({group::QuestTypes::DELIVER_ITEM, currentSettlement, {destination}});
+            break;
+        }
+    case SettlementMenuOptions::FINISH_ITEM_DELIVERY:
+        {
+            group::HumanMind::Get()->FinishQuest(group::QuestTypes::DELIVER_ITEM, currentSettlement);
+            break;
+        }
     }
 }
