@@ -105,6 +105,8 @@ namespace world::group
 
         Delegate OnQuestStarted;
 
+        Delegate OnQuestFinished;
+
         void EnableInput();
 
         void DisableInput();
@@ -144,5 +146,7 @@ namespace world::group
         void FinishQuest(QuestTypes, settlement::Settlement *);
 
         const Quest &GetLastQuest() const;
+
+        const Quest &GetFinishedQuest() const;
     };  
 };

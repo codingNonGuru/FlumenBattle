@@ -3,10 +3,10 @@
 #include "FlumenEngine/Interface/LayoutGroup.h"
 
 #include "QuestMenu.h"
+#include "FlumenBattle/World/Interface/QuestMenuItem.h"
 #include "FlumenBattle/Config.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Group/Quest.h"
-#include "FlumenBattle/World/Settlement/Settlement.h"
 
 using namespace world::interface;
 
@@ -33,8 +33,8 @@ void QuestMenu::HandleConfigure()
     border->Enable();
 
     titleLabel = ElementFactory::BuildText(
-        {Size(), drawOrder_ + 1, {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}},
-        {{"Large"}, Color::RED * 0.5f, "Quests"}
+        {drawOrder_ + 1, {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}},
+        {{"Large"}, TEXT_COLOR, "Quests"}
     );
     titleLabel->Enable();
 
@@ -45,7 +45,7 @@ void QuestMenu::HandleConfigure()
             {ITEM_LIST_OFFSET, ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}
         }
     );
-    itemLayout->SetDistancing(1, 10.0f);
+    itemLayout->SetDistancing(1);
     itemLayout->Enable();
 
     static const auto MAXIMUM_QUEST_COUNT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_QUEST_COUNT).Integer;
@@ -56,9 +56,8 @@ void QuestMenu::HandleConfigure()
     {
         auto item = items.Add();
 
-        *item = ElementFactory::BuildText(
-            {Size(), drawOrder_ + 1, {itemLayout}},
-            {{"Small"}, Color::RED * 0.5f, "Aloha"}
+        *item = ElementFactory::BuildElement <QuestMenuItem>(
+            {Size(200, 55), drawOrder_ + 1, {itemLayout}}
         );
     }
 }
@@ -75,18 +74,9 @@ void QuestMenu::HandleUpdate()
     auto item = items.GetStart();
     for(auto &quest : quests)
     {
-        (*item)->Enable();
+        (*item)->Setup(&quest);
 
-        if(quest.Type == group::QuestTypes::DELIVER_ITEM)
-        {
-            auto text = Phrase("Deliver item to ") << quest.Data.TargetSettlement->GetName() << " (" << quest.GetDaysLeft() << " days left)";
-            (*item)->Setup(text);
-        }
-        else
-        {
-            auto text = Phrase("Defeat bandits");
-            (*item)->Setup(text);
-        }
+        (*item)->Enable();
 
         item++;
     }

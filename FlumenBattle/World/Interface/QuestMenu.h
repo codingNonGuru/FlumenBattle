@@ -7,13 +7,15 @@ class LayoutGroup;
 
 namespace world::interface
 {
+    class QuestMenuItem;
+
     class QuestMenu : public Element
     {
         Element *border;
 
         Text *titleLabel;
 
-        container::Array <Text *> items;
+        container::Array <QuestMenuItem *> items;
 
         LayoutGroup *itemLayout;
 

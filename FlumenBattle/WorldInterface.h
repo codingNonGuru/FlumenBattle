@@ -102,6 +102,8 @@ namespace world
 
         void HandleQuestStarted();
 
+        void HandleQuestFinished();
+
         WorldInterface();
 
     public:

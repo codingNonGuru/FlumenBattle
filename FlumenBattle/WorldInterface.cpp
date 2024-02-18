@@ -195,6 +195,8 @@ WorldInterface::WorldInterface()
     group::HumanMind::Get()->OnSpottingHovered += {this, &WorldInterface::HandleSpottingHovered};
 
     group::HumanMind::Get()->OnQuestStarted += {this, &WorldInterface::HandleQuestStarted};
+
+    group::HumanMind::Get()->OnQuestFinished += {this, &WorldInterface::HandleQuestFinished};
 }
 
 void WorldInterface::Initialize()
@@ -388,7 +390,14 @@ void WorldInterface::HandleSpottingHovered()
 
 void WorldInterface::HandleQuestStarted()
 {
-    questPopup->Setup(group::HumanMind::Get()->GetLastQuest());
+    questPopup->Setup(group::HumanMind::Get()->GetLastQuest(), true);
+
+    questPopup->Enable();
+}
+
+void WorldInterface::HandleQuestFinished()
+{
+    questPopup->Setup(group::HumanMind::Get()->GetFinishedQuest(), false);
 
     questPopup->Enable();
 }

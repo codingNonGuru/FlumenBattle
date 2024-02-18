@@ -11,19 +11,19 @@ namespace world::group
 
 namespace world::interface
 {
-    class QuestPopup : public Element
+    class QuestMenuItem : public Element
     {
-        Element *border;
+        Text *descriptionLabel;
 
-        Text *infoLabel;
+        Text *extraInfoLabel;
 
-        Text *continueLabel;
+        const group::Quest *quest;
 
         void HandleConfigure() override;
 
-        void HandleClosePressed();
+        void HandleUpdate() override;
 
     public:
-        void Setup(const group::Quest &, bool);
+        void Setup(const group::Quest *);
     };
 }

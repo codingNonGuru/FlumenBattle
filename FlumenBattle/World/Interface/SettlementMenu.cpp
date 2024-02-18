@@ -12,6 +12,7 @@
 #include "FlumenBattle/World/Group/ReputationHandler.h"
 #include "FlumenBattle/Utility/Utility.h"
 #include "FlumenBattle/World/Group/Quest.h"
+#include "FlumenBattle/Config.h"
 
 using namespace world::interface;
 
@@ -124,8 +125,10 @@ void SettlementMenu::ProcessOptionInput(SettlementMenuOptions option)
         break;
     case SettlementMenuOptions::SIGN_UP_TO_DELIVER_ITEM:
         {
+            static const auto DELIVER_ITEM_QUEST_BASE_DURATION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::DELIVER_ITEM_QUEST_BASE_DURATION).Integer;
+
             auto destination = currentSettlement->GetLinks().GetRandom()->Other;
-            group::HumanMind::Get()->AddQuest({group::QuestTypes::DELIVER_ITEM, currentSettlement, 14, {destination}});
+            group::HumanMind::Get()->AddQuest({group::QuestTypes::DELIVER_ITEM, currentSettlement, DELIVER_ITEM_QUEST_BASE_DURATION, {destination}});
             break;
         }
     case SettlementMenuOptions::FINISH_ITEM_DELIVERY:

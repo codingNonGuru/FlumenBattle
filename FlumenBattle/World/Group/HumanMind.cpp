@@ -81,6 +81,8 @@ static constexpr auto REPUTATION_LOSS_ON_QUEST_EXPIRY = -3;
 
 static const Quest *mostRecentQuest = nullptr;
 
+static const Quest *finishedQuest = nullptr;
+
 HumanMind::HumanMind()
 {
     static const auto SPOTTING_COUNT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_SPOTTING_LIMIT).Integer;
@@ -625,6 +627,10 @@ void HumanMind::FinishQuest(QuestTypes type, settlement::Settlement *settlement)
             playerReputation.AddFactor(quest.Origin, REPUTATION_GAIN_ON_ITEM_DELIVERY);
         }
 
+        finishedQuest = &quest;
+
+        OnQuestFinished.Invoke();
+
         playerQuests.RemoveAt(&quest);
         break;
     }
@@ -633,4 +639,9 @@ void HumanMind::FinishQuest(QuestTypes type, settlement::Settlement *settlement)
 const Quest &HumanMind::GetLastQuest() const
 {
     return *mostRecentQuest;
+}
+
+const Quest &HumanMind::GetFinishedQuest() const
+{
+    return *finishedQuest;
 }

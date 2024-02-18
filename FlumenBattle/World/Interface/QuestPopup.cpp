@@ -66,16 +66,31 @@ void QuestPopup::HandleClosePressed()
     Disable();
 }
 
-void QuestPopup::Setup(const group::Quest &quest)
+void QuestPopup::Setup(const group::Quest &quest, bool hasStarted)
 {
-    if(quest.Type == group::QuestTypes::DELIVER_ITEM)
+    if(hasStarted == true)
     {
-        auto text = Phrase("My liege, thou must deliver this item\nunto ") << quest.Data.TargetSettlement->GetName() << " no sooner than\n" << quest.DayCount << " days from now on.";
-        infoLabel->Setup(text);
+        if(quest.Type == group::QuestTypes::DELIVER_ITEM)
+        {
+            auto text = Phrase("My liege, thou must deliver this item\nunto ") << quest.Data.TargetSettlement->GetName() << " no sooner than\n" << quest.DayCount << " days from now on.";
+            infoLabel->Setup(text);
+        }
+        else
+        {
+            infoLabel->Setup("Aloha");
+        }
     }
     else
     {
-        infoLabel->Setup("Aloha");
+        if(quest.Type == group::QuestTypes::DELIVER_ITEM)
+        {
+            auto text = Phrase("Thy feet were swift, my liege.\nThe item was promptly conveyed.");
+            infoLabel->Setup(text);
+        }
+        else
+        {
+            infoLabel->Setup("Aloha");
+        }
     }
 
     InputHandler::RegisterEvent(CLOSE_POPUP_INPUT_KEY, {this, &QuestPopup::HandleClosePressed});
