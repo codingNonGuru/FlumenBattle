@@ -79,8 +79,6 @@ static constexpr auto REPUTATION_GAIN_ON_ITEM_DELIVERY = 5;
 
 static const Quest *mostRecentQuest = nullptr;
 
-#define MAXIMUM_QUEST_COUNT 64
-
 HumanMind::HumanMind()
 {
     static const auto SPOTTING_COUNT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_SPOTTING_LIMIT).Integer;
@@ -91,6 +89,7 @@ HumanMind::HumanMind()
 
     latestFadings.Initialize(SPOTTING_COUNT);
 
+    static const auto MAXIMUM_QUEST_COUNT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_QUEST_COUNT).Integer;
     playerQuests.Initialize(MAXIMUM_QUEST_COUNT);
 
     *WorldScene::Get()->OnUpdateStarted += {this, &HumanMind::HandleSceneUpdate};

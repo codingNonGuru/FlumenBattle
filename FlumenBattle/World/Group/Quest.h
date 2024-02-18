@@ -1,5 +1,7 @@
 #pragma once
 
+#include "FlumenBattle/World/WorldScene.h"
+
 namespace world::settlement
 {
     class Settlement;
@@ -28,5 +30,9 @@ namespace world::group
 
             Group *TargetGroup;
         } Data;
+
+        int TimeStamp = [] {return WorldScene::Get()->GetTime().TotalHourCount;} ();
+
+        int GetDaysLeft() const;
     };
 }

@@ -125,7 +125,6 @@ void SettlementMenu::ProcessOptionInput(SettlementMenuOptions option)
     case SettlementMenuOptions::SIGN_UP_TO_DELIVER_ITEM:
         {
             auto destination = currentSettlement->GetLinks().GetRandom()->Other;
-            std::cout<<"---------> "<<destination->GetName()<<"\n";
             group::HumanMind::Get()->AddQuest({group::QuestTypes::DELIVER_ITEM, currentSettlement, 14, {destination}});
             break;
         }

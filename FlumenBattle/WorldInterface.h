@@ -23,6 +23,7 @@ namespace world
         class ReputationMenu;
         class GroupHoverInfo;
         class QuestPopup;
+        class QuestMenu;
     }
 
     namespace settlement
@@ -72,6 +73,8 @@ namespace world
         interface::GroupHoverInfo *groupHoverInfo;
 
         interface::QuestPopup *questPopup;
+
+        interface::QuestMenu *questMenu;
 
         void Update();
 
