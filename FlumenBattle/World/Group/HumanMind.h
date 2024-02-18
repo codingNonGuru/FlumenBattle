@@ -52,6 +52,8 @@ namespace world::group
 
         void UpdateSpottings();
 
+        void UpdateQuests();
+
         void HandleSceneUpdate();
 
         void HandleSearch();

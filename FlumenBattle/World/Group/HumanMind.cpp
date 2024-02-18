@@ -77,6 +77,8 @@ static constexpr auto REPUTATION_GAIN_ON_BANDIT_ATTACK = 10;
 
 static constexpr auto REPUTATION_GAIN_ON_ITEM_DELIVERY = 5;
 
+static constexpr auto REPUTATION_LOSS_ON_QUEST_EXPIRY = -3;
+
 static const Quest *mostRecentQuest = nullptr;
 
 HumanMind::HumanMind()
@@ -252,6 +254,8 @@ void HumanMind::HandleSceneUpdate()
     previousSettlement = playerGroup->GetCurrentSettlement();
 
     UpdateSpottings();
+
+    UpdateQuests();
 }
 
 void HumanMind::UpdateSpottings()
@@ -280,6 +284,30 @@ void HumanMind::UpdateSpottings()
     if(latestFadings.GetSize() > 0)
     {
         OnGroupFaded.Invoke();
+    }
+}
+
+void HumanMind::UpdateQuests()
+{
+    static const auto MAXIMUM_QUEST_COUNT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_QUEST_COUNT).Integer;
+
+    static auto questsToBeRemoved = container::Array <Quest *> (MAXIMUM_QUEST_COUNT);
+
+    questsToBeRemoved.Reset();
+
+    for(auto &quest : playerQuests)
+    {
+        if(quest.GetDaysLeft() > 0)
+            continue;
+
+        *questsToBeRemoved.Add() = &quest;
+    }
+
+    for(auto &quest : questsToBeRemoved)
+    {
+        playerReputation.AddFactor(quest->Origin, REPUTATION_LOSS_ON_QUEST_EXPIRY);
+
+        playerQuests.RemoveAt(quest);
     }
 }
 
