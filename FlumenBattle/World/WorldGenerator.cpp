@@ -26,6 +26,8 @@ static const auto MAXIMUM_TILE_ELEVATION = 100;
 
 static const auto SIZE_TO_GIRTH_FACTOR = 12.0f;
 
+const auto SCRUBLAND_HEAT_THRESHOLD = 35;
+
 int WorldGenerator::GenerateWorld(
     pregame::NewWorldData data, 
     const container::Grid <float> &perlinNoise, 
@@ -333,9 +335,29 @@ int WorldGenerator::GenerateWorld(
                         {
                             tile->Biome = WorldBiomeFactory::BuildBiome(WorldBiomes::STEPPE);
 
+                            tile->IsScrubland = tile->Heat < SCRUBLAND_HEAT_THRESHOLD;
+
                             bool hasMaxFertility = utility::GetRandom(1, 100) < 5;
-                            tile->SetResource(settlement::ResourceTypes::FOOD, hasMaxFertility ? 4 : utility::GetRandom(1, 100) < 35 ? 3 : 2);
-                            tile->SetResource(settlement::ResourceTypes::TIMBER, hasMaxFertility ? 0 : utility::GetRandom(1, 100) < 50 ? 1 : 0);
+                            if(tile->IsScrubland == true)
+                            {
+                                hasMaxFertility = false;
+                            }
+
+                            auto food = hasMaxFertility == true ? 4 : utility::GetRandom(1, 100) < 35 ? 3 : 2;
+                            if(tile->IsScrubland == true)
+                            {
+                                food -= 1;
+                            }
+
+                            tile->SetResource(settlement::ResourceTypes::FOOD, food);
+
+                            auto timber = hasMaxFertility == true ? 0 : utility::GetRandom(1, 100) < 50 ? 1 : 0;
+                            if(tile->IsScrubland == true)
+                            {
+                                timber = 0;
+                            }
+
+                            tile->SetResource(settlement::ResourceTypes::TIMBER, timber);
                         }
                         else 
                         {

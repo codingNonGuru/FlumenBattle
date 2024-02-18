@@ -65,7 +65,14 @@ void WorldTile::Initialize()
                 else
                     return DESERT_COLOR;
             case WorldBiomes::STEPPE:
-                return DIRT_COLOR * 0.3f + GRASS_COLOR * 0.7f;
+                if(IsScrubland == true)
+                {
+                    return DIRT_COLOR * 0.7f + GRASS_COLOR * 0.3f;
+                }
+                else
+                {
+                    return DIRT_COLOR * 0.3f + GRASS_COLOR * 0.7f;
+                }
             case WorldBiomes::WOODS:
                 return GRASS_COLOR * 0.87f;
         }

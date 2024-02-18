@@ -90,6 +90,8 @@ namespace world
 
         const WorldBiome *Biome;
 
+        bool IsScrubland {false};
+
         WorldTile() {}
 
         WorldTile(Position2 position, Integer2 squareCoordinates);
