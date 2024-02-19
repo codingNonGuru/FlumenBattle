@@ -128,7 +128,7 @@ void HumanMind::DetermineAction(Group &group) const
 
 void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result) const
 {
-    selectedActionResult = result;
+    performedActionResult = result;
 
     if(result.HasRolled == true)
     {
@@ -189,8 +189,10 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
     OnActionPerformed.Invoke();
 }
 
-void HumanMind::RegisterActionInitiation(Group &, GroupActionResult) const 
+void HumanMind::RegisterActionInitiation(Group &, GroupActionResult result) const 
 {
+    selectedActionResult = result;
+
     OnActionInitiated.Invoke();
 }
 

@@ -179,6 +179,8 @@ namespace world::group
         }
 
         group.CancelAction();
+
+        return {GroupActions::TAKE_SHORT_REST};
     }
 
     GroupActionResult GroupActionPerformer::TakeLongRest(Group& group)
@@ -242,7 +244,7 @@ namespace world::group
 
             group.CancelAction();
 
-            return {survivalCheck, character::SkillTypes::SURVIVAL};
+            return {GroupActions::TAKE_LONG_REST, survivalCheck, character::SkillTypes::SURVIVAL};
         }
         else
         {
@@ -314,7 +316,7 @@ namespace world::group
         auto perceptionCheck = utility::RollD20Dice(GROUP_SEARCH_BASE_DC, modifier);
         if(perceptionCheck.IsAnySuccess() == true)
         {
-            return {perceptionCheck, character::SkillTypes::PERCEPTION, spottedGroup};
+            return {GroupActions::SEARCH, perceptionCheck, character::SkillTypes::PERCEPTION, spottedGroup};
         }
 
         return {};
@@ -387,7 +389,7 @@ namespace world::group
                 group.travelActionData.IsLost = false;
             }
 
-            return {success, character::SkillTypes::SURVIVAL};
+            return {GroupActions::TRAVEL, success, character::SkillTypes::SURVIVAL};
         }
 
         if(group.travelActionData.Progress < group.action->GetDuration(group) / 2)
@@ -436,7 +438,7 @@ namespace world::group
 
         group.SelectAction(GroupActions::ENGAGE, {true});
 
-        return {success, character::SkillTypes::PERSUASION};
+        return {GroupActions::PERSUADE, success, character::SkillTypes::PERSUASION};
     }
 
     bool GroupActionValidator::CanTakeShortRest(Group &group, const GroupActionData &)

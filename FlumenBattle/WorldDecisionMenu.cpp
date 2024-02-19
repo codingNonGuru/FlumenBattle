@@ -71,8 +71,6 @@ void WorldDecisionMenu::HandleConfigure()
     );
     statusLabel->Enable();
 
-    group::HumanMind::Get()->OnActionSelected += {this, &WorldDecisionMenu::HandleActionSelected};
-
     group::HumanMind::Get()->OnSkillCheckRolled += {this, &WorldDecisionMenu::HandleActionSelected};
 }
 
@@ -144,7 +142,7 @@ void WorldDecisionMenu::HandleUpdate()
 
 void WorldDecisionMenu::HandleActionSelected()
 {
-    auto result = group::HumanMind::Get()->GetSelectedActionResult();
+    auto result = group::HumanMind::Get()->GetPerformedActionResult();
     auto group = WorldScene::Get()->GetPlayerGroup();
 
     Phrase text = [&result] {

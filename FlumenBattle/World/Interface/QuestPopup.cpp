@@ -38,8 +38,7 @@ void QuestPopup::HandleConfigure()
         },
         {
             {"Medium"}, 
-            TEXT_COLOR, 
-            ""
+            TEXT_COLOR
         }
     );
     infoLabel->Enable();

@@ -7,11 +7,6 @@
 
 #define BATTLE_ROUNDS_PER_TICK 100
 
-enum class Scenes
-{
-	BATTLE
-};
-
 class FrameBuffers
 {
 public:

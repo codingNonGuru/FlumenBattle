@@ -24,6 +24,7 @@ namespace world
         class GroupHoverInfo;
         class QuestPopup;
         class QuestMenu;
+        class ActionPopup;
     }
 
     namespace settlement
@@ -76,6 +77,8 @@ namespace world
 
         interface::QuestMenu *questMenu;
 
+        container::Pool <interface::ActionPopup *> actionPopups;
+
         void Update();
 
         void HandlePlayerEncounter();
@@ -104,6 +107,8 @@ namespace world
 
         void HandleQuestFinished();
 
+        void HandleActionInitiated();
+
         WorldInterface();
 
     public:
@@ -120,5 +125,7 @@ namespace world
         bool IsInInventoryMode() const {return isInInventoryMode;}
 
         interface::ItemHoverInfo *GetItemHoverInfo() {return itemHoverInfo;}
+
+        void RemoveActionPopup(interface::ActionPopup *);
     };
 }

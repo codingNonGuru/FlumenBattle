@@ -52,8 +52,10 @@ namespace world::group
         {
             if(onInitiate)
             {
-                return onInitiate(group, data);
+                onInitiate(group, data);
             }
+
+            return {Type};
         }
 
         int GetDuration(const Group &group) const

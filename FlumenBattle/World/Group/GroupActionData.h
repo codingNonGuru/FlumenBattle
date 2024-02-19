@@ -2,6 +2,7 @@
 
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/World/Character/Types.h"
+#include "FlumenBattle/World/Group/Types.h"
 #include "FlumenBattle/Utility/Utility.h"
 
 namespace world
@@ -28,6 +29,8 @@ namespace world::group
 
     struct GroupActionResult
     {
+        GroupActions ActionType;
+
         bool HasRolled;
 
         utility::Success Success;
@@ -39,12 +42,14 @@ namespace world::group
             Group *spottedGroup;
         } Content;
 
-        GroupActionResult(utility::Success success, character::SkillTypes skill) : 
-        HasRolled(true), Success(success), Skill(skill) {}
+        GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill) : 
+        ActionType(actionType), HasRolled(true), Success(success), Skill(skill) {}
 
-        GroupActionResult(utility::Success success, character::SkillTypes skill, Group *spottedGroup) : 
-        HasRolled(true), Success(success), Skill(skill), Content{spottedGroup} {}
+        GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill, Group *spottedGroup) : 
+        ActionType(actionType), HasRolled(true), Success(success), Skill(skill), Content{spottedGroup} {}
 
         GroupActionResult() : HasRolled(false) {}
+
+        GroupActionResult(GroupActions actionType) : ActionType(actionType), HasRolled(false) {}
     };
 }

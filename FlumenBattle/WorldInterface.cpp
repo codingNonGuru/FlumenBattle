@@ -31,6 +31,7 @@
 #include "FlumenBattle/World/Interface/GroupHoverInfo.h"
 #include "FlumenBattle/World/Interface/QuestPopup.h"
 #include "FlumenBattle/World/Interface/QuestMenu.h"
+#include "FlumenBattle/World/Interface/ActionPopup.h"
 
 using namespace world;
 
@@ -39,6 +40,8 @@ WorldController *controller = nullptr;
 static const auto CONSOLE_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_GRAVE;
 
 static const auto MENU_CYCLE_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_TAB;
+
+#define ACTION_POPUP_CAPACITY 8
 
 WorldInterface::WorldInterface()
 {
@@ -204,11 +207,24 @@ WorldInterface::WorldInterface()
         }
     );
 
+    actionPopups.Initialize(ACTION_POPUP_CAPACITY);
+    for(int i = 0; i < ACTION_POPUP_CAPACITY; ++i)
+    {
+        *actionPopups.Add() = ElementFactory::BuildElement <interface::ActionPopup>
+        (
+            {DrawOrder(6), {canvas}}
+        );
+    }
+
+    actionPopups.Reset();
+
     group::HumanMind::Get()->OnSpottingHovered += {this, &WorldInterface::HandleSpottingHovered};
 
     group::HumanMind::Get()->OnQuestStarted += {this, &WorldInterface::HandleQuestStarted};
 
     group::HumanMind::Get()->OnQuestFinished += {this, &WorldInterface::HandleQuestFinished};
+
+    group::HumanMind::Get()->OnActionInitiated += {this, &WorldInterface::HandleActionInitiated};
 }
 
 void WorldInterface::Initialize()
@@ -414,6 +430,17 @@ void WorldInterface::HandleQuestFinished()
     questPopup->Enable();
 }
 
+void WorldInterface::HandleActionInitiated()
+{
+    auto action = group::HumanMind::Get()->GetSelectedActionResult();
+
+    auto popup = *actionPopups.Add();
+
+    popup->Setup(action.ActionType, true);
+
+    popup->Enable();
+}
+
 void WorldInterface::Update()
 {
     auto camera = RenderManager::GetCamera(Cameras::WORLD);
@@ -500,4 +527,9 @@ void WorldInterface::Update()
         label->Enable();
         index++;
     }*/
+}
+
+void WorldInterface::RemoveActionPopup(interface::ActionPopup *popup)
+{
+    actionPopups.Remove(popup);
 }

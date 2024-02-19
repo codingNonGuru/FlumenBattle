@@ -10,4 +10,21 @@ namespace world::group
     {
         PLAYER, MERCHANT, BANDIT, ADVENTURER, TRAVELLING_COURT, PATROL
     };
+
+    enum class GroupTypes {PLAYER, COMPUTER};
+
+    enum class GroupActions
+    {
+        TAKE_SHORT_REST, TAKE_LONG_REST, SEARCH, ENGAGE, FIGHT, DISENGAGE, TRAVEL, PERSUADE, NONE
+    };
+
+    enum class ActionIntensities
+    {
+        LEISURELY, NORMAL, INTENSE
+    };
+
+    enum class Attitudes
+    {
+        FRIENDLY, INDIFFERENT, HOSTILE
+    };
 }
