@@ -458,7 +458,7 @@ void WorldTileModel::RenderPlayerPath()
 
 void WorldTileModel::RenderGroupSightings()
 {
-    static const auto GROUP_VISUAL_SCALE = Scale2(0.35f);
+    static const auto GROUP_VISUAL_SCALE = Scale2(0.25f);
 
     static const auto GROUP_VISUAL_OFFSET = Position2(0.0f, -15.0f);
 
@@ -632,21 +632,17 @@ void WorldTileModel::Render()
 
     FarmModel::Get()->Render();
 
-    RenderSnow();
+    //RenderSnow();
 
     //RenderPaths();
 
     BorderModel::Get()->Render();
-
-    //RenderBorders();
 
     //RenderPoliticalOverlay();
 
     //RenderInterestMap();
 
     RenderSettlements();
-
-    RenderGlobalLight();
 
     if(WorldController::Get()->ShouldDisplayResources() == true)
     {
@@ -660,29 +656,94 @@ void WorldTileModel::Render()
         }
     }
 
-    RenderGroupSightings();
+    //RenderGroupSightings();
 
-    /*auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
 
     for(auto &group : *worldScene->groups)
     {
         auto position = group.GetVisualPosition();
         position += Position2(0, -15);
 
+        groupSprite->SetColor(&Color::WHITE);
         groupSprite->Draw(
             camera, 
             {position, Scale2(18, 30), Opacity(1.0f), DrawOrder(-1)}
             );
 
-        if(&group == playerGroup)
+        if(group.GetClass() == group::GroupClasses::BANDIT)
+        {
+            groupSprite->SetColor(&Color::RED);
+        }
+        else if(group.GetClass() == group::GroupClasses::PATROL)
+        {
+            groupSprite->SetColor(&Color::BLUE);
+        }
+        else if(group.GetClass() == group::GroupClasses::MERCHANT)
+        {
+            groupSprite->SetColor(&Color::ORANGE);
+        }
+        else if(group.GetClass() == group::GroupClasses::ADVENTURER)
+        {
+            groupSprite->SetColor(&Color::GREEN);
+        }
+        else if(group.GetClass() == group::GroupClasses::PLAYER)
+        {
+            groupSprite->SetColor(&Color::MAGENTA);
+        }
+
+        auto opacity = Opacity(1.0f);
+        if(group.IsInEncounter() == false)
+        {
+            auto groupBuffer = WorldScene::Get()->GetNearbyGroups(group.GetTile(), 0);
+            if(groupBuffer.Groups.GetSize() > 1)
+            {
+                opacity = Opacity(0.6f);
+            }
+            else
+            {
+                opacity = Opacity(0.2f);
+            }
+        }
+
+        groupSprite->Draw(
+            camera, 
+            {position, Scale2(12, 12), opacity, DrawOrder(0)}
+            );
+
+        if(group.IsDoingSomething() == false)
+        {
+            groupSprite->SetColor(&Color::MAGENTA);
+        }
+        else if(group.IsDoing(group::GroupActions::TAKE_LONG_REST))
+        {
+            groupSprite->SetColor(&Color::RED);
+        }
+        else if(group.IsDoing(group::GroupActions::TRAVEL))
+        {
+            groupSprite->SetColor(&Color::BLUE);
+        }
+        else if(group.IsDoing(group::GroupActions::ENGAGE))
+        {
+            groupSprite->SetColor(&Color::GREEN);
+        }
+
+        groupSprite->Draw(
+            camera, 
+            {position + Position2(0, -10), Scale2(6, 6), Opacity(1.0f), DrawOrder(0)}
+            );
+
+        /*if(&group == playerGroup)
             continue;
 
         for(int i = 0; i < group.travelActionData.PlannedDestinationCount; ++i)
         {
             auto tile = group.travelActionData.Route[i];
             dotSprite->Draw(camera, {tile->Position, Scale2(0.75f, 0.75f), Opacity(0.6f), DrawOrder(-2)});
-        }
-    }*/
+        }*/
+    }
+
+    //RenderGlobalLight();
 
     RenderPlayerPath();
 

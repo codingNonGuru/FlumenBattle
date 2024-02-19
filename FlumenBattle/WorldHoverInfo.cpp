@@ -79,6 +79,7 @@ void WorldHoverInfo::DisplayWorldInfo()
     Phrase text;
     text << "Settlements: " << world->GetSettlements().GetSize() << "\n";
     text << "Polities: " << world->GetPolities().GetSize() << "\n";
+    text << "Encounters: " << world->GetBattles().GetSize() << "\n";
     text << "Groups: " << world->GetGroups().GetSize() << "\n";
     text << "Groups locations: " << [&]
     {

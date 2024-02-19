@@ -21,7 +21,7 @@ namespace world
         void GenerateSociety(pregame::NewWorldData);
 
     public:
-        int GenerateWorld(pregame::NewWorldData, const container::Grid <float> &, const container::Grid <float> &);
+        int GenerateWorld(pregame::NewWorldData, const container::Grid <float> &, const container::Grid <float> &, const container::Grid <float> &, const container::Grid <float> &);
 
         int GetMaximumPolityCount(int) const;
 

@@ -27,6 +27,7 @@ group(nullptr), settlement(nullptr), owner(nullptr), isBorderingOwnedTile(false)
 
 void WorldTile::Initialize()
 {
+    auto const DESERT_COLOR = Color(0.9f, 0.5f, 0.2f, 1.0f);
     auto const DIRT_COLOR = Color(0.9f, 0.7f, 0.5f, 1.0f);
     auto const GRASS_COLOR = Color(0.4f, 0.6f, 0.05f, 1.0f);
     auto const SEA_COLOR = Color(0.02f, 0.07f, 0.3f, 1.0f);
@@ -59,11 +60,21 @@ void WorldTile::Initialize()
         switch(Biome->Type)
         {
             case WorldBiomes::DESERT:
-                return DIRT_COLOR;
+                if(Heat < 86)
+                    return DIRT_COLOR;
+                else
+                    return DESERT_COLOR;
             case WorldBiomes::STEPPE:
-                return DIRT_COLOR * 0.3f + GRASS_COLOR * 0.7f;
+                if(IsScrubland == true)
+                {
+                    return DIRT_COLOR * 0.7f + GRASS_COLOR * 0.3f;
+                }
+                else
+                {
+                    return DIRT_COLOR * 0.3f + GRASS_COLOR * 0.7f;
+                }
             case WorldBiomes::WOODS:
-                return GRASS_COLOR * 0.9f;
+                return GRASS_COLOR * 0.87f;
         }
     } ();
 

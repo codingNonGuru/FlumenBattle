@@ -12,8 +12,7 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Group/GroupBatchMap.h"
 #include "FlumenBattle/World/Group/GroupBatch.h"
-
-#define CHARACTERS_PER_GROUP 16
+#include "FlumenBattle/Config.h"
 
 #define ITEMS_PER_GROUP 64
 
@@ -23,14 +22,16 @@ namespace world::group
 {
     void GroupAllocator::PreallocateMaximumMemory()
     {
+        static const auto MAXIMUM_CHARACTERS_PER_GROUP = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_CHARACTERS_PER_GROUP).Integer;
+
         std::cout<<"Memory size of a Character is "<<sizeof(character::Character)<<"\n";
         std::cout<<"Memory size of a Group is "<<sizeof(Group)<<"\n";
-        std::cout<<"Memory size of a Group + dependencies is "<<sizeof(Group) + sizeof(character::Character) * CHARACTERS_PER_GROUP + sizeof(character::Item) * ITEMS_PER_GROUP<<"\n";
+        std::cout<<"Memory size of a Group + dependencies is "<<sizeof(Group) + sizeof(character::Character) * MAXIMUM_CHARACTERS_PER_GROUP + sizeof(character::Item) * ITEMS_PER_GROUP<<"\n";
 
         auto groupCount = WorldGenerator::Get()->GetMaximumGroupCount(MAXIMUM_WORLD_SIZE);
         groupMemory = container::Pool <Group>::PreallocateMemory(groupCount);
 
-        characterMemory = container::PoolAllocator <character::Character>::PreallocateMemory(groupCount, CHARACTERS_PER_GROUP);
+        characterMemory = container::PoolAllocator <character::Character>::PreallocateMemory(groupCount, MAXIMUM_CHARACTERS_PER_GROUP);
 
         battleMemory = container::Pool <Encounter>::PreallocateMemory(groupCount);
 
@@ -39,10 +40,12 @@ namespace world::group
 
     void GroupAllocator::AllocateWorldMemory(int worldSize)
     {
+        static const auto MAXIMUM_CHARACTERS_PER_GROUP = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_CHARACTERS_PER_GROUP).Integer;
+
         auto groupCount = WorldGenerator::Get()->GetMaximumGroupCount(worldSize);
         groups.Initialize(groupCount, groupMemory);
 
-        characterAllocator = container::PoolAllocator <character::Character> (groupCount, CHARACTERS_PER_GROUP, characterMemory);
+        characterAllocator = container::PoolAllocator <character::Character> (groupCount, MAXIMUM_CHARACTERS_PER_GROUP, characterMemory);
 
         battles = container::Pool <Encounter> (groupCount, battleMemory);
 

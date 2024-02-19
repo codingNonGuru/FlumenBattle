@@ -28,6 +28,9 @@
 #include "FlumenBattle/World/Interface/VendorCursor.h"
 #include "FlumenBattle/World/Interface/ItemHoverInfo.h"
 #include "FlumenBattle/World/Interface/ExplorationMenu.h"
+#include "FlumenBattle/World/Interface/GroupHoverInfo.h"
+#include "FlumenBattle/World/Interface/QuestPopup.h"
+#include "FlumenBattle/World/Interface/QuestMenu.h"
 
 using namespace world;
 
@@ -55,14 +58,25 @@ WorldInterface::WorldInterface()
     hoverInfo = ElementFactory::BuildElement <WorldHoverInfo>(
         {Size(540, 420), DrawOrder(6), {canvas}, {false}, Opacity(0.5f)}
     );
-    hoverInfo->Disable();
 
     engageMenu = ElementFactory::BuildElement <GroupEngageMenu>(
         {Size(900, 360), DrawOrder(6), {Position2(0.0f, -5.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, canvas}, {false}, Opacity(0.75f)}
     );
-    engageMenu->Disable();
 
     inventoryMenu = ElementFactory::BuildElement <interface::InventoryMenu>
+    (
+        {
+            Size(480, 540), 
+            DrawOrder(7), 
+<<<<<<< HEAD
+=======
+            {canvas}, 
+            {false}, 
+            Opacity(0.9f)
+        }
+    );
+
+    reputationMenu = ElementFactory::BuildElement <interface::ReputationMenu>
     (
         {
             Size(480, 540), 
@@ -72,7 +86,18 @@ WorldInterface::WorldInterface()
             Opacity(0.9f)
         }
     );
-    inventoryMenu->Disable();
+
+    questMenu = ElementFactory::BuildElement <interface::QuestMenu>
+    (
+        {
+            Size(480, 540), 
+            DrawOrder(7), 
+>>>>>>> testBranch
+            {canvas}, 
+            {false}, 
+            Opacity(0.9f)
+        }
+    );
 
     reputationMenu = ElementFactory::BuildElement <interface::ReputationMenu>
     (
@@ -96,7 +121,6 @@ WorldInterface::WorldInterface()
             Opacity(0.9f)
         }
     );
-    settlementMenu->Disable();
 
     explorationMenu = ElementFactory::BuildElement <interface::ExplorationMenu>
     (
@@ -115,7 +139,7 @@ WorldInterface::WorldInterface()
     {
         auto settlementLabel = ElementFactory::BuildElement <settlement::SettlementLabel>
         (
-            {Size(220, 40), DrawOrder(3), {canvas}, {"panel-border-005", true}, Opacity(0.8f)}
+            {Size(220, 40), DrawOrder(3), {canvas}, {"panel-border-005", true}, Opacity(0.7f)}
         );
         settlementLabel->Disable();
         *settlementLabels.Add() = settlementLabel;
@@ -125,7 +149,6 @@ WorldInterface::WorldInterface()
     (
         {Size(210, 320), DrawOrder(3), {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, nullptr}, {false}, Opacity(0.6f)}
     );
-    hoverExtension->Disable();
 
     travelLabel = ElementFactory::BuildText
     (
@@ -152,7 +175,6 @@ WorldInterface::WorldInterface()
         }
     );
     vendorCursor->FollowMouse();
-    vendorCursor->Disable();
 
     itemHoverInfo = ElementFactory::BuildElement <interface::ItemHoverInfo>
     (
@@ -163,7 +185,33 @@ WorldInterface::WorldInterface()
             Opacity(0.5f)
         }
     );
-    itemHoverInfo->Disable();
+
+    groupHoverInfo = ElementFactory::BuildElement <interface::GroupHoverInfo>
+    (
+        {
+            DrawOrder(5),
+            {ElementAnchors::MIDDLE_CENTER, ElementPivots::UPPER_CENTER, canvas},
+            {false},
+            Opacity(0.7f)
+        }
+    );
+
+    questPopup = ElementFactory::BuildElement <interface::QuestPopup>
+    (
+        {
+            Size(480, 200), 
+            DrawOrder(6), 
+            {canvas}, 
+            {false}, 
+            Opacity(0.9f)
+        }
+    );
+
+    group::HumanMind::Get()->OnSpottingHovered += {this, &WorldInterface::HandleSpottingHovered};
+
+    group::HumanMind::Get()->OnQuestStarted += {this, &WorldInterface::HandleQuestStarted};
+
+    group::HumanMind::Get()->OnQuestFinished += {this, &WorldInterface::HandleQuestFinished};
 }
 
 void WorldInterface::Initialize()
@@ -194,7 +242,11 @@ void WorldInterface::Initialize()
 
     controller->onCharacterSelected += {this, &WorldInterface::HandleCharacterSelected};
 
+<<<<<<< HEAD
     *group::HumanMind::Get()->OnSellModeEntered += {this, &WorldInterface::HandleSellModeEntered};
+=======
+    group::HumanMind::Get()->OnSellModeEntered += {this, &WorldInterface::HandleSellModeEntered};
+>>>>>>> testBranch
 }
 
 void WorldInterface::Enable()
@@ -293,6 +345,14 @@ void WorldInterface::HandleInventoryPressed()
         {
             reputationMenu->Disable();
         }
+<<<<<<< HEAD
+=======
+
+        if(questMenu->IsLocallyActive() == true)
+        {
+            questMenu->Disable();
+        }
+>>>>>>> testBranch
     }
 }
 
@@ -321,14 +381,58 @@ void WorldInterface::HandleMenuCycled()
     }
     else if(reputationMenu->IsLocallyActive() == true)
     {
+<<<<<<< HEAD
         inventoryMenu->Enable();
 
         reputationMenu->Disable();
+=======
+        questMenu->Enable();
+
+        reputationMenu->Disable();
+    }
+    else if(questMenu->IsLocallyActive() == true)
+    {
+        inventoryMenu->Enable();
+
+        questMenu->Disable();
+>>>>>>> testBranch
 
         isInInventoryMode = true;
     }
 }
 
+<<<<<<< HEAD
+=======
+void WorldInterface::HandleSpottingHovered()
+{
+    auto hoveredSpotting = group::HumanMind::Get()->GetHoveredSpotting();
+
+    if(hoveredSpotting != nullptr)
+    {
+        groupHoverInfo->Setup(*hoveredSpotting);
+        groupHoverInfo->Enable();
+    }
+    else
+    {
+        groupHoverInfo->Disable();
+    }
+}
+
+void WorldInterface::HandleQuestStarted()
+{
+    questPopup->Setup(group::HumanMind::Get()->GetLastQuest(), true);
+
+    questPopup->Enable();
+}
+
+void WorldInterface::HandleQuestFinished()
+{
+    questPopup->Setup(group::HumanMind::Get()->GetFinishedQuest(), false);
+
+    questPopup->Enable();
+}
+
+>>>>>>> testBranch
 void WorldInterface::Update()
 {
     auto camera = RenderManager::GetCamera(Cameras::WORLD);

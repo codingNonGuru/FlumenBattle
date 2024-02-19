@@ -14,6 +14,12 @@ namespace world::group
 
         void DetermineActionAsAdventurer(Group &) const;
 
+        void DetermineActionAsBandit(Group &) const;
+
+        void DetermineActionAsPatrol(Group &) const;
+
         void RegisterActionPerformance(Group &, GroupActionResult) const override;
+
+        bool NeedsRest(const Group &) const;
     };
 }

@@ -26,7 +26,15 @@ static const auto MAXIMUM_TILE_ELEVATION = 100;
 
 static const auto SIZE_TO_GIRTH_FACTOR = 12.0f;
 
-int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::Grid <float> &perlinNoise, const container::Grid <float> &snowNoise)
+const auto SCRUBLAND_HEAT_THRESHOLD = 35;
+
+int WorldGenerator::GenerateWorld(
+    pregame::NewWorldData data, 
+    const container::Grid <float> &perlinNoise, 
+    const container::Grid <float> &snowNoise,
+    const container::Grid <float> &desertNoise,
+    const container::Grid <float> &forestNoise
+    )
 {
     assert((data.Size % TILES_PER_SIMULATION_DOMAIN == 0) && "World generation size incompatible with simulation standard.\n");
 
@@ -227,7 +235,35 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::G
             auto heatFactor = snowFactor + (1.0f - snowFactor) * baseHeatFactor;
             heatFactor *= 0.5f + baseHeatFactor * 0.5f;
 
+            auto desertValue = *desertNoise.Get(tile->SquareCoordinates.x, tile->SquareCoordinates.y);
+
+            heatFactor = desertValue * heatFactor * 0.35f + heatFactor * 0.65f;
+
             tile->Heat = int(heatFactor * float(WorldTile::MAXIMUM_TILE_HEAT));
+
+            auto getMountainCount = [&] (int range)
+            {
+                auto count = 0;
+
+                auto nearbyTiles = tile->GetNearbyTiles(range);
+                for(auto &nearbyTile : nearbyTiles)
+                {
+                    if(nearbyTile->HasRelief(WorldReliefs::MOUNTAINS))
+                        count++;
+                }
+
+                return count;
+            };
+
+            auto nearbyMountainCount = getMountainCount(1);
+            auto farawayMountainCount = getMountainCount(2);
+            auto veryFarawayMountainCount = getMountainCount(3);
+            auto extremelyFarawayMountainCount = getMountainCount(4);
+
+            tile->Heat -= nearbyMountainCount;
+            tile->Heat -= farawayMountainCount / 2;
+            tile->Heat -= veryFarawayMountainCount / 3;
+            tile->Heat -= extremelyFarawayMountainCount / 5;
         }
     };
 
@@ -256,27 +292,37 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::G
                 }
                 else
                 {
-                    auto nearbyMountainCount = [&] ()
+                    auto forestValue = *forestNoise.Get(tile->SquareCoordinates.x, tile->SquareCoordinates.y);
+
+                    auto heatFactor = (float)tile->Heat - 60.0f;
+                    heatFactor = exp(-heatFactor * heatFactor / (2.0f * 13.0f * 13.0f));
+
+                    forestValue *= heatFactor;
+
+                    auto getMountainCount = [&] (int range)
                     {
                         auto count = 0;
-                        auto nearbyTiles = tile->GetNearbyTiles(1);
-                        for(auto &tile : nearbyTiles)
+
+                        auto nearbyTiles = tile->GetNearbyTiles(range);
+                        for(auto &nearbyTile : nearbyTiles)
                         {
-                            if(tile->HasRelief(WorldReliefs::MOUNTAINS))
+                            if(nearbyTile->HasRelief(WorldReliefs::MOUNTAINS))
                                 count++;
                         }
+
                         return count;
-                    } ();
+                    };
 
-                    auto farawayMountainCount = 0;
-                    auto nearbyTiles = tile->GetNearbyTiles(2);
-                    for(auto &tile : nearbyTiles)
-                    {
-                        if(tile->HasRelief(WorldReliefs::MOUNTAINS))
-                            farawayMountainCount++;
-                    }
+                    auto nearbyMountainCount = getMountainCount(1) * 20;
+                    auto farawayMountainCount = getMountainCount(2);
 
-                    if(nearbyMountainCount >= 1 || (farawayMountainCount >= 1 && utility::GetRandom(1, 100) < 50) || utility::GetRandom(1, 100) < 10)
+                    bool isOneMountainNearby = farawayMountainCount > 0;
+
+                    farawayMountainCount = (farawayMountainCount - 1) * 5;
+                    if(farawayMountainCount < 0)
+                        farawayMountainCount = 0;
+
+                    if(forestValue > 0.45f || (isOneMountainNearby && utility::GetRandom(1, 100) < nearbyMountainCount + farawayMountainCount))
                     {
                         tile->Biome = WorldBiomeFactory::BuildBiome(WorldBiomes::WOODS);
 
@@ -285,13 +331,33 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::G
                     }
                     else
                     {
-                        if(utility::GetRandom(1, 100) < 65)
+                        if(tile->Heat < 80)
                         {
                             tile->Biome = WorldBiomeFactory::BuildBiome(WorldBiomes::STEPPE);
 
+                            tile->IsScrubland = tile->Heat < SCRUBLAND_HEAT_THRESHOLD;
+
                             bool hasMaxFertility = utility::GetRandom(1, 100) < 5;
-                            tile->SetResource(settlement::ResourceTypes::FOOD, hasMaxFertility ? 4 : utility::GetRandom(1, 100) < 35 ? 3 : 2);
-                            tile->SetResource(settlement::ResourceTypes::TIMBER, hasMaxFertility ? 0 : utility::GetRandom(1, 100) < 50 ? 1 : 0);
+                            if(tile->IsScrubland == true)
+                            {
+                                hasMaxFertility = false;
+                            }
+
+                            auto food = hasMaxFertility == true ? 4 : utility::GetRandom(1, 100) < 35 ? 3 : 2;
+                            if(tile->IsScrubland == true)
+                            {
+                                food -= 1;
+                            }
+
+                            tile->SetResource(settlement::ResourceTypes::FOOD, food);
+
+                            auto timber = hasMaxFertility == true ? 0 : utility::GetRandom(1, 100) < 50 ? 1 : 0;
+                            if(tile->IsScrubland == true)
+                            {
+                                timber = 0;
+                            }
+
+                            tile->SetResource(settlement::ResourceTypes::TIMBER, timber);
                         }
                         else 
                         {
@@ -326,9 +392,9 @@ int WorldGenerator::GenerateWorld(pregame::NewWorldData data, const container::G
 
     uniteMountains();
 
-    generateBiomes();
-
     generateClimates();
+
+    generateBiomes();
 
     initializeTiles();
 
@@ -415,5 +481,5 @@ int WorldGenerator::GetMaximumSettlementCount(int worldSize) const
 
 int WorldGenerator::GetMaximumGroupCount(int worldSize) const
 {
-    return (worldSize * worldSize) / 80;
+    return (worldSize * worldSize) / 60;
 }

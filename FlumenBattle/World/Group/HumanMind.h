@@ -1,10 +1,9 @@
 #pragma once
 
 #include "FlumenCore/Singleton.h"
+#include "FlumenCore/Observer.h"
 
 #include "FlumenBattle/World/Group/GroupMind.h"
-
-class Delegate;
 
 namespace world
 {
@@ -13,6 +12,11 @@ namespace world
     namespace character
     {
         struct Item;
+    }
+
+    namespace settlement
+    {
+        class Settlement;
     }
 }
 
@@ -27,12 +31,19 @@ namespace world::group
     struct GroupActionResult;
     struct GroupSpotting;
     class ReputationHandler;
+<<<<<<< HEAD
+=======
+    struct Quest;
+    enum class QuestTypes;
+>>>>>>> testBranch
 
     class HumanMind : public GroupMind, public core::Singleton <HumanMind>
     {
         friend class core::Singleton <HumanMind>;
 
         bool isSellModeActive {false};
+
+        container::Pool <Quest> playerQuests;
 
         HumanMind();
 
@@ -43,6 +54,8 @@ namespace world::group
         void RegisterActionInitiation(Group &, GroupActionResult) const override;
 
         void UpdateSpottings();
+
+        void UpdateQuests();
 
         void HandleSceneUpdate();
 
@@ -69,27 +82,39 @@ namespace world::group
         void HandleBattleEnded();
 
     public:
-        Delegate *OnActionSelected;
+        Delegate OnActionSelected;
 
-        Delegate *OnActionPerformed;
+        Delegate OnActionPerformed;
 
-        Delegate *OnActionInitiated;
+        Delegate OnActionInitiated;
 
-        Delegate *OnSkillCheckRolled;
+        Delegate OnSkillCheckRolled;
 
-        Delegate *OnItemAdded;
+        Delegate OnItemAdded;
 
+<<<<<<< HEAD
         Delegate *OnItemSold;
 
         Delegate *OnSellModeEntered;
+=======
+        Delegate OnItemSold;
+>>>>>>> testBranch
 
-        Delegate *OnSettlementEntered;
+        Delegate OnSellModeEntered;
 
-        Delegate *OnSettlementExited;
+        Delegate OnSettlementEntered;
 
-        Delegate *OnGroupSpotted;
+        Delegate OnSettlementExited;
 
-        Delegate *OnGroupFaded;
+        Delegate OnGroupSpotted;
+
+        Delegate OnGroupFaded;
+
+        Delegate OnSpottingHovered;
+
+        Delegate OnQuestStarted;
+
+        Delegate OnQuestFinished;
 
         void EnableInput();
 
@@ -122,5 +147,18 @@ namespace world::group
         void SetHoveredSpotting(const GroupSpotting *);
 
         const ReputationHandler &GetPlayerReputation() const;
+<<<<<<< HEAD
+=======
+
+        const container::Pool <Quest> &GetQuests() const {return playerQuests;}
+
+        void AddQuest(Quest);
+
+        void FinishQuest(QuestTypes, settlement::Settlement *);
+
+        const Quest &GetLastQuest() const;
+
+        const Quest &GetFinishedQuest() const;
+>>>>>>> testBranch
     };  
 };

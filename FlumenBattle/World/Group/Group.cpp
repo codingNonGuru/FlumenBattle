@@ -4,6 +4,7 @@
 #include "FlumenBattle/World/Group/GroupType.h"
 #include "FlumenBattle/World/Group/Encounter.h"
 #include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/WorldTime.h"
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/World/Character/CharacterFactory.h"
 #include "FlumenBattle/RaceFactory.h"
@@ -15,6 +16,7 @@
 #include "FlumenBattle/World/Group/Types.h"
 #include "FlumenBattle/World/Group/GroupBatch.h"
 #include "FlumenBattle/World/Group/GroupBatchMap.h"
+#include "FlumenBattle/Config.h"
 
 using namespace world::character;
 
@@ -26,8 +28,6 @@ Array <world::character::CharacterClasses> classMakeup; /*= {
     };*/
 
 #define FATIGUE_SAVING_THROW_DC 12
-
-#define TIME_UNTIL_FATIGUE_CHECK 96
 
 namespace world::group
 {
@@ -179,7 +179,11 @@ namespace world::group
             return;
         }
 
-        if(timeSinceLongRest < TIME_UNTIL_FATIGUE_CHECK || (timeSinceLongRest - TIME_UNTIL_FATIGUE_CHECK) % 6 != 0)
+        static const auto FATIGUE_ONSET_SINCE_REST = engine::ConfigManager::Get()->GetValue(game::ConfigValues::FATIGUE_ONSET_SINCE_REST).Integer;
+
+        static const auto TIME_UNTIL_FATIGUE_CHECK = FATIGUE_ONSET_SINCE_REST * WorldTime::HOUR_SIZE;
+
+        if(timeSinceLongRest < TIME_UNTIL_FATIGUE_CHECK || (timeSinceLongRest - TIME_UNTIL_FATIGUE_CHECK) % WorldTime::HOUR_SIZE != 0)
         {
             return;
         }
@@ -294,6 +298,8 @@ namespace world::group
     void Group::ExitBattle()
     {
         encounter = nullptr;
+
+        CancelAction();
     }
 
     void Group::SetTile(WorldTile *newTile)
@@ -382,9 +388,31 @@ namespace world::group
         return action != nullptr ? action->Type == actionType : false;
     }
 
+    bool Group::IsDoingSomething() const 
+    {
+        return action != nullptr;
+    }
+
+    bool Group::IsInEncounter() const
+    {
+        return IsDoing(GroupActions::ENGAGE) == true || IsDoing(GroupActions::FIGHT) == true;
+    }
+
     character::Character *Group::GetCharacter(int index) 
     {
         return characters.Get(index);
+    }
+
+    int Group::GetLivingCount() const
+    {
+        auto count = 0;
+        for(auto &character : characters)
+        {
+            if(character.IsAlive() == true)
+                count++;
+        }
+
+        return count;
     }
 
     SkillData Group::GetMostSkilledMember(SkillTypes skill) const

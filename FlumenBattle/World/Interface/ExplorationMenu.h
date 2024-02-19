@@ -17,8 +17,6 @@ namespace world::interface
 
         Text *ownerLabel;
 
-        Text *tabLabel;
-
         LayoutGroup *spottingGroup;
 
         container::Array <SpottingItem *> spottingItems;
@@ -26,10 +24,6 @@ namespace world::interface
         void HandleConfigure() override;
 
         void HandleUpdate() override;
-
-        void HandleSettlementEntered();
-
-        void HandleSettlementExited();
 
         void HandleGroupSpotted();
 

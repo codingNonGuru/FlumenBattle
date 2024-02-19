@@ -20,6 +20,8 @@ namespace world::group
 
         bool hasBattleEnded;
 
+        bool isPlayerInvolved;
+
         Group *first;
 
         Group *second;
@@ -52,5 +54,10 @@ namespace world::group
         bool IsWinner(Group *group) const {return group == winner;}
 
         void Finish(Group *);
+<<<<<<< HEAD
+=======
+
+        void Terminate();
+>>>>>>> testBranch
     };
 }

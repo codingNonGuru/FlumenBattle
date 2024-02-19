@@ -21,64 +21,64 @@ using namespace world::group;
 
 #define MERCHANT_SPAWN_TIME 4
 
+#define BANDIT_CAP 4
+
+#define BANDIT_SPAWN_DC 6
+
+#define ENCOUNTER_CHANCE_DC 95
+
+#define PATROL_CAP 4
+
 GroupDynamics::GroupDynamics() {}
 
 void GroupDynamics::Initialize()
 {
     lastSpawnTime = -1;
-
-    banditStrength = 5;
-
-    patrolStrength = 5;
-
-    merchantStrength = 3;
 }
 
 void GroupDynamics::Update(settlement::Settlement &settlement)
 {
-    if(banditStrength > 0 && patrolStrength > 0)
-    {
-        auto banditAttackRoll = utility::GetRandom(1, 20) + banditStrength;
-
-        auto bonus = settlement.GetModifier(settlement::Modifiers::PATROL_ATTACK_ROLLS);
-        auto patrolAttackRoll = utility::GetRandom(1, 20) + patrolStrength + bonus;
-
-        if(banditAttackRoll >= ARMOR_CLASS)
-        {
-            patrolStrength--;
-        }
-
-        if(patrolAttackRoll >= ARMOR_CLASS)
-        {
-            banditStrength--;
-        }
-    }
-
-    auto banditSpawnPenalty = banditStrength >= 7 ? 1 : 0;
-    auto banditSpawnBonus = settlement.GetPopulation() >= 10 ? 2 : (settlement.GetPopulation() >= 5 ? 1 : 0);
-    auto diceRoll = utility::GetRandom(1, 100) + banditSpawnBonus - banditSpawnPenalty;
-    if(diceRoll <= 5)
-    {
-        banditStrength++;
-        if(banditStrength > 10)
-        {
-            banditStrength = 10;
-        }
-    }
-
     UpdateSimulationLevel(settlement);
 
     AddAdventurer(settlement);
 
     AddMerchant(settlement);
+
+    AddBandit(settlement);
+
+    const auto simulationLevel = settlement.GetSimulationLevel();
+    if(simulationLevel != SimulationLevels::ADVANCED)
+    {
+        UpdateEncounters(settlement);
+    }
 }
 
-void GroupDynamics::StrengthenPatrol()
+void GroupDynamics::UpdateEncounters(settlement::Settlement &settlement)
 {
-    patrolStrength++;
-    if(patrolStrength > 10)
+    bool thereIsNoOneToFight = GetBanditStrength() == 0 || GetPatrolStrength() == 0;
+    if(thereIsNoOneToFight == true)
+        return;
+    
+    if(utility::RollD100Dice() <= ENCOUNTER_CHANCE_DC)
+        return;
+        
+    auto banditAttackRoll = utility::RollD20Dice() + GetBanditStrength();
+
+    auto bonus = settlement.GetModifier(settlement::Modifiers::PATROL_ATTACK_ROLLS);
+    auto patrolAttackRoll = utility::RollD20Dice() + GetPatrolStrength() + bonus;
+
+    if(banditAttackRoll >= ARMOR_CLASS)
     {
-        patrolStrength = 10;
+        auto patrol = patrols.GetRandom();
+
+        patrols.RemoveAt(patrol);
+    }
+
+    if(patrolAttackRoll >= ARMOR_CLASS)
+    {
+        auto bandit = bandits.GetRandom();
+
+        bandits.RemoveAt(bandit);
     }
 }
 
@@ -89,7 +89,7 @@ void GroupDynamics::UpdateSimulationLevel(settlement::Settlement &settlement)
 
     settlement.UseSimulationChange();
 
-    auto simulationLevel = settlement.GetSimulationLevel();
+    const auto simulationLevel = settlement.GetSimulationLevel();
 
     for(auto &adventurer : adventurers)
     {
@@ -118,6 +118,51 @@ void GroupDynamics::UpdateSimulationLevel(settlement::Settlement &settlement)
             merchant.Group = nullptr;
         }
     }
+
+    for(auto &bandit : bandits)
+    {
+        if(bandit.Group == nullptr && simulationLevel == SimulationLevels::ADVANCED)
+        {
+            bandit.Group = group::GroupFactory::Create({group::GroupClasses::BANDIT, RaceTypes::ORC, &settlement});
+        }
+        else if(bandit.Group != nullptr && simulationLevel != SimulationLevels::ADVANCED)
+        {
+            group::GroupAllocator::Get()->Free(bandit.Group, false);
+
+            bandit.Group = nullptr;
+        }
+    }
+
+    for(auto &patrol : patrols)
+    {
+        if(patrol.Group == nullptr && simulationLevel == SimulationLevels::ADVANCED)
+        {
+            patrol.Group = group::GroupFactory::Create({group::GroupClasses::PATROL, RaceTypes::ORC, &settlement});
+        }
+        else if(patrol.Group != nullptr && simulationLevel != SimulationLevels::ADVANCED)
+        {
+            group::GroupAllocator::Get()->Free(patrol.Group, false);
+
+            patrol.Group = nullptr;
+        }
+    }
+}
+
+void GroupDynamics::AddPatrol(settlement::Settlement &settlement)
+{
+    if(GetPatrolStrength() == PATROL_CAP)
+        return;
+
+    const auto simulationLevel = settlement.GetSimulationLevel();
+    if(simulationLevel == SimulationLevels::BASIC || simulationLevel == SimulationLevels::MEDIUM)
+    {
+        *patrols.Add() = {nullptr};
+    }
+    else
+    {
+        auto patrol = group::GroupFactory::Create({group::GroupClasses::PATROL, RaceTypes::ORC, &settlement});
+        *patrols.Add() = {patrol};
+    }
 }
 
 void GroupDynamics::AddAdventurer(settlement::Settlement &settlement)
@@ -135,7 +180,7 @@ void GroupDynamics::AddAdventurer(settlement::Settlement &settlement)
 
     lastSpawnTime = time;
 
-    auto simulationLevel = settlement.GetSimulationLevel();
+    const auto simulationLevel = settlement.GetSimulationLevel();
     if(simulationLevel == SimulationLevels::BASIC || simulationLevel == SimulationLevels::MEDIUM)
     {
         *adventurers.Add() = {nullptr};
@@ -154,7 +199,7 @@ void GroupDynamics::AddMerchant(settlement::Settlement &settlement)
         return;
     }
 
-    auto time = world::WorldScene::Get()->GetTime().TotalHourCount;
+    const auto time = world::WorldScene::Get()->GetTime().TotalHourCount;
     if(time - lastSpawnTime < MERCHANT_SPAWN_TIME)
     {
         return;
@@ -162,7 +207,7 @@ void GroupDynamics::AddMerchant(settlement::Settlement &settlement)
 
     lastSpawnTime = time;
 
-    auto simulationLevel = settlement.GetSimulationLevel();
+    const auto simulationLevel = settlement.GetSimulationLevel();
     if(simulationLevel == SimulationLevels::BASIC)
     {
         *merchants.Add() = {nullptr};
@@ -171,6 +216,30 @@ void GroupDynamics::AddMerchant(settlement::Settlement &settlement)
     {
         auto merchant = group::GroupFactory::Create({group::GroupClasses::MERCHANT, RaceTypes::ORC, &settlement});
         *merchants.Add() = {merchant};
+    }
+}
+
+void GroupDynamics::AddBandit(settlement::Settlement &settlement)
+{
+    if(GetBanditStrength() == BANDIT_CAP)
+        return;
+
+    auto banditSpawnPenalty = GetBanditStrength() > 3 ? 1 : 0;
+    auto banditSpawnBonus = settlement.GetPopulation() >= 10 ? 2 : (settlement.GetPopulation() >= 5 ? 1 : 0);
+
+    auto diceRoll = utility::RollD100Dice() + banditSpawnBonus - banditSpawnPenalty;
+    if(diceRoll <= BANDIT_SPAWN_DC)
+    {
+        const auto simulationLevel = settlement.GetSimulationLevel();
+        if(simulationLevel == SimulationLevels::BASIC || simulationLevel == SimulationLevels::MEDIUM)
+        {
+            *bandits.Add() = {nullptr};
+        }
+        else
+        {
+            auto bandit = group::GroupFactory::Create({group::GroupClasses::BANDIT, RaceTypes::ORC, &settlement});
+            *bandits.Add() = {bandit};
+        }
     }
 }
 
@@ -184,6 +253,14 @@ void GroupDynamics::RemoveGroup(const group::Group &group)
     {
         merchants.Remove(&group);
     }
+    else if(group.GetClass() == group::GroupClasses::BANDIT)
+    {
+        bandits.Remove(&group);
+    }
+    else if(group.GetClass() == group::GroupClasses::PATROL)
+    {
+        patrols.Remove(&group);
+    }
 }
 
 int GroupDynamics::GetAdventurerStrength()
@@ -194,4 +271,14 @@ int GroupDynamics::GetAdventurerStrength()
 int GroupDynamics::GetMerchantStrength()
 {
     return merchants.GetSize();
+}
+
+int GroupDynamics::GetBanditStrength() const
+{
+    return bandits.GetSize();
+}
+
+int GroupDynamics::GetPatrolStrength() const
+{
+    return patrols.GetSize();
 }

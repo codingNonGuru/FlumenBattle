@@ -20,6 +20,11 @@
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/World/Group/ReputationHandler.h"
 #include "FlumenBattle/World/Group/Encounter.h"
+<<<<<<< HEAD
+=======
+#include "FlumenBattle/World/Character/CharacterClass.h"
+#include "FlumenBattle/World/Group/Quest.h"
+>>>>>>> testBranch
 
 using namespace world::group;
 
@@ -59,6 +64,8 @@ world::settlement::Settlement *previousSettlement = nullptr;
 
 static container::Pool <GroupSpotting> groupSpottings;
 
+static container::ArrayAllocator <world::character::CharacterClasses> groupSpottingCharacterArrays;
+
 static GroupSpotting *latestGroupSpotting = nullptr;
 
 static container::Array <GroupSpotting *> latestFadings;
@@ -69,13 +76,30 @@ static ReputationHandler playerReputation;
 
 static constexpr auto REPUTATION_LOSS_ON_GROUP_ATTACK = -20;
 
+<<<<<<< HEAD
+=======
+static constexpr auto REPUTATION_GAIN_ON_BANDIT_ATTACK = 10;
+
+static constexpr auto REPUTATION_GAIN_ON_ITEM_DELIVERY = 5;
+
+static constexpr auto REPUTATION_LOSS_ON_QUEST_EXPIRY = -3;
+
+static const Quest *mostRecentQuest = nullptr;
+
+static const Quest *finishedQuest = nullptr;
+
+>>>>>>> testBranch
 HumanMind::HumanMind()
 {
     static const auto SPOTTING_COUNT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_SPOTTING_LIMIT).Integer;
     groupSpottings.Initialize(SPOTTING_COUNT);
 
+    static const auto MAXIMUM_CHARACTERS_PER_GROUP = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_CHARACTERS_PER_GROUP).Integer;
+    groupSpottingCharacterArrays = container::ArrayAllocator <world::character::CharacterClasses>(SPOTTING_COUNT, MAXIMUM_CHARACTERS_PER_GROUP);
+
     latestFadings.Initialize(SPOTTING_COUNT);
 
+<<<<<<< HEAD
     OnActionSelected = new Delegate();
 
     OnActionPerformed = new Delegate();
@@ -97,6 +121,10 @@ HumanMind::HumanMind()
     OnGroupSpotted = new Delegate();
 
     OnGroupFaded = new Delegate();
+=======
+    static const auto MAXIMUM_QUEST_COUNT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_QUEST_COUNT).Integer;
+    playerQuests.Initialize(MAXIMUM_QUEST_COUNT);
+>>>>>>> testBranch
 
     *WorldScene::Get()->OnUpdateStarted += {this, &HumanMind::HandleSceneUpdate};
 
@@ -156,7 +184,9 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
             }
             else
             {
-                latestGroupSpotting = existingSpotting;                
+                latestGroupSpotting = existingSpotting;      
+
+                existingSpotting->Characters.Terminate(groupSpottingCharacterArrays);
             }
 
             *latestGroupSpotting = 
@@ -170,21 +200,28 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
                 result.Success.IsCriticalSuccess(), 
                 group.GetTile()->GetDistanceTo(*spottedGroup->GetTile()),
                 spottedGroup->GetVisualPosition(),
-                spottedGroup->GetDestination() != nullptr ? (spottedGroup->GetDestination()->Position - spottedGroup->GetTravelStartPoint()->Position).x < 0.0f : true
+                spottedGroup->GetDestination() != nullptr ? (spottedGroup->GetDestination()->Position - spottedGroup->GetTravelStartPoint()->Position).x < 0.0f : true,
+                groupSpottingCharacterArrays
             };
 
-            OnGroupSpotted->Invoke();
+            latestGroupSpotting->Characters;
+            for(auto &character : spottedGroup->characters)
+            {
+                *latestGroupSpotting->Characters.Add() = character.GetClass()->Class;
+            }
+
+            OnGroupSpotted.Invoke();
         }
 
-        OnSkillCheckRolled->Invoke();
+        OnSkillCheckRolled.Invoke();
     }
 
-    OnActionPerformed->Invoke();
+    OnActionPerformed.Invoke();
 }
 
 void HumanMind::RegisterActionInitiation(Group &, GroupActionResult) const 
 {
-    OnActionInitiated->Invoke();
+    OnActionInitiated.Invoke();
 }
 
 void HumanMind::EnableInput()
@@ -238,17 +275,19 @@ void HumanMind::HandleSceneUpdate()
     {
         if(playerGroup->GetCurrentSettlement() != nullptr)
         {
-            OnSettlementEntered->Invoke();
+            OnSettlementEntered.Invoke();
         }
         else
         {
-            OnSettlementExited->Invoke();
+            OnSettlementExited.Invoke();
         }
     }
 
     previousSettlement = playerGroup->GetCurrentSettlement();
 
     UpdateSpottings();
+
+    UpdateQuests();
 }
 
 void HumanMind::UpdateSpottings()
@@ -269,12 +308,38 @@ void HumanMind::UpdateSpottings()
 
     for(auto &spotting : latestFadings)
     {
+        spotting->Characters.Terminate(groupSpottingCharacterArrays);
+
         groupSpottings.RemoveAt(spotting);
     }
 
     if(latestFadings.GetSize() > 0)
     {
-        OnGroupFaded->Invoke();
+        OnGroupFaded.Invoke();
+    }
+}
+
+void HumanMind::UpdateQuests()
+{
+    static const auto MAXIMUM_QUEST_COUNT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_QUEST_COUNT).Integer;
+
+    static auto questsToBeRemoved = container::Array <Quest *> (MAXIMUM_QUEST_COUNT);
+
+    questsToBeRemoved.Reset();
+
+    for(auto &quest : playerQuests)
+    {
+        if(quest.GetDaysLeft() > 0)
+            continue;
+
+        *questsToBeRemoved.Add() = &quest;
+    }
+
+    for(auto &quest : questsToBeRemoved)
+    {
+        playerReputation.AddFactor(quest->Origin, REPUTATION_LOSS_ON_QUEST_EXPIRY);
+
+        playerQuests.RemoveAt(quest);
     }
 }
 
@@ -423,7 +488,7 @@ void HumanMind::HandleSellModeEntered()
 
     isSellModeActive = true;
 
-    OnSellModeEntered->Invoke();
+    OnSellModeEntered.Invoke();
 }
 
 void HumanMind::HandleSellModeExited()
@@ -439,7 +504,18 @@ void HumanMind::HandleBattleEnded()
 
     const auto enemy = playerEncounter->GetOtherThan(playerGroup);
 
+<<<<<<< HEAD
     playerReputation.AddFactor(enemy->GetHome(), REPUTATION_LOSS_ON_GROUP_ATTACK);
+=======
+    if(enemy->GetClass() == GroupClasses::BANDIT)
+    {
+        playerReputation.AddFactor(enemy->GetHome(), REPUTATION_GAIN_ON_BANDIT_ATTACK);
+    }
+    else
+    {
+        playerReputation.AddFactor(enemy->GetHome(), REPUTATION_LOSS_ON_GROUP_ATTACK);
+    }
+>>>>>>> testBranch
 }
 
 void HumanMind::BuyFood()
@@ -454,7 +530,11 @@ void HumanMind::BuyFood()
     playerGroup->money -= foodPrice;
     playerGroup->AddItem(character::ItemTypes::FOOD, VOLUME_PER_MARKET_ITEM);
 
+<<<<<<< HEAD
     OnItemAdded->Invoke();
+=======
+    OnItemAdded.Invoke();
+>>>>>>> testBranch
 }
 
 void HumanMind::SellItem(character::Item *item)
@@ -464,7 +544,11 @@ void HumanMind::SellItem(character::Item *item)
 
     playerGroup->money += item->Type->Value * item->Amount;
 
+<<<<<<< HEAD
     OnItemSold->Invoke();
+=======
+    OnItemSold.Invoke();
+>>>>>>> testBranch
 }
 
 void HumanMind::PursueSighting(const GroupSpotting &spotting)
@@ -476,7 +560,7 @@ void HumanMind::PursueSighting(const GroupSpotting &spotting)
     if(group->IsAlive() == false)
         return;
 
-    if(group->IsDoing(GroupActions::ENGAGE) || group->IsDoing(GroupActions::FIGHT))
+    if(group->IsInEncounter() == true)
         return;
 
     static auto playerGroup = WorldScene::Get()->GetPlayerGroup();
@@ -541,9 +625,71 @@ const GroupSpotting *HumanMind::GetHoveredSpotting() const
 void HumanMind::SetHoveredSpotting(const GroupSpotting *sighting)
 {
     hoveredGroupSpotting = sighting;
+<<<<<<< HEAD
+=======
+
+    OnSpottingHovered.Invoke();
+>>>>>>> testBranch
 }
 
 const ReputationHandler &HumanMind::GetPlayerReputation() const
 {
     return playerReputation;
+<<<<<<< HEAD
+=======
+}
+
+void HumanMind::AddQuest(Quest quest) 
+{
+    auto newQuest = playerQuests.Add();
+    
+    *newQuest = quest;
+
+    mostRecentQuest = newQuest;
+
+    OnQuestStarted.Invoke();
+}
+
+void HumanMind::FinishQuest(QuestTypes type, settlement::Settlement *settlement)
+{
+    for(auto &quest : playerQuests)
+    {
+        if(quest.Type != type)
+            continue;
+
+        bool isConditionMet = false;
+        if(type == QuestTypes::DELIVER_ITEM)
+        {
+            if(quest.Data.TargetSettlement == settlement)
+            {
+                isConditionMet = true;
+            }
+        }
+
+        if(isConditionMet == false)
+            continue;
+
+        if(type == QuestTypes::DELIVER_ITEM)
+        {
+            playerReputation.AddFactor(quest.Origin, REPUTATION_GAIN_ON_ITEM_DELIVERY);
+        }
+
+        finishedQuest = &quest;
+
+        OnQuestFinished.Invoke();
+
+        playerQuests.RemoveAt(&quest);
+        break;
+    }
+}
+
+const Quest &HumanMind::GetLastQuest() const
+{
+    return *mostRecentQuest;
+}
+
+const Quest &HumanMind::GetFinishedQuest() const
+{
+    return *finishedQuest;
+>>>>>>> testBranch
 }

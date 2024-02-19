@@ -6,6 +6,7 @@
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/World/Types.h"
 #include "FlumenBattle/World/Settlement/Types.h"
+#include "FlumenBattle/World/TileBuffer.h"
 
 namespace world
 {
@@ -88,6 +89,8 @@ namespace world
         const WorldRelief *Relief;
 
         const WorldBiome *Biome;
+
+        bool IsScrubland {false};
 
         WorldTile() {}
 

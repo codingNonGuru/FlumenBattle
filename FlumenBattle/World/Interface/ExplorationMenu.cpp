@@ -94,27 +94,9 @@ void ExplorationMenu::HandleConfigure()
         (*itemIterator)->Disable();
     }
 
-    tabLabel = ElementFactory::BuildText
-    (
-        {
-            drawOrder_ + 1, 
-            {Position2(0.0f, -10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, this}
-        },
-        {
-            {"VerySmall"}, 
-            TEXT_COLOR, 
-            TOGGLE_MESSAGE
-        }
-    );
-    tabLabel->Enable();
+    group::HumanMind::Get()->OnGroupSpotted += {this, &ExplorationMenu::HandleGroupSpotted};
 
-    *group::HumanMind::Get()->OnSettlementEntered += {this, &ExplorationMenu::HandleSettlementEntered};
-
-    *group::HumanMind::Get()->OnSettlementExited += {this, &ExplorationMenu::HandleSettlementExited};
-
-    *group::HumanMind::Get()->OnGroupSpotted += {this, &ExplorationMenu::HandleGroupSpotted};
-
-    *group::HumanMind::Get()->OnGroupFaded += {this, &ExplorationMenu::HandleGroupFaded};
+    group::HumanMind::Get()->OnGroupFaded += {this, &ExplorationMenu::HandleGroupFaded};
 }
 
 void ExplorationMenu::HandleUpdate()
@@ -146,16 +128,6 @@ void ExplorationMenu::HandleUpdate()
     } ();
 
     ownerLabel->Setup(string);
-}
-
-void ExplorationMenu::HandleSettlementEntered()
-{
-    tabLabel->Enable();
-}
-
-void ExplorationMenu::HandleSettlementExited()
-{
-    tabLabel->Disable();
 }
 
 void ExplorationMenu::HandleGroupSpotted()

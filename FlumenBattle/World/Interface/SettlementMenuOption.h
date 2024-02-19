@@ -9,11 +9,20 @@ namespace world::interface
     class SettlementMenu;
     class ResourceCounter;
 
+    enum class SettlementMenuOptions
+    {
+        BUY_FOOD,
+        SIGN_UP_TO_DELIVER_ITEM,
+        FINISH_ITEM_DELIVERY
+    };
+
     class SettlementMenuOption : public Element
     {
         Text *label;
 
         SettlementMenu *menu;
+
+        SettlementMenuOptions option;
 
         ResourceCounter *priceCounter;
 
@@ -24,6 +33,6 @@ namespace world::interface
         void HandleUpdate() override;
 
     public:
-        void Setup(SettlementMenu *newMenu) {menu = newMenu;}
+        void Setup(SettlementMenu *, SettlementMenuOptions);
     };
 }

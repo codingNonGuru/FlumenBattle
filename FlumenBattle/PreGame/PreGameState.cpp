@@ -67,6 +67,10 @@ namespace pregame
 
     static auto snowNoise = container::Grid <float> (128, 128);
 
+    static auto desertNoise = container::Grid <float> (128, 128);
+
+    static auto forestNoise = container::Grid <float> (128, 128);
+
     void PreGameState::GenerateNewWorld(NewWorldData data)
     {
         generatorPopup->Enable();
@@ -79,10 +83,18 @@ namespace pregame
         
         Perlin::Download(&snowNoise);
 
+        Perlin::Generate(Size(desertNoise.GetWidth(), desertNoise.GetHeight()), 0.4f, ContrastThreshold(0.5f), ContrastStrength(2.0f));
+        
+        Perlin::Download(&desertNoise);
+
+        Perlin::Generate(Size(forestNoise.GetWidth(), forestNoise.GetHeight()), 0.6f, ContrastThreshold(0.5f), ContrastStrength(4.0f));
+        
+        Perlin::Download(&forestNoise);
+
         engine::ThreadManager::Get()->LaunchAsyncThread(
             {this, &PreGameState::FinishWorldGeneration}, 
             &world::WorldGenerator::GenerateWorld, world::WorldGenerator::Get(), 
-            data, &perlinNoise, &snowNoise);
+            data, &perlinNoise, &snowNoise, &desertNoise, &forestNoise);
     }
 
     void PreGameState::FinishWorldGeneration()

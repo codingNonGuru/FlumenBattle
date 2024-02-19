@@ -127,7 +127,7 @@ namespace world
             {
                 battle.Update();
 
-                if(!battle.IsOngoing())
+                if(battle.IsOngoing() == false)
                 {
                     *finishedBattles.Allocate() = &battle;
                 }
@@ -135,6 +135,8 @@ namespace world
 
             for(auto &battle : finishedBattles)
             {
+                battle->Terminate();
+
                 battles->RemoveAt(battle);
             }
 

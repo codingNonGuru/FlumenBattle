@@ -24,6 +24,16 @@ namespace world::group
                 static const GroupType type = {GroupTypes::COMPUTER, groupClass, MachineMind::Get(), 1};
                 return &type;
             }
+        case GroupClasses::BANDIT:
+            {
+                static const GroupType type = {GroupTypes::COMPUTER, groupClass, MachineMind::Get(), 1};
+                return &type;
+            }
+        case GroupClasses::PATROL:
+            {
+                static const GroupType type = {GroupTypes::COMPUTER, groupClass, MachineMind::Get(), 1};
+                return &type;
+            }
         }
     }
 

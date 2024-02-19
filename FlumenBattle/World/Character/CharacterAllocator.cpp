@@ -6,19 +6,18 @@
 #include "FlumenBattle/World/Character/CharacterAction.h"
 #include "FlumenBattle/World/Character/CharacterClass.h"
 #include "FlumenBattle/World/WorldGenerator.h"
+#include "FlumenBattle/Config.h"
 
 namespace world::character
 {
-    #define MAXIMUM_GROUPS_PER_WORLD 64
-
-    #define MAXIMUM_CHARACTERS_PER_GROUP 16
-
     #define CONDITIONS_PER_CHARACTER 16
 
     #define MODIFIERS_PER_CHARACTER 16
 
     void CharacterAllocator::PreallocateMaximumMemory()
     {
+        static const auto MAXIMUM_CHARACTERS_PER_GROUP = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_CHARACTERS_PER_GROUP).Integer;
+
         auto worldGenerator = WorldGenerator::Get();
 
         auto groupCount = worldGenerator->GetMaximumGroupCount(MAXIMUM_WORLD_SIZE);
@@ -30,6 +29,8 @@ namespace world::character
 
     void CharacterAllocator::AllocateWorldMemory(int worldSize)
     {
+        static const auto MAXIMUM_CHARACTERS_PER_GROUP = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_CHARACTERS_PER_GROUP).Integer;
+        
         auto worldGenerator = WorldGenerator::Get();
 
         auto groupCount = worldGenerator->GetMaximumGroupCount(worldSize);

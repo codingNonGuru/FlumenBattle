@@ -188,9 +188,15 @@ namespace world::group
 
         bool IsDoing(GroupActions actionType) const;
 
+        bool IsDoingSomething() const;
+
+        bool IsInEncounter() const;
+
         utility::Success GetActionSuccess() const {return actionSuccess;}
 
         Pool <character::Character> & GetCharacters() {return characters;}
+
+        int GetLivingCount() const;
 
         character::Character *GetCharacter(int index);
 
@@ -267,5 +273,10 @@ namespace world::group
         settlement::Settlement *GetCurrentSettlement();
 
         int GetDistanceTo(const Group *) const;
+<<<<<<< HEAD
+=======
+
+        void AddMoney(int sum) {money += sum;}
+>>>>>>> testBranch
     };
 }

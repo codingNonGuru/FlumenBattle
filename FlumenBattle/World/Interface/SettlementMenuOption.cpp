@@ -10,6 +10,10 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Group/ReputationHandler.h"
+<<<<<<< HEAD
+=======
+#include "FlumenBattle/World/Group/Quest.h"
+>>>>>>> testBranch
 
 using namespace world::interface;
 
@@ -33,7 +37,7 @@ void SettlementMenuOption::HandleConfigure()
         {
             {DEFAULT_FONT_TYPE, OPTION_FONT_SIZE}, 
             Color::RED * 0.5f, 
-            "Buy food"
+            ""
         }
     );
     label->Enable();
@@ -41,17 +45,41 @@ void SettlementMenuOption::HandleConfigure()
     priceCounter = ElementFactory::BuildElement <ResourceCounter> (
         {Size(), drawOrder_ + 1, {Position2(-60.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_CENTER, this}}
     );
-    priceCounter->Setup("Coin", std::function <int(void)> ([] -> int {
-        auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
+}
 
-        return playerGroup->GetCurrentSettlement()->GetResourcePrice(settlement::ResourceTypes::FOOD);
-    }));
-    priceCounter->Enable();
+void SettlementMenuOption::Setup(SettlementMenu *newMenu, SettlementMenuOptions newOption) 
+{
+    menu = newMenu; 
+    option = newOption;
+
+    switch(option)
+    {
+    case SettlementMenuOptions::BUY_FOOD:
+        priceCounter->Setup("Coin", std::function <int(void)> ([] -> int {
+            auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
+
+            return playerGroup->GetCurrentSettlement()->GetResourcePrice(settlement::ResourceTypes::FOOD);
+        }));
+        priceCounter->Enable();
+
+        label->Setup("Buy food");
+        break;
+    case SettlementMenuOptions::SIGN_UP_TO_DELIVER_ITEM:
+        priceCounter->Disable();
+
+        label->Setup("Sign up to deliver item");
+        break;
+    case SettlementMenuOptions::FINISH_ITEM_DELIVERY:
+        priceCounter->Disable();
+
+        label->Setup("Drop item");
+        break;
+    }
 }
 
 void SettlementMenuOption::HandleLeftClick()
 {
-    menu->ProcessOptionInput();
+    menu->ProcessOptionInput(option);
 }
 
 void SettlementMenuOption::HandleUpdate()
@@ -68,6 +96,7 @@ void SettlementMenuOption::HandleUpdate()
     static const auto &reputationHandler = group::HumanMind::Get()->GetPlayerReputation();
     const auto attitude = reputationHandler.GetAttitude(menu->GetCurrentSettlement());
 
+<<<<<<< HEAD
     if(attitude == settlement::SettlementAttitudes::HOSTILE || attitude == settlement::SettlementAttitudes::UNFRIENDLY)
     {
         SetInteractivity(false);
@@ -81,5 +110,81 @@ void SettlementMenuOption::HandleUpdate()
         SetInteractivity(true);
 
         label->SetOpacity(HOVERED_OPTION_OPACITY);
+=======
+    switch(option)
+    {
+    case SettlementMenuOptions::BUY_FOOD:
+        if(attitude == settlement::SettlementAttitudes::HOSTILE || attitude == settlement::SettlementAttitudes::UNFRIENDLY)
+        {
+            SetInteractivity(false);
+
+            SetOpacity(BASE_OPTION_OPACITY);
+
+            label->SetOpacity(BASE_OPTION_OPACITY);
+        }
+        else
+        {
+            SetInteractivity(true);
+
+            label->SetOpacity(HOVERED_OPTION_OPACITY);
+        }
+        break;
+    case SettlementMenuOptions::SIGN_UP_TO_DELIVER_ITEM:
+        {
+            bool hasQuest = false;
+            for(auto &quest : group::HumanMind::Get()->GetQuests())
+            {
+                if(quest.Origin == menu->GetCurrentSettlement() && quest.Type == group::QuestTypes::DELIVER_ITEM)
+                {
+                    hasQuest = true;
+                    break;
+                }
+            }
+
+            if(hasQuest == false && menu->GetCurrentSettlement()->GetLinks().GetSize() > 0)
+            {
+                SetInteractivity(true);
+
+                label->SetOpacity(HOVERED_OPTION_OPACITY);
+            }
+            else
+            {
+                SetInteractivity(false);
+
+                SetOpacity(BASE_OPTION_OPACITY);
+
+                label->SetOpacity(BASE_OPTION_OPACITY);
+            }
+            break;
+        }
+    case SettlementMenuOptions::FINISH_ITEM_DELIVERY:
+        {
+            bool isTarget = false;
+            for(auto &quest : group::HumanMind::Get()->GetQuests())
+            {
+                if(quest.Data.TargetSettlement == menu->GetCurrentSettlement() && quest.Type == group::QuestTypes::DELIVER_ITEM)
+                {
+                    isTarget = true;
+                    break;
+                }
+            }
+
+            if(isTarget == true)
+            {
+                SetInteractivity(true);
+
+                label->SetOpacity(HOVERED_OPTION_OPACITY);
+            }
+            else
+            {
+                SetInteractivity(false);
+
+                SetOpacity(BASE_OPTION_OPACITY);
+
+                label->SetOpacity(BASE_OPTION_OPACITY);
+            }
+            break;
+        }
+>>>>>>> testBranch
     }
 }
