@@ -68,8 +68,6 @@ WorldInterface::WorldInterface()
         {
             Size(480, 540), 
             DrawOrder(7), 
-<<<<<<< HEAD
-=======
             {canvas}, 
             {false}, 
             Opacity(0.9f)
@@ -92,7 +90,6 @@ WorldInterface::WorldInterface()
         {
             Size(480, 540), 
             DrawOrder(7), 
->>>>>>> testBranch
             {canvas}, 
             {false}, 
             Opacity(0.9f)
@@ -242,11 +239,7 @@ void WorldInterface::Initialize()
 
     controller->onCharacterSelected += {this, &WorldInterface::HandleCharacterSelected};
 
-<<<<<<< HEAD
-    *group::HumanMind::Get()->OnSellModeEntered += {this, &WorldInterface::HandleSellModeEntered};
-=======
     group::HumanMind::Get()->OnSellModeEntered += {this, &WorldInterface::HandleSellModeEntered};
->>>>>>> testBranch
 }
 
 void WorldInterface::Enable()
@@ -345,14 +338,11 @@ void WorldInterface::HandleInventoryPressed()
         {
             reputationMenu->Disable();
         }
-<<<<<<< HEAD
-=======
 
         if(questMenu->IsLocallyActive() == true)
         {
             questMenu->Disable();
         }
->>>>>>> testBranch
     }
 }
 
@@ -381,11 +371,6 @@ void WorldInterface::HandleMenuCycled()
     }
     else if(reputationMenu->IsLocallyActive() == true)
     {
-<<<<<<< HEAD
-        inventoryMenu->Enable();
-
-        reputationMenu->Disable();
-=======
         questMenu->Enable();
 
         reputationMenu->Disable();
@@ -395,14 +380,11 @@ void WorldInterface::HandleMenuCycled()
         inventoryMenu->Enable();
 
         questMenu->Disable();
->>>>>>> testBranch
 
         isInInventoryMode = true;
     }
 }
 
-<<<<<<< HEAD
-=======
 void WorldInterface::HandleSpottingHovered()
 {
     auto hoveredSpotting = group::HumanMind::Get()->GetHoveredSpotting();
@@ -432,7 +414,6 @@ void WorldInterface::HandleQuestFinished()
     questPopup->Enable();
 }
 
->>>>>>> testBranch
 void WorldInterface::Update()
 {
     auto camera = RenderManager::GetCamera(Cameras::WORLD);

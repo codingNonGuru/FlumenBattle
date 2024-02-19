@@ -22,13 +22,10 @@ namespace world::group
         second->EngageGroup(this);
         
         winner = nullptr;
-<<<<<<< HEAD
-=======
 
         static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
 
         isPlayerInvolved = playerGroup == first || playerGroup == second;
->>>>>>> testBranch
     }
 
     void Encounter::Update()
@@ -87,10 +84,6 @@ namespace world::group
 
         this->winner = winner;
 
-<<<<<<< HEAD
-        //first->ExitBattle();
-        //second->ExitBattle();
-=======
         auto loser = GetOtherThan(winner);
         
         this->winner->AddMoney(loser->GetMoney());
@@ -104,6 +97,5 @@ namespace world::group
         first->ExitBattle();
 
         second->ExitBattle();
->>>>>>> testBranch
     }
 }

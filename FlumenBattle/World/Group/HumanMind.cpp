@@ -20,11 +20,8 @@
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/World/Group/ReputationHandler.h"
 #include "FlumenBattle/World/Group/Encounter.h"
-<<<<<<< HEAD
-=======
 #include "FlumenBattle/World/Character/CharacterClass.h"
 #include "FlumenBattle/World/Group/Quest.h"
->>>>>>> testBranch
 
 using namespace world::group;
 
@@ -76,8 +73,6 @@ static ReputationHandler playerReputation;
 
 static constexpr auto REPUTATION_LOSS_ON_GROUP_ATTACK = -20;
 
-<<<<<<< HEAD
-=======
 static constexpr auto REPUTATION_GAIN_ON_BANDIT_ATTACK = 10;
 
 static constexpr auto REPUTATION_GAIN_ON_ITEM_DELIVERY = 5;
@@ -88,7 +83,6 @@ static const Quest *mostRecentQuest = nullptr;
 
 static const Quest *finishedQuest = nullptr;
 
->>>>>>> testBranch
 HumanMind::HumanMind()
 {
     static const auto SPOTTING_COUNT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_SPOTTING_LIMIT).Integer;
@@ -99,32 +93,8 @@ HumanMind::HumanMind()
 
     latestFadings.Initialize(SPOTTING_COUNT);
 
-<<<<<<< HEAD
-    OnActionSelected = new Delegate();
-
-    OnActionPerformed = new Delegate();
-
-    OnActionInitiated = new Delegate();
-
-    OnSkillCheckRolled = new Delegate();
-
-    OnItemAdded = new Delegate();
-
-    OnItemSold = new Delegate();
-
-    OnSellModeEntered = new Delegate();
-
-    OnSettlementEntered = new Delegate();
-
-    OnSettlementExited = new Delegate();
-
-    OnGroupSpotted = new Delegate();
-
-    OnGroupFaded = new Delegate();
-=======
     static const auto MAXIMUM_QUEST_COUNT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_QUEST_COUNT).Integer;
     playerQuests.Initialize(MAXIMUM_QUEST_COUNT);
->>>>>>> testBranch
 
     *WorldScene::Get()->OnUpdateStarted += {this, &HumanMind::HandleSceneUpdate};
 
@@ -504,9 +474,6 @@ void HumanMind::HandleBattleEnded()
 
     const auto enemy = playerEncounter->GetOtherThan(playerGroup);
 
-<<<<<<< HEAD
-    playerReputation.AddFactor(enemy->GetHome(), REPUTATION_LOSS_ON_GROUP_ATTACK);
-=======
     if(enemy->GetClass() == GroupClasses::BANDIT)
     {
         playerReputation.AddFactor(enemy->GetHome(), REPUTATION_GAIN_ON_BANDIT_ATTACK);
@@ -515,7 +482,6 @@ void HumanMind::HandleBattleEnded()
     {
         playerReputation.AddFactor(enemy->GetHome(), REPUTATION_LOSS_ON_GROUP_ATTACK);
     }
->>>>>>> testBranch
 }
 
 void HumanMind::BuyFood()
@@ -530,11 +496,7 @@ void HumanMind::BuyFood()
     playerGroup->money -= foodPrice;
     playerGroup->AddItem(character::ItemTypes::FOOD, VOLUME_PER_MARKET_ITEM);
 
-<<<<<<< HEAD
-    OnItemAdded->Invoke();
-=======
     OnItemAdded.Invoke();
->>>>>>> testBranch
 }
 
 void HumanMind::SellItem(character::Item *item)
@@ -544,11 +506,7 @@ void HumanMind::SellItem(character::Item *item)
 
     playerGroup->money += item->Type->Value * item->Amount;
 
-<<<<<<< HEAD
-    OnItemSold->Invoke();
-=======
     OnItemSold.Invoke();
->>>>>>> testBranch
 }
 
 void HumanMind::PursueSighting(const GroupSpotting &spotting)
@@ -625,18 +583,13 @@ const GroupSpotting *HumanMind::GetHoveredSpotting() const
 void HumanMind::SetHoveredSpotting(const GroupSpotting *sighting)
 {
     hoveredGroupSpotting = sighting;
-<<<<<<< HEAD
-=======
 
     OnSpottingHovered.Invoke();
->>>>>>> testBranch
 }
 
 const ReputationHandler &HumanMind::GetPlayerReputation() const
 {
     return playerReputation;
-<<<<<<< HEAD
-=======
 }
 
 void HumanMind::AddQuest(Quest quest) 
@@ -691,5 +644,4 @@ const Quest &HumanMind::GetLastQuest() const
 const Quest &HumanMind::GetFinishedQuest() const
 {
     return *finishedQuest;
->>>>>>> testBranch
 }

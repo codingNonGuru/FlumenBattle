@@ -21,12 +21,9 @@ namespace world
         class ItemHoverInfo;
         class ExplorationMenu;
         class ReputationMenu;
-<<<<<<< HEAD
-=======
         class GroupHoverInfo;
         class QuestPopup;
         class QuestMenu;
->>>>>>> testBranch
     }
 
     namespace settlement
@@ -73,15 +70,12 @@ namespace world
 
         interface::ReputationMenu *reputationMenu;
 
-<<<<<<< HEAD
-=======
         interface::GroupHoverInfo *groupHoverInfo;
 
         interface::QuestPopup *questPopup;
 
         interface::QuestMenu *questMenu;
 
->>>>>>> testBranch
         void Update();
 
         void HandlePlayerEncounter();
@@ -104,15 +98,12 @@ namespace world
 
         void HandleMenuCycled();
 
-<<<<<<< HEAD
-=======
         void HandleSpottingHovered();
 
         void HandleQuestStarted();
 
         void HandleQuestFinished();
 
->>>>>>> testBranch
         WorldInterface();
 
     public:

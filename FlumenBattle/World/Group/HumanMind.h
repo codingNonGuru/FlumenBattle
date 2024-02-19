@@ -31,11 +31,8 @@ namespace world::group
     struct GroupActionResult;
     struct GroupSpotting;
     class ReputationHandler;
-<<<<<<< HEAD
-=======
     struct Quest;
     enum class QuestTypes;
->>>>>>> testBranch
 
     class HumanMind : public GroupMind, public core::Singleton <HumanMind>
     {
@@ -92,13 +89,7 @@ namespace world::group
 
         Delegate OnItemAdded;
 
-<<<<<<< HEAD
-        Delegate *OnItemSold;
-
-        Delegate *OnSellModeEntered;
-=======
         Delegate OnItemSold;
->>>>>>> testBranch
 
         Delegate OnSellModeEntered;
 
@@ -147,8 +138,6 @@ namespace world::group
         void SetHoveredSpotting(const GroupSpotting *);
 
         const ReputationHandler &GetPlayerReputation() const;
-<<<<<<< HEAD
-=======
 
         const container::Pool <Quest> &GetQuests() const {return playerQuests;}
 
@@ -159,6 +148,5 @@ namespace world::group
         const Quest &GetLastQuest() const;
 
         const Quest &GetFinishedQuest() const;
->>>>>>> testBranch
     };  
 };

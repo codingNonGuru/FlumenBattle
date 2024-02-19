@@ -33,11 +33,7 @@ namespace world::interface
     public:
         void Setup(settlement::Settlement *);
 
-<<<<<<< HEAD
-        void ProcessOptionInput();
-=======
         void ProcessOptionInput(SettlementMenuOptions);
->>>>>>> testBranch
 
         settlement::Settlement *GetCurrentSettlement() const {return currentSettlement;}
     };

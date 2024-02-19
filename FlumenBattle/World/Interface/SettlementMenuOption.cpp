@@ -10,10 +10,7 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Group/ReputationHandler.h"
-<<<<<<< HEAD
-=======
 #include "FlumenBattle/World/Group/Quest.h"
->>>>>>> testBranch
 
 using namespace world::interface;
 
@@ -96,21 +93,6 @@ void SettlementMenuOption::HandleUpdate()
     static const auto &reputationHandler = group::HumanMind::Get()->GetPlayerReputation();
     const auto attitude = reputationHandler.GetAttitude(menu->GetCurrentSettlement());
 
-<<<<<<< HEAD
-    if(attitude == settlement::SettlementAttitudes::HOSTILE || attitude == settlement::SettlementAttitudes::UNFRIENDLY)
-    {
-        SetInteractivity(false);
-
-        SetOpacity(BASE_OPTION_OPACITY);
-
-        label->SetOpacity(BASE_OPTION_OPACITY);
-    }
-    else
-    {
-        SetInteractivity(true);
-
-        label->SetOpacity(HOVERED_OPTION_OPACITY);
-=======
     switch(option)
     {
     case SettlementMenuOptions::BUY_FOOD:
@@ -185,6 +167,5 @@ void SettlementMenuOption::HandleUpdate()
             }
             break;
         }
->>>>>>> testBranch
     }
 }

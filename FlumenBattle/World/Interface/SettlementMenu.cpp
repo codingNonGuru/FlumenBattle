@@ -11,11 +11,8 @@
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Group/ReputationHandler.h"
 #include "FlumenBattle/Utility/Utility.h"
-<<<<<<< HEAD
-=======
 #include "FlumenBattle/World/Group/Quest.h"
 #include "FlumenBattle/Config.h"
->>>>>>> testBranch
 
 using namespace world::interface;
 
@@ -56,29 +53,6 @@ void SettlementMenu::HandleConfigure()
     nameLabel->Enable();
 
     attitudeLabel = ElementFactory::BuildText
-<<<<<<< HEAD
-    (
-        {
-            drawOrder_ + 1, 
-            {Position2(), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, nameLabel}
-        },
-        {
-            {"Small"}, 
-            Color::RED * 0.5f, 
-            ""
-        }
-    );
-    attitudeLabel->Enable();
-
-    optionLayout = ElementFactory::BuildElement <LayoutGroup> 
-    (
-        {drawOrder_, {Position2(10.0f, 80.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}}
-    );
-    optionLayout->Enable();
-
-    auto optionItem = ElementFactory::BuildElement <SettlementMenuOption>
-=======
->>>>>>> testBranch
     (
         {
             drawOrder_ + 1, 

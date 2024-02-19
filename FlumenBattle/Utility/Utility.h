@@ -11,8 +11,6 @@ namespace world::settlement
     enum class SettlementAttitudes;
 }
 
-<<<<<<< HEAD
-=======
 namespace world::group
 {
     enum class GroupClasses;
@@ -23,7 +21,6 @@ namespace world::character
     enum class CharacterClasses;
 }
 
->>>>>>> testBranch
 namespace utility
 {
     typedef int Result;
@@ -97,11 +94,8 @@ namespace utility
     Result RollD100Dice();
 
     const char *GetAttitudeName(world::settlement::SettlementAttitudes);
-<<<<<<< HEAD
-=======
 
     const char *GetClassName(world::group::GroupClasses);
 
     const char *GetClassName(world::character::CharacterClasses);
->>>>>>> testBranch
 }
