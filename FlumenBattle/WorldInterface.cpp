@@ -48,11 +48,11 @@ static const auto MENU_CYCLE_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_TAB;
 
 #define ROLL_POPUP_CAPACITY 16
 
-auto rollPopupTimestamp = std::chrono::steady_clock::now();
+auto popupTimestamp = std::chrono::steady_clock::now();
 
-#define TIME_BETWEEN_FADING_POPUPS 300
+#define TIME_BETWEEN_FADING_POPUPS 200
 
-WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY)
+WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 2)
 {
     canvas = ElementFactory::BuildCanvas();
     canvas->SetInteractivity(true);
@@ -454,13 +454,24 @@ void WorldInterface::HandleQuestFinished()
 
 void WorldInterface::HandleActionInitiated()
 {
+    auto timestamp = std::chrono::steady_clock::now();
+
     auto action = group::HumanMind::Get()->GetSelectedActionResult();
 
-    auto popup = *actionPopups.Add();
+    if(std::chrono::duration_cast<std::chrono::milliseconds>(timestamp - popupTimestamp).count() < TIME_BETWEEN_FADING_POPUPS)
+    {
+        *popupQueue.Grow() = {PopupTypes::ACTION, {action.ActionType, true}};
+    }
+    else
+    {
+        auto popup = *actionPopups.Add();
 
-    popup->Setup(action.ActionType, true);
+        popup->Setup(action.ActionType, true);
 
-    popup->Enable();
+        popup->Enable();
+
+        popupTimestamp = timestamp;
+    }
 }
 
 void WorldInterface::HandleDiceRolled()
@@ -469,9 +480,9 @@ void WorldInterface::HandleDiceRolled()
 
     auto action = group::HumanMind::Get()->GetPerformedActionResult();
 
-    if(std::chrono::duration_cast<std::chrono::milliseconds>(timestamp - rollPopupTimestamp).count() < TIME_BETWEEN_FADING_POPUPS)
+    if(std::chrono::duration_cast<std::chrono::milliseconds>(timestamp - popupTimestamp).count() < TIME_BETWEEN_FADING_POPUPS)
     {
-        *popupQueue.Grow() = {action.Success};
+        *popupQueue.Grow() = {PopupTypes::ROLL, {action.Success}};
     }
     else
     {
@@ -481,7 +492,7 @@ void WorldInterface::HandleDiceRolled()
 
         popup->Enable();
 
-        rollPopupTimestamp = timestamp;
+        popupTimestamp = timestamp;
     }
 }
 
@@ -543,15 +554,28 @@ void WorldInterface::Update()
     {
         auto timestamp = std::chrono::steady_clock::now();
 
-        if(std::chrono::duration_cast<std::chrono::milliseconds>(timestamp - rollPopupTimestamp).count() > TIME_BETWEEN_FADING_POPUPS)
+        if(std::chrono::duration_cast<std::chrono::milliseconds>(timestamp - popupTimestamp).count() > TIME_BETWEEN_FADING_POPUPS)
         {
-            auto popup = *rollPopups.Add();
+            auto data = popupQueue.Pop();
 
-            popup->Setup(popupQueue.Pop()->Roll);
+            if(data->Type == PopupTypes::ROLL)
+            {
+                auto popup = *rollPopups.Add();
 
-            popup->Enable();
+                popup->Setup(data->Data.RollData);
 
-            rollPopupTimestamp = timestamp;
+                popup->Enable();
+            }
+            else
+            {
+                auto popup = *actionPopups.Add();
+
+                popup->Setup(data->Data.ActionData.Type, data->Data.ActionData.HasStarted);
+
+                popup->Enable();
+            }
+
+            popupTimestamp = timestamp;
         }
     }
 

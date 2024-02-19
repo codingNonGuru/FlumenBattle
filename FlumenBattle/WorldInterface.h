@@ -4,6 +4,7 @@
 #include "FlumenCore/Container/Queue.h"
 
 #include "FlumenBattle/Utility/Utility.h"
+#include "FlumenBattle/World/Group/Types.h"
 
 class WorldInfoPanel;
 class Element;
@@ -85,9 +86,22 @@ namespace world
 
         container::Pool <interface::RollPopup *> rollPopups;
 
+        enum class PopupTypes {ACTION, ROLL};
+
         struct PopupData
         {
-            utility::Success Roll;
+            PopupTypes Type;
+
+            union VariableData
+            {
+                struct ActionData {group::GroupActions Type; bool HasStarted;} ActionData; 
+
+                utility::Success RollData;
+
+                VariableData(utility::Success rollData) : RollData(rollData) {}
+
+                VariableData(group::GroupActions type, bool hasStarted) : ActionData{type, hasStarted} {}
+            } Data;
         };
 
         container::Queue <PopupData> popupQueue;
