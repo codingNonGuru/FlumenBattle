@@ -1,6 +1,9 @@
 #pragma once
 
 #include "FlumenCore/Singleton.h"
+#include "FlumenCore/Container/Queue.h"
+
+#include "FlumenBattle/Utility/Utility.h"
 
 class WorldInfoPanel;
 class Element;
@@ -81,6 +84,13 @@ namespace world
         container::Pool <interface::ActionPopup *> actionPopups;
 
         container::Pool <interface::RollPopup *> rollPopups;
+
+        struct PopupData
+        {
+            utility::Success Roll;
+        };
+
+        container::Queue <PopupData> popupQueue;
 
         void Update();
 

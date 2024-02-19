@@ -1,3 +1,5 @@
+#include <chrono>
+
 #include "FlumenCore/Observer.h"
 #include "FlumenCore/Time.hpp"
 
@@ -46,7 +48,11 @@ static const auto MENU_CYCLE_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_TAB;
 
 #define ROLL_POPUP_CAPACITY 16
 
-WorldInterface::WorldInterface()
+auto rollPopupTimestamp = std::chrono::steady_clock::now();
+
+#define TIME_BETWEEN_FADING_POPUPS 300
+
+WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY)
 {
     canvas = ElementFactory::BuildCanvas();
     canvas->SetInteractivity(true);
@@ -459,13 +465,24 @@ void WorldInterface::HandleActionInitiated()
 
 void WorldInterface::HandleDiceRolled()
 {
+    auto timestamp = std::chrono::steady_clock::now();
+
     auto action = group::HumanMind::Get()->GetPerformedActionResult();
 
-    auto popup = *rollPopups.Add();
+    if(std::chrono::duration_cast<std::chrono::milliseconds>(timestamp - rollPopupTimestamp).count() < TIME_BETWEEN_FADING_POPUPS)
+    {
+        *popupQueue.Grow() = {action.Success};
+    }
+    else
+    {
+        auto popup = *rollPopups.Add();
 
-    popup->Setup(action.Success);
+        popup->Setup(action.Success);
 
-    popup->Enable();
+        popup->Enable();
+
+        rollPopupTimestamp = timestamp;
+    }
 }
 
 void WorldInterface::Update()
@@ -519,6 +536,22 @@ void WorldInterface::Update()
         {
             settlementMenu->Setup(currentSettlement);
             settlementMenu->Enable();
+        }
+    }
+
+    if(popupQueue.IsEmpty() == false)
+    {
+        auto timestamp = std::chrono::steady_clock::now();
+
+        if(std::chrono::duration_cast<std::chrono::milliseconds>(timestamp - rollPopupTimestamp).count() > TIME_BETWEEN_FADING_POPUPS)
+        {
+            auto popup = *rollPopups.Add();
+
+            popup->Setup(popupQueue.Pop()->Roll);
+
+            popup->Enable();
+
+            rollPopupTimestamp = timestamp;
         }
     }
 

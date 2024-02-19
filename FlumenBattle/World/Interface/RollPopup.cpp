@@ -21,9 +21,9 @@ static const auto ANIMATION_NAME = "Lift";
 
 static const auto ANIMATION_LENGTH = 1.0f;
 
-static const auto COUNTER_END_HEIGHT = -200.0f;
+static const auto COUNTER_END_HEIGHT = -100.0f;
 
-static const auto FONT_SIZE = "Medium";
+static const auto FONT_SIZE = "Large";
 
 static const auto SUCCESS_COLOR = Color::GREEN * 0.7f;
 
@@ -73,6 +73,11 @@ void RollPopup::ConfigureAnimation()
     property->AddKey()->Initialize(ANIMATION_LENGTH, 0.0f);
 
     property = animation->AddProperty({animation, &label->GetOpacity().Value});
+
+    property->AddKey()->Initialize(0.0f, 1.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH, 0.0f);
+
+    property = animation->AddProperty({animation, &diceIcon->GetOpacity().Value});
 
     property->AddKey()->Initialize(0.0f, 1.0f);
     property->AddKey()->Initialize(ANIMATION_LENGTH, 0.0f);
