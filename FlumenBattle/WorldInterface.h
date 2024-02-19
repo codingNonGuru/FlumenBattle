@@ -25,6 +25,7 @@ namespace world
         class QuestPopup;
         class QuestMenu;
         class ActionPopup;
+        class RollPopup;
     }
 
     namespace settlement
@@ -79,6 +80,8 @@ namespace world
 
         container::Pool <interface::ActionPopup *> actionPopups;
 
+        container::Pool <interface::RollPopup *> rollPopups;
+
         void Update();
 
         void HandlePlayerEncounter();
@@ -109,6 +112,8 @@ namespace world
 
         void HandleActionInitiated();
 
+        void HandleDiceRolled();
+
         WorldInterface();
 
     public:
@@ -127,5 +132,7 @@ namespace world
         interface::ItemHoverInfo *GetItemHoverInfo() {return itemHoverInfo;}
 
         void RemoveActionPopup(interface::ActionPopup *);
+
+        void RemoveRollPopup(interface::RollPopup *);
     };
 }

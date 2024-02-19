@@ -32,6 +32,7 @@
 #include "FlumenBattle/World/Interface/QuestPopup.h"
 #include "FlumenBattle/World/Interface/QuestMenu.h"
 #include "FlumenBattle/World/Interface/ActionPopup.h"
+#include "FlumenBattle/World/Interface/RollPopup.h"
 
 using namespace world;
 
@@ -41,7 +42,9 @@ static const auto CONSOLE_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_GRAVE;
 
 static const auto MENU_CYCLE_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_TAB;
 
-#define ACTION_POPUP_CAPACITY 8
+#define ACTION_POPUP_CAPACITY 4
+
+#define ROLL_POPUP_CAPACITY 16
 
 WorldInterface::WorldInterface()
 {
@@ -218,6 +221,17 @@ WorldInterface::WorldInterface()
 
     actionPopups.Reset();
 
+    rollPopups.Initialize(ROLL_POPUP_CAPACITY);
+    for(int i = 0; i < ROLL_POPUP_CAPACITY; ++i)
+    {
+        *rollPopups.Add() = ElementFactory::BuildElement <interface::RollPopup>
+        (
+            {DrawOrder(6), {canvas}}
+        );
+    }
+
+    rollPopups.Reset();
+
     group::HumanMind::Get()->OnSpottingHovered += {this, &WorldInterface::HandleSpottingHovered};
 
     group::HumanMind::Get()->OnQuestStarted += {this, &WorldInterface::HandleQuestStarted};
@@ -225,6 +239,8 @@ WorldInterface::WorldInterface()
     group::HumanMind::Get()->OnQuestFinished += {this, &WorldInterface::HandleQuestFinished};
 
     group::HumanMind::Get()->OnActionInitiated += {this, &WorldInterface::HandleActionInitiated};
+
+    group::HumanMind::Get()->OnSkillCheckRolled += {this, &WorldInterface::HandleDiceRolled};
 }
 
 void WorldInterface::Initialize()
@@ -441,6 +457,17 @@ void WorldInterface::HandleActionInitiated()
     popup->Enable();
 }
 
+void WorldInterface::HandleDiceRolled()
+{
+    auto action = group::HumanMind::Get()->GetPerformedActionResult();
+
+    auto popup = *rollPopups.Add();
+
+    popup->Setup(action.Success);
+
+    popup->Enable();
+}
+
 void WorldInterface::Update()
 {
     auto camera = RenderManager::GetCamera(Cameras::WORLD);
@@ -532,4 +559,9 @@ void WorldInterface::Update()
 void WorldInterface::RemoveActionPopup(interface::ActionPopup *popup)
 {
     actionPopups.Remove(popup);
+}
+
+void WorldInterface::RemoveRollPopup(interface::RollPopup *popup)
+{
+    rollPopups.Remove(popup);
 }
