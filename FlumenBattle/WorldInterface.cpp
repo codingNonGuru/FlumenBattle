@@ -35,6 +35,7 @@
 #include "FlumenBattle/World/Interface/QuestMenu.h"
 #include "FlumenBattle/World/Interface/ActionPopup.h"
 #include "FlumenBattle/World/Interface/RollPopup.h"
+#include "FlumenBattle/World/Interface/MoneyPopup.h"
 
 using namespace world;
 
@@ -238,6 +239,17 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 2)
 
     rollPopups.Reset();
 
+    moneyPopups.Initialize(ACTION_POPUP_CAPACITY);
+    for(int i = 0; i < ACTION_POPUP_CAPACITY; ++i)
+    {
+        *moneyPopups.Add() = ElementFactory::BuildElement <interface::MoneyPopup>
+        (
+            {DrawOrder(6), {canvas}}
+        );
+    }
+
+    moneyPopups.Reset();
+
     group::HumanMind::Get()->OnSpottingHovered += {this, &WorldInterface::HandleSpottingHovered};
 
     group::HumanMind::Get()->OnQuestStarted += {this, &WorldInterface::HandleQuestStarted};
@@ -247,6 +259,8 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 2)
     group::HumanMind::Get()->OnActionInitiated += {this, &WorldInterface::HandleActionInitiated};
 
     group::HumanMind::Get()->OnSkillCheckRolled += {this, &WorldInterface::HandleDiceRolled};
+
+    group::HumanMind::Get()->OnPlayerWealthChanged += {this, &WorldInterface::HandlePlayerWealthChanged};
 }
 
 void WorldInterface::Initialize()
@@ -496,6 +510,28 @@ void WorldInterface::HandleDiceRolled()
     }
 }
 
+void WorldInterface::HandlePlayerWealthChanged()
+{
+    auto timestamp = std::chrono::steady_clock::now();
+
+    auto money = group::HumanMind::Get()->GetPlayerWealthChange();
+
+    if(std::chrono::duration_cast<std::chrono::milliseconds>(timestamp - popupTimestamp).count() < TIME_BETWEEN_FADING_POPUPS)
+    {
+        *popupQueue.Grow() = {PopupTypes::MONEY, {money}};
+    }
+    else
+    {
+        auto popup = *moneyPopups.Add();
+
+        popup->Setup(money);
+
+        popup->Enable();
+
+        popupTimestamp = timestamp;
+    }
+}
+
 void WorldInterface::Update()
 {
     auto camera = RenderManager::GetCamera(Cameras::WORLD);
@@ -566,11 +602,19 @@ void WorldInterface::Update()
 
                 popup->Enable();
             }
-            else
+            else if(data->Type == PopupTypes::ACTION)
             {
                 auto popup = *actionPopups.Add();
 
                 popup->Setup(data->Data.ActionData.Type, data->Data.ActionData.HasStarted);
+
+                popup->Enable();
+            }
+            else
+            {
+                auto popup = *moneyPopups.Add();
+
+                popup->Setup(data->Data.MoneyData);
 
                 popup->Enable();
             }
@@ -621,4 +665,9 @@ void WorldInterface::RemoveActionPopup(interface::ActionPopup *popup)
 void WorldInterface::RemoveRollPopup(interface::RollPopup *popup)
 {
     rollPopups.Remove(popup);
+}
+
+void WorldInterface::RemoveMoneyPopup(interface::MoneyPopup *popup)
+{
+    moneyPopups.Remove(popup);
 }

@@ -83,6 +83,8 @@ static const Quest *mostRecentQuest = nullptr;
 
 static const Quest *finishedQuest = nullptr;
 
+static int moneyChange = 0;
+
 HumanMind::HumanMind()
 {
     static const auto SPOTTING_COUNT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_SPOTTING_LIMIT).Integer;
@@ -484,6 +486,10 @@ void HumanMind::HandleBattleEnded()
     {
         playerReputation.AddFactor(enemy->GetHome(), REPUTATION_LOSS_ON_GROUP_ATTACK);
     }
+
+    moneyChange = enemy->GetMoney();
+
+    OnPlayerWealthChanged.Invoke();
 }
 
 void HumanMind::BuyFood()
@@ -499,6 +505,10 @@ void HumanMind::BuyFood()
     playerGroup->AddItem(character::ItemTypes::FOOD, VOLUME_PER_MARKET_ITEM);
 
     OnItemAdded.Invoke();
+
+    moneyChange = -foodPrice;
+
+    OnPlayerWealthChanged.Invoke();
 }
 
 void HumanMind::SellItem(character::Item *item)
@@ -506,9 +516,12 @@ void HumanMind::SellItem(character::Item *item)
     static auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     playerGroup->RemoveItem(item);
 
-    playerGroup->money += item->Type->Value * item->Amount;
+    moneyChange = item->Type->Value * item->Amount;
+    playerGroup->money += moneyChange;
 
     OnItemSold.Invoke();
+
+    OnPlayerWealthChanged.Invoke();
 }
 
 void HumanMind::PursueSighting(const GroupSpotting &spotting)
@@ -646,4 +659,9 @@ const Quest &HumanMind::GetLastQuest() const
 const Quest &HumanMind::GetFinishedQuest() const
 {
     return *finishedQuest;
+}
+
+int HumanMind::GetPlayerWealthChange() const
+{
+    return moneyChange;
 }

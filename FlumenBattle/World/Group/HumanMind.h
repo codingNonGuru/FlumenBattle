@@ -107,6 +107,8 @@ namespace world::group
 
         Delegate OnQuestFinished;
 
+        Delegate OnPlayerWealthChanged;
+
         void EnableInput();
 
         void DisableInput();
@@ -148,5 +150,7 @@ namespace world::group
         const Quest &GetLastQuest() const;
 
         const Quest &GetFinishedQuest() const;
+
+        int GetPlayerWealthChange() const;
     };  
 };

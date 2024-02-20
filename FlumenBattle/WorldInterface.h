@@ -30,6 +30,7 @@ namespace world
         class QuestMenu;
         class ActionPopup;
         class RollPopup;
+        class MoneyPopup;
     }
 
     namespace settlement
@@ -86,7 +87,9 @@ namespace world
 
         container::Pool <interface::RollPopup *> rollPopups;
 
-        enum class PopupTypes {ACTION, ROLL};
+        container::Pool <interface::MoneyPopup *> moneyPopups;
+
+        enum class PopupTypes {ACTION, ROLL, MONEY};
 
         struct PopupData
         {
@@ -98,9 +101,13 @@ namespace world
 
                 utility::Success RollData;
 
+                int MoneyData;
+
                 VariableData(utility::Success rollData) : RollData(rollData) {}
 
                 VariableData(group::GroupActions type, bool hasStarted) : ActionData{type, hasStarted} {}
+
+                VariableData(int moneyData) : MoneyData(moneyData) {}
             } Data;
         };
 
@@ -138,6 +145,8 @@ namespace world
 
         void HandleDiceRolled();
 
+        void HandlePlayerWealthChanged();
+
         WorldInterface();
 
     public:
@@ -158,5 +167,7 @@ namespace world
         void RemoveActionPopup(interface::ActionPopup *);
 
         void RemoveRollPopup(interface::RollPopup *);
+
+        void RemoveMoneyPopup(interface::MoneyPopup *);
     };
 }

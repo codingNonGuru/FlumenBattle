@@ -40,6 +40,10 @@ namespace world::group
         union SpecificContent
         {
             Group *spottedGroup;
+
+            SpecificContent() {}
+
+            SpecificContent(Group *group) : spottedGroup(group) {}
         } Content;
 
         GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill) : 

@@ -350,6 +350,8 @@ namespace world::group
         group.GetOther()->encounter = nullptr;
 
         group.encounter = nullptr;
+
+        return {GroupActions::DISENGAGE};
     }
 
     #define SURVIVAL_DC_WHEN_NOT_LOST 5
