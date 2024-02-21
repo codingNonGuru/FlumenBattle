@@ -385,6 +385,23 @@ namespace world
         return true;
     }
 
+    bool WorldController::CanBuyMule()
+    {
+        auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+        auto playerSettlement = playerGroup->GetCurrentSettlement();
+        if(playerSettlement == nullptr)
+            return false;
+
+        auto playerMoney = playerGroup->GetMoney();
+
+        auto price = playerSettlement->GetMulePrice();
+        if(playerMoney < price)
+            return false;
+
+        return true;
+    }
+
     void WorldController::BuyFood()
     {
         auto playerGroup = WorldScene::Get()->GetPlayerGroup();

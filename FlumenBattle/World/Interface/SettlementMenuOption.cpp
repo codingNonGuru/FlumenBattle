@@ -11,6 +11,7 @@
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Group/ReputationHandler.h"
 #include "FlumenBattle/World/Group/Quest.h"
+#include "FlumenBattle/World/WorldController.h"
 
 using namespace world::interface;
 
@@ -61,6 +62,16 @@ void SettlementMenuOption::Setup(SettlementMenu *newMenu, SettlementMenuOptions 
 
         label->Setup("Buy food");
         break;
+    case SettlementMenuOptions::BUY_MULE:
+        priceCounter->Setup("Coin", std::function <int(void)> ([] -> int {
+            auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
+
+            return playerGroup->GetCurrentSettlement()->GetMulePrice();
+        }));
+        priceCounter->Enable();
+
+        label->Setup("Buy mule");
+        break;
     case SettlementMenuOptions::SIGN_UP_TO_DELIVER_ITEM:
         priceCounter->Disable();
 
@@ -96,7 +107,23 @@ void SettlementMenuOption::HandleUpdate()
     switch(option)
     {
     case SettlementMenuOptions::BUY_FOOD:
-        if(attitude == settlement::SettlementAttitudes::HOSTILE || attitude == settlement::SettlementAttitudes::UNFRIENDLY)
+        if(attitude == settlement::SettlementAttitudes::HOSTILE || attitude == settlement::SettlementAttitudes::UNFRIENDLY || WorldController::Get()->CanBuyFood() == false)
+        {
+            SetInteractivity(false);
+
+            SetOpacity(BASE_OPTION_OPACITY);
+
+            label->SetOpacity(BASE_OPTION_OPACITY);
+        }
+        else
+        {
+            SetInteractivity(true);
+
+            label->SetOpacity(HOVERED_OPTION_OPACITY);
+        }
+        break;
+    case SettlementMenuOptions::BUY_MULE:
+        if(attitude == settlement::SettlementAttitudes::HOSTILE || attitude == settlement::SettlementAttitudes::UNFRIENDLY || attitude == settlement::SettlementAttitudes::COLD || WorldController::Get()->CanBuyMule() == false)
         {
             SetInteractivity(false);
 

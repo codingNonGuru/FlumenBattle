@@ -109,11 +109,15 @@ namespace world::group
 
         Delegate OnPlayerWealthChanged;
 
+        Delegate OnMarketTransaction;
+
         void EnableInput();
 
         void DisableInput();
 
         void BuyFood();
+
+        void BuyMule();
 
         void SellItem(character::Item *);
 

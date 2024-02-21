@@ -546,6 +546,13 @@ world::SimulationLevels Settlement::GetSimulationLevel() const
     return simulationLevel;
 }
 
+int Settlement::GetMulePrice() const
+{
+    auto foodPrice = GetResourcePrice(ResourceTypes::FOOD);
+
+    return foodPrice * 4 + 30;
+}
+
 void Settlement::SetupSimulation()
 {
     simulationDomain = world::SimulationMap::Get()->GetDomain(location);

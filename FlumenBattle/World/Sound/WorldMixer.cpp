@@ -23,7 +23,7 @@ WorldMixer::WorldMixer()
         engine::SoundManager::Get()->PlaySound(*sound);
     };
 
-    group::HumanMind::Get()->OnItemAdded += [] {
+    group::HumanMind::Get()->OnMarketTransaction += [] {
         auto sound = COIN_SOUNDS.GetRandom();
         engine::SoundManager::Get()->PlaySound(*sound);
     };

@@ -113,6 +113,8 @@ namespace world
 
         bool CanBuyFood();
 
+        bool CanBuyMule();
+
         void BuyFood();
 
         bool ShouldDisplayResources() const {return isResourceDisplayActive;}

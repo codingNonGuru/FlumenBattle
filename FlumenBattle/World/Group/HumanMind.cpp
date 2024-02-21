@@ -509,6 +509,27 @@ void HumanMind::BuyFood()
     moneyChange = -foodPrice;
 
     OnPlayerWealthChanged.Invoke();
+
+    OnMarketTransaction.Invoke();
+}
+
+void HumanMind::BuyMule()
+{
+    static auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+    auto playerSettlement = playerGroup->GetCurrentSettlement();
+
+    auto price = playerSettlement->GetMulePrice();
+
+    playerGroup->money -= price;
+
+    playerGroup->muleCount++;
+
+    moneyChange = -price;
+
+    OnPlayerWealthChanged.Invoke();
+
+    OnMarketTransaction.Invoke();
 }
 
 void HumanMind::SellItem(character::Item *item)

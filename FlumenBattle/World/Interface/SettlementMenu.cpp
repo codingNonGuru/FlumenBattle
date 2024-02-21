@@ -73,7 +73,7 @@ void SettlementMenu::HandleConfigure()
     optionLayout->SetDistancing(1, 5.0f);
     optionLayout->Enable();
 
-    auto options = {SettlementMenuOptions::BUY_FOOD, SettlementMenuOptions::SIGN_UP_TO_DELIVER_ITEM, SettlementMenuOptions::FINISH_ITEM_DELIVERY};
+    auto options = {SettlementMenuOptions::BUY_FOOD, SettlementMenuOptions::BUY_MULE, SettlementMenuOptions::SIGN_UP_TO_DELIVER_ITEM, SettlementMenuOptions::FINISH_ITEM_DELIVERY};
 
     for(auto &option : options)
     {
@@ -121,6 +121,12 @@ void SettlementMenu::ProcessOptionInput(SettlementMenuOptions option)
         if(WorldController::Get()->CanBuyFood() == true)
         {
             WorldController::Get()->BuyFood();
+        }
+        break;
+    case SettlementMenuOptions::BUY_MULE:
+        if(WorldController::Get()->CanBuyMule() == true)
+        {
+            group::HumanMind::Get()->BuyMule();
         }
         break;
     case SettlementMenuOptions::SIGN_UP_TO_DELIVER_ITEM:
