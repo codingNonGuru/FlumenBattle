@@ -196,7 +196,7 @@ namespace world::group
 
         group.timeSinceLongRest = 0;
 
-        auto foodNeeded = group.characters.GetSize();
+        auto foodNeeded = group.GetFoodConsumption();
         auto foodAvailable = group.GetItemAmount(character::ItemTypes::FOOD);
         
         if(foodAvailable >= foodNeeded)

@@ -279,5 +279,7 @@ namespace world::group
         int GetMuleCount() const {return muleCount;}
 
         void AddMoney(int sum) {money += sum;}
+
+        int GetFoodConsumption() const;
     };
 }

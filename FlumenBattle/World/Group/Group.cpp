@@ -31,6 +31,8 @@ Array <world::character::CharacterClasses> classMakeup; /*= {
 
 #define MULE_CARRY_CAPACITY 25
 
+#define MULE_FOOD_CONSUMPTION 3
+
 namespace world::group
 {
     Group::Group() {}
@@ -479,6 +481,11 @@ namespace world::group
     const container::Pool <character::Item> &Group::GetItems() const
     {
         return items.GetItems();
+    }
+
+    int Group::GetFoodConsumption() const
+    {
+        return characters.GetSize() + muleCount * MULE_FOOD_CONSUMPTION;
     }
 
     GroupClasses Group::GetClass() const
