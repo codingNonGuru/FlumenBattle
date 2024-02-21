@@ -4,6 +4,7 @@
 #include "FlumenCore/Observer.h"
 
 #include "FlumenBattle/World/Group/GroupMind.h"
+#include "FlumenBattle/World/Group/ItemChange.h"
 
 namespace world
 {
@@ -158,5 +159,7 @@ namespace world::group
         const Quest &GetFinishedQuest() const;
 
         int GetPlayerWealthChange() const;
+
+        const ItemChange &GetItemChange() const;
     };  
 };

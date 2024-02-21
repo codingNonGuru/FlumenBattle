@@ -118,6 +118,11 @@ bool Item::CanFitInto(ItemPositions position)
     }
 }
 
+Word Item::GetTextureName(ItemTypes type)
+{
+    return ItemFactory::Get()->Create(type).Type->TextureName;
+}
+
 Item ItemFactory::Create(ItemTypes type)
 {
     switch(type)

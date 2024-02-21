@@ -87,6 +87,8 @@ static const Quest *finishedQuest = nullptr;
 
 static int moneyChange = 0;
 
+static ItemChange itemChange;
+
 HumanMind::HumanMind()
 {
     static const auto SPOTTING_COUNT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_SPOTTING_LIMIT).Integer;
@@ -144,7 +146,7 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
             diceSoundClock = clock;
         }
 
-        if(group.IsDoing(GroupActions::SEARCH) == true)
+        if(result.ActionType == GroupActions::SEARCH)
         {
             static auto &worldTime = WorldScene::Get()->GetTime();
 
@@ -185,6 +187,12 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
             }
 
             OnGroupSpotted.Invoke();
+        }
+        else if(result.ActionType == GroupActions::FORAGE)
+        {
+            itemChange = {character::ItemTypes::FOOD, result.Content.foragedFood};
+
+            OnItemAdded.Invoke();
         }
 
         OnSkillCheckRolled.Invoke();
@@ -519,6 +527,8 @@ void HumanMind::BuyFood()
     playerGroup->money -= foodPrice;
     playerGroup->AddItem(character::ItemTypes::FOOD, VOLUME_PER_MARKET_ITEM);
 
+    itemChange = {character::ItemTypes::FOOD, VOLUME_PER_MARKET_ITEM};
+
     OnItemAdded.Invoke();
 
     moneyChange = -foodPrice;
@@ -554,6 +564,8 @@ void HumanMind::SellItem(character::Item *item)
 
     moneyChange = item->Type->Value * item->Amount;
     playerGroup->money += moneyChange;
+
+    itemChange = {item->Type->Type, -item->Amount};
 
     OnItemSold.Invoke();
 
@@ -700,4 +712,9 @@ const Quest &HumanMind::GetFinishedQuest() const
 int HumanMind::GetPlayerWealthChange() const
 {
     return moneyChange;
+}
+
+const ItemChange &HumanMind::GetItemChange() const
+{
+    return itemChange;
 }

@@ -54,13 +54,15 @@ namespace world::character
 
         bool IsUsed {false};
 
-        bool CanFitInto(ItemPositions position);
+        bool CanFitInto(ItemPositions);
 
         void ApplyEffect(Character &character) const {Type->ApplyEffect(character);}
 
         bool IsRangedWeapon() const {return Type->IsRangedWeapon();}
 
         bool operator==(ItemTypes type) {return Type->Type == type;}
+
+        static Word GetTextureName(ItemTypes);
     };
 
     class ItemSet
@@ -98,6 +100,8 @@ namespace world::character
 
     class ItemFactory : public core::Singleton <ItemFactory>
     {
+        friend class Item;
+
         friend class ItemManager;
 
         Item Create(ItemTypes);

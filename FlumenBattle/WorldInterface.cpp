@@ -36,6 +36,7 @@
 #include "FlumenBattle/World/Interface/ActionPopup.h"
 #include "FlumenBattle/World/Interface/RollPopup.h"
 #include "FlumenBattle/World/Interface/MoneyPopup.h"
+#include "FlumenBattle/World/Interface/ItemPopup.h"
 
 using namespace world;
 
@@ -51,9 +52,9 @@ static const auto MENU_CYCLE_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_TAB;
 
 auto popupTimestamp = std::chrono::steady_clock::now();
 
-#define TIME_BETWEEN_FADING_POPUPS 200
+#define TIME_BETWEEN_FADING_POPUPS 300
 
-WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 2)
+WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
 {
     canvas = ElementFactory::BuildCanvas();
     canvas->SetInteractivity(true);
@@ -250,6 +251,17 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 2)
 
     moneyPopups.Reset();
 
+    itemPopups.Initialize(ROLL_POPUP_CAPACITY);
+    for(int i = 0; i < ROLL_POPUP_CAPACITY; ++i)
+    {
+        *itemPopups.Add() = ElementFactory::BuildElement <interface::ItemPopup>
+        (
+            {DrawOrder(6), {canvas}}
+        );
+    }
+
+    itemPopups.Reset();
+
     group::HumanMind::Get()->OnSpottingHovered += {this, &WorldInterface::HandleSpottingHovered};
 
     group::HumanMind::Get()->OnQuestStarted += {this, &WorldInterface::HandleQuestStarted};
@@ -261,6 +273,10 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 2)
     group::HumanMind::Get()->OnSkillCheckRolled += {this, &WorldInterface::HandleDiceRolled};
 
     group::HumanMind::Get()->OnPlayerWealthChanged += {this, &WorldInterface::HandlePlayerWealthChanged};
+
+    group::HumanMind::Get()->OnItemAdded += {this, &WorldInterface::HandlePlayerItemChanged};
+
+    group::HumanMind::Get()->OnItemSold += {this, &WorldInterface::HandlePlayerItemChanged};
 }
 
 void WorldInterface::Initialize()
@@ -532,6 +548,28 @@ void WorldInterface::HandlePlayerWealthChanged()
     }
 }
 
+void WorldInterface::HandlePlayerItemChanged()
+{
+    auto timestamp = std::chrono::steady_clock::now();
+
+    auto itemChange = group::HumanMind::Get()->GetItemChange();
+
+    if(std::chrono::duration_cast<std::chrono::milliseconds>(timestamp - popupTimestamp).count() < TIME_BETWEEN_FADING_POPUPS)
+    {
+        *popupQueue.Grow() = {PopupTypes::ITEM, {itemChange}};
+    }
+    else
+    {
+        auto popup = *itemPopups.Add();
+
+        popup->Setup(itemChange);
+
+        popup->Enable();
+
+        popupTimestamp = timestamp;
+    }
+}
+
 void WorldInterface::Update()
 {
     auto camera = RenderManager::GetCamera(Cameras::WORLD);
@@ -610,6 +648,14 @@ void WorldInterface::Update()
 
                 popup->Enable();
             }
+            else if(data->Type == PopupTypes::ITEM)
+            {
+                auto popup = *itemPopups.Add();
+
+                popup->Setup(data->Data.ItemChange);
+
+                popup->Enable();
+            }
             else
             {
                 auto popup = *moneyPopups.Add();
@@ -670,4 +716,9 @@ void WorldInterface::RemoveRollPopup(interface::RollPopup *popup)
 void WorldInterface::RemoveMoneyPopup(interface::MoneyPopup *popup)
 {
     moneyPopups.Remove(popup);
+}
+
+void WorldInterface::RemoveItemPopup(interface::ItemPopup *popup)
+{
+    itemPopups.Remove(popup);
 }

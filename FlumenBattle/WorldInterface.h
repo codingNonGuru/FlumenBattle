@@ -5,6 +5,7 @@
 
 #include "FlumenBattle/Utility/Utility.h"
 #include "FlumenBattle/World/Group/Types.h"
+#include "FlumenBattle/World/Group/ItemChange.h"
 
 class WorldInfoPanel;
 class Element;
@@ -31,6 +32,7 @@ namespace world
         class ActionPopup;
         class RollPopup;
         class MoneyPopup;
+        class ItemPopup;
     }
 
     namespace settlement
@@ -89,7 +91,9 @@ namespace world
 
         container::Pool <interface::MoneyPopup *> moneyPopups;
 
-        enum class PopupTypes {ACTION, ROLL, MONEY};
+        container::Pool <interface::ItemPopup *> itemPopups;
+
+        enum class PopupTypes {ACTION, ROLL, MONEY, ITEM};
 
         struct PopupData
         {
@@ -103,11 +107,15 @@ namespace world
 
                 int MoneyData;
 
+                group::ItemChange ItemChange;
+
                 VariableData(utility::Success rollData) : RollData(rollData) {}
 
                 VariableData(group::GroupActions type, bool hasStarted) : ActionData{type, hasStarted} {}
 
                 VariableData(int moneyData) : MoneyData(moneyData) {}
+
+                VariableData(group::ItemChange itemChange) : ItemChange(itemChange) {}
             } Data;
         };
 
@@ -147,6 +155,8 @@ namespace world
 
         void HandlePlayerWealthChanged();
 
+        void HandlePlayerItemChanged();
+
         WorldInterface();
 
     public:
@@ -169,5 +179,7 @@ namespace world
         void RemoveRollPopup(interface::RollPopup *);
 
         void RemoveMoneyPopup(interface::MoneyPopup *);
+
+        void RemoveItemPopup(interface::ItemPopup *);
     };
 }

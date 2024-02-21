@@ -490,7 +490,7 @@ namespace world::group
 
         auto foragedFood = [&skillCheck]
         {
-            auto amount = utility::RollDice({utility::RollDies::D4, 2});
+            auto amount = utility::RollDice({utility::RollDies::D6, 2});
             if(skillCheck.IsCriticalSuccess() == true)
             {
                 return amount * 2;
@@ -513,7 +513,7 @@ namespace world::group
 
         group.CancelAction();
 
-        return {GroupActions::FORAGE, skillCheck, character::SkillTypes::SURVIVAL};
+        return {GroupActions::FORAGE, skillCheck, character::SkillTypes::SURVIVAL, foragedFood};
     }
 
     bool GroupActionValidator::CanTakeShortRest(Group &group, const GroupActionData &)
