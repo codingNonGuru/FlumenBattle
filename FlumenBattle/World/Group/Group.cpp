@@ -29,6 +29,8 @@ Array <world::character::CharacterClasses> classMakeup; /*= {
 
 #define FATIGUE_SAVING_THROW_DC 12
 
+#define MULE_CARRY_CAPACITY 25
+
 namespace world::group
 {
     Group::Group() {}
@@ -61,6 +63,8 @@ namespace world::group
         {
             this->money = utility::GetRandom(100, 150);
         }
+
+        this->muleCount = 0;
 
         actionProgress = 0;
 
@@ -506,7 +510,9 @@ namespace world::group
             strengthScoreSum += character.GetAbility(character::AbilityTypes::STRENGTH).Score;
         }
 
-        return strengthScoreSum;
+        auto muleCapacity = muleCount * MULE_CARRY_CAPACITY;
+
+        return strengthScoreSum + muleCapacity;
     }
 
     int Group::GetCarriedWeight() const

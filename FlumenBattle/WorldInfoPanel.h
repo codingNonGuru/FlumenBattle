@@ -61,6 +61,8 @@ class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
 
     world::interface::ResourceCounter *weightCounter;
 
+    world::interface::ResourceCounter *muleCounter;
+
     Array <CharacterItem> items;
 
     int selectionIndex {-1};

@@ -189,6 +189,23 @@ void WorldInfoPanel::HandleConfigure()
     );
     weightCounter->SetOffset(3.0f);
     weightCounter->Enable();
+
+    muleCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
+        {drawOrder_, {Position2(280.0f, 0.0f), this}}
+    );
+    muleCounter->Setup(
+        "HorseHead", 
+        std::function <int(void)> (
+            [] -> int 
+            {
+                auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
+
+                return playerGroup->GetMuleCount();
+            }
+        )
+    );
+    muleCounter->SetOffset(3.0f);
+    muleCounter->Enable();
 }
 
 void WorldInfoPanel::SelectCharacter(int index, bool isInInventoryMode)

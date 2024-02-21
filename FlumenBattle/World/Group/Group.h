@@ -159,6 +159,8 @@ namespace world::group
 
         character::Character *leader;
 
+        int muleCount;
+
         void Initialize(Word, const GroupType *, Integer, Color, RaceTypes);
 
         void *operator new(size_t);
@@ -273,6 +275,8 @@ namespace world::group
         settlement::Settlement *GetCurrentSettlement();
 
         int GetDistanceTo(const Group *) const;
+
+        int GetMuleCount() const {return muleCount;}
 
         void AddMoney(int sum) {money += sum;}
     };
