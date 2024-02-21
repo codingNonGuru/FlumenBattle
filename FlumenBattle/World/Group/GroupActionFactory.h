@@ -28,6 +28,8 @@ namespace world::group
 
         const GroupAction * BuildPersuade();
 
+        const GroupAction *BuildForage();
+
     public:
         const GroupAction * BuildAction(GroupActions);
     };
@@ -57,6 +59,8 @@ namespace world::group
         static GroupActionResult Travel(Group &group);
 
         static GroupActionResult Persuade(Group &group);
+
+        static GroupActionResult Forage(Group &group);
     };
 
     class GroupActionValidator
@@ -78,5 +82,7 @@ namespace world::group
         static bool CanTravel(Group &, const GroupActionData &);
 
         static bool CanPersuade(Group &, const GroupActionData &);
+
+        static bool CanForage(Group &, const GroupActionData &);
     };
 }

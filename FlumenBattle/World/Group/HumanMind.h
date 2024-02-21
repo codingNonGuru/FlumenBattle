@@ -68,6 +68,8 @@ namespace world::group
 
         void HandleCancelTravel();
 
+        void HandleForage();
+
         void HandleSlackenAction();
 
         void HandleIntensifyAction();

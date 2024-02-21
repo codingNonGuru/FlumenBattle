@@ -12,6 +12,8 @@
 
 static const auto NOURISHED_DURATION = 8 * 6;
 
+static const auto BASE_FORAGE_DC = 15;
+
 namespace world::group
 {
     const GroupAction * GroupActionFactory::BuildAction(GroupActions actionType)
@@ -34,6 +36,8 @@ namespace world::group
                 return BuildTravel();
             case GroupActions::PERSUADE:
                 return BuildPersuade();
+            case GroupActions::FORAGE:
+                return BuildForage();
         }
     }
 
@@ -130,6 +134,18 @@ namespace world::group
             false, 
             &GroupActionValidator::CanPersuade, 
             &GroupActionPerformer::Persuade 
+            };
+        return &action;
+    }
+
+    const GroupAction * GroupActionFactory::BuildForage()
+    {
+        static GroupAction action = {
+            GroupActions::FORAGE, 
+            3 * WorldTime::HOUR_SIZE * GroupAction::BASE_PROGRESS_RATE,
+            false, 
+            &GroupActionValidator::CanForage, 
+            &GroupActionPerformer::Forage 
             };
         return &action;
     }
@@ -443,6 +459,63 @@ namespace world::group
         return {GroupActions::PERSUADE, success, character::SkillTypes::PERSUASION};
     }
 
+    GroupActionResult GroupActionPerformer::Forage(Group& group)
+    {
+        if(group.actionProgress != group.action->BaseDuration)
+            return {};
+
+        auto survivalBonus = group.GetMostSkilledMember(character::SkillTypes::SURVIVAL).Bonus;
+
+        auto difficultyClass = BASE_FORAGE_DC;
+
+        if(group.GetTile()->HasRelief(WorldReliefs::MOUNTAINS) == true)
+        {
+            difficultyClass += 4;
+        }
+        else if(group.GetTile()->HasBiome(WorldBiomes::DESERT) == true)
+        {
+            difficultyClass += 4;
+        }
+        else if(group.GetTile()->HasBiome(WorldBiomes::STEPPE) == true && group.GetTile()->IsScrubland == true)
+        {
+            difficultyClass += 2;
+        }
+
+        if(group.GetTile()->IsWinter() == true)
+        {
+            difficultyClass += 4;
+        }
+        
+        auto skillCheck = utility::RollD20Dice(difficultyClass, survivalBonus);
+
+        auto foragedFood = [&skillCheck]
+        {
+            auto amount = utility::RollDice({utility::RollDies::D4, 2});
+            if(skillCheck.IsCriticalSuccess() == true)
+            {
+                return amount * 2;
+            }
+            else if(skillCheck.IsAnySuccess() == true)
+            {
+                return amount;
+            }
+            else if(skillCheck.IsRegularFailure() == true)
+            {
+                return amount / 2;
+            }
+            else
+            {
+                return 0;
+            }
+        } ();
+
+        group.AddItem(character::ItemTypes::FOOD, foragedFood);
+
+        group.CancelAction();
+
+        return {GroupActions::FORAGE, skillCheck, character::SkillTypes::SURVIVAL};
+    }
+
     bool GroupActionValidator::CanTakeShortRest(Group &group, const GroupActionData &)
     {
         return true;
@@ -504,5 +577,10 @@ namespace world::group
         group.GetOther()->attitude == Attitudes::HOSTILE && 
         group.GetEncounter()->HasBattleEnded() == false &&
         group.hasAttemptedPersuasion == false;
+    }
+
+    bool GroupActionValidator::CanForage(Group &group, const GroupActionData &)
+    {
+        return true;
     }
 }

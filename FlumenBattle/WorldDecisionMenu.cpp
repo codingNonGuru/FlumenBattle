@@ -119,6 +119,9 @@ void WorldDecisionMenu::HandleUpdate()
             case GroupActions::FIGHT:
                 text << "Fighting";
                 break;
+            case GroupActions::FORAGE:
+                text << "Foraging";
+                break;
         }
 
         auto progressRate = group->GetProgressRate();

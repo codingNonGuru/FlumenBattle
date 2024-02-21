@@ -35,6 +35,8 @@ static const SDL_Scancode resumeTravelInputKey = SDL_Scancode::SDL_SCANCODE_R;
 
 static const SDL_Scancode cancelTravelInputKey = SDL_Scancode::SDL_SCANCODE_C;
 
+static const SDL_Scancode forageInputKey = SDL_Scancode::SDL_SCANCODE_F;
+
 static const SDL_Scancode slackenActionKey = SDL_Scancode::SDL_SCANCODE_LEFTBRACKET;
 
 static const SDL_Scancode intensifyActionKey = SDL_Scancode::SDL_SCANCODE_RIGHTBRACKET;
@@ -210,6 +212,8 @@ void HumanMind::EnableInput()
 
     InputHandler::RegisterEvent(cancelTravelInputKey, {this, &HumanMind::HandleCancelTravel});
 
+    InputHandler::RegisterEvent(forageInputKey, {this, &HumanMind::HandleForage});
+
     InputHandler::RegisterEvent(slackenActionKey, {this, &HumanMind::HandleSlackenAction});
 
     InputHandler::RegisterEvent(intensifyActionKey, {this, &HumanMind::HandleIntensifyAction});
@@ -231,6 +235,8 @@ void HumanMind::DisableInput()
     InputHandler::UnregisterEvent(resumeTravelInputKey);
 
     InputHandler::UnregisterEvent(cancelTravelInputKey);
+
+    InputHandler::UnregisterEvent(forageInputKey);
 
     InputHandler::UnregisterEvent(slackenActionKey);
 
@@ -351,6 +357,15 @@ void HumanMind::HandleTakeLongRest()
     if(playerGroup->ValidateAction(GroupActions::TAKE_LONG_REST))
     {
         playerGroup->SelectAction(GroupActions::TAKE_LONG_REST);
+    }
+}
+
+void HumanMind::HandleForage()
+{
+    static auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    if(playerGroup->ValidateAction(GroupActions::FORAGE))
+    {
+        playerGroup->SelectAction(GroupActions::FORAGE);
     }
 }
 

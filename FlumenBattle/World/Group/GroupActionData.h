@@ -41,9 +41,13 @@ namespace world::group
         {
             Group *spottedGroup;
 
+            int foragedFood;
+
             SpecificContent() {}
 
             SpecificContent(Group *group) : spottedGroup(group) {}
+
+            SpecificContent(int food) : foragedFood(food) {}
         } Content;
 
         GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill) : 
@@ -51,6 +55,9 @@ namespace world::group
 
         GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill, Group *spottedGroup) : 
         ActionType(actionType), HasRolled(true), Success(success), Skill(skill), Content{spottedGroup} {}
+
+        GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill, int foragedFood) : 
+        ActionType(actionType), HasRolled(true), Success(success), Skill(skill), Content{foragedFood} {}
 
         GroupActionResult() : HasRolled(false) {}
 

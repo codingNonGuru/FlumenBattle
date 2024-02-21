@@ -116,6 +116,9 @@ void ActionPopup::Setup(group::GroupActions actionType, bool hasActionStarted)
     case group::GroupActions::DISENGAGE:
         label->Setup("Disengage");
         break;
+    case group::GroupActions::FORAGE:
+        label->Setup("Forage");
+        break;
     }
 
     backdrop->SetWidth(label->GetWidth() + BACKDROP_SIZE_DELTA);
