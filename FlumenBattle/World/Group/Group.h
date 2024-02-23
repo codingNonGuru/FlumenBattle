@@ -83,8 +83,6 @@ namespace world::group
 
         int uniqueId;
 
-        Word name;
-
         const GroupType *type;
 
         const GroupMind *controller;
@@ -161,7 +159,7 @@ namespace world::group
 
         int muleCount;
 
-        void Initialize(Word, const GroupType *, Integer, Color, RaceTypes);
+        void Initialize(const GroupType *, Integer, Color, RaceTypes);
 
         void *operator new(size_t);
 
@@ -175,8 +173,6 @@ namespace world::group
         bool IsAlive();
 
         const Color& GetColor() const {return color;} 
-
-        Word GetName() const {return name;}
 
         Encounter * GetEncounter() const {return encounter;}
 

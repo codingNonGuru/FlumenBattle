@@ -24,7 +24,8 @@ void main()
 	}
 	else
 	{
-		fragment = color; //vec4(1.0f);
+		fragment.rgb = color.rgb; //vec4(1.0f);
+		fragment.a = 1.0f;
 	}
 	
 	fragment.a *= opacity;

@@ -11,8 +11,6 @@
 
 Array <Color> colors = {Color::RED, Color::GREEN, Color::CYAN, Color::RED * 0.5f, Color::GREEN * 0.5f, Color::GREEN, Color::BLUE};
 
-Array <Word> names = {"A", "B", "C", "D", "E", "F", "G", "H", "I"};
-
 int nameIndex = 0;
 
 namespace world::group
@@ -39,7 +37,16 @@ namespace world::group
 
         auto color = GetColor();
 
-        group->Initialize(*names.Get(nameIndex), type, size, color, buildData.Race);
+        if(buildData.Type == GroupClasses::MERCHANT)
+        {
+            group->muleCount = 2;
+        }
+        else
+        {
+            group->muleCount = 0;
+        }
+
+        group->Initialize(type, size, color, buildData.Race);
 
         group->SetHome(buildData.Home);
 

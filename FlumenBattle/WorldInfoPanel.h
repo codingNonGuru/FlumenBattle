@@ -4,6 +4,7 @@
 #include "FlumenCore/Singleton.h"
 
 class Text;
+class Animation;
 
 namespace world::character
 {
@@ -33,7 +34,15 @@ class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
 
         Element *border;
 
+        Element *cover;
+
+        Text *healthDifferenceLabel;
+
         bool isSelected {false};
+
+        int previousHitpoints;
+
+        Animation *animation;
 
         void HandleConfigure() override;    
 

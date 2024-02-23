@@ -2,11 +2,7 @@
 
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/Text.hpp"
-#include "FlumenEngine/Animation/AnimationProperty.hpp"
-#include "FlumenEngine/Animation/AnimationKey.hpp"
-#include "FlumenEngine/Animation/Animator.hpp"
-#include "FlumenEngine/Animation/Animation.hpp"
-#include "FlumenEngine/Animation/AnimationEvent.hpp"
+#include "FlumenEngine/Animation.h"
 
 #include "ActionPopup.h"
 #include "FlumenBattle/WorldInterface.h"

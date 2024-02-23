@@ -42,12 +42,11 @@ namespace world::group
         return GroupAllocator::Get()->Allocate();
     }
 
-    void Group::Initialize(Word name, const GroupType *groupType, Integer size, Color color, RaceTypes raceType)
+    void Group::Initialize(const GroupType *groupType, Integer size, Color color, RaceTypes raceType)
     {
         this->type = groupType;
         this->controller = groupType->Controller;
 
-        this->name = name;
         this->color = color;
 
         this->isAlive = true;
@@ -65,8 +64,6 @@ namespace world::group
         {
             this->money = utility::GetRandom(100, 150);
         }
-
-        this->muleCount = 0;
 
         actionProgress = 0;
 

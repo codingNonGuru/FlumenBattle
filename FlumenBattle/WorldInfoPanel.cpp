@@ -1,6 +1,9 @@
+#include "FlumenCore/Observer.h"
+
 #include "FlumenEngine/Interface/Text.hpp"
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/Sprite.hpp"
+#include "FlumenEngine/Animation.h"
 
 #include "FlumenBattle/WorldInfoPanel.h"
 #include "FlumenBattle/World/WorldScene.h"
@@ -10,6 +13,24 @@
 #include "FlumenBattle/World/Interface/ResourceCounter.h"
 #include "FlumenBattle/World/Character/Types.h"
 #include "FlumenBattle/Config.h"
+
+static const auto ANIMATION_NAME = "Flash";
+
+static const auto ANIMATION_LENGTH = 1.5f;
+
+static const Color BORDER_COLOR = Color::RED * 0.25f;
+
+static const Color TEXT_COLOR = Color::RED * 0.5f;
+
+static const auto SELECTED_OPACITY = Opacity(1.0f);
+
+static const auto UNSELECTED_OPACITY = Opacity(0.5f);
+
+static const auto MAXIMUM_CONDITIONS_PER_ITEM = 4;
+
+static const Color WOUNDED_COLOR = Color::RED * 0.9f;
+
+static const Color HEALING_COLOR = Color::GREEN * 0.6f;
 
 void * WorldInfoPanel::CharacterItem::operator new(size_t size)
 {
@@ -24,17 +45,9 @@ void WorldInfoPanel::CharacterItem::SetCharacter(world::character::Character *_c
     character = _character;
 
     icon->GetSprite()->SetTexture(character->GetAvatar());
+
+    previousHitpoints = character->GetCurrentHitPoints();
 }
-
-static const Color BORDER_COLOR = Color::RED * 0.25f;
-
-static const Color TEXT_COLOR = Color::RED * 0.5f;
-
-static const auto SELECTED_OPACITY = Opacity(1.0f);
-
-static const auto UNSELECTED_OPACITY = Opacity(0.5f);
-
-static const auto MAXIMUM_CONDITIONS_PER_ITEM = 4;
 
 void WorldInfoPanel::CharacterItem::ToggleSelection() 
 {
@@ -83,11 +96,62 @@ void WorldInfoPanel::CharacterItem::HandleConfigure()
     );
     border->GetSprite()->SetColor(&BORDER_COLOR);
     border->Enable();
+
+    cover = ElementFactory::BuildElement <Element>(
+        {size_, drawOrder_ + 2, {this}, {false}, Opacity(1.0f)}
+    );
+
+    healthDifferenceLabel = ElementFactory::BuildText(
+        {drawOrder_ + 3, {cover}}, 
+        {{"Huge"}, Color::WHITE}
+    );
+    healthDifferenceLabel->Enable();
+
+    animation = animator_->AddAnimation(new Animation(ANIMATION_LENGTH), ANIMATION_NAME);
+
+    auto property = animation->AddProperty({animation, &cover->GetOpacity().Value});
+
+    property->AddKey()->Initialize(0.0f, 1.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH * 0.7f, 1.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH, 0.0f);
+
+    property = animation->AddProperty({animation, &healthDifferenceLabel->GetOpacity().Value});
+
+    property->AddKey()->Initialize(0.0f, 1.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH * 0.5f, 1.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH, 0.0f);
+
+    auto finishEvent = animation->GetFinishEvent();
+    finishEvent->GetActions() += {cover, &Element::Disable};
 }
 
 void WorldInfoPanel::CharacterItem::HandleUpdate()
 {
-    auto string = Word() << character->GetCurrentHitPoints() << "/" << character->GetMaximumHitPoints();
+    auto currentHitPoints = character->GetCurrentHitPoints();
+
+    if(currentHitPoints != previousHitpoints)
+    {
+        auto hitpointDifference = currentHitPoints - previousHitpoints;
+
+        if(hitpointDifference > 0)
+        {
+            cover->SetSpriteColor(HEALING_COLOR);
+        }
+        else
+        {
+            cover->SetSpriteColor(WOUNDED_COLOR);
+        }
+
+        healthDifferenceLabel->Setup(ShortWord() << (hitpointDifference > 0 ? "+" : "") << hitpointDifference);
+
+        cover->Enable();
+
+        animation->Play();
+    }
+
+    previousHitpoints = currentHitPoints;
+
+    auto string = Word() << currentHitPoints << "/" << character->GetMaximumHitPoints();
     healthLabel->Setup(string);
 
     auto &conditions = character->GetConditions();
