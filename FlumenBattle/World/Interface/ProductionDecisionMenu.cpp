@@ -1,0 +1,120 @@
+#include "FlumenEngine/Interface/ElementFactory.h"
+#include "FlumenEngine/Interface/Text.hpp"
+#include "FlumenEngine/Interface/LayoutGroup.h"
+
+#include "ProductionDecisionMenu.h"
+#include "FlumenBattle/World/Interface/ProductionDecisionItem.h"
+#include "FlumenBattle/World/Polity/HumanMind.h"
+#include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Settlement/SettlementProduction.h"
+
+using namespace world;
+using namespace world::interface;
+
+static const auto BORDER_COLOR = Color::RED * 0.25f;
+
+static const auto TEXT_COLOR = Color::RED * 0.5f;
+
+static const auto BORDER_INNER_OFFSET = Size(4, 4);
+
+static constexpr auto DEFAULT_FONT_SIZE = "Medium";
+
+static constexpr auto OPTION_ITEM_SIZE = Size(280, 35);
+
+static const settlement::ProductionOptions options[] = {
+    settlement::ProductionOptions::PATROL, 
+    settlement::ProductionOptions::SETTLERS, 
+    settlement::ProductionOptions::IRRIGATION, 
+    settlement::ProductionOptions::LIBRARY,
+    settlement::ProductionOptions::SEWAGE,
+    settlement::ProductionOptions::HOUSING,
+    settlement::ProductionOptions::FARM
+    };
+
+#define ITEM_CAPACITY std::size(options)
+
+void ProductionDecisionMenu::HandleConfigure()
+{
+    border = ElementFactory::BuildElement <Element>
+    (
+        {
+            size_ - BORDER_INNER_OFFSET, 
+            drawOrder_ + 1, 
+            {this}, 
+            {"panel-border-031", true} 
+        }
+    );
+    border->SetSpriteColor(BORDER_COLOR);
+    border->Enable();
+
+    nameLabel = ElementFactory::BuildText
+    (
+        {
+            drawOrder_ + 1, 
+            {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}
+        },
+        {
+            {DEFAULT_FONT_SIZE}, 
+            TEXT_COLOR
+        }
+    );
+    nameLabel->Enable();
+
+    optionLayout = ElementFactory::BuildElement <LayoutGroup> 
+    (
+        {drawOrder_, {Position2(10.0f, 80.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}}
+    );
+    optionLayout->SetDistancing(1, 5.0f);
+    optionLayout->Enable();
+
+    optionItems.Initialize(ITEM_CAPACITY);
+    for(auto i = 0; i < optionItems.GetCapacity(); ++i)
+    {
+        auto optionItem = ElementFactory::BuildElement <ProductionDecisionItem>
+        (
+            {
+                OPTION_ITEM_SIZE, 
+                drawOrder_ + 1, 
+                {optionLayout}, 
+                {"panel-border-001", true}
+            }
+        );
+        optionItem->SetSpriteColor(BORDER_COLOR);
+        optionItem->SetInteractivity(true);
+
+        *optionItems.Add() = optionItem;
+    }
+}
+
+void ProductionDecisionMenu::HandleUpdate()
+{
+    for(auto &item : optionItems)
+    {
+        item->Disable();
+    }
+
+    auto item = optionItems.GetStart();
+    for(auto &option : options)
+    {
+        auto inquiry = settlement::SettlementProduction::CanProduce(*currentSettlement, option);
+        if(inquiry.CanProduce == false)
+            continue;
+
+        (*item)->Setup(this, option);
+        (*item)->Enable();
+
+        item++;
+    }
+}
+
+void ProductionDecisionMenu::Setup(settlement::Settlement *settlement)
+{
+    currentSettlement = settlement;
+
+    nameLabel->Setup(currentSettlement->GetName());
+}
+
+void ProductionDecisionMenu::ProcessInput(settlement::ProductionOptions option)
+{
+    polity::HumanMind::Get()->ProcessProductionInput(option, currentSettlement);
+}

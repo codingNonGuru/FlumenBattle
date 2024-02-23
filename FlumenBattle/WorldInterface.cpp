@@ -37,6 +37,7 @@
 #include "FlumenBattle/World/Interface/RollPopup.h"
 #include "FlumenBattle/World/Interface/MoneyPopup.h"
 #include "FlumenBattle/World/Interface/ItemPopup.h"
+#include "FlumenBattle/World/Interface/ProductionDecisionMenu.h"
 
 using namespace world;
 
@@ -262,6 +263,17 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
 
     itemPopups.Reset();
 
+    productionMenu = ElementFactory::BuildElement <interface::ProductionDecisionMenu>
+    (
+        {
+            Size(320, 400), 
+            DrawOrder(6), 
+            {Position2(5.0f, -5.0f), ElementAnchors::LOWER_LEFT, ElementPivots::LOWER_LEFT, canvas}, 
+            {false}, 
+            Opacity(0.9f)
+        }
+    );
+
     group::HumanMind::Get()->OnSpottingHovered += {this, &WorldInterface::HandleSpottingHovered};
 
     group::HumanMind::Get()->OnQuestStarted += {this, &WorldInterface::HandleQuestStarted};
@@ -277,6 +289,10 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     group::HumanMind::Get()->OnItemAdded += {this, &WorldInterface::HandlePlayerItemChanged};
 
     group::HumanMind::Get()->OnItemSold += {this, &WorldInterface::HandlePlayerItemChanged};
+
+    group::HumanMind::Get()->OnSettlementEntered += {this, &WorldInterface::HandleSettlementEntered};
+
+    group::HumanMind::Get()->OnSettlementExited += {this, &WorldInterface::HandleSettlementExited};
 }
 
 void WorldInterface::Initialize()
@@ -317,6 +333,8 @@ void WorldInterface::Enable()
     InputHandler::RegisterEvent(MENU_CYCLE_INPUT_KEY, {this, &WorldInterface::HandleMenuCycled});
 
     canvas->Enable();
+
+    HandleSettlementEntered();
 }
 
 void WorldInterface::Disable()
@@ -451,6 +469,26 @@ void WorldInterface::HandleMenuCycled()
 
         isInInventoryMode = true;
     }
+    else
+    {
+        if(settlementMenu->IsLocallyActive() == true)
+        {
+            settlementMenu->Disable();
+
+            static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+            auto settlement = playerGroup->GetCurrentSettlement();
+
+            productionMenu->Setup(settlement);
+
+            productionMenu->Enable();
+        }
+        else if(productionMenu->IsLocallyActive() == true)
+        {
+            productionMenu->Disable();
+
+            settlementMenu->Enable();
+        }
+    }
 }
 
 void WorldInterface::HandleSpottingHovered()
@@ -570,6 +608,27 @@ void WorldInterface::HandlePlayerItemChanged()
     }
 }
 
+void WorldInterface::HandleSettlementEntered()
+{
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    auto currentSettlement = playerGroup->GetCurrentSettlement();
+
+    if(currentSettlement == nullptr)
+        return;
+
+    settlementMenu->Setup(currentSettlement);
+    settlementMenu->Enable();
+
+    productionMenu->Disable();
+}
+
+void WorldInterface::HandleSettlementExited()
+{
+    settlementMenu->Disable();
+
+    productionMenu->Disable();
+}
+
 void WorldInterface::Update()
 {
     auto camera = RenderManager::GetCamera(Cameras::WORLD);
@@ -609,7 +668,7 @@ void WorldInterface::Update()
         travelLabel->Disable();
     }
 
-    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    /*auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     auto currentSettlement = playerGroup->GetCurrentSettlement();
     if(currentSettlement == nullptr)
     {
@@ -622,7 +681,7 @@ void WorldInterface::Update()
             settlementMenu->Setup(currentSettlement);
             settlementMenu->Enable();
         }
-    }
+    }*/
 
     if(popupQueue.IsEmpty() == false)
     {

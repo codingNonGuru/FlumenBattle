@@ -111,10 +111,14 @@ namespace world::settlement
         static int GetNecessity(Settlement &, ProductionOptions);
 
         static ProductionInquiry CanProduce(Settlement &, ProductionOptions);
+
+        static const Word &GetName(ProductionOptions);
     };
 
     class SettlementProductionFactory : public core::Singleton <SettlementProductionFactory>
     {
+        friend class SettlementProduction;
+
         const SettlementProductionType *BuildProductionType(ProductionOptions);
 
         const SettlementProductionType *BuildPatrolProduction();

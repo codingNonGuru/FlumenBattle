@@ -33,6 +33,7 @@ namespace world
         class RollPopup;
         class MoneyPopup;
         class ItemPopup;
+        class ProductionDecisionMenu;
     }
 
     namespace settlement
@@ -121,6 +122,8 @@ namespace world
 
         container::Queue <PopupData> popupQueue;
 
+        interface::ProductionDecisionMenu *productionMenu;
+
         void Update();
 
         void HandlePlayerEncounter();
@@ -156,6 +159,10 @@ namespace world
         void HandlePlayerWealthChanged();
 
         void HandlePlayerItemChanged();
+
+        void HandleSettlementEntered();
+
+        void HandleSettlementExited();
 
         WorldInterface();
 

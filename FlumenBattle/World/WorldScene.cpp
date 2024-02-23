@@ -383,7 +383,7 @@ namespace world
         auto polity = mother != nullptr ? mother->GetPolity() : nullptr;
         if(polity == nullptr)
         {
-            FoundPolity(settlement, false);
+            FoundPolity(settlement, true);
         }
         else
         {

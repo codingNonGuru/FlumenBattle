@@ -114,6 +114,8 @@ namespace world::group
 
         Delegate OnMarketTransaction;
 
+        void Enable();
+
         void EnableInput();
 
         void DisableInput();

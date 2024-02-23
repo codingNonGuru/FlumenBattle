@@ -53,6 +53,8 @@ namespace world
 
     void WorldController::Enable()
     {
+        group::HumanMind::Get()->Enable();
+
         if(GetPlayerBattle() != nullptr)
         {
             

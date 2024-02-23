@@ -55,9 +55,20 @@ ProductionInquiry SettlementProduction::CanProduce(Settlement &settlement, Produ
             return {true, {improvementTarget}};
         }
     }
+    case ProductionOptions::SEWAGE:
+        return {settlement.HasBuilding(BuildingTypes::SEWAGE) == false};
+    case ProductionOptions::IRRIGATION:
+        return {settlement.HasBuilding(BuildingTypes::IRRIGATION) == false};
+    case ProductionOptions::LIBRARY:
+        return {settlement.HasBuilding(BuildingTypes::LIBRARY) == false};
     default:
         return {true};
     }
+}
+
+const Word &SettlementProduction::GetName(ProductionOptions option)
+{
+    return SettlementProductionFactory::Get()->BuildProductionType(option)->Name;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildProductionType(ProductionOptions option)

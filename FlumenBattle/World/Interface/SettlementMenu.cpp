@@ -46,8 +46,7 @@ void SettlementMenu::HandleConfigure()
         },
         {
             {DEFAULT_FONT_SIZE}, 
-            Color::RED * 0.5f, 
-            ""
+            Color::RED * 0.5f
         }
     );
     nameLabel->Enable();
@@ -56,12 +55,11 @@ void SettlementMenu::HandleConfigure()
     (
         {
             drawOrder_ + 1, 
-            {Position2(), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, nameLabel}
+            {ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, nameLabel}
         },
         {
             {"Small"}, 
-            Color::RED * 0.5f, 
-            ""
+            Color::RED * 0.5f
         }
     );
     attitudeLabel->Enable();

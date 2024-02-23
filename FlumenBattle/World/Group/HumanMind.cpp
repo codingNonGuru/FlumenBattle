@@ -107,6 +107,12 @@ HumanMind::HumanMind()
     *WorldScene::Get()->OnPlayerBattleEnded += {this, &HumanMind::HandleBattleEnded};
 }
 
+void HumanMind::Enable()
+{
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    previousSettlement = playerGroup->GetCurrentSettlement();
+}
+
 void HumanMind::DetermineAction(Group &group) const 
 {
     if(group.travelActionData.IsOnRoute)
