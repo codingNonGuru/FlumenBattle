@@ -15,8 +15,6 @@
 
 using namespace world::interface;
 
-static constexpr auto DEFAULT_FONT_TYPE = "JSLAncient";
-
 static constexpr auto OPTION_FONT_SIZE = "Small";
 
 static constexpr auto BASE_OPTION_OPACITY = 0.5f;
@@ -28,20 +26,18 @@ void SettlementMenuOption::HandleConfigure()
     label = ElementFactory::BuildText
     (
         {
-            Size(), 
             drawOrder_ + 1, 
             {Position2(10.0f, 3.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}
         },
         {
-            {DEFAULT_FONT_TYPE, OPTION_FONT_SIZE}, 
-            Color::RED * 0.5f, 
-            ""
+            {OPTION_FONT_SIZE}, 
+            Color::RED * 0.5f
         }
     );
     label->Enable();
 
     priceCounter = ElementFactory::BuildElement <ResourceCounter> (
-        {Size(), drawOrder_ + 1, {Position2(-60.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_CENTER, this}}
+        {drawOrder_ + 1, {Position2(-60.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_CENTER, this}}
     );
 }
 

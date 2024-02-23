@@ -17,7 +17,7 @@ void ResourceCounter::HandleConfigure()
 
     label = ElementFactory::BuildText(
         {drawOrder_ + 1, {ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, icon}},
-        {{DEFAULT_FONT_TYPE, DEFAULT_FONT_SIZE}, TEXT_COLOR, "20"}
+        {{DEFAULT_FONT_SIZE}, TEXT_COLOR}
     );
     label->SetAlignment(Text::Alignments::LEFT);
     label->Enable();
@@ -68,7 +68,7 @@ void ResourceCounter::Setup(Word name, const int *newValue, Word fontSize, Scale
 
     icon->GetSprite()->SetTextureSize(textureScale);
 
-    label->SetFont({DEFAULT_FONT_TYPE, fontSize});
+    label->SetFont({fontSize});
 
     valueOrigin = ValueOrigins::POINTER;
 }
@@ -81,7 +81,7 @@ void ResourceCounter::Setup(Word name, std::function <int(void)> newFetcher, Wor
 
     icon->GetSprite()->SetTextureSize(textureScale);
 
-    label->SetFont({DEFAULT_FONT_TYPE, fontSize});
+    label->SetFont({fontSize});
 
     valueOrigin = ValueOrigins::FUNCTION;
 }
@@ -94,7 +94,7 @@ void ResourceCounter::Setup(Word name, Word string, Word fontSize, Scale2 textur
 
     icon->GetSprite()->SetTextureSize(textureScale);
 
-    label->SetFont({DEFAULT_FONT_TYPE, fontSize});
+    label->SetFont({fontSize});
 
     valueOrigin = ValueOrigins::STRING;
 }
@@ -107,7 +107,7 @@ void ResourceCounter::Setup(Word name, std::function <Word(void)> newFetcher, Wo
 
     icon->GetSprite()->SetTextureSize(textureScale);
 
-    label->SetFont({DEFAULT_FONT_TYPE, fontSize});
+    label->SetFont({fontSize});
 
     valueOrigin = ValueOrigins::STRING_FUNCTION;
 }

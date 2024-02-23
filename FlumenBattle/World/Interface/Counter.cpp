@@ -11,8 +11,8 @@ static const auto TEXT_COLOR = Color::RED * 0.5f;
 void Counter::HandleConfigure()
 {
     label = ElementFactory::BuildText(
-        {Size(), drawOrder_ + 1, {Position2(), this}},
-        {{DEFAULT_FONT_TYPE, DEFAULT_FONT_SIZE}, TEXT_COLOR, "5"}
+        {drawOrder_ + 1, {this}},
+        {{DEFAULT_FONT_SIZE}, TEXT_COLOR}
     );
     label->Enable();
 
@@ -38,7 +38,7 @@ void Counter::Setup(const int *newValue, Scale2 newScale, Word fontSize)
 {
     value = newValue;
 
-    label->SetFont({DEFAULT_FONT_TYPE, fontSize});
+    label->SetFont({fontSize});
 
     backdropScale = newScale;
 }

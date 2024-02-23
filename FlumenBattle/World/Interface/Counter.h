@@ -10,8 +10,6 @@ namespace world::interface
     {
         static constexpr auto DEFAULT_FONT_SIZE = "Small";
 
-        static constexpr auto DEFAULT_FONT_TYPE = "JSLAncient";
-
         static constexpr auto BACKDROP_SCALE = Scale2(0.8f, 0.8f);
 
         static constexpr auto BACKDROP_ENLARGE_FACTOR = 1.3f;

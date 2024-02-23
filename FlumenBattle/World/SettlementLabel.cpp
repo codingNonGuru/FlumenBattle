@@ -55,7 +55,7 @@ void HoverExtension::ResourceWidget::HandleUpdate()
 void HoverExtension::ConditionWidget::HandleConfigure()
 {
     Progress = ElementFactory::BuildProgressBar <ProgressBar>(
-        {Size(48, 16), drawOrder_ + 1, {Position2(), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, this}, {"BaseBar", true}},
+        {Size(48, 16), drawOrder_ + 1, {ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, this}, {"BaseBar", true}},
         {"BaseFillerRed", {6.0f, 8.0f}}
     );
     Progress->Enable();

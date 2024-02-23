@@ -15,6 +15,7 @@ namespace world::settlement
 namespace world::interface
 {
     class ProductionDecisionMenu;
+    class ResourceCounter;
 
     class ProductionDecisionItem : public Element
     {
@@ -23,6 +24,8 @@ namespace world::interface
         settlement::ProductionOptions option;
 
         ProductionDecisionMenu *parent;
+
+        ResourceCounter *laborCounter;
 
         void HandleConfigure() override;
 

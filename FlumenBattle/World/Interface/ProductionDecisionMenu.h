@@ -4,6 +4,7 @@
 
 class Text;
 class LayoutGroup;
+class ProgressBar;
 
 namespace world::settlement
 {
@@ -14,6 +15,7 @@ namespace world::settlement
 namespace world::interface
 {
     class ProductionDecisionItem;
+    class ResourceCounter;
 
     class ProductionDecisionMenu : public Element
     {
@@ -21,11 +23,19 @@ namespace world::interface
 
         Text *nameLabel;
 
+        Text *productionLabel;
+
+        ProgressBar *productionProgress;
+
+        ResourceCounter *laborCounter;
+
         LayoutGroup *optionLayout;
 
         container::Array <ProductionDecisionItem *> optionItems;
 
         settlement::Settlement *currentSettlement;
+
+        int industrialCapacity;
 
         void HandleConfigure() override;
 

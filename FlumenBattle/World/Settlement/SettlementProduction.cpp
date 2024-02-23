@@ -71,6 +71,11 @@ const Word &SettlementProduction::GetName(ProductionOptions option)
     return SettlementProductionFactory::Get()->BuildProductionType(option)->Name;
 }
 
+const SettlementProductionType *SettlementProduction::GetType(ProductionOptions option)
+{
+    return SettlementProductionFactory::Get()->BuildProductionType(option);
+}
+
 const SettlementProductionType * SettlementProductionFactory::BuildProductionType(ProductionOptions option)
 {
     switch(option)
@@ -138,7 +143,7 @@ const SettlementProductionType * SettlementProductionFactory::BuildHousingProduc
 
 const SettlementProductionType * SettlementProductionFactory::BuildNoneProduction()
 {
-    static const SettlementProductionType productionType = {ProductionOptions::NONE, "None", 6, nullptr};
+    static const SettlementProductionType productionType = {ProductionOptions::NONE, "Nothing", 6, nullptr};
     return &productionType;
 }
 

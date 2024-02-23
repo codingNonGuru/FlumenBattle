@@ -25,7 +25,6 @@ namespace world::settlement
 
         friend class SettlementProductionFactory;
 
-    private:
         SettlementProductionType(ProductionOptions type, Integer cost, void (*onFinish) (Settlement &)) : Type(type), Cost(cost), OnFinish(onFinish) {}
 
         SettlementProductionType(ProductionOptions type, Word name, Integer cost, void (*onFinish) (Settlement &)) : Type(type), Name(name), Cost(cost), OnFinish(onFinish) {}
@@ -113,6 +112,8 @@ namespace world::settlement
         static ProductionInquiry CanProduce(Settlement &, ProductionOptions);
 
         static const Word &GetName(ProductionOptions);
+
+        static const SettlementProductionType *GetType(ProductionOptions);
     };
 
     class SettlementProductionFactory : public core::Singleton <SettlementProductionFactory>

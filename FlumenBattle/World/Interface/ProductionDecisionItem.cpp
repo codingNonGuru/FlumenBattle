@@ -4,10 +4,9 @@
 #include "ProductionDecisionItem.h"
 #include "FlumenBattle/World/Interface/ProductionDecisionMenu.h"
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
+#include "FlumenBattle/World/Interface/ResourceCounter.h"
 
 using namespace world::interface;
-
-static constexpr auto DEFAULT_FONT_TYPE = "JSLAncient";
 
 static constexpr auto OPTION_FONT_SIZE = "Small";
 
@@ -24,11 +23,18 @@ void ProductionDecisionItem::HandleConfigure()
             {Position2(10.0f, 3.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}
         },
         {
-            {DEFAULT_FONT_TYPE, OPTION_FONT_SIZE}, 
+            {OPTION_FONT_SIZE}, 
             Color::RED * 0.5f
         }
     );
     label->Enable();
+
+    laborCounter = ElementFactory::BuildElement <ResourceCounter> (
+        {drawOrder_, {Position2(-80.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_CENTER, this}}
+    );
+    laborCounter->Enable();
+
+    laborCounter->SetOffset(5.0f);
 }
 
 void ProductionDecisionItem::HandleLeftClick() 
@@ -55,4 +61,6 @@ void ProductionDecisionItem::Setup(ProductionDecisionMenu *newParent, settlement
     option = newOption;
 
     label->Setup(settlement::SettlementProduction::GetName(option));
+
+    laborCounter->Setup("WorkHammer", &settlement::SettlementProduction::GetType(option)->Cost);
 }

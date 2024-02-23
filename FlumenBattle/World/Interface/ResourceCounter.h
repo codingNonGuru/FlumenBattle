@@ -10,8 +10,6 @@ namespace world::interface
     {
         static constexpr auto DEFAULT_FONT_SIZE = "Small";
 
-        static constexpr auto DEFAULT_FONT_TYPE = "JSLAncient";
-
         Element *icon;
 
         Text *label;
