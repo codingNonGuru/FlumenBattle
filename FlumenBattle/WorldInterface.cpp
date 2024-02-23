@@ -21,7 +21,7 @@
 #include "FlumenBattle/World/WorldMap.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
-#include "FlumenBattle/World/Polity.h"
+#include "FlumenBattle/World/Polity/Polity.h"
 #include "FlumenBattle/World/Interface/InventoryMenu.h"
 #include "FlumenBattle/World/Interface/ReputationMenu.h"
 #include "FlumenBattle/World/Interface/SettlementMenu.h"

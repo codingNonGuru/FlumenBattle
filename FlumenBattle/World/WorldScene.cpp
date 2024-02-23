@@ -22,9 +22,9 @@
 #include "FlumenBattle/World/Settlement/Path.h"
 #include "FlumenBattle/World/Settlement/SettlementFactory.h"
 #include "FlumenBattle/World/Settlement/SettlementAllocator.h"
-#include "FlumenBattle/World/Polity.h"
-#include "FlumenBattle/World/Faction.h"
-#include "FlumenBattle/World/PolityAllocator.h"
+#include "FlumenBattle/World/Polity/Polity.h"
+#include "FlumenBattle/World/Polity/Faction.h"
+#include "FlumenBattle/World/Polity/PolityAllocator.h"
 #include "FlumenBattle/World/Group/Encounter.h"
 #include "FlumenBattle/Battle/BattleState.h"
 #include "FlumenBattle/Battle/BattleScene.h"
@@ -275,6 +275,11 @@ namespace world
         {
             auto startClock = high_resolution_clock::now();
 
+            for(auto &polity : *polities)
+            {
+                polity.Decide();
+            }
+
             factionDecisions.Reset();
             for(auto &polity : *polities)
             {
@@ -378,7 +383,7 @@ namespace world
         auto polity = mother != nullptr ? mother->GetPolity() : nullptr;
         if(polity == nullptr)
         {
-            FoundPolity(settlement);
+            FoundPolity(settlement, false);
         }
         else
         {
@@ -449,10 +454,10 @@ namespace world
         }
     }
 
-    polity::Polity *WorldScene::FoundPolity(settlement::Settlement *ruler)
+    polity::Polity *WorldScene::FoundPolity(settlement::Settlement *ruler, bool isPlayerControlled)
     {
         auto polity = polity::PolityAllocator::Get()->AllocatePolity();
-        polity->Initialize(ruler);
+        polity->Initialize(ruler, isPlayerControlled);
 
         return polity;
     }
@@ -463,7 +468,7 @@ namespace world
 
         polity->UndergoDivision(faction);
 
-        auto newPolity = FoundPolity(faction->GetLeader());
+        auto newPolity = FoundPolity(faction->GetLeader(), false);
         for(auto &member : faction->GetMembers())
         {
             if(member == faction->GetLeader())

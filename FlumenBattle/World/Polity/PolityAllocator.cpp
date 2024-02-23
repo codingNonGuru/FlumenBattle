@@ -1,7 +1,7 @@
-#include "FlumenBattle/World/PolityAllocator.h"
+#include "FlumenBattle/World/Polity/PolityAllocator.h"
 #include "FlumenBattle/World/WorldGenerator.h"
-#include "FlumenBattle/World/Faction.h"
-#include "FlumenBattle/World/Polity.h"
+#include "FlumenBattle/World/Polity/Faction.h"
+#include "FlumenBattle/World/Polity/Polity.h"
 
 using namespace world::polity;
 

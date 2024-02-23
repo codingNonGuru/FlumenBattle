@@ -1,7 +1,7 @@
 #include "Faction.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/Utility/Utility.h"
-#include "FlumenBattle/World/Polity.h"
+#include "FlumenBattle/World/Polity/Polity.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/Condition.h"
 

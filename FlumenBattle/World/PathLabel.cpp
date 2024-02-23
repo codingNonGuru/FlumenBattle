@@ -9,7 +9,7 @@
 #include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
-#include "FlumenBattle/World/Polity.h"
+#include "FlumenBattle/World/Polity/Polity.h"
 
 using namespace world;
 

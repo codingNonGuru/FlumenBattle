@@ -159,7 +159,7 @@ namespace world
 
         settlement::Settlement * ForgePath(settlement::Settlement *, settlement::Settlement *, int = INT_MAX);
 
-        polity::Polity *FoundPolity(settlement::Settlement *);
+        polity::Polity *FoundPolity(settlement::Settlement *, bool);
 
         polity::Polity *SplitPolity(polity::Faction *);
 

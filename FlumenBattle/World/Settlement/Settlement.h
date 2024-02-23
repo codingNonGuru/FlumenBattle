@@ -164,8 +164,6 @@ namespace world::settlement
 
         void GrowBorders();
 
-        void DecideProduction();
-
     public:
         Word GetName() const {return name;}
 
@@ -242,6 +240,10 @@ namespace world::settlement
         void ProcessEarthquake(const disaster::Earthquake &);
 
         void Update();
+
+        void DecideProduction();
+
+        void SetProduction(ProductionOptions);
 
         void UpdatePolitics();
 

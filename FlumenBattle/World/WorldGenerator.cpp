@@ -15,7 +15,7 @@
 #include "FlumenBattle/World/Group/Types.h"
 #include "FlumenBattle/PreGame/Types.h"
 #include "FlumenBattle/World/Settlement/Types.h"
-#include "FlumenBattle/World/PolityAllocator.h"
+#include "FlumenBattle/World/Polity/PolityAllocator.h"
 #include "FlumenBattle/World/SimulationMap.h"
 
 using namespace world;

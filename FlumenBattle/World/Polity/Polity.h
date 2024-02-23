@@ -23,6 +23,7 @@ namespace world::polity
 {
     class Faction;
     struct FactionDecision;
+    class Mind;
 
     class Polity
     {
@@ -60,6 +61,8 @@ namespace world::polity
             Faction *Second {nullptr};
         };
 
+        Mind* controller;
+
         Pool <settlement::Settlement *> settlements;
 
         settlement::Settlement *ruler;
@@ -79,7 +82,7 @@ namespace world::polity
         void MergeFactions(FusionData);
 
     public:
-        void Initialize(settlement::Settlement *);
+        void Initialize(settlement::Settlement *, bool);
 
         void ExtendRealm(settlement::Settlement *);
 
@@ -90,6 +93,8 @@ namespace world::polity
         void DecideResearch();
 
         container::Array <FactionDecision> &Update();
+
+        void Decide();
 
         Faction *FindFaction(settlement::Settlement *);
         

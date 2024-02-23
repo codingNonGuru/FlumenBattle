@@ -3,7 +3,7 @@
 #include "Technology.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/WorldScene.h"
-#include "FlumenBattle/World/Polity.h"
+#include "FlumenBattle/World/Polity/Polity.h"
 
 using namespace world::science;
 

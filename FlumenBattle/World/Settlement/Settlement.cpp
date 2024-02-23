@@ -9,8 +9,8 @@
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldMap.h"
 #include "FlumenBattle/World/WorldController.h"
-#include "FlumenBattle/World/Polity.h"
-#include "FlumenBattle/World/Faction.h"
+#include "FlumenBattle/World/Polity/Polity.h"
+#include "FlumenBattle/World/Polity/Faction.h"
 #include "FlumenBattle/World/Settlement/Affliction.h"
 #include "FlumenBattle/World/Settlement/SettlementEvent.h"
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
@@ -456,6 +456,15 @@ void Settlement::DecideProduction()
     }
 }
 
+void Settlement::SetProduction(ProductionOptions option)
+{
+    auto inquiry = SettlementProduction::CanProduce(*this, option);
+    if(inquiry.CanProduce == false)
+        return;
+
+    *currentProduction = SettlementProductionFactory::Get()->Create(option, inquiry.Data);
+}
+
 Color Settlement::GetRulerBanner() const
 {
     return polity->GetRuler()->GetBanner();
@@ -729,11 +738,8 @@ void Settlement::Update()
     if(currentProduction->IsDone())
     {
         currentProduction->Finish(*this);
-
-        if(currentProduction->Is(ProductionOptions::NONE) == true)
-            DecideProduction();
-        else
-            *currentProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
+            
+        *currentProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
     }
 
     if(worldTime.MinuteCount == 0)

@@ -6,13 +6,25 @@
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
-#include "FlumenBattle/World/Faction.h"
-#include "FlumenBattle/World/PolityAllocator.h"
+#include "FlumenBattle/World/Polity/Faction.h"
+#include "FlumenBattle/World/Polity/PolityAllocator.h"
+#include "FlumenBattle/World/Polity/Mind.h"
+#include "FlumenBattle/World/Polity/HumanMind.h"
+#include "FlumenBattle/World/Polity/MachineMind.h"
 
 using namespace world::polity;
 
-void Polity::Initialize(settlement::Settlement *ruler)
+void Polity::Initialize(settlement::Settlement *ruler, bool isPlayerControlled)
 {
+    if(isPlayerControlled == true)
+    {
+        controller = HumanMind::Get();
+    }
+    else
+    {
+        controller = MachineMind::Get();
+    }
+
     this->ruler = ruler;
 
     malariaDeathCount = 0;
@@ -304,8 +316,6 @@ container::Array <FactionDecision> &Polity::Update()
         }
     }
 
-    DecideResearch();
-
     technologyRoster->Update(*this);
 
     decisions.Reset();
@@ -332,6 +342,13 @@ container::Array <FactionDecision> &Polity::Update()
     }
 
     return decisions;
+}
+
+void Polity::Decide()
+{
+    DecideResearch();
+
+    controller->MakeDecision(*this);
 }
 
 Polity::FusionData Polity::CheckFactionMergers()

@@ -29,7 +29,7 @@
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/Path.h"
-#include "FlumenBattle/World/Polity.h"
+#include "FlumenBattle/World/Polity/Polity.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Group/GroupSpotting.h"

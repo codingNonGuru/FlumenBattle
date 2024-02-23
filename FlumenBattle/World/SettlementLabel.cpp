@@ -18,8 +18,8 @@
 #include "FlumenBattle/World/Group/GroupDynamics.h"
 #include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
-#include "FlumenBattle/World/Polity.h"
-#include "FlumenBattle/World/Faction.h"
+#include "FlumenBattle/World/Polity/Polity.h"
+#include "FlumenBattle/World/Polity/Faction.h"
 #include "FlumenBattle/WorldInterface.h"
 
 using namespace world::settlement;
