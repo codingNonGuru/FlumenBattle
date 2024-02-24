@@ -272,5 +272,7 @@ namespace world::settlement
         bool HasUsedSimulationChange() const {return hasUsedSimulationChange;}
 
         void UseSimulationChange() {hasUsedSimulationChange = true;}
+
+        bool IsPlayerControlled() const;
     };
 }

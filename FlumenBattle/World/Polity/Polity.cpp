@@ -16,6 +16,8 @@ using namespace world::polity;
 
 void Polity::Initialize(settlement::Settlement *ruler, bool isPlayerControlled)
 {
+    isValid = true;
+
     if(isPlayerControlled == true)
     {
         controller = HumanMind::Get();
@@ -55,11 +57,6 @@ void Polity::ExtendRealm(settlement::Settlement *domain)
     domain->SetPolity(this);
 
     MapInterest(domain);
-
-    /*for(auto &neighbour : neighboursToRemoved)
-    {
-        MapInterest(neighbour);
-    }*/
 }
 
 static auto neighboursToRemoved = container::Array <world::settlement::Settlement *> (256);
@@ -116,6 +113,25 @@ void Polity::UndergoDivision(Faction *faction)
         RemoveSettlement(member);
 
         member->SetFaction(nullptr);
+    }
+
+    for(auto &neighbour : neighboursToRemoved)
+    {
+        MapInterest(neighbour);
+    }
+}
+
+void Polity::UndergoDivision(settlement::Settlement *settlement)
+{
+    neighboursToRemoved.Reset();
+
+    RemoveSettlement(settlement);
+
+    if(settlement->GetFaction() != nullptr)
+    {
+        settlement->GetFaction()->RemoveMember(settlement);
+
+        settlement->SetFaction(nullptr);
     }
 
     for(auto &neighbour : neighboursToRemoved)
@@ -202,9 +218,6 @@ Faction *Polity::FindFaction(settlement::Settlement *settlement)
 
     if(hasFound == false)
     {
-        /*if(factions.GetSize() == 1)
-            return;*/
-
         auto faction = PolityAllocator::Get()->AllocateFaction(this);
         faction->Initialize(this);
         faction->AddMember(settlement);
@@ -303,6 +316,14 @@ static container::Array <FactionDecision> decisions = container::Array <FactionD
 
 container::Array <FactionDecision> &Polity::Update() 
 {
+    decisions.Reset();
+
+    if(isValid == false)
+    {
+        turnsUntilDeletion--;
+        return decisions;
+    }
+
     malariaDeathCount = 0;
 
     for(auto &settlement : settlements)
@@ -317,8 +338,6 @@ container::Array <FactionDecision> &Polity::Update()
     }
 
     technologyRoster->Update(*this);
-
-    decisions.Reset();
 
     auto fusionData = CheckFactionMergers();
     if(fusionData.First != nullptr)
@@ -346,6 +365,9 @@ container::Array <FactionDecision> &Polity::Update()
 
 void Polity::Decide()
 {
+    if(isValid == false)
+        return;
+
     DecideResearch();
 
     controller->MakeDecision(*this);
@@ -384,4 +406,39 @@ void Polity::MergeFactions(Polity::FusionData fusionData)
     }
 
     PolityAllocator::Get()->FreeFaction(this, fusionData.Second);
+}
+
+bool Polity::IsPlayerControlled() const
+{
+    return controller == HumanMind::Get();
+}
+
+void Polity::SetController(bool isPlayer)
+{
+    if(isPlayer == true)
+    {
+        controller = HumanMind::Get();
+    }
+    else
+    {
+        controller = MachineMind::Get();
+    }
+}
+
+void Polity::CleanUp()
+{
+    for(auto &faction : factions)
+    {
+        if(faction.GetMembers().GetSize() > 0)
+            continue;
+
+        polity::PolityAllocator::Get()->FreeFaction(this, &faction);   
+    }
+}
+
+void Polity::MarkForDeletion()
+{
+    isValid = false;
+
+    turnsUntilDeletion = 3;
 }

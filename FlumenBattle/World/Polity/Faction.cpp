@@ -17,6 +17,11 @@ void Faction::SetLeader(settlement::Settlement *settlement)
     leader = settlement;
 }
 
+void Faction::RemoveMember(settlement::Settlement *settlement)
+{
+    members.Remove(settlement);
+}
+
 FactionDecision Faction::Update()
 {
     if(members.GetSize() < 3)

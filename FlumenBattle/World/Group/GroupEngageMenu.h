@@ -32,6 +32,8 @@ namespace world
 
         void HandleLeavePressed();
 
+        void HandleConquerPressed();
+
         void RefreshOptions();
 
         void DisableInput();

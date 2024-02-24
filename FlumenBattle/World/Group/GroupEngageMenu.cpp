@@ -21,14 +21,14 @@ static auto TEXT_COLOR = Color::RED * 0.5f;
 void GroupEngageMenu::HandleConfigure()
 {
     descriptionLabel = ElementFactory::BuildText(
-        {Size(), drawOrder_ + 1, {Position2(20.0f, 20.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}},
+        {drawOrder_ + 1, {Position2(20.0f, 20.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}},
         {{"Large"}, TEXT_COLOR, "You come across a band of travellers most merry..."}
     );
     descriptionLabel->SetAlignment(Text::Alignments::LEFT);
     descriptionLabel->Enable();
 
     lootLabel = ElementFactory::BuildText(
-        {Size(), drawOrder_ + 1, {Position2(), ElementAnchors::LOWER_LEFT, ElementPivots::UPPER_LEFT, descriptionLabel}},
+        {drawOrder_ + 1, {ElementAnchors::LOWER_LEFT, ElementPivots::UPPER_LEFT, descriptionLabel}},
         {{"Small"}, TEXT_COLOR, "You empty your foes pockets, bagging "}
     );
     lootLabel->SetAlignment(Text::Alignments::LEFT);
@@ -39,7 +39,7 @@ void GroupEngageMenu::HandleConfigure()
         {
             Size(64, 64), 
             drawOrder_ + 1, 
-            {Position2(), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, lootLabel}, 
+            {ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, lootLabel}, 
             {"Coin", false}
         }
     );
@@ -50,7 +50,7 @@ void GroupEngageMenu::HandleConfigure()
         {
             size_ - Size(4, 4), 
             drawOrder_ + 1, 
-            {Position2(), this}, 
+            {this}, 
             {"panel-border-031", true}
         }
     );
@@ -120,6 +120,20 @@ void GroupEngageMenu::HandleLeavePressed()
     WorldScene::Get()->FinishPlayerEncounter();
 }
 
+void GroupEngageMenu::HandleConquerPressed()
+{
+    Disable();
+
+    static const auto player = WorldScene::Get()->GetPlayerGroup();
+
+    const auto encounter = WorldController::Get()->GetPlayerBattle();
+    const auto enemy = encounter->GetOtherThan(player);
+
+    WorldScene::Get()->AccomplishPlayerConquest(enemy->GetHome());
+
+    WorldScene::Get()->FinishPlayerEncounter();
+}
+
 void GroupEngageMenu::RefreshOptions()
 {
     DisableInput();
@@ -127,14 +141,13 @@ void GroupEngageMenu::RefreshOptions()
     static const auto player = WorldScene::Get()->GetPlayerGroup();
 
     const auto encounter = WorldController::Get()->GetPlayerBattle();
+    const auto enemy = encounter->GetOtherThan(player);
 
     if(encounter->HasBattleEnded() == true)
     {
         Phrase text("My liege, we have made short-shrift of their wretched kin.");
         //text << "Word will reach " << encounter->GetOtherThan(player)->GetHome()->GetName() << " that we are not to be trusted.";
         descriptionLabel->Setup(text);
-
-        const auto enemy = encounter->GetOtherThan(player);
 
         text = "You empty your foes pockets, bagging ";
         text << enemy->GetMoney();
@@ -155,6 +168,15 @@ void GroupEngageMenu::RefreshOptions()
     }
 
     auto label = optionLabels.GetStart();
+
+    if(encounter->HasBattleEnded() == true && enemy->GetClass() == group::GroupClasses::GARRISON)
+    {
+        (*label)->Enable();
+        (*label)->Setup("[C] Conquer the settlement");
+        label++;
+
+        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_C, {this, &GroupEngageMenu::HandleConquerPressed});
+    }
 
     if(player->ValidateAction(group::GroupActions::FIGHT) == true)
     {
@@ -188,4 +210,5 @@ void GroupEngageMenu::DisableInput()
     InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_F);
     InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_L);
     InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_P);
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_C);
 }

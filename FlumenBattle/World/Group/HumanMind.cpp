@@ -102,9 +102,9 @@ HumanMind::HumanMind()
     static const auto MAXIMUM_QUEST_COUNT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_QUEST_COUNT).Integer;
     playerQuests.Initialize(MAXIMUM_QUEST_COUNT);
 
-    *WorldScene::Get()->OnUpdateStarted += {this, &HumanMind::HandleSceneUpdate};
+    WorldScene::Get()->OnUpdateStarted += {this, &HumanMind::HandleSceneUpdate};
 
-    *WorldScene::Get()->OnPlayerBattleEnded += {this, &HumanMind::HandleBattleEnded};
+    WorldScene::Get()->OnPlayerBattleEnded += {this, &HumanMind::HandleBattleEnded};
 }
 
 void HumanMind::Enable()
@@ -264,6 +264,15 @@ void HumanMind::DisableInput()
 
 void HumanMind::HandleSceneUpdate()
 {
+    UpdateLocationStatus();
+    
+    UpdateSpottings();
+
+    UpdateQuests();
+}
+
+void HumanMind::UpdateLocationStatus()
+{
     static auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     if(playerGroup->GetCurrentSettlement() != previousSettlement)
     {
@@ -278,10 +287,6 @@ void HumanMind::HandleSceneUpdate()
     }
 
     previousSettlement = playerGroup->GetCurrentSettlement();
-
-    UpdateSpottings();
-
-    UpdateQuests();
 }
 
 void HumanMind::UpdateSpottings()
@@ -435,6 +440,8 @@ void HumanMind::HandleTravel()
     }
 
     playerGroup->SelectAction(GroupActions::TRAVEL, {playerGroup->travelActionData.Route[0]});
+
+    UpdateLocationStatus();
 }
 
 void HumanMind::HandleResumeTravel()
@@ -445,6 +452,8 @@ void HumanMind::HandleResumeTravel()
         return;
 
     playerGroup->SelectAction(GroupActions::TRAVEL, {playerGroup->travelActionData.Route[0]});
+
+    UpdateLocationStatus();
 }
 
 void HumanMind::HandleCancelTravel()
@@ -466,6 +475,8 @@ void HumanMind::HandleCancelTravel()
 
     extendedPath.Tiles.Clear();
     extendedPathIndex = 0;
+
+    UpdateLocationStatus();
 }
 
 void HumanMind::HandleSlackenAction()

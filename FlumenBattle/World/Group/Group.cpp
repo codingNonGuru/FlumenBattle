@@ -64,6 +64,14 @@ namespace world::group
         {
             this->money = utility::GetRandom(100, 150);
         }
+        else if(this->type->Class == GroupClasses::GARRISON || this->type->Class == GroupClasses::PATROL)
+        {
+            this->money = utility::GetRandom(50, 100);
+        }
+        else if(this->type->Class == GroupClasses::BANDIT)
+        {
+            this->money = utility::GetRandom(100, 150);
+        }
 
         actionProgress = 0;
 
@@ -73,6 +81,7 @@ namespace world::group
         encounter = nullptr;
         tile = nullptr;
         home = nullptr;
+        domain = nullptr;
 
         for(int i = 0; i < size; ++i)
         {
@@ -546,5 +555,15 @@ namespace world::group
     int Group::GetDistanceTo(const Group *group) const
     {
         return tile->GetDistanceTo(*group->GetTile());
+    }
+
+    bool Group::DoesRulePolity() const
+    {
+        return domain != nullptr;
+    }
+
+    void Group::SetDomain(polity::Polity *polity)
+    {
+        domain = polity;
     }
 }

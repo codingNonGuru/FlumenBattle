@@ -562,6 +562,11 @@ int Settlement::GetMulePrice() const
     return foodPrice * 4 + 30;
 }
 
+bool Settlement::IsPlayerControlled() const
+{
+    return polity->IsPlayerControlled();
+}
+
 void Settlement::SetupSimulation()
 {
     simulationDomain = world::SimulationMap::Get()->GetDomain(location);

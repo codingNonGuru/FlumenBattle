@@ -42,11 +42,11 @@ namespace world
 
     void WorldController::Initialize()
     {
-        *WorldScene::Get()->OnPlayerEncounterInitiated += {this, &WorldController::HandlePlayerEncounterInitiated};
+        WorldScene::Get()->OnPlayerEncounterInitiated += {this, &WorldController::HandlePlayerEncounterInitiated};
 
-        *WorldScene::Get()->OnPlayerEncounterFinished += {this, &WorldController::DisableEncounterMode};
+        WorldScene::Get()->OnPlayerEncounterFinished += {this, &WorldController::DisableEncounterMode};
 
-        *WorldScene::Get()->OnPlayerBattleStarted += {this, &WorldController::HandleBattleStarted};
+        WorldScene::Get()->OnPlayerBattleStarted += {this, &WorldController::HandleBattleStarted};
 
         group::HumanMind::Get();
     }
@@ -57,10 +57,11 @@ namespace world
 
         if(GetPlayerBattle() != nullptr)
         {
-            
+            std::cout<<"alohaaa\n";
         }
         else
         {
+            std::cout<<"alohaaaaaaaaaa\n";
             EnableHardInput();
         }
 

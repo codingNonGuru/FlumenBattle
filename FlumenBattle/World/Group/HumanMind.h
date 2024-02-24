@@ -51,6 +51,8 @@ namespace world::group
 
         void RegisterActionInitiation(Group &, GroupActionResult) const override;
 
+        void UpdateLocationStatus();
+
         void UpdateSpottings();
 
         void UpdateQuests();

@@ -62,6 +62,8 @@ namespace world::polity
 
         void SetLeader(settlement::Settlement *settlement);
 
+        void RemoveMember(settlement::Settlement *);
+
         FactionDecision Update();
 
         void Stop() {isActive = false;}

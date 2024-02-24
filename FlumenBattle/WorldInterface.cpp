@@ -38,6 +38,7 @@
 #include "FlumenBattle/World/Interface/MoneyPopup.h"
 #include "FlumenBattle/World/Interface/ItemPopup.h"
 #include "FlumenBattle/World/Interface/ProductionDecisionMenu.h"
+#include "FlumenBattle/World/Interface/ConquestPopup.h"
 
 using namespace world;
 
@@ -274,6 +275,17 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
         }
     );
 
+    conquestPopup = ElementFactory::BuildElement <interface::ConquestPopup>
+    (
+        {
+            Size(480, 200), 
+            DrawOrder(6), 
+            {canvas}, 
+            {false}, 
+            Opacity(0.9f)
+        }
+    );
+
     group::HumanMind::Get()->OnSpottingHovered += {this, &WorldInterface::HandleSpottingHovered};
 
     group::HumanMind::Get()->OnQuestStarted += {this, &WorldInterface::HandleQuestStarted};
@@ -293,6 +305,8 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     group::HumanMind::Get()->OnSettlementEntered += {this, &WorldInterface::HandleSettlementEntered};
 
     group::HumanMind::Get()->OnSettlementExited += {this, &WorldInterface::HandleSettlementExited};
+
+    WorldScene::Get()->OnPlayerConquest += {this, &WorldInterface::HandlePlayerConquest};
 }
 
 void WorldInterface::Initialize()
@@ -307,15 +321,15 @@ void WorldInterface::Initialize()
         settlementLabel++;
     }
 
-    *WorldScene::Get()->OnPlayerEncounterInitiated += {this, &WorldInterface::HandlePlayerEncounter};
+    WorldScene::Get()->OnPlayerEncounterInitiated += {this, &WorldInterface::HandlePlayerEncounter};
 
-    *WorldScene::Get()->OnPlayerEncounterFinished += {this, &WorldInterface::HandlePlayerDisengage};
+    WorldScene::Get()->OnPlayerEncounterFinished += {this, &WorldInterface::HandlePlayerDisengage};
 
-    *WorldScene::Get()->OnPlayerBattleStarted += {this, &WorldInterface::HandlePlayerBattle};
+    WorldScene::Get()->OnPlayerBattleStarted += {this, &WorldInterface::HandlePlayerBattle};
 
-    *WorldScene::Get()->OnPlayerBattleEnded += {this, &WorldInterface::HandleBattleEnded};
+    WorldScene::Get()->OnPlayerBattleEnded += {this, &WorldInterface::HandleBattleEnded};
 
-    *WorldScene::Get()->OnSettlementFounded += {this, &WorldInterface::HandleSettlementFounded};
+    WorldScene::Get()->OnSettlementFounded += {this, &WorldInterface::HandleSettlementFounded};
 
     controller = WorldController::Get();
 
@@ -471,22 +485,25 @@ void WorldInterface::HandleMenuCycled()
     }
     else
     {
-        if(settlementMenu->IsLocallyActive() == true)
+        static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+        auto settlement = playerGroup->GetCurrentSettlement();
+
+        if(settlement != nullptr && settlement->IsPlayerControlled() == true)
         {
-            settlementMenu->Disable();
+            if(settlementMenu->IsLocallyActive() == true)
+            {
+                settlementMenu->Disable();       
 
-            static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
-            auto settlement = playerGroup->GetCurrentSettlement();
+                productionMenu->Setup(settlement);
 
-            productionMenu->Setup(settlement);
+                productionMenu->Enable();
+            }
+            else if(productionMenu->IsLocallyActive() == true)
+            {
+                productionMenu->Disable();
 
-            productionMenu->Enable();
-        }
-        else if(productionMenu->IsLocallyActive() == true)
-        {
-            productionMenu->Disable();
-
-            settlementMenu->Enable();
+                settlementMenu->Enable();
+            }
         }
     }
 }
@@ -627,6 +644,15 @@ void WorldInterface::HandleSettlementExited()
     settlementMenu->Disable();
 
     productionMenu->Disable();
+}
+
+void WorldInterface::HandlePlayerConquest()
+{
+    const auto settlement = WorldScene::Get()->GetConqueredSettlement();
+
+    conquestPopup->Setup(settlement);
+
+    conquestPopup->Enable();
 }
 
 void WorldInterface::Update()

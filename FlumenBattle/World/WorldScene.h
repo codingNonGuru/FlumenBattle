@@ -1,11 +1,11 @@
 #pragma once
 
+#include "FlumenCore/Observer.h"
+
 #include "FlumenEngine/Core/Scene.hpp"
 
 #include "FlumenBattle/World/WorldTime.h"
 #include "FlumenBattle/World/Group/GroupBatchMap.h"
-
-class Delegate;
 
 namespace world::settlement
 {
@@ -71,6 +71,8 @@ namespace world
 
         Array <WorldTile *> ownershipChangeQueue;
 
+        settlement::Settlement *conqueredSettlement;
+
         WorldScene();
 
         void Initialize() override;
@@ -98,17 +100,23 @@ namespace world
         void HandleBattleRoundEnded();
 
     public:
-        Delegate *OnUpdateStarted;
+        Delegate OnUpdateStarted;
 
-        Delegate *OnPlayerEncounterInitiated;
+        Delegate OnPlayerEncounterInitiated;
 
-        Delegate *OnPlayerEncounterFinished;
+        Delegate OnPlayerEncounterFinished;
 
-        Delegate *OnPlayerBattleStarted;
+        Delegate OnPlayerBattleStarted;
 
-        Delegate *OnPlayerBattleEnded;
+        Delegate OnPlayerBattleEnded;
 
-        Delegate *OnSettlementFounded;
+        Delegate OnSettlementFounded;
+
+        Delegate OnPlayerConquest;
+
+        Delegate OnPlayerBecameRuler;
+
+        Delegate OnPlayerDomainGrew;
 
         static WorldScene * Get() 
         {
@@ -155,6 +163,8 @@ namespace world
 
         void FinishPlayerEncounter();
 
+        void AccomplishPlayerConquest(settlement::Settlement *);
+
         settlement::Settlement * FoundSettlement(WorldTile *, settlement::Settlement *);
 
         settlement::Settlement * ForgePath(settlement::Settlement *, settlement::Settlement *, int = INT_MAX);
@@ -163,10 +173,14 @@ namespace world
 
         polity::Polity *SplitPolity(polity::Faction *);
 
+        void DiminishPolity(polity::Polity *, settlement::Settlement *);
+
         void UpdateOwnershipChangeQueue(WorldTile *);
 
         const Array <WorldTile *> &GetOwnershipChangeQueue() const {return ownershipChangeQueue;}
 
         bool IsNightTime() const {return time.HourCount < 6 || time.HourCount >= 22;}
+
+        settlement::Settlement *GetConqueredSettlement() const;
     };
 }

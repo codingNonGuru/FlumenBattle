@@ -34,6 +34,7 @@ namespace world
         class MoneyPopup;
         class ItemPopup;
         class ProductionDecisionMenu;
+        class ConquestPopup;
     }
 
     namespace settlement
@@ -124,6 +125,8 @@ namespace world
 
         interface::ProductionDecisionMenu *productionMenu;
 
+        interface::ConquestPopup *conquestPopup;
+
         void Update();
 
         void HandlePlayerEncounter();
@@ -163,6 +166,8 @@ namespace world
         void HandleSettlementEntered();
 
         void HandleSettlementExited();
+
+        void HandlePlayerConquest();
 
         WorldInterface();
 

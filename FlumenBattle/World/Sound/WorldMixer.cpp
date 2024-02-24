@@ -14,11 +14,11 @@ static const auto COIN_SOUNDS = container::Array {"Coin", "Coin2", "Coin3", "Coi
 
 WorldMixer::WorldMixer()
 {
-    *WorldScene::Get()->OnPlayerBattleStarted += [] {
+    WorldScene::Get()->OnPlayerBattleStarted += [] {
         engine::SoundManager::Get()->PlaySound(START_BATTLE_SOUND);
     };
 
-    *WorldScene::Get()->OnPlayerEncounterFinished += [] {
+    WorldScene::Get()->OnPlayerEncounterFinished += [] {
         auto sound = COIN_SOUNDS.GetRandom();
         engine::SoundManager::Get()->PlaySound(*sound);
     };

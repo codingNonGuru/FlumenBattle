@@ -44,6 +44,8 @@ namespace world::polity
 
         Faction *AllocateFaction(Polity *);
 
+        void FreePolity(Polity *);
+
         void FreeFaction(Polity *, Faction *);
     };
 }

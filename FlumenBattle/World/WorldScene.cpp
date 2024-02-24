@@ -43,19 +43,7 @@
 namespace world
 {
     WorldScene::WorldScene()
-    {
-        OnUpdateStarted = new Delegate();
-
-        OnPlayerEncounterInitiated = new Delegate();
-
-        OnPlayerEncounterFinished = new Delegate();
-
-        OnPlayerBattleStarted = new Delegate();
-
-        OnPlayerBattleEnded = new Delegate();
-
-        OnSettlementFounded = new Delegate();
-    }
+    {}
 
     void WorldScene::Initialize()
     {
@@ -83,7 +71,7 @@ namespace world
 
         AWAIT(time.GetStep())
 
-        OnUpdateStarted->Invoke();
+        OnUpdateStarted.Invoke();
 
         ownershipChangeQueue.Reset();
 
@@ -299,6 +287,19 @@ namespace world
                 }
             }
 
+            for(auto &polity : *polities)
+            {
+                polity.CleanUp();
+            }
+
+            for(auto &polity : *polities)
+            {
+                if(polity.ShouldBeDeleted() == false)
+                    continue;
+
+                polity::PolityAllocator::Get()->FreePolity(&polity);
+            }
+
             auto stop = high_resolution_clock::now();
             auto duration = duration_cast<microseconds>(stop - startClock);
             //std::cout <<"polity refresh duration " << duration.count() << "\n";
@@ -330,7 +331,7 @@ namespace world
 
         if(playerGroup == first || playerGroup == second)
         {
-            OnPlayerEncounterInitiated->Invoke();
+            OnPlayerEncounterInitiated.Invoke();
 
             this->StopTime(1);
         }
@@ -349,7 +350,7 @@ namespace world
 
         playerGroup->GetEncounter()->StartFighting();
 
-        OnPlayerBattleStarted->Invoke();
+        OnPlayerBattleStarted.Invoke();
 
         this->StartTime(1);
     }
@@ -360,7 +361,7 @@ namespace world
 
         playerGroup->GetEncounter()->EndFighting();
 
-        OnPlayerBattleEnded->Invoke();
+        OnPlayerBattleEnded.Invoke();
     }
 
     void WorldScene::FinishPlayerEncounter()
@@ -369,9 +370,72 @@ namespace world
 
         playerGroup->GetEncounter()->Finish(playerGroup);
 
-        OnPlayerEncounterFinished->Invoke();
+        OnPlayerEncounterFinished.Invoke();
 
         this->StartTime(1);
+    }
+
+    void WorldScene::AccomplishPlayerConquest(settlement::Settlement *settlement)
+    {
+        conqueredSettlement = settlement;
+
+        auto otherPolity = conqueredSettlement->GetPolity();
+
+        if(playerGroup->DoesRulePolity() == true)
+        {
+            const auto playerPolity = playerGroup->GetDomain();
+
+            if(otherPolity->GetSettlements().GetSize() == 1)
+            {
+                otherPolity->MarkForDeletion();
+
+                playerPolity->ExtendRealm(conqueredSettlement);
+            }
+            else
+            {
+                DiminishPolity(otherPolity, conqueredSettlement);
+
+                playerPolity->ExtendRealm(conqueredSettlement);
+            }
+
+            auto &tiles = conqueredSettlement->GetTiles();
+            for(auto &tile : tiles)
+            {
+                UpdateOwnershipChangeQueue(tile.Tile);
+            }
+
+            OnPlayerDomainGrew.Invoke();
+        }
+        else
+        {
+            if(otherPolity->GetSettlements().GetSize() == 1)
+            {
+                playerGroup->SetDomain(otherPolity);
+
+                otherPolity->SetController(true);
+            }
+            else
+            {
+                DiminishPolity(otherPolity, conqueredSettlement);
+
+                auto newPolity = FoundPolity(settlement, true);
+
+                playerGroup->SetDomain(newPolity);
+
+                for(auto &settlement : otherPolity->GetSettlements())
+                {
+                    auto &tiles = settlement->GetTiles();
+                    for(auto &tile : tiles)
+                    {
+                        UpdateOwnershipChangeQueue(tile.Tile);
+                    }
+                }
+            }
+
+            OnPlayerBecameRuler.Invoke();
+        }
+
+        OnPlayerConquest.Invoke();
     }
 
     static settlement::Settlement *foundedSettlement = nullptr;
@@ -383,7 +447,7 @@ namespace world
         auto polity = mother != nullptr ? mother->GetPolity() : nullptr;
         if(polity == nullptr)
         {
-            FoundPolity(settlement, true);
+            FoundPolity(settlement, false);
         }
         else
         {
@@ -426,7 +490,7 @@ namespace world
         }
 
         foundedSettlement = settlement;
-        OnSettlementFounded->Invoke();
+        OnSettlementFounded.Invoke();
     }
 
     settlement::Settlement *WorldScene::ForgePath(settlement::Settlement *from, settlement::Settlement *to, int complexityLimit)
@@ -460,6 +524,20 @@ namespace world
         polity->Initialize(ruler, isPlayerControlled);
 
         return polity;
+    }
+
+    void WorldScene::DiminishPolity(polity::Polity *polity, settlement::Settlement *settlement)
+    {
+        polity->UndergoDivision(settlement);
+
+        polity->SetRuler(*polity->GetSettlements().GetRandom());
+
+        auto &neighbours = polity->GetSecederNeighbours();
+        for(auto &neighbour : neighbours)
+        {
+            neighbour->UpdateDistanceToCapital();
+            neighbour->UpdateColonialMap();
+        }
     }
 
     polity::Polity *WorldScene::SplitPolity(polity::Faction *faction)
@@ -557,6 +635,11 @@ namespace world
     const group::GroupBuffer WorldScene::GetNearbyGroups(WorldTile *tile, int maximumGroupDistance)
     {
         return group::GroupBatchMap::Get()->GetNearbyGroups(tile, maximumGroupDistance);
+    }
+
+    settlement::Settlement *WorldScene::GetConqueredSettlement() const
+    {
+        return conqueredSettlement;
     }
 
     void WorldScene::UpdateOwnershipChangeQueue(WorldTile *tile)

@@ -63,6 +63,20 @@ Faction *PolityAllocator::AllocateFaction(Polity *polity)
     return faction;
 }
 
+void PolityAllocator::FreePolity(Polity *polity)
+{
+    for(auto &faction : polity->GetFactions())
+    {
+        faction.members.Terminate(factionSettlementAllocator);
+    }
+
+    polity->factions.Terminate(factionAllocator);
+
+    polity->settlements.Terminate(politySettlementAllocator);
+
+    polities.RemoveAt(polity);
+}
+
 void PolityAllocator::FreeFaction(Polity *polity, Faction *faction)
 {
     polity->factions.RemoveAt(faction);

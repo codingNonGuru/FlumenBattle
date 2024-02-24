@@ -33,6 +33,11 @@ namespace world
     {
         class Settlement;
     }
+
+    namespace polity
+    {
+        class Polity;
+    }
 }
 
 namespace world::group
@@ -159,6 +164,8 @@ namespace world::group
 
         int muleCount;
 
+        polity::Polity *domain;
+
         void Initialize(const GroupType *, Integer, Color, RaceTypes);
 
         void *operator new(size_t);
@@ -277,5 +284,11 @@ namespace world::group
         void AddMoney(int sum) {money += sum;}
 
         int GetFoodConsumption() const;
+
+        bool DoesRulePolity() const;
+
+        polity::Polity *GetDomain() {return domain;}
+
+        void SetDomain(polity::Polity *);
     };
 }

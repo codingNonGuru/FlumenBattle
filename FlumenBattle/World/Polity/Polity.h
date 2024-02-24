@@ -61,6 +61,10 @@ namespace world::polity
             Faction *Second {nullptr};
         };
 
+        bool isValid;
+
+        int turnsUntilDeletion;
+
         Mind* controller;
 
         Pool <settlement::Settlement *> settlements;
@@ -90,6 +94,8 @@ namespace world::polity
 
         void UndergoDivision(Faction *);
 
+        void UndergoDivision(settlement::Settlement *);
+
         void DecideResearch();
 
         container::Array <FactionDecision> &Update();
@@ -101,6 +107,8 @@ namespace world::polity
         void ApplyTechnologyModifiers(settlement::Settlement *) const;
 
         settlement::Settlement *GetRuler() const {return ruler;}
+
+        void SetRuler(settlement::Settlement *newRuler) {ruler = newRuler;}
 
         Integer GetPopulation() const;
 
@@ -123,5 +131,15 @@ namespace world::polity
         bool HasDiscoveredTechnology(science::Technologies) const;
 
         const container::Array <world::settlement::Settlement *> &GetSecederNeighbours() const;
+
+        bool IsPlayerControlled() const;
+
+        void SetController(bool);
+
+        void CleanUp();
+
+        void MarkForDeletion();
+
+        bool ShouldBeDeleted() const {return isValid == false && turnsUntilDeletion == 0;}
     };
 }
