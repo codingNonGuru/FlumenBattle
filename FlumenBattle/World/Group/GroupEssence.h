@@ -6,7 +6,7 @@ namespace world::group
 
     struct GroupEssence
     {
-        Group *Group;
+        Group *Group {nullptr};
 
         bool operator== (const group::Group *group) {return Group == group;}
     };

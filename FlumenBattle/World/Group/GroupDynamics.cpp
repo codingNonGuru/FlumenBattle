@@ -31,7 +31,7 @@ using namespace world::group;
 
 GroupDynamics::GroupDynamics() {}
 
-void GroupDynamics::Initialize()
+void GroupDynamics::Initialize(settlement::Settlement &settlement)
 {
     lastSpawnTime = -1;
 }
@@ -45,6 +45,8 @@ void GroupDynamics::Update(settlement::Settlement &settlement)
     AddMerchant(settlement);
 
     AddBandit(settlement);
+
+    AddGarrison(settlement);
 
     const auto simulationLevel = settlement.GetSimulationLevel();
     if(simulationLevel != SimulationLevels::ADVANCED)
@@ -146,6 +148,20 @@ void GroupDynamics::UpdateSimulationLevel(settlement::Settlement &settlement)
             patrol.Group = nullptr;
         }
     }
+
+    for(auto &garrison : garrisons)
+    {
+        if(garrison.Group == nullptr && simulationLevel == SimulationLevels::ADVANCED)
+        {
+            garrison.Group = group::GroupFactory::Create({group::GroupClasses::GARRISON, RaceTypes::ORC, &settlement});
+        }
+        else if(garrison.Group != nullptr && simulationLevel != SimulationLevels::ADVANCED)
+        {
+            group::GroupAllocator::Get()->Free(garrison.Group, false);
+
+            garrison.Group = nullptr;
+        }
+    }
 }
 
 void GroupDynamics::AddPatrol(settlement::Settlement &settlement)
@@ -243,6 +259,23 @@ void GroupDynamics::AddBandit(settlement::Settlement &settlement)
     }
 }
 
+void GroupDynamics::AddGarrison(settlement::Settlement &settlement)
+{
+    if(garrisons.GetSize() == 1)
+        return;
+
+    const auto simulationLevel = settlement.GetSimulationLevel();
+    if(simulationLevel == SimulationLevels::ADVANCED)
+    {
+        auto garrison = group::GroupFactory::Create({group::GroupClasses::GARRISON, RaceTypes::ORC, &settlement});
+        *garrisons.Add() = {garrison};
+    }
+    else
+    {
+        *garrisons.Add() = {nullptr};
+    }
+}
+
 void GroupDynamics::RemoveGroup(const group::Group &group)
 {
     if(group.GetClass() == group::GroupClasses::ADVENTURER)
@@ -260,6 +293,10 @@ void GroupDynamics::RemoveGroup(const group::Group &group)
     else if(group.GetClass() == group::GroupClasses::PATROL)
     {
         patrols.Remove(&group);
+    }
+    else if(group.GetClass() == group::GroupClasses::GARRISON)
+    {
+        garrisons.Remove(&group);
     }
 }
 
@@ -281,4 +318,9 @@ int GroupDynamics::GetBanditStrength() const
 int GroupDynamics::GetPatrolStrength() const
 {
     return patrols.GetSize();
+}
+
+int GroupDynamics::GetGarrisonStrength() const
+{
+    return garrisons.GetSize();
 }

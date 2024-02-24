@@ -40,6 +40,10 @@ namespace world::group
         {
             DetermineActionAsPatrol(group);
         }
+        else if(group.type->Class == GroupClasses::GARRISON)
+        {
+            DetermineActionAsGarrison(group);
+        }
     }
 
     void MachineMind::DetermineActionAsMerchant(Group &group) const 
@@ -299,6 +303,14 @@ namespace world::group
                 group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
             }
         }
+    }
+
+    void MachineMind::DetermineActionAsGarrison(Group &group) const
+    {
+        if(NeedsRest(group) == false)
+            return;
+
+        group.SelectAction(GroupActions::TAKE_LONG_REST);
     }
 
     void MachineMind::RegisterActionPerformance(Group &, GroupActionResult) const

@@ -175,12 +175,10 @@ namespace world::group
 
     void Group::CheckFatigue()
     {
-        timeSinceLongRest += 1;
-
-        if(action != nullptr && action->Type == GroupActions::TAKE_LONG_REST)
-        {
+        if(this->IsDoing(GroupActions::TAKE_LONG_REST) == true)
             return;
-        }
+
+        timeSinceLongRest += 1;
 
         static const auto FATIGUE_ONSET_SINCE_REST = engine::ConfigManager::Get()->GetValue(game::ConfigValues::FATIGUE_ONSET_SINCE_REST).Integer;
 

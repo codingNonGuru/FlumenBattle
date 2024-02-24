@@ -18,6 +18,8 @@ namespace world::group
 
         void DetermineActionAsPatrol(Group &) const;
 
+        void DetermineActionAsGarrison(Group &) const;
+
         void RegisterActionPerformance(Group &, GroupActionResult) const override;
 
         bool NeedsRest(const Group &) const;

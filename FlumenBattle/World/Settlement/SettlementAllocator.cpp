@@ -38,6 +38,8 @@
 
 #define PATROLS_PER_SETTLEMENT 8
 
+#define GARRISONS_PER_SETTLEMENT 4
+
 using namespace world::settlement;
 
 void SettlementAllocator::PreallocateMaximumMemory()
@@ -85,6 +87,8 @@ void SettlementAllocator::PreallocateMaximumMemory()
     banditMemory = container::PoolAllocator <group::GroupEssence>::PreallocateMemory (settlementCount, BANDITS_PER_SETTLEMENT);
 
     patrolMemory = container::PoolAllocator <group::GroupEssence>::PreallocateMemory (settlementCount, PATROLS_PER_SETTLEMENT);
+
+    garrisonMemory = container::PoolAllocator <group::GroupEssence>::PreallocateMemory (settlementCount, GARRISONS_PER_SETTLEMENT);
 }
 
 void SettlementAllocator::AllocateWorldMemory(int worldSize)
@@ -130,6 +134,8 @@ void SettlementAllocator::AllocateWorldMemory(int worldSize)
     banditAllocator = container::PoolAllocator <group::GroupEssence> (settlementCount, BANDITS_PER_SETTLEMENT, banditMemory);
 
     patrolAllocator = container::PoolAllocator <group::GroupEssence> (settlementCount, PATROLS_PER_SETTLEMENT, patrolMemory);
+
+    garrisonAllocator = container::PoolAllocator <group::GroupEssence> (settlementCount, GARRISONS_PER_SETTLEMENT, garrisonMemory);
 }
 
 Settlement * SettlementAllocator::Allocate()
@@ -145,6 +151,8 @@ Settlement * SettlementAllocator::Allocate()
     settlement->groupDynamics->bandits.Initialize(banditAllocator);
 
     settlement->groupDynamics->patrols.Initialize(patrolAllocator);
+
+    settlement->groupDynamics->garrisons.Initialize(garrisonAllocator);
 
     auto &tiles = settlement->GetTiles();
     tiles.Initialize(tileAllocator);

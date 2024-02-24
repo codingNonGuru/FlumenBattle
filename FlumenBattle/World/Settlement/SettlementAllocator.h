@@ -85,6 +85,8 @@ namespace world::settlement
 
         container::PoolAllocator <group::GroupEssence>::Memory patrolMemory;
 
+        container::PoolAllocator <group::GroupEssence>::Memory garrisonMemory;
+
 
         container::Pool <Settlement> settlements;
 
@@ -123,6 +125,8 @@ namespace world::settlement
         container::PoolAllocator <group::GroupEssence> banditAllocator;
 
         container::PoolAllocator <group::GroupEssence> patrolAllocator;
+
+        container::PoolAllocator <group::GroupEssence> garrisonAllocator;
 
 
         void PerformCleanup();

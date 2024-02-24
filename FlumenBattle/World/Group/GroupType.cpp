@@ -34,6 +34,11 @@ namespace world::group
                 static const GroupType type = {GroupTypes::COMPUTER, groupClass, MachineMind::Get(), 1};
                 return &type;
             }
+        case GroupClasses::GARRISON:
+            {
+                static const GroupType type = {GroupTypes::COMPUTER, groupClass, MachineMind::Get(), 10};
+                return &type;
+            }
         }
     }
 

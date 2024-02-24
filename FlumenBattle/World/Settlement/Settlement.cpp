@@ -44,17 +44,19 @@ bool Link::operator== (const settlement::Path &path) const
 
 void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
 {
+    this->location = location;
+
+    SetupSimulation();
+
+    this->groupDynamics->Initialize(*this);
+
     this->buildingManager->Initialize(this);
 
     this->resourceHandler.Initialize();
 
-    this->groupDynamics->Initialize();
-
     this->name = name;
 
     this->banner = banner;
-
-    this->location = location;
 
     this->population = 1;
 
@@ -89,8 +91,6 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
     AddBuilding(BuildingTypes::HOUSING);
 
     WorkNewTile();
-
-    SetupSimulation();
 }
 
 void Settlement::AddPath(Path *path) 
