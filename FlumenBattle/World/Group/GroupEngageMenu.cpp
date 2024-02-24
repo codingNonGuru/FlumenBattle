@@ -109,8 +109,6 @@ void GroupEngageMenu::HandleFightPressed()
 void GroupEngageMenu::HandlePersuadePressed()
 {
     WorldScene::Get()->InitiatePlayerPersuasion();
-
-    //RefreshOptions();
 }
 
 void GroupEngageMenu::HandleLeavePressed()

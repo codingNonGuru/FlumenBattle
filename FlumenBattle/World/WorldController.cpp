@@ -53,15 +53,11 @@ namespace world
 
     void WorldController::Enable()
     {
-        group::HumanMind::Get()->Enable();
-
         if(GetPlayerBattle() != nullptr)
         {
-            std::cout<<"alohaaa\n";
         }
         else
         {
-            std::cout<<"alohaaaaaaaaaa\n";
             EnableHardInput();
         }
 
@@ -100,11 +96,6 @@ namespace world
 
     void WorldController::DisableEncounterMode()
     {
-        if(isInEncounterMode == false)
-        {
-            return;
-        }
-
         isInEncounterMode = false;
 
         EnableHardInput();

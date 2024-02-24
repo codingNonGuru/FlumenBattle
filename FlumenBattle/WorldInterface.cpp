@@ -387,8 +387,6 @@ void WorldInterface::HandlePlayerEncounter()
 void WorldInterface::HandlePlayerDisengage()
 {
     decisionMenu->Enable();
-
-    engageMenu->Disable();
 }
 
 void WorldInterface::HandlePlayerBattle()
