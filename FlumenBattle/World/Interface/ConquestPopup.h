@@ -21,6 +21,8 @@ namespace world::interface
 
         void HandleConfigure() override;
 
+        void HandleSetupAnimations() override;
+
         void HandleClosePressed();
 
     public:

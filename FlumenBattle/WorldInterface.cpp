@@ -285,6 +285,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
             Opacity(0.9f)
         }
     );
+    conquestPopup->SetupBasicAnimations();
 
     group::HumanMind::Get()->OnSpottingHovered += {this, &WorldInterface::HandleSpottingHovered};
 
@@ -650,7 +651,7 @@ void WorldInterface::HandlePlayerConquest()
 
     conquestPopup->Setup(settlement);
 
-    conquestPopup->Enable();
+    conquestPopup->Open();
 }
 
 void WorldInterface::Update()

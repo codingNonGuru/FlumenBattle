@@ -1,6 +1,8 @@
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/Text.hpp"
 #include "FlumenEngine/Core/InputHandler.hpp"
+#include "FlumenEngine/Animation.h"
+#include "FlumenEngine/Core/Transform.hpp"
 
 #include "ConquestPopup.h"
 #include "FlumenBattle/World/Group/Quest.h"
@@ -15,6 +17,8 @@ static const auto BORDER_INNER_OFFSET = Size(4, 4);
 static const auto TEXT_COLOR = Color::RED * 0.5f;
 
 static constexpr auto CLOSE_POPUP_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_RETURN;
+
+static const auto ANIMATION_LENGTH = 0.3f;
 
 void ConquestPopup::HandleConfigure()
 {
@@ -56,13 +60,74 @@ void ConquestPopup::HandleConfigure()
         }
     );
     continueLabel->Enable();
+
+    UpdatePositionConstantly();
+}
+
+void ConquestPopup::HandleSetupAnimations()
+{
+    openAnimation_->SetLength(ANIMATION_LENGTH);
+
+    auto property = openAnimation_->AddProperty({openAnimation_, &GetOpacity().Value});
+
+    property->AddKey()->Initialize(0.0f, 0.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH, 1.0f);
+
+    property = openAnimation_->AddProperty({openAnimation_, &border->GetOpacity().Value});
+
+    property->AddKey()->Initialize(0.0f, 0.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH, 1.0f);
+
+    property = openAnimation_->AddProperty({openAnimation_, &infoLabel->GetOpacity().Value});
+
+    property->AddKey()->Initialize(0.0f, 0.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH, 1.0f);
+
+    property = openAnimation_->AddProperty({openAnimation_, &continueLabel->GetOpacity().Value});
+
+    property->AddKey()->Initialize(0.0f, 0.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH, 1.0f);
+
+    property = openAnimation_->AddProperty({openAnimation_, &basePosition_.y});
+
+    property->AddKey()->Initialize(0.0f, 200.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH, 0.0f);
+
+    closeAnimation_->SetLength(ANIMATION_LENGTH);
+
+    property = closeAnimation_->AddProperty({closeAnimation_, &GetOpacity().Value});
+
+    property->AddKey()->Initialize(0.0f, 1.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH, 0.0f);
+
+    property = closeAnimation_->AddProperty({closeAnimation_, &border->GetOpacity().Value});
+
+    property->AddKey()->Initialize(0.0f, 1.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH, 0.0f);
+
+    property = closeAnimation_->AddProperty({closeAnimation_, &infoLabel->GetOpacity().Value});
+
+    property->AddKey()->Initialize(0.0f, 1.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH, 0.0f);
+
+    property = closeAnimation_->AddProperty({closeAnimation_, &continueLabel->GetOpacity().Value});
+
+    property->AddKey()->Initialize(0.0f, 1.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH, 0.0f);
+
+    property = closeAnimation_->AddProperty({closeAnimation_, &basePosition_.y});
+
+    property->AddKey()->Initialize(0.0f, 0.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH, -200.0f);
+
+    InputHandler::RegisterEvent(CLOSE_POPUP_INPUT_KEY, {this, &ConquestPopup::HandleClosePressed});
 }
 
 void ConquestPopup::HandleClosePressed()
 {
     InputHandler::UnregisterEvent(CLOSE_POPUP_INPUT_KEY);
 
-    Disable();
+    Close();
 }
 
 void ConquestPopup::Setup(settlement::Settlement *settlement)
