@@ -24,6 +24,7 @@
 #include "FlumenBattle/Utility/SettlementPathfinder.h"
 #include "FlumenBattle/Config.h"
 #include "FlumenBattle/ThreadedResourceHandler.h"
+#include "FlumenBattle/Race.h"
 
 using namespace world::settlement;
 
@@ -42,9 +43,11 @@ bool Link::operator== (const settlement::Path &path) const
     return *Path == path;
 }
 
-void Settlement::Initialize(Word name, Color banner, world::WorldTile *location)
+void Settlement::Initialize(Word name, Color banner, world::WorldTile *location, const Race *race)
 {
     this->location = location;
+
+    this->race = race;
 
     SetupSimulation();
 
@@ -639,6 +642,8 @@ void Settlement::Update()
         conditionManager->ApplyModifiers(*this);
 
         buildingManager->ApplyModifiers(*this);
+
+        race->ApplyModifiers(*this);
     };
 
     updateModifiers();
@@ -684,7 +689,9 @@ void Settlement::Update()
             }
         } ();
 
-        return growthFromFood + growthFromHousing;
+        auto modifier = GetModifier(Modifiers::POPULATION_GROWTH_RATE);
+
+        return growthFromFood + growthFromHousing + modifier;
     } ();
 
     growth += addedGrowth;
@@ -793,7 +800,9 @@ void Settlement::PrepareTransport()
         if(other->GetStock(ResourceTypes::METAL) > other->storage / 4 || other->GetStock(ResourceTypes::METAL) > GetStock(ResourceTypes::METAL))
             continue;
 
-        lastShipmentTime = TIME_BETWEEN_SHIPMENTS;
+        const auto timeModifier = GetModifier(Modifiers::DURATION_BETWEEN_TRADE_SHIPMENTS);
+
+        lastShipmentTime = TIME_BETWEEN_SHIPMENTS + timeModifier;
         shipment = {other};
         link.HasShipped = true;
 

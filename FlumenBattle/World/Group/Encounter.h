@@ -8,6 +8,8 @@ namespace world
     {
         class Group;
     }
+
+    class WorldTile;
 }
 
 namespace world::group
@@ -27,6 +29,8 @@ namespace world::group
         Group *second;
 
         Group *winner;
+
+        WorldTile *location;
 
     public:
         Encounter() {}

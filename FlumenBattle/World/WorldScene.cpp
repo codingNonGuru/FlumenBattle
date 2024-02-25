@@ -440,9 +440,9 @@ namespace world
 
     static settlement::Settlement *foundedSettlement = nullptr;
 
-    settlement::Settlement * WorldScene::FoundSettlement(WorldTile *location, settlement::Settlement *mother)
+    settlement::Settlement * WorldScene::FoundSettlement(WorldTile *location, RaceTypes race, settlement::Settlement *mother)
     {
-        auto settlement = settlement::SettlementFactory::Create({location});
+        auto settlement = settlement::SettlementFactory::Create({location, race});
 
         auto polity = mother != nullptr ? mother->GetPolity() : nullptr;
         if(polity == nullptr)

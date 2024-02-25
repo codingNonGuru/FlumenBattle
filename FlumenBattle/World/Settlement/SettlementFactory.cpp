@@ -4,6 +4,7 @@
 #include "FlumenBattle/World/Settlement/SettlementAllocator.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Settlement/NameGenerator.h"
+#include "FlumenBattle/RaceFactory.h"
 
 using namespace world::settlement;
 
@@ -52,7 +53,9 @@ Settlement* SettlementFactory::Create(SettlementBuildData buildData)
         lastBannerIndex = 0;
     }
 
-    settlement->Initialize(name, *banner, buildData.Location);
+    auto race = RaceFactory::BuildRace(buildData.Race);
+
+    settlement->Initialize(name, *banner, buildData.Location, race);
 
     buildData.Location->Settle(settlement);
 

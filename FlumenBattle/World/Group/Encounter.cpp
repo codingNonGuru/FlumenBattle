@@ -2,6 +2,8 @@
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Character/Character.h"
+#include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/WorldTile.h"
 
 namespace world::group
 {
@@ -26,6 +28,8 @@ namespace world::group
         static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
 
         isPlayerInvolved = playerGroup == first || playerGroup == second;
+
+        location = first->GetTile();
     }
 
     void Encounter::Update()
@@ -38,6 +42,17 @@ namespace world::group
 
         auto firstStrength = first->GetLivingCount();
         auto secondStrength = second->GetLivingCount();
+
+        if(location->HasRelief(WorldReliefs::MOUNTAINS) == true)
+        {
+            firstStrength += first->GetHome()->GetModifier(settlement::Modifiers::COMBAT_BONUS_ON_MOUNTAIN_TILES);
+            secondStrength += second->GetHome()->GetModifier(settlement::Modifiers::COMBAT_BONUS_ON_MOUNTAIN_TILES);
+        }
+        else if(location->HasBiome(WorldBiomes::WOODS) == true)
+        {
+            firstStrength += first->GetHome()->GetModifier(settlement::Modifiers::COMBAT_BONUS_ON_WOOD_TILES);
+            secondStrength += second->GetHome()->GetModifier(settlement::Modifiers::COMBAT_BONUS_ON_WOOD_TILES);
+        }
 
         auto firstAttack = utility::RollD20Dice(BASE_ATTACK_DC, firstStrength);
         if(firstAttack.IsAnySuccess() == true)

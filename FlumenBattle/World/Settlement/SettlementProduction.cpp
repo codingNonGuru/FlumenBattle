@@ -6,8 +6,12 @@
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Settlement/ProductionEvaluator.h"
+#include "FlumenBattle/Race.h"
+#include "FlumenBattle/Utility/Utility.h"
 
 using namespace world::settlement;
+
+#define COLONIZATION_DC 5
 
 SettlementProduction SettlementProductionFactory::Create(ProductionOptions option, ProductionData data)
 {
@@ -183,23 +187,24 @@ void ProductionFinisher::FinishSettlers(Settlement &settlement)
 
     if(target != nullptr)
     {
-        auto dice = utility::GetRandom(1, 20);
-        if(dice == 20)
+        auto bonus = settlement.GetModifier(Modifiers::ALL_DICE_ROLLS);
+
+        auto check = utility::RollD20Dice(COLONIZATION_DC, bonus);
+        if(check.IsCriticalSuccess() == true)
         {
-            WorldScene::Get()->FoundSettlement(target, &settlement);
+            WorldScene::Get()->FoundSettlement(target, settlement.GetRace()->Type, &settlement);
         }
-        else if(dice > 5)
+        else if(check.IsAnySuccess() == true)
         {
-            WorldScene::Get()->FoundSettlement(target, &settlement);
+            WorldScene::Get()->FoundSettlement(target, settlement.GetRace()->Type, &settlement);
             settlement.KillPopulation();
         }
-        else if(dice > 1) //Colonization fails, but settlers survive & return
+        else if(check.IsRegularFailure() == true) 
         {
             
         }
-        else if(dice == 1) //Colonization fails and settlers perish
+        else
         {
-            std::cout<<"critical failure\n";
             settlement.KillPopulation();
         }
     }

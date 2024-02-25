@@ -13,12 +13,15 @@
 #include "FlumenBattle/Utility/Utility.h"
 #include "FlumenBattle/World/Group/Quest.h"
 #include "FlumenBattle/Config.h"
+#include "FlumenBattle/Race.h"
 
 using namespace world::interface;
 
 static const auto BORDER_COLOR = Color::RED * 0.25f;
 
 static const auto BORDER_INNER_OFFSET = Size(4, 4);
+
+static const auto TEXT_COLOR = Color::RED * 0.5f;
 
 static constexpr auto DEFAULT_FONT_SIZE = "Medium";
 
@@ -46,7 +49,7 @@ void SettlementMenu::HandleConfigure()
         },
         {
             {DEFAULT_FONT_SIZE}, 
-            Color::RED * 0.5f
+            TEXT_COLOR
         }
     );
     nameLabel->Enable();
@@ -58,8 +61,8 @@ void SettlementMenu::HandleConfigure()
             {ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, nameLabel}
         },
         {
-            {"Small"}, 
-            Color::RED * 0.5f
+            {"VerySmall"}, 
+            TEXT_COLOR
         }
     );
     attitudeLabel->Enable();
@@ -97,11 +100,14 @@ void SettlementMenu::HandleUpdate()
     text << currentSettlement->GetName();
     nameLabel->Setup(text);
 
+    text = currentSettlement->GetRace()->PluralName;
+    text << ". ";
+
     static const auto &reputationHandler = group::HumanMind::Get()->GetPlayerReputation();
     const auto attitude = reputationHandler.GetAttitude(currentSettlement);
 
-    text = utility::GetAttitudeName(attitude);
-    text << " towards you";
+    text << utility::GetAttitudeName(attitude);
+    text << " towards you.";
 
     attitudeLabel->Setup(text);
 }

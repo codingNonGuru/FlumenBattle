@@ -453,7 +453,7 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
     for(auto i = 0; i < 1; ++i)
     {
         auto location = findSettleLocation();
-        newSettlement = scene.FoundSettlement(location, nullptr);
+        newSettlement = scene.FoundSettlement(location, RaceTypes::DWARF, nullptr);
     }
 
     auto groups = group::GroupAllocator::Get()->GetGroups();

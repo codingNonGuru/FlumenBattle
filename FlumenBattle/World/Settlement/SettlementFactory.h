@@ -18,7 +18,7 @@ namespace world::settlement
     {
         world::WorldTile * Location;
 
-        //RaceTypes Race;
+        RaceTypes Race;
     };
 
     class SettlementFactory

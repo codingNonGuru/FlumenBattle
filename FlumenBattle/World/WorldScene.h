@@ -7,6 +7,8 @@
 #include "FlumenBattle/World/WorldTime.h"
 #include "FlumenBattle/World/Group/GroupBatchMap.h"
 
+enum class RaceTypes;
+
 namespace world::settlement
 {
     class Settlement;
@@ -167,7 +169,7 @@ namespace world
 
         void AccomplishPlayerConquest(settlement::Settlement *);
 
-        settlement::Settlement * FoundSettlement(WorldTile *, settlement::Settlement *);
+        settlement::Settlement * FoundSettlement(WorldTile *, RaceTypes, settlement::Settlement *);
 
         settlement::Settlement * ForgePath(settlement::Settlement *, settlement::Settlement *, int = INT_MAX);
 

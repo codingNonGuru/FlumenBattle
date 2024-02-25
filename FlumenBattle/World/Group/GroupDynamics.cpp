@@ -7,6 +7,7 @@
 #include "FlumenBattle/World/WorldTime.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Group/GroupAllocator.h"
+#include "FlumenBattle/Race.h"
 
 using namespace world;
 using namespace world::group;
@@ -97,7 +98,7 @@ void GroupDynamics::UpdateSimulationLevel(settlement::Settlement &settlement)
     {
         if(adventurer.Group == nullptr && simulationLevel == SimulationLevels::ADVANCED)
         {
-            adventurer.Group = group::GroupFactory::Create({group::GroupClasses::ADVENTURER, RaceTypes::ORC, &settlement});
+            adventurer.Group = group::GroupFactory::Create({group::GroupClasses::ADVENTURER, settlement.GetRace()->Type, &settlement});
         }
         else if(adventurer.Group != nullptr && simulationLevel != SimulationLevels::ADVANCED)
         {
@@ -111,7 +112,7 @@ void GroupDynamics::UpdateSimulationLevel(settlement::Settlement &settlement)
     {
         if(merchant.Group == nullptr && simulationLevel != SimulationLevels::BASIC)
         {
-            merchant.Group = group::GroupFactory::Create({group::GroupClasses::MERCHANT, RaceTypes::ORC, &settlement});
+            merchant.Group = group::GroupFactory::Create({group::GroupClasses::MERCHANT, settlement.GetRace()->Type, &settlement});
         }
         else if(merchant.Group != nullptr && simulationLevel == SimulationLevels::BASIC)
         {
@@ -125,7 +126,7 @@ void GroupDynamics::UpdateSimulationLevel(settlement::Settlement &settlement)
     {
         if(bandit.Group == nullptr && simulationLevel == SimulationLevels::ADVANCED)
         {
-            bandit.Group = group::GroupFactory::Create({group::GroupClasses::BANDIT, RaceTypes::ORC, &settlement});
+            bandit.Group = group::GroupFactory::Create({group::GroupClasses::BANDIT, settlement.GetRace()->Type, &settlement});
         }
         else if(bandit.Group != nullptr && simulationLevel != SimulationLevels::ADVANCED)
         {
@@ -139,7 +140,7 @@ void GroupDynamics::UpdateSimulationLevel(settlement::Settlement &settlement)
     {
         if(patrol.Group == nullptr && simulationLevel == SimulationLevels::ADVANCED)
         {
-            patrol.Group = group::GroupFactory::Create({group::GroupClasses::PATROL, RaceTypes::ORC, &settlement});
+            patrol.Group = group::GroupFactory::Create({group::GroupClasses::PATROL, settlement.GetRace()->Type, &settlement});
         }
         else if(patrol.Group != nullptr && simulationLevel != SimulationLevels::ADVANCED)
         {
@@ -153,7 +154,7 @@ void GroupDynamics::UpdateSimulationLevel(settlement::Settlement &settlement)
     {
         if(garrison.Group == nullptr && simulationLevel == SimulationLevels::ADVANCED)
         {
-            garrison.Group = group::GroupFactory::Create({group::GroupClasses::GARRISON, RaceTypes::ORC, &settlement});
+            garrison.Group = group::GroupFactory::Create({group::GroupClasses::GARRISON, settlement.GetRace()->Type, &settlement});
         }
         else if(garrison.Group != nullptr && simulationLevel != SimulationLevels::ADVANCED)
         {
@@ -176,7 +177,7 @@ void GroupDynamics::AddPatrol(settlement::Settlement &settlement)
     }
     else
     {
-        auto patrol = group::GroupFactory::Create({group::GroupClasses::PATROL, RaceTypes::ORC, &settlement});
+        auto patrol = group::GroupFactory::Create({group::GroupClasses::PATROL, settlement.GetRace()->Type, &settlement});
         *patrols.Add() = {patrol};
     }
 }
@@ -203,7 +204,7 @@ void GroupDynamics::AddAdventurer(settlement::Settlement &settlement)
     }
     else
     {
-        auto adventurer = group::GroupFactory::Create({group::GroupClasses::ADVENTURER, RaceTypes::ORC, &settlement});
+        auto adventurer = group::GroupFactory::Create({group::GroupClasses::ADVENTURER, settlement.GetRace()->Type, &settlement});
         *adventurers.Add() = {adventurer};
     }
 }
@@ -230,7 +231,7 @@ void GroupDynamics::AddMerchant(settlement::Settlement &settlement)
     }
     else
     {
-        auto merchant = group::GroupFactory::Create({group::GroupClasses::MERCHANT, RaceTypes::ORC, &settlement});
+        auto merchant = group::GroupFactory::Create({group::GroupClasses::MERCHANT, settlement.GetRace()->Type, &settlement});
         *merchants.Add() = {merchant};
     }
 }
@@ -253,7 +254,7 @@ void GroupDynamics::AddBandit(settlement::Settlement &settlement)
         }
         else
         {
-            auto bandit = group::GroupFactory::Create({group::GroupClasses::BANDIT, RaceTypes::ORC, &settlement});
+            auto bandit = group::GroupFactory::Create({group::GroupClasses::BANDIT, settlement.GetRace()->Type, &settlement});
             *bandits.Add() = {bandit};
         }
     }
@@ -267,7 +268,7 @@ void GroupDynamics::AddGarrison(settlement::Settlement &settlement)
     const auto simulationLevel = settlement.GetSimulationLevel();
     if(simulationLevel == SimulationLevels::ADVANCED)
     {
-        auto garrison = group::GroupFactory::Create({group::GroupClasses::GARRISON, RaceTypes::ORC, &settlement});
+        auto garrison = group::GroupFactory::Create({group::GroupClasses::GARRISON, settlement.GetRace()->Type, &settlement});
         *garrisons.Add() = {garrison};
     }
     else

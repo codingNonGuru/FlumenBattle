@@ -9,6 +9,8 @@
 #include "FlumenBattle/World/Settlement/Resource.h"
 #include "FlumenBattle/World/Settlement/Types.h"
 
+struct Race;
+
 namespace world
 {
     class WorldTile;
@@ -95,6 +97,8 @@ namespace world::settlement
 
         world::WorldTile *location;
 
+        const Race *race;
+
         world::SimulationDomain *simulationDomain;
 
         SimulationLevels simulationLevel;
@@ -158,7 +162,7 @@ namespace world::settlement
             bool IsToBeVisited = false;
         } pathData;
 
-        void Initialize(Word, Color, world::WorldTile *);
+        void Initialize(Word, Color, world::WorldTile *, const Race *);
 
         void WorkNewTile();
 
@@ -274,5 +278,7 @@ namespace world::settlement
         void UseSimulationChange() {hasUsedSimulationChange = true;}
 
         bool IsPlayerControlled() const;
+
+        const Race *GetRace() const {return race;}
     };
 }
