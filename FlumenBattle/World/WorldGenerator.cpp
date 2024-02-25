@@ -17,6 +17,7 @@
 #include "FlumenBattle/World/Settlement/Types.h"
 #include "FlumenBattle/World/Polity/PolityAllocator.h"
 #include "FlumenBattle/World/SimulationMap.h"
+#include "FlumenBattle/World/Polity/Polity.h"
 
 using namespace world;
 
@@ -447,10 +448,12 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
         }
     };
     
+    settlement::Settlement *newSettlement;
+
     for(auto i = 0; i < 1; ++i)
     {
         auto location = findSettleLocation();
-        scene.FoundSettlement(location, nullptr);
+        newSettlement = scene.FoundSettlement(location, nullptr);
     }
 
     auto groups = group::GroupAllocator::Get()->GetGroups();
@@ -467,6 +470,9 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
     {
         settlement.SetupSimulation();
     }
+
+    /*newSettlement->GetPolity()->SetController(true);
+    scene.playerGroup->SetDomain(newSettlement->GetPolity());*/
 }
 
 int WorldGenerator::GetMaximumPolityCount(int worldSize) const

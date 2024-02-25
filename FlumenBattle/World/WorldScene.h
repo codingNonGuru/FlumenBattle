@@ -100,6 +100,8 @@ namespace world
         void HandleBattleRoundEnded();
 
     public:
+        Delegate OnSceneEnabled;
+
         Delegate OnUpdateStarted;
 
         Delegate OnPlayerEncounterInitiated;

@@ -13,6 +13,8 @@
 #include "FlumenBattle/World/Interface/ResourceCounter.h"
 #include "FlumenBattle/World/Character/Types.h"
 #include "FlumenBattle/Config.h"
+#include "FlumenBattle/World/Polity/Polity.h"
+#include "FlumenBattle/World/Settlement/Settlement.h"
 
 static const auto ANIMATION_NAME = "Flash";
 
@@ -94,7 +96,7 @@ void WorldInfoPanel::CharacterItem::HandleConfigure()
     border = ElementFactory::BuildElement <Element>(
         {size_, drawOrder_ + 1, {this}, {"panel-border-007", true}, UNSELECTED_OPACITY}
     );
-    border->GetSprite()->SetColor(&BORDER_COLOR);
+    border->SetSpriteColor(BORDER_COLOR);
     border->Enable();
 
     cover = ElementFactory::BuildElement <Element>(
@@ -181,7 +183,7 @@ void WorldInfoPanel::HandleConfigure()
     for(Index i = 0; i < items.GetCapacity(); ++i, position += Direction2(80.0f, 0.0f))
     {
         auto item = ElementFactory::BuildElement <CharacterItem>(
-            {Size(70, 110), drawOrder_ + 1, {position, ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}, {false}, Opacity(0.5f)}
+            {Size(70, 110), drawOrder_ + 1, {position, ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}, {false}, Opacity(0.8f)}
         );
     }
 
@@ -197,79 +199,165 @@ void WorldInfoPanel::HandleConfigure()
     );
     speedLabel->Enable();
 
+    auto startPosition = Position2(-140.0f, -10.0f);
+
     moneyCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
-        {drawOrder_, {this}}
+        {drawOrder_, {startPosition, this}}
     );
     auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
     moneyCounter->Setup("Coin", &playerGroup->GetMoney());
     moneyCounter->Enable();
+    startPosition.x += 70.0f;
 
     foodCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
-        {drawOrder_, {Position2(70.0f, 0.0f), this}}
+        {drawOrder_, {startPosition, this}}
     );
     foodCounter->Setup(
         "Radish", 
         std::function <int(void)> (
             [] -> int 
             {
-                auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
-
+                static const auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
                 return playerGroup->GetItemAmount(world::character::ItemTypes::FOOD);
             }
         )
     );
     foodCounter->Enable();
+    startPosition.x += 70.0f;
 
     perceptionCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
-        {drawOrder_, {Position2(140.0f, 0.0f), this}}
+        {drawOrder_, {startPosition, this}}
     );
     perceptionCounter->Setup(
         "SunRays", 
         std::function <int(void)> (
             [] -> int 
             {
-                auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
-
+                static const auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
                 return playerGroup->GetMostSkilledMember(world::character::SkillTypes::PERCEPTION).Bonus;
             }
         )
     );
     perceptionCounter->MakeSignSensitive();
     perceptionCounter->Enable();
+    startPosition.x += 70.0f;
 
     weightCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
-        {drawOrder_, {Position2(210.0f, 0.0f), this}}
+        {drawOrder_, {startPosition, this}}
     );
     weightCounter->Setup(
         "CrateShadowed", 
         std::function <int(void)> (
             [] -> int 
             {
-                auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
-
+                static const auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
                 return playerGroup->GetCarriedWeight();
             }
         )
     );
     weightCounter->SetOffset(3.0f);
     weightCounter->Enable();
+    startPosition.x += 70.0f;
 
     muleCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
-        {drawOrder_, {Position2(280.0f, 0.0f), this}}
+        {drawOrder_, {startPosition, this}}
     );
     muleCounter->Setup(
         "HorseHead", 
         std::function <int(void)> (
             [] -> int 
             {
-                auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
-
+                static const auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
                 return playerGroup->GetMuleCount();
             }
         )
     );
     muleCounter->SetOffset(3.0f);
     muleCounter->Enable();
+
+    playerDomainInfoBox = ElementFactory::BuildElement <Element>(
+        {Size(400, 70), drawOrder_ + 1, {Position2(0.0f, 5.0f), ElementAnchors::LOWER_CENTER, ElementPivots::MIDDLE_CENTER, this}, {false}, Opacity(0.8f)}
+    );
+
+    playerDomainInfoBorder = ElementFactory::BuildElement <Element>(
+        {playerDomainInfoBox->GetSize(), drawOrder_ + 2, {playerDomainInfoBox}, {"panel-border-007", true}, Opacity(0.6f)}
+    );
+    playerDomainInfoBorder->SetSpriteColor(BORDER_COLOR);
+    playerDomainInfoBorder->Enable();
+
+    playerDomainInfo = ElementFactory::BuildText(
+        {drawOrder_ + 2, {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, playerDomainInfoBox}}, 
+        {{"Small"}, TEXT_COLOR}
+    );
+    playerDomainInfo->Enable();
+
+    subjectCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
+        {drawOrder_ + 1, {Position2(-80.0f, -25.0f), ElementAnchors::LOWER_CENTER, ElementPivots::MIDDLE_CENTER, playerDomainInfoBox}}
+    );
+    subjectCounter->Setup(
+        "Castle", 
+        std::function <int(void)> (
+            [] -> int 
+            {
+                static const auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
+                return playerGroup->GetDomainSettlementCount();
+            }
+        ),
+        "Medium",
+        Scale2(0.55f)
+    );
+    subjectCounter->SetOffset(5.0f);
+    subjectCounter->Enable();
+
+    populationCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
+        {drawOrder_ + 1, {Position2(0.0f, -25.0f), ElementAnchors::LOWER_CENTER, ElementPivots::MIDDLE_CENTER, playerDomainInfoBox}}
+    );
+    populationCounter->Setup(
+        "Houses", 
+        std::function <int(void)> (
+            [] -> int 
+            {
+                static const auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
+                return playerGroup->GetDomain()->GetPopulation();
+            }
+        ),
+        "Medium",
+        Scale2(0.3f)
+    );
+    populationCounter->SetOffset(5.0f);
+    populationCounter->Enable();
+
+    industryCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
+        {drawOrder_ + 1, {Position2(80.0f, -25.0f), ElementAnchors::LOWER_CENTER, ElementPivots::MIDDLE_CENTER, playerDomainInfoBox}}
+    );
+    industryCounter->Setup(
+        "WorkHammer", 
+        std::function <int(void)> (
+            [] -> int 
+            {
+                static const auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
+                return playerGroup->GetDomain()->GetIndustrialPower();
+            }
+        ),
+        "Medium"
+    );
+    industryCounter->SetOffset(5.0f);
+    industryCounter->Enable();
+
+    world::WorldScene::Get()->OnPlayerBecameRuler += {this, &WorldInfoPanel::HandlePlayerBecameRuler};
+
+    world::WorldScene::Get()->OnSceneEnabled += {this, &WorldInfoPanel::HandlePlayerBecameRuler};
+}
+
+void WorldInfoPanel::HandlePlayerBecameRuler()
+{
+    static const auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
+    if(playerGroup->GetDomain() == nullptr)
+        return;
+
+    playerDomainInfoBox->Enable();
+
+    playerDomainInfo->Setup(Phrase() << "You rule over " << playerGroup->GetDomain()->GetRuler()->GetName());
 }
 
 void WorldInfoPanel::SelectCharacter(int index, bool isInInventoryMode)

@@ -76,6 +76,18 @@ class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
 
     int selectionIndex {-1};
 
+    Element *playerDomainInfoBox;
+
+    Element *playerDomainInfoBorder;
+
+    Text *playerDomainInfo;
+
+    world::interface::ResourceCounter *subjectCounter;
+
+    world::interface::ResourceCounter *populationCounter;
+
+    world::interface::ResourceCounter *industryCounter;
+
     void HandleConfigure() override;
 
     void HandleEnable() override;
@@ -83,6 +95,8 @@ class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
     void HandleUpdate() override;
 
     Array <CharacterItem> & GetItemAllocator() {return items;}
+
+    void HandlePlayerBecameRuler();
 
 public:
     void SelectCharacter(int, bool);

@@ -52,7 +52,9 @@ void Polity::Initialize(settlement::Settlement *ruler, bool isPlayerControlled)
 
 void Polity::ExtendRealm(settlement::Settlement *domain)
 {
-    *this->settlements.Add() = domain;
+    *settlements.Add() = domain;
+
+    settlements;
 
     domain->SetPolity(this);
 

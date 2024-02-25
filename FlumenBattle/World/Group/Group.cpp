@@ -16,6 +16,7 @@
 #include "FlumenBattle/World/Group/Types.h"
 #include "FlumenBattle/World/Group/GroupBatch.h"
 #include "FlumenBattle/World/Group/GroupBatchMap.h"
+#include "FlumenBattle/World/Polity/Polity.h"
 #include "FlumenBattle/Config.h"
 
 using namespace world::character;
@@ -565,5 +566,10 @@ namespace world::group
     void Group::SetDomain(polity::Polity *polity)
     {
         domain = polity;
+    }
+
+    int Group::GetDomainSettlementCount() const
+    {
+        return domain->GetSettlements().GetSize();
     }
 }

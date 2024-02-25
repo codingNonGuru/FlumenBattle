@@ -71,7 +71,7 @@ void ConquestPopup::HandleSetupAnimations()
     auto property = openAnimation_->AddProperty({openAnimation_, &GetOpacity().Value});
 
     property->AddKey()->Initialize(0.0f, 0.0f);
-    property->AddKey()->Initialize(ANIMATION_LENGTH, 1.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH, opacity_);
 
     property = openAnimation_->AddProperty({openAnimation_, &border->GetOpacity().Value});
 
@@ -97,7 +97,7 @@ void ConquestPopup::HandleSetupAnimations()
 
     property = closeAnimation_->AddProperty({closeAnimation_, &GetOpacity().Value});
 
-    property->AddKey()->Initialize(0.0f, 1.0f);
+    property->AddKey()->Initialize(0.0f, opacity_);
     property->AddKey()->Initialize(ANIMATION_LENGTH, 0.0f);
 
     property = closeAnimation_->AddProperty({closeAnimation_, &border->GetOpacity().Value});
@@ -119,8 +119,6 @@ void ConquestPopup::HandleSetupAnimations()
 
     property->AddKey()->Initialize(0.0f, 0.0f);
     property->AddKey()->Initialize(ANIMATION_LENGTH, -200.0f);
-
-    InputHandler::RegisterEvent(CLOSE_POPUP_INPUT_KEY, {this, &ConquestPopup::HandleClosePressed});
 }
 
 void ConquestPopup::HandleClosePressed()

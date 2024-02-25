@@ -491,6 +491,8 @@ namespace world
 
         foundedSettlement = settlement;
         OnSettlementFounded.Invoke();
+
+        return foundedSettlement;
     }
 
     settlement::Settlement *WorldScene::ForgePath(settlement::Settlement *from, settlement::Settlement *to, int complexityLimit)
@@ -596,6 +598,10 @@ namespace world
     void WorldScene::HandleEnable() 
     {
         time.StopTime();
+
+        polities;
+
+        OnSceneEnabled.Invoke();
     }
 
     void WorldScene::HandleDisable() 

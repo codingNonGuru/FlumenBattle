@@ -290,5 +290,7 @@ namespace world::group
         polity::Polity *GetDomain() {return domain;}
 
         void SetDomain(polity::Polity *);
+
+        int GetDomainSettlementCount() const;
     };
 }
