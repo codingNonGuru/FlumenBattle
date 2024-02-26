@@ -61,7 +61,7 @@ void ReputationMenu::HandleConfigure()
 
 void ReputationMenu::HandleUpdate()
 {
-    for(auto item : items)
+    for(auto &item : items)
     {
         item->Disable();
     }

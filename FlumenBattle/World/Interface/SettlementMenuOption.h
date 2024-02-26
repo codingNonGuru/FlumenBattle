@@ -14,7 +14,8 @@ namespace world::interface
         BUY_FOOD,
         BUY_MULE,
         SIGN_UP_TO_DELIVER_ITEM,
-        FINISH_ITEM_DELIVERY
+        FINISH_ITEM_DELIVERY,
+        RECRUIT_HEROES
     };
 
     class SettlementMenuOption : public Element

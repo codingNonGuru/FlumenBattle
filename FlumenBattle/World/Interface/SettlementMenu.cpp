@@ -14,6 +14,7 @@
 #include "FlumenBattle/World/Group/Quest.h"
 #include "FlumenBattle/Config.h"
 #include "FlumenBattle/Race.h"
+#include "FlumenBattle/WorldInterface.h"
 
 using namespace world::interface;
 
@@ -74,7 +75,13 @@ void SettlementMenu::HandleConfigure()
     optionLayout->SetDistancing(1, 5.0f);
     optionLayout->Enable();
 
-    auto options = {SettlementMenuOptions::BUY_FOOD, SettlementMenuOptions::BUY_MULE, SettlementMenuOptions::SIGN_UP_TO_DELIVER_ITEM, SettlementMenuOptions::FINISH_ITEM_DELIVERY};
+    auto options = {
+        SettlementMenuOptions::BUY_FOOD, 
+        SettlementMenuOptions::BUY_MULE, 
+        SettlementMenuOptions::SIGN_UP_TO_DELIVER_ITEM, 
+        SettlementMenuOptions::FINISH_ITEM_DELIVERY,
+        SettlementMenuOptions::RECRUIT_HEROES
+        };
 
     for(auto &option : options)
     {
@@ -144,6 +151,11 @@ void SettlementMenu::ProcessOptionInput(SettlementMenuOptions option)
     case SettlementMenuOptions::FINISH_ITEM_DELIVERY:
         {
             group::HumanMind::Get()->FinishQuest(group::QuestTypes::DELIVER_ITEM, currentSettlement);
+            break;
+        }
+    case SettlementMenuOptions::RECRUIT_HEROES:
+        {
+            WorldInterface::Get()->OpenRecruitmentMenu();
             break;
         }
     }

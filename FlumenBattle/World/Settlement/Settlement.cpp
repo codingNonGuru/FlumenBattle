@@ -862,7 +862,9 @@ void Settlement::UpdatePolitics()
     if(modifier.IsValid == true)
         return;
 
-    if(distanceToCapital > 12)
+    auto distanceModifier = modifierManager.GetAmount(Modifiers::DISTANCE_TO_CAPITAL_INDEPENDENCE_LIMIT);
+
+    if(distanceToCapital > 12 + distanceModifier)
     {
         faction = polity->FindFaction(this);
     }

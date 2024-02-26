@@ -78,6 +78,11 @@ void SettlementMenuOption::Setup(SettlementMenu *newMenu, SettlementMenuOptions 
 
         label->Setup("Drop item");
         break;
+    case SettlementMenuOptions::RECRUIT_HEROES:
+        priceCounter->Disable();
+
+        label->Setup("Recruit heroes");
+        break;
     }
 }
 
@@ -190,5 +195,21 @@ void SettlementMenuOption::HandleUpdate()
             }
             break;
         }
+    case SettlementMenuOptions::RECRUIT_HEROES:
+        if(attitude == settlement::SettlementAttitudes::HOSTILE || attitude == settlement::SettlementAttitudes::UNFRIENDLY)
+        {
+            SetInteractivity(false);
+
+            SetOpacity(BASE_OPTION_OPACITY);
+
+            label->SetOpacity(BASE_OPTION_OPACITY);
+        }
+        else
+        {
+            SetInteractivity(true);
+
+            label->SetOpacity(HOVERED_OPTION_OPACITY);
+        }
+        break;
     }
 }

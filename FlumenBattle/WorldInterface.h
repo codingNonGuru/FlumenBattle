@@ -35,6 +35,7 @@ namespace world
         class ItemPopup;
         class ProductionDecisionMenu;
         class ConquestPopup;
+        class RecruitmentMenu;
     }
 
     namespace settlement
@@ -127,6 +128,8 @@ namespace world
 
         interface::ConquestPopup *conquestPopup;
 
+        interface::RecruitmentMenu *recruitmentMenu;
+
         void Update();
 
         void HandlePlayerEncounter();
@@ -193,5 +196,7 @@ namespace world
         void RemoveMoneyPopup(interface::MoneyPopup *);
 
         void RemoveItemPopup(interface::ItemPopup *);
+
+        void OpenRecruitmentMenu();
     };
 }

@@ -39,6 +39,7 @@
 #include "FlumenBattle/World/Interface/ItemPopup.h"
 #include "FlumenBattle/World/Interface/ProductionDecisionMenu.h"
 #include "FlumenBattle/World/Interface/ConquestPopup.h"
+#include "FlumenBattle/World/Interface/RecruitmentMenu.h"
 
 using namespace world;
 
@@ -286,6 +287,18 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
         }
     );
     conquestPopup->SetupBasicAnimations();
+
+    recruitmentMenu = ElementFactory::BuildElement <interface::RecruitmentMenu>
+    (
+        {
+            Size(600, 420), 
+            DrawOrder(7), 
+            {canvas}, 
+            {false}, 
+            Opacity(0.9f)
+        }
+    );
+    recruitmentMenu->SetupBasicAnimations();
 
     group::HumanMind::Get()->OnSpottingHovered += {this, &WorldInterface::HandleSpottingHovered};
 
@@ -805,4 +818,12 @@ void WorldInterface::RemoveMoneyPopup(interface::MoneyPopup *popup)
 void WorldInterface::RemoveItemPopup(interface::ItemPopup *popup)
 {
     itemPopups.Remove(popup);
+}
+
+void WorldInterface::OpenRecruitmentMenu()
+{
+    if(recruitmentMenu->IsLocallyActive() == true)
+        return;
+        
+    recruitmentMenu->Open();
 }

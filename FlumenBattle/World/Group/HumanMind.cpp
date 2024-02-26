@@ -716,6 +716,11 @@ void HumanMind::FinishQuest(QuestTypes type, settlement::Settlement *settlement)
     }
 }
 
+void HumanMind::RecruitCharacter()
+{
+    
+}
+
 const Quest &HumanMind::GetLastQuest() const
 {
     return *mostRecentQuest;

@@ -158,6 +158,8 @@ namespace world::group
 
         void FinishQuest(QuestTypes, settlement::Settlement *);
 
+        void RecruitCharacter();
+
         const Quest &GetLastQuest() const;
 
         const Quest &GetFinishedQuest() const;
