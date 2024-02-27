@@ -249,8 +249,6 @@ namespace world::group
 
         void RemoveItemAmount(character::ItemTypes, int);
 
-        void AddCharacter();
-
         WorldTile *GetDestination() const {return travelActionData.Destination;}
 
         WorldTile *GetFinalDestination() const;

@@ -35,9 +35,13 @@ namespace world::interface
 
         void HandleEnable() override;
 
+        void HandleSetupAnimations() override;
+
         void HandleClosePressed();
 
-        void HandleSetupAnimations() override;
+        void HandlePoolUpdate();
+
+        void RefreshItemList();
 
     public:
         void Setup(settlement::Settlement *);

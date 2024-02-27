@@ -2,6 +2,8 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/Race.h"
 #include "FlumenBattle/World/Character/CharacterFactory.h"
+#include "FlumenBattle/Utility/Utility.h"
+#include "FlumenBattle/World/WorldTime.h"
 
 using namespace world::character;
 
@@ -9,7 +11,15 @@ using namespace world::character;
 
 #define MAXIMUM_RECRUITS_PER_POOL 8
 
+#define SPAWN_CHANCE_PER_TICK 1
+
+#define DESPAWN_CHANCE_PER_TICK 1
+
+#define BASE_ROLL_DC 101
+
 static unsigned int uniqueId = 0;
+
+static constexpr auto LAST_VISIT_EXPIRY_DURATION = world::WorldTime::HOUR_SIZE * world::WorldTime::HOURS_IN_DAY * 3;
 
 RecruitHandler::RecruitHandler()
 {
@@ -23,7 +33,7 @@ RecruitHandler::RecruitHandler()
     recruitPools.Reset();
 }
 
-container::Pool <RecruitData> &RecruitHandler::GetRecruitPool(settlement::Settlement *settlement)
+container::Pool <RecruitData> &RecruitHandler::GetRecruitPool(const settlement::Settlement *settlement)
 {
     auto pool = recruitPools.Find(settlement);
     if(pool == nullptr)
@@ -32,17 +42,11 @@ container::Pool <RecruitData> &RecruitHandler::GetRecruitPool(settlement::Settle
 
         GeneratePool(pool, settlement);
     }
-    else
-    {
-        auto power = pool->GetPower();
-
-        auto potentialPower = GetPotentialPower(settlement);
-    }
 
     return pool->recruits;
 }
 
-void RecruitHandler::GeneratePool(RecruitPool *pool, settlement::Settlement *settlement)
+void RecruitHandler::GeneratePool(RecruitPool *pool, const settlement::Settlement *settlement)
 {
     auto recruitPower = GetPotentialPower(settlement);
 
@@ -50,27 +54,72 @@ void RecruitHandler::GeneratePool(RecruitPool *pool, settlement::Settlement *set
 
     pool->recruits.Reset();
 
+    pool->timeSinceLastVisit = 0;
+
     for(int i = 0; i < recruitPower; ++i)
     {
-        auto level = utility::GetRandom(1, 4);
-
-        auto cost = level * 100 + utility::GetRandom(-2, 4) * 10;
-
-        static const container::Array <CharacterClasses> classes = {CharacterClasses::FIGHTER, CharacterClasses::CLERIC, CharacterClasses::RANGER, CharacterClasses::WIZARD};
-
-        auto iconTextureId = utility::GetRandom(0, character::CharacterFactory::GetIconCount() - 1);
-
-        *pool->recruits.Add() = {uniqueId, *classes.GetRandom(), settlement->GetRace(), level, cost, iconTextureId};
-
-        uniqueId++;
+        pool->AddRecruit();
     }
 }
 
-void RecruitHandler::RemoveRecruit(settlement::Settlement *settlement, unsigned int uniqueId)
+void RecruitHandler::RemoveRecruit(const settlement::Settlement *settlement, unsigned int uniqueId)
 {
     auto pool = recruitPools.Find(settlement);
 
     pool->recruits.Remove(uniqueId);
+}
+
+int RecruitHandler::GetPotentialPower(const settlement::Settlement *settlement)
+{
+    auto population = settlement->GetPopulation();
+
+    if(population == 0)
+        return 2;
+    else if(population == 1)
+        return 3;
+    else if(population <= 5)
+        return 4;
+    else if(population <= 12)
+        return 5;
+    else if(population <= 20)
+        return 6;
+    else if(population <= 35)
+        return 7;
+    else
+        return 8;
+}
+
+bool RecruitHandler::Update(const settlement::Settlement *currentSettlement)
+{
+    bool hasCurrentSettlementChanged = false;
+
+    for(auto &pool : recruitPools)
+    {
+        auto hasChanged = pool.Update();
+        if(currentSettlement == pool.settlement && hasChanged == true)
+        {
+            hasCurrentSettlementChanged = true;
+        }
+    }
+
+    for(auto &pool : recruitPools)
+    {
+        if(pool.settlement == currentSettlement)
+        {
+            pool.timeSinceLastVisit = 0;
+        }
+        else
+        {
+            pool.timeSinceLastVisit++;
+
+            if(pool.timeSinceLastVisit >= LAST_VISIT_EXPIRY_DURATION)
+            {
+                recruitPools.RemoveAt(&pool);
+            }
+        }
+    }
+
+    return hasCurrentSettlementChanged;
 }
 
 int RecruitPool::GetPower() const
@@ -78,26 +127,62 @@ int RecruitPool::GetPower() const
     return recruits.GetSize();
 }
 
-int RecruitHandler::GetPotentialPower(settlement::Settlement *settlement)
+bool RecruitPool::Update()
 {
-    auto population = settlement->GetPopulation();
+    bool hasRemovedAny = UpdateRemovals();
 
-    return 5;
+    bool hasAddedAny = UpdateAdditions();
 
-    if(population == 0)
-        return 0;
-    else if(population == 1)
-        return 1;
-    else if(population < 5)
-        return 2;
-    else if(population < 10)
-        return 3;
-    else if(population < 17)
-        return 4;
-    else if(population < 30)
-        return 5;
-    else if(population < 50)
-        return 6;
-    else
-        return 7;
+    return hasRemovedAny || hasAddedAny;
+}
+
+void RecruitPool::AddRecruit()
+{
+    auto level = utility::GetRandom(1, 4);
+
+    auto cost = level * 100 + utility::GetRandom(-2, 4) * 10;
+
+    static const container::Array <CharacterClasses> classes = {CharacterClasses::FIGHTER, CharacterClasses::CLERIC, CharacterClasses::RANGER, CharacterClasses::WIZARD};
+
+    auto iconTextureId = utility::GetRandom(0, character::CharacterFactory::GetIconCount() - 1);
+
+    *recruits.Add() = {uniqueId, *classes.GetRandom(), settlement->GetRace(), level, cost, iconTextureId};
+
+    uniqueId++;
+}
+
+bool RecruitPool::UpdateRemovals()
+{
+    if(recruits.GetSize() == 0)
+        return false;
+
+    if(utility::RollD100Dice() < BASE_ROLL_DC - DESPAWN_CHANCE_PER_TICK)
+        return false;
+
+    auto randomRecruit = recruits.GetRandom();
+
+    recruits.RemoveAt(randomRecruit);
+
+    return true;
+}
+
+bool RecruitPool::UpdateAdditions()
+{
+    auto power = GetPower();
+
+    auto potentialPower = RecruitHandler::GetPotentialPower(settlement);
+
+    if(power >= potentialPower)
+        return false;
+
+    auto powerDelta = potentialPower - power;
+
+    const auto spawnDifficulty = (BASE_ROLL_DC - SPAWN_CHANCE_PER_TICK) - powerDelta;
+
+    if(utility::RollD100Dice() < spawnDifficulty)
+        return false;
+
+    AddRecruit();
+
+    return true;
 }

@@ -58,6 +58,8 @@ namespace world::group
 
         void UpdateQuests();
 
+        void UpdateRecruitment();
+
         void HandleSceneUpdate();
 
         void HandleSearch();
@@ -118,6 +120,8 @@ namespace world::group
         Delegate OnMarketTransaction;
 
         Delegate OnHeroJoinedParty;
+
+        Delegate OnCurrentRecruitPoolUpdate;
 
         void Enable();
 

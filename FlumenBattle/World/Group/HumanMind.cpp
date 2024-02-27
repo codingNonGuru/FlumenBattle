@@ -271,6 +271,8 @@ void HumanMind::HandleSceneUpdate()
     UpdateSpottings();
 
     UpdateQuests();
+
+    UpdateRecruitment();
 }
 
 void HumanMind::UpdateLocationStatus()
@@ -716,6 +718,18 @@ void HumanMind::FinishQuest(QuestTypes type, settlement::Settlement *settlement)
         playerQuests.RemoveAt(&quest);
         break;
     }
+}
+
+void HumanMind::UpdateRecruitment()
+{
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+    bool hasCurrentSettlementChanged = character::RecruitHandler::Get()->Update(playerGroup->GetCurrentSettlement());
+
+    if(hasCurrentSettlementChanged == false)
+        return;
+
+    OnCurrentRecruitPoolUpdate.Invoke();
 }
 
 void HumanMind::RecruitCharacter(const character::RecruitData &recruitData)

@@ -16,31 +16,45 @@ namespace world::character
     {
         friend class RecruitHandler;
 
-        settlement::Settlement *settlement;
+        const settlement::Settlement *settlement;
 
         container::Pool <RecruitData> recruits;
 
+        int timeSinceLastVisit;
+
+        bool UpdateRemovals();
+
+        bool UpdateAdditions();
+
     public:
-        bool operator==(settlement::Settlement *other) {return this->settlement == other;}
+        bool operator==(const settlement::Settlement *other) {return this->settlement == other;}
 
         int GetPower() const;
+
+        bool Update();
+
+        void AddRecruit();
     };
 
     class RecruitHandler : public core::Singleton <RecruitHandler>
     {
         friend class core::Singleton <RecruitHandler>;
 
+        friend class RecruitPool;
+
         container::Pool <RecruitPool> recruitPools;
 
         RecruitHandler();
 
-        void GeneratePool(RecruitPool *, settlement::Settlement *);
+        void GeneratePool(RecruitPool *, const settlement::Settlement *);
 
-        static int GetPotentialPower(settlement::Settlement *);
+        static int GetPotentialPower(const settlement::Settlement *);
 
     public:
-        container::Pool <RecruitData> &GetRecruitPool(settlement::Settlement *);
+        container::Pool <RecruitData> &GetRecruitPool(const settlement::Settlement *);
 
-        void RemoveRecruit(settlement::Settlement *, unsigned int);
+        void RemoveRecruit(const settlement::Settlement *, unsigned int);
+
+        bool Update(const settlement::Settlement *);
     };
 }

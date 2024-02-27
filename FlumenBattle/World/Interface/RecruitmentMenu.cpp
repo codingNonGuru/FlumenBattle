@@ -48,7 +48,7 @@ void RecruitmentMenu::HandleConfigure()
     (
         { 
             drawOrder_, 
-            {this}
+            {Position2(10.0f, 0.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}
         }
     );
     itemLayout->SetDistancing(5, 10.0f);
@@ -64,20 +64,13 @@ void RecruitmentMenu::HandleConfigure()
             {Size(120, 200), drawOrder_ + 1, {itemLayout}, {"panel-border-007", true}}
         );
     }
+
+    group::HumanMind::Get()->OnCurrentRecruitPoolUpdate += {this, &RecruitmentMenu::HandlePoolUpdate};
 }
 
 void RecruitmentMenu::HandleEnable()
 {
-    auto &recruits = character::RecruitHandler::Get()->GetRecruitPool(settlement);
-
-    auto item = items.GetStart();
-    for(auto &recruit : recruits)
-    {
-        (*item)->Enable();
-        (*item)->Setup(this, &recruit);
-
-        item++;
-    }
+    RefreshItemList();
 
     InputHandler::RegisterEvent(CLOSE_POPUP_INPUT_KEY, {this, &RecruitmentMenu::HandleClosePressed});
 }
@@ -141,6 +134,30 @@ void RecruitmentMenu::HandleClosePressed()
     }
 
     Close();
+}
+
+void RecruitmentMenu::HandlePoolUpdate()
+{
+    RefreshItemList();
+}
+
+void RecruitmentMenu::RefreshItemList()
+{
+    for(auto &item : items)
+    {
+        item->Disable();
+    }
+
+    const auto &recruits = character::RecruitHandler::Get()->GetRecruitPool(settlement);
+
+    auto item = items.GetStart();
+    for(auto &recruit : recruits)
+    {
+        (*item)->Enable();
+        (*item)->Setup(this, &recruit);
+
+        item++;
+    }
 }
 
 void RecruitmentMenu::Setup(settlement::Settlement *settlement)
