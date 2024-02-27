@@ -4,6 +4,7 @@
 #include "FlumenBattle/World/Character/CharacterFactory.h"
 #include "FlumenBattle/Utility/Utility.h"
 #include "FlumenBattle/World/WorldTime.h"
+#include "FlumenBattle/RaceFactory.h"
 
 using namespace world::character;
 
@@ -71,7 +72,7 @@ void RecruitHandler::RemoveRecruit(const settlement::Settlement *settlement, uns
 
 int RecruitHandler::GetPotentialPower(const settlement::Settlement *settlement)
 {
-    auto population = settlement->GetPopulation();
+    const auto population = settlement->GetPopulation();
 
     if(population == 0)
         return 2;
@@ -87,6 +88,24 @@ int RecruitHandler::GetPotentialPower(const settlement::Settlement *settlement)
         return 7;
     else
         return 8;
+}
+
+int RecruitHandler::GetMaximumLevel(const settlement::Settlement *settlement)
+{
+    const auto population = settlement->GetPopulation();
+
+    if(population <= 2)
+        return 1;
+    else if(population <= 5)
+        return 2;
+    else if(population <= 10)
+        return 3;
+    else if(population <= 20)
+        return 4;
+    else if(population <= 35)
+        return 5;
+    else
+        return 6;
 }
 
 bool RecruitHandler::Update(const settlement::Settlement *currentSettlement)
@@ -138,7 +157,9 @@ bool RecruitPool::Update()
 
 void RecruitPool::AddRecruit()
 {
-    auto level = utility::GetRandom(1, 4);
+    const auto maximumLevel = RecruitHandler::GetMaximumLevel(settlement);
+
+    auto level = utility::GetRandom(1, maximumLevel);
 
     auto cost = level * 100 + utility::GetRandom(-2, 4) * 10;
 
@@ -146,7 +167,39 @@ void RecruitPool::AddRecruit()
 
     auto iconTextureId = utility::GetRandom(0, character::CharacterFactory::GetIconCount() - 1);
 
-    *recruits.Add() = {uniqueId, *classes.GetRandom(), settlement->GetRace(), level, cost, iconTextureId};
+    auto race = [&]
+    {
+        if(utility::RollD100Dice() > 30)
+        {
+            return settlement->GetRace();
+        }
+        else if(settlement->GetLinks().GetSize() > 0)
+        {
+            if(utility::RollD100Dice() > 40)
+            {
+                auto randomNeighbor = settlement->GetLinks().GetRandom()->Other;
+
+                return randomNeighbor->GetRace();
+            }
+            else
+            {   
+                return RaceFactory::BuildRandomRace();
+            }
+        }
+        else
+        {
+            if(utility::RollD100Dice() > 60)
+            {
+                return settlement->GetRace();
+            }
+            else
+            {
+                return RaceFactory::BuildRandomRace();
+            }
+        }
+    } ();
+
+    *recruits.Add() = {uniqueId, *classes.GetRandom(), race, level, cost, iconTextureId};
 
     uniqueId++;
 }

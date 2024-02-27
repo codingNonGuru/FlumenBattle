@@ -50,6 +50,8 @@ namespace world::character
 
         static int GetPotentialPower(const settlement::Settlement *);
 
+        static int GetMaximumLevel(const settlement::Settlement *);
+
     public:
         container::Pool <RecruitData> &GetRecruitPool(const settlement::Settlement *);
 
