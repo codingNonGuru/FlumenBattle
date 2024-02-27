@@ -5,6 +5,16 @@
 class Text;
 class LayoutGroup;
 
+namespace world::character
+{
+    struct RecruitData;
+}
+
+namespace world::settlement
+{
+    class Settlement;
+}
+
 namespace world::interface
 {
     class RecruitmentItem;
@@ -19,13 +29,19 @@ namespace world::interface
 
         LayoutGroup *itemLayout;
 
+        settlement::Settlement *settlement;
+
         void HandleConfigure() override;
 
         void HandleEnable() override;
 
         void HandleClosePressed();
 
+        void HandleSetupAnimations() override;
+
     public:
-        void ProcessInput();
+        void Setup(settlement::Settlement *);
+
+        void ProcessInput(const character::RecruitData *);
     };
 }

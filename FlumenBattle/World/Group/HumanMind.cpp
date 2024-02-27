@@ -22,6 +22,8 @@
 #include "FlumenBattle/World/Group/Encounter.h"
 #include "FlumenBattle/World/Character/CharacterClass.h"
 #include "FlumenBattle/World/Group/Quest.h"
+#include "FlumenBattle/World/Character/RecruitHandler.h"
+#include "FlumenBattle/World/Character/CharacterFactory.h"
 
 using namespace world::group;
 
@@ -716,9 +718,38 @@ void HumanMind::FinishQuest(QuestTypes type, settlement::Settlement *settlement)
     }
 }
 
-void HumanMind::RecruitCharacter()
+void HumanMind::RecruitCharacter(const character::RecruitData &recruitData)
 {
-    
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+    playerGroup->money -= recruitData.Cost;
+
+    moneyChange = -recruitData.Cost;
+
+    OnPlayerWealthChanged.Invoke();
+
+    OnMarketTransaction.Invoke();
+
+    character::CharacterFactory::Create(recruitData, *playerGroup);
+
+    character::RecruitHandler::Get()->RemoveRecruit(playerGroup->GetCurrentSettlement(), recruitData.UniqueId);
+
+    OnHeroJoinedParty.Invoke();
+}
+
+bool HumanMind::CanRecruitCharacter(const character::RecruitData &recruitData) const
+{
+    static const auto MAXIMUM_CHARACTERS_PER_GROUP = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_CHARACTERS_PER_GROUP).Integer;
+
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+    if(playerGroup->GetCharacters().GetSize() == MAXIMUM_CHARACTERS_PER_GROUP)
+        return false;
+
+    if(playerGroup->GetMoney() < recruitData.Cost)
+        return false;
+
+    return true;
 }
 
 const Quest &HumanMind::GetLastQuest() const

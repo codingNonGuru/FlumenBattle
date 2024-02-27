@@ -13,6 +13,7 @@ namespace world
     namespace character
     {
         struct Item;
+        struct RecruitData;
     }
 
     namespace settlement
@@ -116,6 +117,8 @@ namespace world::group
 
         Delegate OnMarketTransaction;
 
+        Delegate OnHeroJoinedParty;
+
         void Enable();
 
         void EnableInput();
@@ -158,7 +161,9 @@ namespace world::group
 
         void FinishQuest(QuestTypes, settlement::Settlement *);
 
-        void RecruitCharacter();
+        void RecruitCharacter(const character::RecruitData &);
+
+        bool CanRecruitCharacter(const character::RecruitData &) const;
 
         const Quest &GetLastQuest() const;
 

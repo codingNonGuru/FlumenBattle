@@ -15,6 +15,7 @@
 #include "FlumenBattle/Config.h"
 #include "FlumenBattle/World/Polity/Polity.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Group/HumanMind.h"
 
 static const auto ANIMATION_NAME = "Flash";
 
@@ -175,7 +176,19 @@ void WorldInfoPanel::CharacterItem::HandleUpdate()
 
 void WorldInfoPanel::HandleConfigure() 
 {
-    auto position = Position2(10.0f, 20.0f);
+    border = ElementFactory::BuildElement <Element>
+    (
+        {
+            size_, 
+            drawOrder_ + 1, 
+            {this}, 
+            {"panel-border-007", true}
+        }
+    );
+    border->SetSpriteColor(BORDER_COLOR);
+    border->Enable();
+
+    auto position = Position2(10.0f, 10.0f);
 
     static const auto MAXIMUM_CHARACTERS_PER_GROUP = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_CHARACTERS_PER_GROUP).Integer;
     items.Initialize(MAXIMUM_CHARACTERS_PER_GROUP);
@@ -183,7 +196,7 @@ void WorldInfoPanel::HandleConfigure()
     for(Index i = 0; i < items.GetCapacity(); ++i, position += Direction2(80.0f, 0.0f))
     {
         auto item = ElementFactory::BuildElement <CharacterItem>(
-            {Size(70, 110), drawOrder_ + 1, {position, ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}, {false}, Opacity(0.8f)}
+            {Size(70, 110), drawOrder_ + 2, {position, ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}, {false}, Opacity(0.8f)}
         );
     }
 
@@ -347,6 +360,8 @@ void WorldInfoPanel::HandleConfigure()
     world::WorldScene::Get()->OnPlayerBecameRuler += {this, &WorldInfoPanel::HandlePlayerBecameRuler};
 
     world::WorldScene::Get()->OnSceneEnabled += {this, &WorldInfoPanel::HandlePlayerBecameRuler};
+
+    world::group::HumanMind::Get()->OnHeroJoinedParty += {this, &WorldInfoPanel::HandleHeroJoinedParty};
 }
 
 void WorldInfoPanel::HandlePlayerBecameRuler()
@@ -358,6 +373,33 @@ void WorldInfoPanel::HandlePlayerBecameRuler()
     playerDomainInfoBox->Enable();
 
     playerDomainInfo->Setup(Phrase() << "You rule over " << playerGroup->GetDomain()->GetRuler()->GetName());
+}
+
+void WorldInfoPanel::HandleHeroJoinedParty()
+{
+    RefreshCharacterList();
+}
+
+void WorldInfoPanel::RefreshCharacterList()
+{
+    auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
+    if(!playerGroup)
+        return;
+
+    auto &characters = playerGroup->GetCharacters();
+
+    for(auto item = items.GetStart(); item != items.GetEnd(); ++item)
+    {
+        item->Disable();
+    }
+
+    auto item = items.GetStart();
+    for(auto &character : characters)
+    {
+        item->SetCharacter(&character);
+        item->Enable();
+        item++;
+    }
 }
 
 void WorldInfoPanel::SelectCharacter(int index, bool isInInventoryMode)
@@ -417,32 +459,15 @@ void WorldInfoPanel::HandleInventoryOpen(int index)
 
 void WorldInfoPanel::HandleEnable()
 {
-    auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
-    if(!playerGroup)
-        return;
-
-    auto &characters = playerGroup->GetCharacters();
-
-    for(auto item = items.GetStart(); item != items.GetEnd(); ++item)
-    {
-        item->Disable();
-    }
-
-    auto item = items.GetStart();
-    for(auto &character : characters)
-    {
-        item->SetCharacter(&character);
-        item->Enable();
-        item++;
-    }
+    RefreshCharacterList();
 }
 
 void WorldInfoPanel::HandleUpdate()
 {
-    static auto &time = world::WorldScene::Get()->GetTime();
+    static const auto &time = world::WorldScene::Get()->GetTime();
 
-    auto dayOfMonth = time.GetDayOfMonth();
-    auto monthName = time.GetMonthName();
+    const auto dayOfMonth = time.GetDayOfMonth();
+    const auto monthName = time.GetMonthName();
     auto string = Phrase() << "hour " << time.HourCount << ", day " << dayOfMonth << " of month " << monthName << ", year " << time.YearCount;
     timeLabel->Setup(string);   
 

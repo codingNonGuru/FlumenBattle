@@ -68,7 +68,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     decisionMenu->Enable();
 
     infoPanel = ElementFactory::BuildElement <WorldInfoPanel>(
-        {Size(1900, 80), DrawOrder(6), {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, canvas}, {false}, Opacity(0.75f)}
+        {Size(canvas->GetWidth() - 10, 80), DrawOrder(6), {Position2(0.0f, 5.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, canvas}, {false}, Opacity(0.75f)}
     );
     infoPanel->Enable();
 
@@ -291,7 +291,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     recruitmentMenu = ElementFactory::BuildElement <interface::RecruitmentMenu>
     (
         {
-            Size(600, 420), 
+            Size(660, 420), 
             DrawOrder(7), 
             {canvas}, 
             {false}, 
@@ -824,6 +824,11 @@ void WorldInterface::OpenRecruitmentMenu()
 {
     if(recruitmentMenu->IsLocallyActive() == true)
         return;
-        
+
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    auto currentSettlement = playerGroup->GetCurrentSettlement();
+
+    recruitmentMenu->Setup(currentSettlement);
+
     recruitmentMenu->Open();
 }

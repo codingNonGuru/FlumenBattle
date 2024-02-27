@@ -4,11 +4,13 @@
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/LayoutGroup.h"
 #include "FlumenEngine/Interface/Text.hpp"
+#include "FlumenEngine/Animation.h"
 
 #include "RecruitmentMenu.h"
 #include "FlumenBattle/World/Interface/RecruitmentItem.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Character/RecruitHandler.h"
 
 using namespace world::interface;
 
@@ -19,6 +21,8 @@ static auto BORDER_COLOR = Color::RED * 0.25f;
 static auto TEXT_COLOR = Color::RED * 0.5f;
 
 static constexpr auto CLOSE_POPUP_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_RETURN;
+
+static const auto ANIMATION_LENGTH = 0.3f;
 
 void RecruitmentMenu::HandleConfigure() 
 {
@@ -64,16 +68,67 @@ void RecruitmentMenu::HandleConfigure()
 
 void RecruitmentMenu::HandleEnable()
 {
+    auto &recruits = character::RecruitHandler::Get()->GetRecruitPool(settlement);
+
     auto item = items.GetStart();
-    for(int i = 0; i < 3; ++i)
+    for(auto &recruit : recruits)
     {
         (*item)->Enable();
-        (*item)->Setup(this);
+        (*item)->Setup(this, &recruit);
 
         item++;
     }
 
     InputHandler::RegisterEvent(CLOSE_POPUP_INPUT_KEY, {this, &RecruitmentMenu::HandleClosePressed});
+}
+
+void RecruitmentMenu::HandleSetupAnimations()
+{
+    UpdatePositionConstantly();
+
+    openAnimation_->SetLength(ANIMATION_LENGTH);
+
+    auto property = openAnimation_->AddProperty({openAnimation_, &GetOpacity().Value});
+
+    property->AddKey()->Initialize(0.0f, 0.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH, opacity_);
+
+    property = openAnimation_->AddProperty({openAnimation_, &border->GetOpacity().Value});
+
+    property->AddKey()->Initialize(0.0f, 0.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH, 1.0f);
+
+    property = openAnimation_->AddProperty({openAnimation_, &titleLabel->GetOpacity().Value});
+
+    property->AddKey()->Initialize(0.0f, 0.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH, 1.0f);
+
+    property = openAnimation_->AddProperty({openAnimation_, &basePosition_.y});
+
+    property->AddKey()->Initialize(0.0f, 150.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH, 0.0f);
+
+    closeAnimation_->SetLength(ANIMATION_LENGTH);
+
+    property = closeAnimation_->AddProperty({closeAnimation_, &GetOpacity().Value});
+
+    property->AddKey()->Initialize(0.0f, opacity_);
+    property->AddKey()->Initialize(ANIMATION_LENGTH, 0.0f);
+
+    property = closeAnimation_->AddProperty({closeAnimation_, &border->GetOpacity().Value});
+
+    property->AddKey()->Initialize(0.0f, 1.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH, 0.0f);
+
+    property = closeAnimation_->AddProperty({closeAnimation_, &titleLabel->GetOpacity().Value});
+
+    property->AddKey()->Initialize(0.0f, 1.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH, 0.0f);
+
+    property = closeAnimation_->AddProperty({closeAnimation_, &basePosition_.y});
+
+    property->AddKey()->Initialize(0.0f, 0.0f);
+    property->AddKey()->Initialize(ANIMATION_LENGTH, -150.0f);
 }
 
 void RecruitmentMenu::HandleClosePressed()
@@ -85,10 +140,15 @@ void RecruitmentMenu::HandleClosePressed()
         item->Disable();
     }
 
-    Disable();
+    Close();
 }
 
-void RecruitmentMenu::ProcessInput()
+void RecruitmentMenu::Setup(settlement::Settlement *settlement)
 {
-    group::HumanMind::Get()->RecruitCharacter();
+    this->settlement = settlement;
+}
+
+void RecruitmentMenu::ProcessInput(const character::RecruitData *recruitData)
+{
+    group::HumanMind::Get()->RecruitCharacter(*recruitData);
 }

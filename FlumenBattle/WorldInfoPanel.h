@@ -58,6 +58,8 @@ class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
         void ForceSelection();
     };
 
+    Element *border;
+
     Text *timeLabel;
 
     Text *speedLabel;
@@ -97,6 +99,10 @@ class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
     Array <CharacterItem> & GetItemAllocator() {return items;}
 
     void HandlePlayerBecameRuler();
+
+    void HandleHeroJoinedParty();
+
+    void RefreshCharacterList();
 
 public:
     void SelectCharacter(int, bool);

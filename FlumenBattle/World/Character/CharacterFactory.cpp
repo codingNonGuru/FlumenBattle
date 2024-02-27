@@ -15,6 +15,7 @@
 #include "FlumenBattle/World/Character/ClassFactory.h"
 #include "FlumenBattle/World/Character/CharacterAction.h"
 #include "FlumenBattle/World/Character/NameGenerator.h"
+#include "FlumenBattle/World/Character/RecruitData.h"
 
 using namespace world::character;
 
@@ -24,9 +25,14 @@ int textureIndex = 0;
 
 const Array <Word> avatarTextures = {"Icons_01", "Icons_02", "Icons_03", "Icons_13", "Icons_14", "Icons_15", "Icons_16", "Icons_17"};
 
-Character* CharacterFactory::Create(const Race *race, const CharacterClass *type, world::group::Group& group)
+Character *CharacterFactory::Create(const RecruitData &recruitData, world::group::Group &group)
 {
-    auto character = world::character::CharacterAllocator::Get()->Allocate(group);// group.GetCharacters().Add();
+    return Create(recruitData.Race, &ClassFactory::BuildClass(recruitData.Class), group, recruitData.IconTextureId);
+}
+
+Character *CharacterFactory::Create(const Race *race, const CharacterClass *type, world::group::Group& group, int iconId)
+{
+    auto character = world::character::CharacterAllocator::Get()->Allocate(group);
 
     character->group = &group;
 
@@ -182,11 +188,19 @@ Character* CharacterFactory::Create(const Race *race, const CharacterClass *type
 
     character->name = NameGenerator::Get()->GenerateName();
 
-    auto textureName = avatarTextures.Get(textureIndex++);
-    character->avatar = render::TextureManager::GetTexture(*textureName);
-    if(textureIndex == avatarTextures.GetSize())
+    if(iconId == -1)
     {
-        textureIndex = 0;
+        auto textureName = avatarTextures.Get(textureIndex++);
+        character->avatar = render::TextureManager::GetTexture(*textureName);
+        if(textureIndex == avatarTextures.GetSize())
+        {
+            textureIndex = 0;
+        }
+    }
+    else
+    {
+        auto textureName = avatarTextures.Get(iconId);
+        character->avatar = render::TextureManager::GetTexture(*textureName);
     }
 
     character->maximumHitPoints = type->HitDice;
@@ -230,4 +244,14 @@ Integer CharacterFactory::GetRandomAbilityScore()
     }
 
     return sum;
+}
+
+int CharacterFactory::GetIconCount()
+{
+    return avatarTextures.GetSize();
+}
+
+const char *CharacterFactory::GetTextureName(int id)
+{
+    return *avatarTextures.Get(id);
 }
