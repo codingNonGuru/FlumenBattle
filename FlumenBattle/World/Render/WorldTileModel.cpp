@@ -687,6 +687,14 @@ void WorldTileModel::Render()
         {
             groupSprite->SetColor(&Color::GREEN);
         }
+        else if(group.GetClass() == group::GroupClasses::RAIDER)
+        {
+            groupSprite->SetColor(&Color::BLACK);
+        }
+        else if(group.GetClass() == group::GroupClasses::GARRISON)
+        {
+            groupSprite->SetColor(&Color::YELLOW);
+        }
         else if(group.GetClass() == group::GroupClasses::PLAYER)
         {
             groupSprite->SetColor(&Color::MAGENTA);

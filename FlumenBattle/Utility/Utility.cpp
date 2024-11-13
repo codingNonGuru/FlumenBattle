@@ -170,6 +170,8 @@ const char *utility::GetClassName(world::group::GroupClasses groupClass)
         return "Patrol";
     case world::group::GroupClasses::GARRISON:
         return "Garrison";
+    case world::group::GroupClasses::RAIDER:
+        return "Raider";
     default:
         return "Default";
     }

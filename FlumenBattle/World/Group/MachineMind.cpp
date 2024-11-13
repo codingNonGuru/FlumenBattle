@@ -44,6 +44,10 @@ namespace world::group
         {
             DetermineActionAsGarrison(group);
         }
+        else if(group.type->Class == GroupClasses::RAIDER)
+        {
+            DetermineActionAsRaider(group);
+        }
     }
 
     void MachineMind::DetermineActionAsMerchant(Group &group) const 
@@ -311,6 +315,64 @@ namespace world::group
             return;
 
         group.SelectAction(GroupActions::TAKE_LONG_REST);
+    }
+
+    void MachineMind::DetermineActionAsRaider(Group &group) const
+    {
+        if(group.travelActionData.IsOnRoute)
+        {
+            if(group.GetDestination() == nullptr)
+            {
+                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+            }
+        }
+        else
+        {
+            if(NeedsRest(group) == true)
+            {
+                group.SelectAction(GroupActions::TAKE_LONG_REST);
+            }
+            else
+            {
+                auto path = [&] () -> settlement::Path *
+                {
+                    if(group.tile == group.home->GetLocation())
+                    {
+                        if(group.home->GetLinks().GetSize() == 0)
+                            return nullptr;
+
+                        auto link = group.home->GetLinks().GetRandom();
+                        if(link != nullptr /*&& link->Other->GetPolity() != group.home->GetPolity()*/)
+                        {
+                            return link->Path;
+                        }
+                        else
+                        {
+                            return nullptr;
+                        }
+                    }
+                    else
+                    {
+                        return group.tile->GetSettlement()->GetPathTo(group.home);
+                    }
+                } ();
+
+                if(path != nullptr && path->Tiles.GetSize() < TILES_PER_GROUP_ROUTE)
+                {
+                    auto destination = group.tile == group.home->GetLocation() ? path->GetOther(group.home) : group.home;
+                    auto route = path->GetTilesTo(destination);
+
+                    group.travelActionData.PlannedDestinationCount = route.GetSize() - 1;
+                    for(int i = 1; i < route.GetSize(); ++i)
+                    {
+                        group.travelActionData.Route[i - 1] = *route[i];
+                    }
+                    group.travelActionData.IsOnRoute = true;
+
+                    group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+                }
+            }
+        }
     }
 
     void MachineMind::RegisterActionPerformance(Group &, GroupActionResult) const

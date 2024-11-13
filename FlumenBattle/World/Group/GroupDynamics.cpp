@@ -49,6 +49,8 @@ void GroupDynamics::Update(settlement::Settlement &settlement)
 
     AddGarrison(settlement);
 
+    AddRaider(settlement);
+
     const auto simulationLevel = settlement.GetSimulationLevel();
     if(simulationLevel != SimulationLevels::ADVANCED)
     {
@@ -161,6 +163,20 @@ void GroupDynamics::UpdateSimulationLevel(settlement::Settlement &settlement)
             group::GroupAllocator::Get()->Free(garrison.Group, false);
 
             garrison.Group = nullptr;
+        }
+    }
+
+    for(auto &raider : raiders)
+    {
+        if(raider.Group == nullptr && simulationLevel == SimulationLevels::ADVANCED)
+        {
+            raider.Group = group::GroupFactory::Create({group::GroupClasses::RAIDER, settlement.GetRace()->Type, &settlement});
+        }
+        else if(raider.Group != nullptr && simulationLevel != SimulationLevels::ADVANCED)
+        {
+            group::GroupAllocator::Get()->Free(raider.Group, false);
+
+            raider.Group = nullptr;
         }
     }
 }
@@ -277,6 +293,23 @@ void GroupDynamics::AddGarrison(settlement::Settlement &settlement)
     }
 }
 
+void GroupDynamics::AddRaider(settlement::Settlement &settlement)
+{
+    if(raiders.GetSize() == 1)
+        return;
+
+    const auto simulationLevel = settlement.GetSimulationLevel();
+    if(simulationLevel == SimulationLevels::ADVANCED)
+    {
+        auto raider = group::GroupFactory::Create({group::GroupClasses::RAIDER, settlement.GetRace()->Type, &settlement});
+        *raiders.Add() = {raider};
+    }
+    else
+    {
+        *raiders.Add() = {nullptr};
+    }
+}
+
 void GroupDynamics::RemoveGroup(const group::Group &group)
 {
     if(group.GetClass() == group::GroupClasses::ADVENTURER)
@@ -298,6 +331,10 @@ void GroupDynamics::RemoveGroup(const group::Group &group)
     else if(group.GetClass() == group::GroupClasses::GARRISON)
     {
         garrisons.Remove(&group);
+    }
+    else if(group.GetClass() == group::GroupClasses::RAIDER)
+    {
+        raiders.Remove(&group);
     }
 }
 
@@ -324,4 +361,9 @@ int GroupDynamics::GetPatrolStrength() const
 int GroupDynamics::GetGarrisonStrength() const
 {
     return garrisons.GetSize();
+}
+
+int GroupDynamics::GetRaiderStrength() const
+{
+    return raiders.GetSize();
 }

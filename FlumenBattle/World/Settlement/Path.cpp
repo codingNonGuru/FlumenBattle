@@ -25,7 +25,7 @@ void Path::AddTile(WorldTile *tile)
     tile->AddLink(previousTile, segment);
 }
 
-const container::SmartBlock <world::WorldTile *, 16> Path::GetTilesTo(Settlement *settlement) const
+const container::SmartBlock <world::WorldTile *, 16> Path::GetTilesTo(const Settlement *settlement) const
 {
     container::SmartBlock <world::WorldTile *, 16> tiles;
 

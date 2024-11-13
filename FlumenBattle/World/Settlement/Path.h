@@ -73,6 +73,6 @@ namespace world::settlement
             }
         }
 
-        const container::SmartBlock <WorldTile *, 16> GetTilesTo(Settlement *settlement) const;
+        const container::SmartBlock <WorldTile *, 16> GetTilesTo(const Settlement *settlement) const;
     };
 }

@@ -40,6 +40,8 @@
 
 #define GARRISONS_PER_SETTLEMENT 4
 
+#define RAIDERS_PER_SETTLEMENT 4
+
 using namespace world::settlement;
 
 void SettlementAllocator::PreallocateMaximumMemory()
@@ -89,6 +91,8 @@ void SettlementAllocator::PreallocateMaximumMemory()
     patrolMemory = container::PoolAllocator <group::GroupEssence>::PreallocateMemory (settlementCount, PATROLS_PER_SETTLEMENT);
 
     garrisonMemory = container::PoolAllocator <group::GroupEssence>::PreallocateMemory (settlementCount, GARRISONS_PER_SETTLEMENT);
+
+    raiderMemory = container::PoolAllocator <group::GroupEssence>::PreallocateMemory (settlementCount, RAIDERS_PER_SETTLEMENT);
 }
 
 void SettlementAllocator::AllocateWorldMemory(int worldSize)
@@ -136,6 +140,8 @@ void SettlementAllocator::AllocateWorldMemory(int worldSize)
     patrolAllocator = container::PoolAllocator <group::GroupEssence> (settlementCount, PATROLS_PER_SETTLEMENT, patrolMemory);
 
     garrisonAllocator = container::PoolAllocator <group::GroupEssence> (settlementCount, GARRISONS_PER_SETTLEMENT, garrisonMemory);
+
+    raiderAllocator = container::PoolAllocator <group::GroupEssence> (settlementCount, RAIDERS_PER_SETTLEMENT, raiderMemory);
 }
 
 Settlement * SettlementAllocator::Allocate()
@@ -153,6 +159,8 @@ Settlement * SettlementAllocator::Allocate()
     settlement->groupDynamics->patrols.Initialize(patrolAllocator);
 
     settlement->groupDynamics->garrisons.Initialize(garrisonAllocator);
+
+    settlement->groupDynamics->raiders.Initialize(raiderAllocator);
 
     auto &tiles = settlement->GetTiles();
     tiles.Initialize(tileAllocator);

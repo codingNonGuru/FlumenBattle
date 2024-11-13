@@ -20,6 +20,8 @@ namespace world::group
 
         void DetermineActionAsGarrison(Group &) const;
 
+        void DetermineActionAsRaider(Group &) const;
+
         void RegisterActionPerformance(Group &, GroupActionResult) const override;
 
         bool NeedsRest(const Group &) const;

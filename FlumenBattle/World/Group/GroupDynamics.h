@@ -34,6 +34,8 @@ namespace world::group
 
         container::Pool <GroupEssence> garrisons;
 
+        container::Pool <GroupEssence> raiders;
+
         void Update(settlement::Settlement &);
 
         void UpdateEncounters(settlement::Settlement &);
@@ -49,6 +51,8 @@ namespace world::group
         void AddBandit(settlement::Settlement &);
 
         void AddGarrison(settlement::Settlement &);
+
+        void AddRaider(settlement::Settlement &);
 
         void RemoveGroup(const group::Group &);
 
@@ -66,5 +70,7 @@ namespace world::group
         int GetBanditStrength() const;
 
         int GetGarrisonStrength() const;
+
+        int GetRaiderStrength() const;
     };
 }
