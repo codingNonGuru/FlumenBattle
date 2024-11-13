@@ -18,7 +18,7 @@ WorldMixer::WorldMixer()
         engine::SoundManager::Get()->PlaySound(START_BATTLE_SOUND);
     };
 
-    WorldScene::Get()->OnPlayerEncounterFinished += [] {
+    WorldScene::Get()->OnPlayerBattleEnded += [] {
         auto sound = COIN_SOUNDS.GetRandom();
         engine::SoundManager::Get()->PlaySound(*sound);
     };

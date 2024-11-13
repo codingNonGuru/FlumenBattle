@@ -66,7 +66,7 @@ BattleInterface::BattleInterface()
     characterDetailPanel->Enable();
 
     battleEndMessage = ElementFactory::BuildElement<BattleEndMessage>(
-        {Size(300, 180), DrawOrder(3), {canvas}, sprite, Opacity(ELEMENT_OPACITY)}
+        {Size(720, 180), DrawOrder(3), {canvas}, sprite, Opacity(ELEMENT_OPACITY)}
     );
 
     damageCounters.Initialize(MAXIMUM_DAMAGE_COUNTERS);

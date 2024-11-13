@@ -9,13 +9,31 @@
 
 using namespace battle;
 
+static const auto BORDER_COLOR = Color::RED * 0.25f;
+
+static const auto TEXT_COLOR = Color::RED * 0.5f;
+
+static const auto BORDER_INNER_OFFSET = Size(4, 4);
+
 void BattleEndMessage::HandleConfigure() 
 {
     mainLabel = ElementFactory::BuildText(
-        {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, 0.0f), this}},
-        {{"Large"}, Color::RED * 0.5f}
+        {drawOrder_ + 1, {this}},
+        {{"Large"}, TEXT_COLOR}
     );
     mainLabel->Enable();
+
+    border = ElementFactory::BuildElement <Element>
+    (
+        {
+            size_ - BORDER_INNER_OFFSET, 
+            drawOrder_ + 1, 
+            {this}, 
+            {"panel-border-031", true} 
+        }
+    );
+    border->SetSpriteColor(BORDER_COLOR);
+    border->Enable();
 
     BattleController::Get()->OnBattleEnded += {this, &BattleEndMessage::Enable};
 }    

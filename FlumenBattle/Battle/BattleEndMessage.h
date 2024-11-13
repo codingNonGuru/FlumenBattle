@@ -8,6 +8,8 @@ namespace battle
 {
     class BattleEndMessage : public Element
     {
+        Element *border;
+        
         Text *mainLabel;
 
         void HandleConfigure() override;
