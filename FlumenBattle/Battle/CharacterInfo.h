@@ -3,6 +3,7 @@
 #include "FlumenEngine/Interface/Element.hpp"
 
 class Text;
+class ProgressBar;
 class Camera;
 
 namespace battle
@@ -28,6 +29,8 @@ namespace battle
         Text* hitpointLabel;
 
         Text* deathSavingLabel;
+
+        ProgressBar *healthBar;
 
         Camera* camera;
 

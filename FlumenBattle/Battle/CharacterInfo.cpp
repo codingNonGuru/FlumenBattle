@@ -2,6 +2,7 @@
 
 #include "FlumenEngine/Interface/Text.hpp"
 #include "FlumenEngine/Interface/ElementFactory.h"
+#include "FlumenEngine/Interface/ProgressBar.h"
 #include "FlumenEngine/Core/Transform.hpp"
 #include "FlumenEngine/Render/RenderManager.hpp"
 #include "FlumenEngine/Render/Camera.hpp"
@@ -20,6 +21,10 @@
 
 using namespace battle;
 
+static const auto HEALTHBAR_MIN_SIZE = Size(40, 16);
+
+static const auto HEALTHBAR_MAX_SIZE = Size(160, 32);
+
 void CharacterInfo::HandleConfigure() 
 {
     battleController = BattleController::Get();
@@ -37,9 +42,15 @@ void CharacterInfo::HandleConfigure()
     targetedLabel->UpdatePositionConstantly();
 
     hitpointLabel = ElementFactory::BuildText(
-        {Size(150, 150), DrawOrder(2), {Position2(20.0f, 0.0f), this}},
-        {{"Small"}, textColor}
+        {Size(150, 150), DrawOrder(4), {this}},
+        {{"VerySmall"}, Color::WHITE}
     );
+
+    healthBar = ElementFactory::BuildProgressBar <ProgressBar>(
+        {HEALTHBAR_MIN_SIZE, DrawOrder(2), {this}, {"BaseBar", true}},
+        {"BaseFillerRed", {6.0f, 6.0f}}
+    );
+    healthBar->Enable();
 
     deathSavingLabel = ElementFactory::BuildText(
         {Size(150, 150), DrawOrder(2), {Position2(0.0f, 30.0f), this}},
@@ -86,8 +97,33 @@ void CharacterInfo::Deselect()
 
 void CharacterInfo::HandleUpdate()
 {
-    auto string = Word() << combatant->character->currentHitPoints;
-    hitpointLabel->Setup(string);
+    auto healthRatio = (float)combatant->character->currentHitPoints / (float)combatant->character->maximumHitPoints;
+    healthBar->SetProgress(healthRatio);
+
+    auto barOffset = 50.0f / camera->GetZoomFactor();
+    healthBar->SetBasePosition({0.0f, barOffset});
+
+    auto scaleFactor = 1.0f - exp(-camera->GetZoomFactor() / 1.5f);
+    scaleFactor -= 0.15f;
+    scaleFactor *= 1.3f;
+
+    healthBar->SetSize({(float)HEALTHBAR_MIN_SIZE.x * scaleFactor + (float)HEALTHBAR_MAX_SIZE.x * (1.0f - scaleFactor),
+        (float)HEALTHBAR_MIN_SIZE.y * scaleFactor + (float)HEALTHBAR_MAX_SIZE.y * (1.0f - scaleFactor)}
+    );
+
+    if(scaleFactor < 0.35f)
+    {
+        auto string = Word() << combatant->character->currentHitPoints << " / " << combatant->character->maximumHitPoints;
+        hitpointLabel->Setup(string);
+
+        hitpointLabel->Enable();
+
+        hitpointLabel->SetBasePosition({0.0f, barOffset});
+    }
+    else
+    {
+        hitpointLabel->Disable();
+    }
 
     if(battleController->GetTargetedCombatant() == combatant)
     {

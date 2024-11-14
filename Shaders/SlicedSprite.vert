@@ -15,7 +15,7 @@ layout (location = 2) uniform vec2 spriteSize;
 
 layout (location = 4) uniform float depth;  
 
-layout (location = 5) uniform vec2 sliceCornerSize;  
+layout (location = 5) uniform vec2 sliceCornerSize;   
 
 uniform sampler2D diffuse; 
 
