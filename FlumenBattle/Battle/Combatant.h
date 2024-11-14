@@ -148,6 +148,8 @@ namespace battle
 
         bool IsSavingAgainstDeath() const {return isSavingAgainstDeath;}
 
+        bool IsFlanked();
+
         Float GetHealth() const;
 
         BattleTile *GetTile() const {return tile;}

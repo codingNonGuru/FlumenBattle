@@ -32,7 +32,7 @@ static const Float CAMERA_GRAB_SENSITIVITY = 1.7f;
 
 static const Scale2 CAMERA_ZOOM_LIMIT = {0.3f, 3.5f};
 
-static const Integer3 COMBAT_GROUP_OFFSET = {-4, 12, -8};
+static const Integer3 COMBAT_GROUP_OFFSET = {-2, 6, -4};
 
 static const Length BATTLE_MAP_SIZE = 55;
 

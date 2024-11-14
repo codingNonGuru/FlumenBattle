@@ -136,6 +136,11 @@ void CharacterHoverInfo::HandleUpdate()
 
     Phrase text = "";
 
+    if(characterInfo->GetCombatant()->IsFlanked() == true)
+    {
+        text << "Flanked" << "\n";
+    }
+
     auto index = 0;
     for(auto &condition : conditions)
     {

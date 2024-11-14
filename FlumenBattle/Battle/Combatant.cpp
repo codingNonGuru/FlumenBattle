@@ -15,6 +15,7 @@
 #include "FlumenBattle/World/Character/CharacterAction.h"
 #include "FlumenBattle/World/Character/Types.h"
 #include "FlumenBattle/Utility/Utility.h"
+#include "FlumenBattle/Config.h"
 
 using namespace battle;
 
@@ -374,13 +375,24 @@ CharacterActionData Combatant::Strike()
 {
     auto targetArmor = target->GetCharacter()->GetArmorClass();
 
+    auto distance = GetDistanceTo(target);
+    if(distance == 1)
+    {
+        if(target->IsFlanked() == true)
+        {
+            static const auto FLANKING_ARMOR_PENALTY = engine::ConfigManager::Get()->GetValue(game::ConfigValues::FLANKING_ARMOR_PENALTY).Integer;
+
+            targetArmor -= FLANKING_ARMOR_PENALTY;
+        }
+    }
+
     auto attackBonus = GetCharacter()->GetAttackRating();
 
     auto attackRoll = utility::RollD20Dice(targetArmor, attackBonus);
 
     auto damage = 0;
 
-    bool hasHit = true;//attackRoll.IsAnySuccess();
+    bool hasHit = attackRoll.IsAnySuccess();
     if(hasHit)
     {
         auto damageRollInput = GetCharacter()->GetDamage();
@@ -525,6 +537,26 @@ bool Combatant::IsDodging()
 
     return isDodging;*/
     return false;
+}
+
+bool Combatant::IsFlanked()
+{
+    auto nearbyEnemyCount = 0;
+
+    auto &nearbyTiles = tile->GetNearbyTiles(1);
+    for(auto nearbyTile : nearbyTiles)
+    {
+        auto other = nearbyTile->Combatant;
+        if(other != nullptr && other->IsAlive() == true && other->GetCharacter()->GetGroup() != character->GetGroup())
+        {
+            nearbyEnemyCount++;
+        }
+    }
+
+    if(nearbyEnemyCount > 1)
+        return true;
+    else 
+        return false;
 }
 
 CombatGroup * Combatant::GetGroup() const

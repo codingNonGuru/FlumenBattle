@@ -26,7 +26,7 @@ void CombatGroup::Initialize(world::group::Group *_group, BattleTile *_tile)
     {
         auto combatant = combatants.Allocate();
 
-        auto combatantTile = tile->GetEmptyTileInRange(5);
+        auto combatantTile = tile->GetEmptyTileInRange(4);
 
         combatant->Initialize(this, &character, combatantTile);
     }

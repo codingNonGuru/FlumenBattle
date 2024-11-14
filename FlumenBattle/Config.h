@@ -22,5 +22,6 @@ namespace game
         static constexpr auto FATIGUE_ONSET_SINCE_REST = "FATIGUE_ONSET_SINCE_REST";
         static constexpr auto MAXIMUM_QUEST_COUNT = "MAXIMUM_QUEST_COUNT";
         static constexpr auto DELIVER_ITEM_QUEST_BASE_DURATION = "DELIVER_ITEM_QUEST_BASE_DURATION";
+        static constexpr auto FLANKING_ARMOR_PENALTY = "FLANKING_ARMOR_PENALTY";
     };
 }
