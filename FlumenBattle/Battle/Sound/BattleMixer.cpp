@@ -6,6 +6,7 @@
 #include "FlumenBattle/Battle/HumanController.h"
 #include "FlumenBattle/Battle/BattleController.h"
 #include "FlumenBattle/World/Character/Character.h"
+#include "FlumenBattle/World/Character/CharacterAction.h"
 
 using namespace battle::sound;
 
@@ -25,7 +26,7 @@ void BattleMixer::Initialize()
 void BattleMixer::HandleTargetingInitiated()
 {
     auto character = BattleController::Get()->GetSelectedCharacter();
-    if(character->GetActionRange() > 1)
+    if(*character->GetSelectedAction() == world::character::CharacterActions::ATTACK && character->GetActionRange() > 1)
     {
         auto drawSound = BOW_DRAW_SOUNDS.GetRandom();
         engine::SoundManager::Get()->PlaySound(*drawSound);
@@ -35,14 +36,18 @@ void BattleMixer::HandleTargetingInitiated()
 void BattleMixer::HandleCombatantActed()
 {
     auto character = BattleController::Get()->GetSelectedCharacter();
-    if(character->GetActionRange() > 1)
+    if(*character->GetSelectedAction() == world::character::CharacterActions::ATTACK)
     {
-        auto bowSound = BOW_SHOOT_SOUNDS.GetRandom();
-        engine::SoundManager::Get()->PlaySound(*bowSound);
-    }
-    else
-    {
-        auto swingSound = SWING_SOUNDS.GetRandom();
-        engine::SoundManager::Get()->PlaySound(*swingSound);
+        auto isRangedAttack = character->GetActionRange() > 1;
+        if(isRangedAttack == true)
+        {
+            auto bowSound = BOW_SHOOT_SOUNDS.GetRandom();
+            engine::SoundManager::Get()->PlaySound(*bowSound);
+        }
+        else
+        {
+            auto swingSound = SWING_SOUNDS.GetRandom();
+            engine::SoundManager::Get()->PlaySound(*swingSound);
+        }
     }
 }

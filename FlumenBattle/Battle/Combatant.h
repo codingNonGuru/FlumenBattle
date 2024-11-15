@@ -53,8 +53,6 @@ namespace battle
 
         Integer movement; 
 
-        Integer speedPenalty;
-
         Integer armorClass; 
 
         Integer remainingActionCount; 
@@ -129,7 +127,7 @@ namespace battle
 
         void SaveAgainstDeath();
 
-        void AddCondition(world::character::Conditions, world::character::Character *);
+        //void AddCondition(world::character::Conditions, world::character::Character *);
             
         void Select();
 

@@ -3,6 +3,7 @@
 #include "FlumenCore/Conventions.hpp"
 
 #include "FlumenBattle/Types.hpp"
+#include "FlumenBattle/Utility/Types.h"
 
 namespace world::character
 {
@@ -25,7 +26,7 @@ namespace world::character
 
         Integer Level;
 
-        Integer HitDice;
+        utility::RollDies HitDice;
 
         Integer RollCount;
 
@@ -39,14 +40,28 @@ namespace world::character
 
         bool IsBonusAction;
 
+        struct SaveType
+        {
+            bool HasSave;
+
+            SavingThrows Type;
+
+            SaveType() : HasSave(false) {}
+
+            SaveType(SavingThrows type) : HasSave(true), Type(type) {}
+        } SaveType;
+
         //const Phrase & Description;
 
         Spell() {}
 
         Spell(SpellTypes type) : Type(type) {}
 
-        Spell(SpellTypes type, Integer level, Integer hitDice, Integer rollCount, Integer range, Word name, bool isOffensive, bool isAttack, bool isBonusAction) :
-            Type(type), Level(level), HitDice(hitDice), RollCount(rollCount), Range(range), Name(name), IsOffensive(isOffensive), IsAttack(isAttack), IsBonusAction(isBonusAction) {}
+        Spell(SpellTypes type, Integer level, utility::RollDies hitDice, Integer rollCount, Integer range, Word name, bool isOffensive, bool isAttack, bool isBonusAction) :
+            Type(type), Level(level), HitDice(hitDice), RollCount(rollCount), Range(range), Name(name), IsOffensive(isOffensive), IsAttack(isAttack), IsBonusAction(isBonusAction), SaveType() {}
+
+        Spell(SpellTypes type, Integer level, utility::RollDies hitDice, Integer rollCount, Integer range, Word name, bool isOffensive, bool isAttack, bool isBonusAction, struct SaveType saveType) :
+            Type(type), Level(level), HitDice(hitDice), RollCount(rollCount), Range(range), Name(name), IsOffensive(isOffensive), IsAttack(isAttack), IsBonusAction(isBonusAction), SaveType(saveType) {}
 
         bool operator== (const Spell &other) {return other.Type == this->Type;}
     };
@@ -56,42 +71,42 @@ namespace world::character
     public:
         static Spell BuildFrostRay()
         {
-            return {SpellTypes::FROST_RAY, 0, 8, 1, 12, "Frost Ray", true, true, false};
+            return {SpellTypes::FROST_RAY, 0, utility::RollDies::D8, 1, 12, "Frost Ray", true, true, false, SavingThrows::FORTITUDE};
         }
 
         static Spell BuildShockingGrasp()
         {
-            return {SpellTypes::SHOCKING_GRASP, 0, 8, 1, 1, "Shocking Grasp", true, true, false};
+            return {SpellTypes::SHOCKING_GRASP, 0, utility::RollDies::D8, 1, 1, "Shocking Grasp", true, true, false, SavingThrows::REFLEX};
         }
 
         static Spell BuildSacredFlame()
         {
-            return {SpellTypes::SACRED_FLAME, 0, 8, 1, 12, "Sacred Flame", true, true, false};
+            return {SpellTypes::SACRED_FLAME, 0, utility::RollDies::D8, 1, 12, "Sacred Flame", true, true, false, SavingThrows::REFLEX};
         }
 
         static Spell BuildFireBolt()
         {
-            return {SpellTypes::FIRE_BOLT, 0, 10, 1, 24, "Fire Bolt", true, true, false};
+            return {SpellTypes::FIRE_BOLT, 0, utility::RollDies::D10, 1, 24, "Fire Bolt", true, true, false, SavingThrows::REFLEX};
         }
 
         static Spell BuildMagicMissile()
         {
-            return {SpellTypes::MAGIC_MISSILE, 1, 4, 1, 24, "Magic Missile", true, false, false};
+            return {SpellTypes::MAGIC_MISSILE, 1, utility::RollDies::D4, 1, 24, "Magic Missile", true, false, false};
         }
 
         static Spell BuildCureWounds()
         {
-            return {SpellTypes::CURE_WOUNDS, 1, 8, 1, 1, "Cure Wounds", false, false, false};
+            return {SpellTypes::CURE_WOUNDS, 1, utility::RollDies::D8, 1, 1, "Cure Wounds", false, false, false};
         }
 
         static Spell BuildHealingWord()
         {
-            return {SpellTypes::HEALING_WORD, 1, 4, 1, 12, "Healing Word", false, false, true};
+            return {SpellTypes::HEALING_WORD, 1, utility::RollDies::D4, 1, 12, "Healing Word", false, false, true};
         }
 
         static Spell BuildBless()
         {
-            return {SpellTypes::BLESS, 1, 4, 1, 5, "Bless", false, false, false};
+            return {SpellTypes::BLESS, 1, utility::RollDies::D4, 1, 5, "Bless", false, false, false};
         }
     };
 }

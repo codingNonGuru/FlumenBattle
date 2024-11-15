@@ -90,17 +90,17 @@ namespace world::character
 
     Integer Character::GetReflexSaveBonus()
     {
-        return proficiencies.GetSaveBonus(*this, SavingThrows::REFLEX_SAVE) + abilities.GetModifier(AbilityTypes::DEXTERITY);
+        return proficiencies.GetSaveBonus(*this, SavingThrows::REFLEX) + abilities.GetModifier(AbilityTypes::DEXTERITY);
     }
 
     Integer Character::GetFortitudeSaveBonus()
     {
-        return proficiencies.GetSaveBonus(*this, SavingThrows::FORTITUDE_SAVE) + abilities.GetModifier(AbilityTypes::CONSTITUTION);
+        return proficiencies.GetSaveBonus(*this, SavingThrows::FORTITUDE) + abilities.GetModifier(AbilityTypes::CONSTITUTION);
     }
 
     Integer Character::GetWillSaveBonus()
     {
-        return proficiencies.GetSaveBonus(*this, SavingThrows::WILL_SAVE) + abilities.GetModifier(AbilityTypes::WISDOM);
+        return proficiencies.GetSaveBonus(*this, SavingThrows::WILL) + abilities.GetModifier(AbilityTypes::WISDOM);
     }
 
     const Array <world::character::CharacterAction> &Character::GetActions() 

@@ -45,7 +45,7 @@ enum class SpellTypes {
 
 enum class SavingThrows
 {
-	REFLEX_SAVE, FORTITUDE_SAVE, WILL_SAVE
+	REFLEX, FORTITUDE, WILL
 };
 
 enum class WeaponClasses

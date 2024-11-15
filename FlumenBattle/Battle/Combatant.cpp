@@ -100,7 +100,13 @@ Integer Combatant::GetCurrentSpeed() const
 {
     if(IsAlive())
     {
-        return character->defaultSpeed - speedPenalty;
+        auto modifier = character->GetModifier(world::character::Modifiers::MOVE_SPEED);
+
+        auto speed = character->defaultSpeed + modifier;
+        if(speed < 0)
+            speed = 0;
+
+        return speed;
     }
     else
     {
@@ -119,8 +125,6 @@ bool Combatant::IsWithinActionRange(BattleTile *tile)
 
 void Combatant::StartTurn()
 {
-    speedPenalty = 0;
-
     /*conditions.Do([](auto &condition) -> bool
     {
         condition.Apply();
@@ -430,7 +434,7 @@ CharacterActionData Combatant::CastSpell()
 
 CharacterActionData Combatant::Dodge()
 {
-    AddCondition(world::character::Conditions::EVASION, character);
+    //AddCondition(world::character::Conditions::EVASION, character);
 
     remainingActionCount--;
 
@@ -484,34 +488,10 @@ bool Combatant::HealDamage(Integer damage)
 }
 
 
-void Combatant::AddCondition(world::character::Conditions newCondition, world::character::Character *character)
+/*void Combatant::AddCondition(world::character::Conditions newCondition, world::character::Character *character)
 {
-    bool hasFound = false;
-
-    /*conditions.Do([&](auto &condition) -> bool 
-    {
-        if(condition.GetType() == newCondition.GetType() && condition.IsActive())
-        {
-            condition = newCondition;
-            hasFound = true;
-            BREAK
-        }
-    });
-    
-    if(!hasFound)
-    {
-        auto condition = conditions.Add();
-        if(condition != nullptr)
-        {
-            *condition = newCondition;
-        }
-        else
-        {
-            std::cout<<"Adding condition on character has failed.\n";
-        }
-        
-    }*/
-}
+    character->AddCondition({newCondition});
+}*/
 
 void Combatant::Select()
 {

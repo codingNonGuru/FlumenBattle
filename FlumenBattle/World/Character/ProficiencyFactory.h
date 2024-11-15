@@ -36,19 +36,19 @@ namespace world::character
     public:
         static Proficiency BuildReflexSaveProficiency(ProficiencyLevels level)
         {
-            static ProficiencyType type = {CheckClasses::SAVE, "Reflex save", SavingThrows::REFLEX_SAVE};
+            static ProficiencyType type = {CheckClasses::SAVE, "Reflex save", SavingThrows::REFLEX};
             return {level, &type};
         }
 
         static Proficiency BuildFortitudeSaveProficiency(ProficiencyLevels level)
         {
-            static ProficiencyType type = {CheckClasses::SAVE, "Fortitude save", SavingThrows::FORTITUDE_SAVE};
+            static ProficiencyType type = {CheckClasses::SAVE, "Fortitude save", SavingThrows::FORTITUDE};
             return {level, &type};
         }
 
         static Proficiency BuildWillSaveProficiency(ProficiencyLevels level)
         {
-            static ProficiencyType type = {CheckClasses::SAVE, "Will save", SavingThrows::WILL_SAVE};
+            static ProficiencyType type = {CheckClasses::SAVE, "Will save", SavingThrows::WILL};
             return {level, &type};
         }
 

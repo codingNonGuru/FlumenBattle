@@ -223,6 +223,8 @@ namespace world::character
 
         bool HasCondition(Conditions condition) {return conditions.HasCondition(condition);}
 
+        int GetModifier(Modifiers modifier) {return modifiers.GetAmount(modifier);}
+
         void TakeShortRest();
 
         void TakeLongRest();

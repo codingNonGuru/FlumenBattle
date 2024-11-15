@@ -25,6 +25,8 @@ namespace battle
 
         static void RollHealing(Combatant &, const world::character::Spell &);
 
+        static void RollSavingThrow(Combatant &, const world::character::Spell &);
+
         static CharacterActionData ApplyFrostRay(Combatant &, const world::character::Spell &);
 
         static CharacterActionData ApplyShockingGrasp(Combatant &, const world::character::Spell &);

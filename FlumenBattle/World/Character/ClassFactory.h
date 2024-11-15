@@ -79,7 +79,7 @@ namespace world::character
                 6, 
                 10, 
                 {"Wizard1", Position2(0.0f, 0.5f)},
-                {CharacterActions::ATTACK, CharacterActions::DODGE, CharacterActions::DASH, CharacterActions::HELP},
+                {CharacterActions::ATTACK, CharacterActions::DODGE, CharacterActions::DASH, CharacterActions::CAST_SPELL},
                 {
                     AbilityTypes::INTELLIGENCE, 
                     {SpellFactory::BuildFrostRay(), SpellFactory::BuildShockingGrasp(), SpellFactory::BuildFireBolt(), SpellFactory::BuildMagicMissile()}

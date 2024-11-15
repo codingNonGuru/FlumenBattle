@@ -6,6 +6,7 @@
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/Battle/CharacterActionData.h"
 #include "FlumenBattle/World/Character/Condition.h"
+#include "FlumenBattle/Utility/Utility.h"
 
 using namespace battle;
 using namespace world::character;
@@ -22,6 +23,8 @@ struct SpellResult
 
     Integer DifficultyClass;
 
+    utility::Success Success;
+
     void Reset() {AttackRoll = 0; HasHit = false; IsCritical = false; Damage = 0; DifficultyClass = 0;}
 };
 
@@ -37,16 +40,23 @@ void SpellCaster::RollDamage(Combatant &combatant, const Spell & spell)
     Integer damage = 0;
     if(spellResult.HasHit)
     {
-        for(Index i = 0; i < spell.RollCount; ++i)
-        {
-            damage += utility::GetRandom(1, spell.HitDice);
-        }
+        damage += utility::RollDice({spell.HitDice, spell.RollCount});
 
         if(spellResult.IsCritical)
         {
-            damage += spell.HitDice * spell.RollCount;
+            damage += (int)spell.HitDice * spell.RollCount;
         }
+    }
+    else
+    {
+        if(spellResult.IsCritical == false)
+        {
+            damage += utility::RollDice({spell.HitDice, spell.RollCount}) / 2;
+        }
+    }
 
+    if(spellResult.HasHit == true || (spellResult.HasHit == false && spellResult.IsCritical == false))
+    {
         combatant.target->SufferDamage(damage);
     }
 
@@ -55,7 +65,7 @@ void SpellCaster::RollDamage(Combatant &combatant, const Spell & spell)
 
 void SpellCaster::RollHealing(Combatant &combatant, const Spell & spell)
 {
-    Integer damage = combatant.character->GetSpellCastingAbility().Modifier + utility::GetRandom(1, spell.HitDice);
+    Integer damage = combatant.character->GetSpellCastingAbility().Modifier + utility::RollDice({spell.HitDice, 1});
     combatant.GetTarget()->HealDamage(damage);
 
     spellResult.Damage = damage;
@@ -63,38 +73,46 @@ void SpellCaster::RollHealing(Combatant &combatant, const Spell & spell)
 
 void SpellCaster::RollAttack(Combatant &combatant)
 {
-    bool hasDisadvantage = combatant.HasDisadvantage();
+    auto attackBonus = combatant.character->GetSpellCastingAbility().Modifier + combatant.character->GetMagicProficiencyBonus();
 
-    auto attackRoll = utility::GetRandom(1, 20);
-    if(hasDisadvantage)
+    auto result = utility::RollD20Dice(combatant.target->armorClass, attackBonus);
+
+    spellResult.IsCritical = result.IsCriticalSuccess() || result.IsCriticalFailure();
+
+    spellResult.HasHit = result.IsAnySuccess();
+    spellResult.AttackRoll = result.Roll;
+}
+
+void SpellCaster::RollSavingThrow(Combatant &combatant, const Spell &spell)
+{
+    ComputeDifficultyClass(combatant);
+
+    auto savingThrow = [&]
     {
-        auto newRoll = utility::GetRandom(1, 20);
-        if(newRoll < attackRoll)
+        switch(spell.SaveType.Type)
         {
-            attackRoll = newRoll;
+        case SavingThrows::REFLEX:
+            return utility::RollD20Dice(spellResult.DifficultyClass, combatant.character->GetReflexSaveBonus());
+        case SavingThrows::WILL:
+            return utility::RollD20Dice(spellResult.DifficultyClass, combatant.character->GetWillSaveBonus());
+        case SavingThrows::FORTITUDE:
+            return utility::RollD20Dice(spellResult.DifficultyClass, combatant.character->GetFortitudeSaveBonus());
         }
-    }
+    } ();
 
-    spellResult.IsCritical = attackRoll == 20;
-
-    attackRoll += combatant.character->GetSpellCastingAbility().Modifier + combatant.character->GetMagicProficiencyBonus();
-
-    spellResult.HasHit = attackRoll >= combatant.target->armorClass;
-    spellResult.AttackRoll = attackRoll;
+    spellResult.HasHit = savingThrow.IsAnyFailure();
+    spellResult.IsCritical = savingThrow.IsCriticalFailure() || savingThrow.IsCriticalSuccess();
 }
 
 CharacterActionData SpellCaster::ApplyFrostRay(Combatant &combatant, const Spell & spell)
 {
-    ComputeDifficultyClass(combatant);
-
     RollAttack(combatant);
-
-    RollDamage(combatant, spell);
 
     if(spellResult.HasHit)
     {
-        //auto condition = world::character::Condition(ConditionTypes::CHILL, combatant.target, spellResult.DifficultyClass);
-        combatant.target->AddCondition(world::character::Conditions::HOBBLED, combatant.target->character);
+        RollDamage(combatant, spell);
+
+        combatant.target->GetCharacter()->AddCondition({world::character::Conditions::HOBBLED, 3});
     }
 }
 
@@ -107,13 +125,7 @@ CharacterActionData SpellCaster::ApplyShockingGrasp(Combatant &combatant, const 
 
 CharacterActionData SpellCaster::ApplySacredFlame(Combatant &combatant, const Spell & spell)
 {
-    ComputeDifficultyClass(combatant);
-
-    auto reflexSavingThrow = utility::GetRandom(1, 20) + combatant.character->GetReflexSaveBonus();
-    if(reflexSavingThrow < spellResult.DifficultyClass) 
-    {
-        spellResult.HasHit = true;
-    }
+    RollSavingThrow(combatant, spell);
 
     RollDamage(combatant, spell);
 }
