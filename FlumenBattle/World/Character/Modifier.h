@@ -4,6 +4,11 @@
 
 #include "FlumenBattle/World/Character/Types.h"
 
+namespace battle
+{
+    class Combatant;
+}
+
 namespace world::character
 {
     class Character;
@@ -31,6 +36,8 @@ namespace world::character
 
         friend class Character;
 
+        friend class battle::Combatant;
+
         void Initialize();
 
         void AddModifier(Modifier);
@@ -43,6 +50,13 @@ namespace world::character
     class ModifierAllocator
     {
         friend class CharacterAllocator;
+
+        friend class battle::Combatant;
+
+        static void Initialize(ModifierManager &manager, int capacity) 
+        {
+            manager.modifiers.Initialize(capacity);
+        }
 
         static void Allocate(container::ArrayAllocator <Modifier> &allocator, ModifierManager &manager) 
         {

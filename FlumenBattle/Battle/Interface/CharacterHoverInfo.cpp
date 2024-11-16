@@ -132,7 +132,8 @@ void CharacterHoverInfo::HandleUpdate()
         Disable();
     }
 
-    auto &conditions = characterInfo->GetCombatant()->GetCharacter()->GetConditions();
+    auto &worldConditions = characterInfo->GetCombatant()->GetCharacter()->GetConditions();
+    auto &battleConditions = characterInfo->GetCombatant()->GetConditions();
 
     Phrase text = "";
 
@@ -142,14 +143,18 @@ void CharacterHoverInfo::HandleUpdate()
     }
 
     auto index = 0;
-    for(auto &condition : conditions)
+    for(auto &conditions : {worldConditions, battleConditions})
     {
-        text << condition.Type->Name;
-
-        index++;
-        if(index != conditions.GetSize())
+        for(auto &condition : conditions)
         {
-            text << "\n";
+            if(index > 0)
+            {
+                text << "\n";
+            }
+
+            text << condition.Type->Name;
+
+            index++;
         }
     }
 

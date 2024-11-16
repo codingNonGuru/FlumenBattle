@@ -96,7 +96,7 @@ void Condition::ApplyEvasion()
 
 #include "Condition.h"
 #include "FlumenBattle/World/Character/Character.h"
-//#include "FlumenBattle/Utility/Utility.h"
+#include "FlumenBattle/Battle/Combatant.h"
 
 using namespace world::character;
 
@@ -108,6 +108,11 @@ namespace world::character
         static void AddModifier(Character &character, Modifier modifier)
         {
             character.AddModifier(modifier);
+        }
+
+        static void AddModifier(battle::Combatant &combatant, Modifier modifier)
+        {
+            combatant.AddModifier(modifier);
         }
     };
 
@@ -166,9 +171,9 @@ namespace world::character
     {
         using ConditionType::ConditionType; 
 
-        void HandleApplyEffect(Character &character) const override
+        void HandleApplyEffect(battle::Combatant &combatant) const override
         {
-            ModifierAccessor::AddModifier(character, {Modifiers::ATTACK_RATING_BONUS, 1});
+            ModifierAccessor::AddModifier(combatant, {Modifiers::ATTACK_RATING_BONUS, 1});
         }
     };
 
@@ -176,9 +181,9 @@ namespace world::character
     {
         using ConditionType::ConditionType; 
 
-        void HandleApplyEffect(Character &character) const override
+        void HandleApplyEffect(battle::Combatant &combatant) const override
         {
-            ModifierAccessor::AddModifier(character, {Modifiers::MOVE_SPEED, -2});
+            ModifierAccessor::AddModifier(combatant, {Modifiers::MOVE_SPEED, -2});
         }
     };
 }
@@ -186,6 +191,11 @@ namespace world::character
 void Condition::ApplyEffect(Character &character) const
 {
     Type->HandleApplyEffect(character);
+}
+
+void Condition::ApplyEffect(battle::Combatant &combatant) const
+{
+    Type->HandleApplyEffect(combatant);
 }
 
 Condition ConditionFactory::Create(ConditionData data)
@@ -271,6 +281,14 @@ void ConditionManager::ApplyModifiers(Character &character) const
     for(const auto &condition : conditionSet.Get())
     {
         condition.ApplyEffect(character);
+    }
+}
+
+void ConditionManager::ApplyModifiers(battle::Combatant &combatant) const
+{
+    for(const auto &condition : conditionSet.Get())
+    {
+        condition.ApplyEffect(combatant);
     }
 }
 

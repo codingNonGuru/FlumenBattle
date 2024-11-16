@@ -7,7 +7,7 @@
 #include "FlumenBattle/World/Character/Condition.h"
 #include "FlumenBattle/World/Character/Spell.h"
 #include "FlumenBattle/Battle/SpellCaster.h"
-#include "FlumenBattle/World/Character/Condition.h"
+#include "FlumenBattle/World/Character/Modifier.h"
 #include "FlumenBattle/World/Character/Weapon.h"
 #include "FlumenBattle/Battle/CombatGroup.h"
 #include "FlumenBattle/Battle/CharacterInfo.h"
@@ -45,6 +45,10 @@ void Combatant::Initialize(CombatGroup *_group, world::character::Character *_ch
     armorClass = character->type->ArmorClass;
 
     rotation = 0.0f;
+
+    world::character::ConditionAllocator::Initialize(conditions, 16);
+
+    world::character::ModifierAllocator::Initialize(modifiers, 16);
 }
 
 bool Combatant::HasAdvantage() const
@@ -552,4 +556,14 @@ bool Combatant::IsAlive() const
 Float Combatant::GetHealth() const 
 {
     return character->GetHealth();
+}
+
+void Combatant::AddModifier(world::character::Modifier modifier)
+{
+    modifiers.AddModifier(modifier);
+}
+
+void Combatant::AddCondition(world::character::ConditionData data)
+{
+    conditions.AddCondition(data);
 }

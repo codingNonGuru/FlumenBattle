@@ -3,11 +3,15 @@
 #include "FlumenCore/Conventions.hpp"
 
 #include "FlumenBattle/World/Character/Types.h"
+#include "FlumenBattle/World/Character/Condition.h"
+#include "FlumenBattle/World/Character/Modifier.h"
 
 namespace world::character
 {
     class Character;
     class Condition;
+    class Modifier;
+    class ModifierAccessor;
 }
 
 enum class SpellTypes;
@@ -45,6 +49,8 @@ namespace battle
 
         friend class SpellCaster;
 
+        friend class world::character::ModifierAccessor;
+
         CombatGroup *group;
 
         world::character::Character *character;
@@ -73,7 +79,9 @@ namespace battle
 
         float rotation;
 
-        //Pool <world::character::Condition> conditions;
+        world::character::ConditionManager conditions;
+
+        world::character::ModifierManager modifiers;
 
         Combatant();
 
@@ -135,6 +143,10 @@ namespace battle
 
         bool IsDodging();
 
+        void AddModifier(world::character::Modifier);
+
+        void AddCondition(world::character::ConditionData);
+
     public:
         CombatGroup * GetGroup() const;
 
@@ -165,5 +177,7 @@ namespace battle
         void SetPosition(Position2 newPosition) {position = newPosition;}
 
         void SetRotation(float newRotation) {rotation = newRotation;}
+
+        const Pool <world::character::Condition> &GetConditions() const {return conditions.GetConditions();}
     };
 }

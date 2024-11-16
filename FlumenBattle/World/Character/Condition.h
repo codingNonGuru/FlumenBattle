@@ -63,6 +63,11 @@ namespace world::character
 
 #include "FlumenBattle/World/Character/Types.h"
 
+namespace battle
+{
+    class Combatant;
+}
+
 namespace world::character
 {
     class Character;
@@ -91,7 +96,9 @@ namespace world::character
 
         explicit ConditionType(Conditions type, ShortWord name, bool isTimeDependent) : Type(type), Name(name), IsTimeDependent(isTimeDependent) {}
 
-        virtual void HandleApplyEffect(Character &) const = 0;
+        virtual void HandleApplyEffect(Character &) const {}
+
+        virtual void HandleApplyEffect(battle::Combatant &) const {}
     };
 
     struct Condition
@@ -104,7 +111,9 @@ namespace world::character
 
         int TimeElapsed {0};
 
-        void ApplyEffect(Character &character) const;
+        void ApplyEffect(Character &) const;
+
+        void ApplyEffect(battle::Combatant &) const;
 
         bool operator ==(Conditions condition) {return Type->Type == condition;}
 
@@ -126,7 +135,7 @@ namespace world::character
 
         ConditionSet() {}
 
-        ConditionSet& operator=(const ConditionSet &) = delete;
+        //ConditionSet& operator=(const ConditionSet &) = delete;
 
         const container::Pool <Condition> &Get() const {return conditions;}
     };
@@ -136,6 +145,8 @@ namespace world::character
         ConditionSet conditionSet;
 
         friend class Character;
+
+        friend class battle::Combatant;
 
         friend class ConditionAllocator;
 
@@ -147,6 +158,8 @@ namespace world::character
 
         void ApplyModifiers(Character &) const;
 
+        void ApplyModifiers(battle::Combatant &) const;
+
         void Update();
 
         const container::Pool <Condition> &GetConditions() const {return conditionSet.Get();}
@@ -155,6 +168,13 @@ namespace world::character
     class ConditionAllocator
     {
         friend class CharacterAllocator;
+
+        friend class battle::Combatant;
+
+        static void Initialize(ConditionManager &manager, int capacity)
+        {
+            manager.conditionSet.conditions.Initialize(capacity);
+        }
 
         static void Allocate(container::PoolAllocator <Condition> &allocator, ConditionManager &manager) 
         {

@@ -112,7 +112,7 @@ CharacterActionData SpellCaster::ApplyFrostRay(Combatant &combatant, const Spell
     {
         RollDamage(combatant, spell);
 
-        combatant.target->GetCharacter()->AddCondition({world::character::Conditions::HOBBLED, 3});
+        combatant.target->AddCondition({world::character::Conditions::HOBBLED, 3});
     }
 }
 
@@ -149,7 +149,7 @@ CharacterActionData SpellCaster::ApplyHealingWord(Combatant &combatant, const Sp
 
 CharacterActionData SpellCaster::ApplyBless(Combatant &combatant, const Spell &spell)
 {
-    combatant.target->GetCharacter()->AddCondition({world::character::Conditions::BLESSED, 3, 1});
+    combatant.target->AddCondition({world::character::Conditions::BLESSED, 3, 1});
 }
 
 CharacterActionData SpellCaster::ApplyEffect(Combatant &combatant, const Spell &spell)
