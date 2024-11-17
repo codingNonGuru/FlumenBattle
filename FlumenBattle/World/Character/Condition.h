@@ -79,7 +79,9 @@ namespace world::character
 
         int Duration;
 
-        int Strength {1};
+        int Strength;
+
+        int TimeInitiated {0};
     };
 
     struct ConditionType
@@ -161,6 +163,8 @@ namespace world::character
         void ApplyModifiers(battle::Combatant &) const;
 
         void Update();
+
+        void UpdateBattle(int);
 
         const container::Pool <Condition> &GetConditions() const {return conditionSet.Get();}
     };

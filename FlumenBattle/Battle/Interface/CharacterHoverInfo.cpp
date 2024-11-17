@@ -11,6 +11,7 @@
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/World/Interface/ResourceCounter.h"
+#include "FlumenBattle/Battle/BattleScene.h"
 
 using namespace battle::interface;
 
@@ -142,6 +143,9 @@ void CharacterHoverInfo::HandleUpdate()
         text << "Flanked" << "\n";
     }
 
+    auto turnIndex = BattleScene::Get()->GetTurnIndex();
+    auto turnsPerRound = BattleScene::Get()->GetTurnsPerRound();
+
     auto index = 0;
     for(auto &conditions : {worldConditions, battleConditions})
     {
@@ -153,6 +157,12 @@ void CharacterHoverInfo::HandleUpdate()
             }
 
             text << condition.Type->Name;
+
+            if(condition.Type->IsTimeDependent == true)
+            {
+                auto roundsLeft = condition.Duration - (turnIndex - condition.TimeElapsed) / turnsPerRound;
+                text << " (" << roundsLeft << ")";
+            }
 
             index++;
         }

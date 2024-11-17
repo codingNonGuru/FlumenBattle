@@ -76,6 +76,10 @@ namespace battle
         playerGroup->Initialize(world::WorldScene::Get()->GetPlayerGroup(), centerTile->GetNeighbor(COMBAT_GROUP_OFFSET));
         computerGroup->Initialize(GetComputerGroup(), centerTile->GetNeighbor(-COMBAT_GROUP_OFFSET));
 
+        roundIndex = 0;
+
+        turnIndex = 0;
+
         DetermineTurnOrder();
 
         InputHandler::RegisterContinualEvent(SCREEN_GRAB_INPUT_KEY, {this, &BattleScene::HandleGrabPressed}, {this, &BattleScene::HandleGrabReleased});
@@ -128,18 +132,37 @@ namespace battle
         turn->Combatant->StartTurn();
     }
 
+    void BattleScene::AddCondition(Combatant *combatant, world::character::ConditionData data)
+    {
+        data.TimeInitiated = turnIndex;
+
+        combatant->AddCondition(data);
+    }
+
     void BattleScene::EndTurn()
     {
         while(true)
         {
             turn++;
 
+            turnIndex++;
+
             bool hasRoundEnded = turn == turnOrder.GetEnd();
             if(hasRoundEnded)
             {
                 turn = turnOrder.GetStart();
 
+                roundIndex++;
+
                 OnRoundEnded.Invoke();
+            }
+
+            for(auto &group : {playerGroup, computerGroup})
+            {
+                for(auto &combatant : group->combatants)
+                {
+                    combatant.UpdateConditions(turnIndex);
+                }
             }
 
             if(turn->Combatant->IsAlive())
@@ -223,6 +246,21 @@ namespace battle
     bool BattleScene::IsCharactersTurn(Combatant *character) const
     {
         return character == turn->Combatant;
+    }
+
+    int BattleScene::GetRoundIndex() const
+    {
+        return roundIndex;
+    }
+
+    int BattleScene::GetTurnIndex() const
+    {
+        return turnIndex;
+    }
+
+    int BattleScene::GetTurnsPerRound() const
+    {
+        return turnOrder.GetSize();
     }
 
     Camera * BattleScene::GetCamera() const

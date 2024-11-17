@@ -7,6 +7,7 @@
 #include "FlumenBattle/Battle/CharacterActionData.h"
 #include "FlumenBattle/World/Character/Condition.h"
 #include "FlumenBattle/Utility/Utility.h"
+#include "FlumenBattle/Battle/BattleScene.h"
 
 using namespace battle;
 using namespace world::character;
@@ -32,7 +33,7 @@ static SpellResult spellResult;
 
 void SpellCaster::ComputeDifficultyClass(Combatant& combatant)
 {
-    spellResult.DifficultyClass = 8 + combatant.character->GetSpellCastingAbility().Modifier + combatant.character->GetMagicProficiencyBonus();
+    spellResult.DifficultyClass = 8 + combatant.GetCharacter()->GetSpellCastingAbility().Modifier + combatant.GetCharacter()->GetMagicProficiencyBonus();
 }
 
 void SpellCaster::RollDamage(Combatant &combatant, const Spell & spell)
@@ -57,7 +58,7 @@ void SpellCaster::RollDamage(Combatant &combatant, const Spell & spell)
 
     if(spellResult.HasHit == true || (spellResult.HasHit == false && spellResult.IsCritical == false))
     {
-        combatant.target->SufferDamage(damage);
+        combatant.GetTarget()->SufferDamage(damage);
     }
 
     spellResult.Damage = damage;
@@ -65,7 +66,7 @@ void SpellCaster::RollDamage(Combatant &combatant, const Spell & spell)
 
 void SpellCaster::RollHealing(Combatant &combatant, const Spell & spell)
 {
-    Integer damage = combatant.character->GetSpellCastingAbility().Modifier + utility::RollDice({spell.HitDice, 1});
+    Integer damage = combatant.GetCharacter()->GetSpellCastingAbility().Modifier + utility::RollDice({spell.HitDice, 1});
     combatant.GetTarget()->HealDamage(damage);
 
     spellResult.Damage = damage;
@@ -73,9 +74,9 @@ void SpellCaster::RollHealing(Combatant &combatant, const Spell & spell)
 
 void SpellCaster::RollAttack(Combatant &combatant)
 {
-    auto attackBonus = combatant.character->GetSpellCastingAbility().Modifier + combatant.character->GetMagicProficiencyBonus();
+    auto attackBonus = combatant.GetCharacter()->GetSpellCastingAbility().Modifier + combatant.GetCharacter()->GetMagicProficiencyBonus();
 
-    auto result = utility::RollD20Dice(combatant.target->armorClass, attackBonus);
+    auto result = utility::RollD20Dice(combatant.GetTarget()->armorClass, attackBonus);
 
     spellResult.IsCritical = result.IsCriticalSuccess() || result.IsCriticalFailure();
 
@@ -92,11 +93,11 @@ void SpellCaster::RollSavingThrow(Combatant &combatant, const Spell &spell)
         switch(spell.SaveType.Type)
         {
         case SavingThrows::REFLEX:
-            return utility::RollD20Dice(spellResult.DifficultyClass, combatant.character->GetReflexSaveBonus());
+            return utility::RollD20Dice(spellResult.DifficultyClass, combatant.GetCharacter()->GetReflexSaveBonus());
         case SavingThrows::WILL:
-            return utility::RollD20Dice(spellResult.DifficultyClass, combatant.character->GetWillSaveBonus());
+            return utility::RollD20Dice(spellResult.DifficultyClass, combatant.GetCharacter()->GetWillSaveBonus());
         case SavingThrows::FORTITUDE:
-            return utility::RollD20Dice(spellResult.DifficultyClass, combatant.character->GetFortitudeSaveBonus());
+            return utility::RollD20Dice(spellResult.DifficultyClass, combatant.GetCharacter()->GetFortitudeSaveBonus());
         }
     } ();
 
@@ -112,7 +113,7 @@ CharacterActionData SpellCaster::ApplyFrostRay(Combatant &combatant, const Spell
     {
         RollDamage(combatant, spell);
 
-        combatant.target->AddCondition({world::character::Conditions::HOBBLED, 3});
+        BattleScene::Get()->AddCondition(combatant.GetTarget(), {world::character::Conditions::HOBBLED, 3, 1});
     }
 }
 
@@ -149,7 +150,7 @@ CharacterActionData SpellCaster::ApplyHealingWord(Combatant &combatant, const Sp
 
 CharacterActionData SpellCaster::ApplyBless(Combatant &combatant, const Spell &spell)
 {
-    combatant.target->AddCondition({world::character::Conditions::BLESSED, 3, 1});
+    BattleScene::Get()->AddCondition(combatant.GetTarget(), {world::character::Conditions::BLESSED, 3, 1});
 }
 
 CharacterActionData SpellCaster::ApplyEffect(Combatant &combatant, const Spell &spell)
@@ -187,14 +188,14 @@ CharacterActionData SpellCaster::ApplyEffect(Combatant &combatant, const Spell &
     {
         //auto slot = combatant.character->spellSlots.Get(spell.Level - 1);
         //slot->Current--;
-        combatant.character->spellUseCount--;
+        combatant.GetCharacter()->spellUseCount--;
     }
 
     return CharacterActionData(
         world::character::CharacterActions::CAST_SPELL, 
         &combatant, 
         spellResult.AttackRoll, 
-        combatant.target->armorClass, 
+        combatant.GetTarget()->armorClass, 
         spellResult.Damage,
         spellResult.HasHit
         );

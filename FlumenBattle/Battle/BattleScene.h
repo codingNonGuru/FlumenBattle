@@ -9,6 +9,11 @@
 
 class CharacterInfo;
 
+namespace world::character
+{
+    struct ConditionData;
+}
+
 namespace battle
 {
     class Combatant;
@@ -56,6 +61,10 @@ namespace battle
 
         Turn *turn;
 
+        int roundIndex;
+
+        int turnIndex;
+
         bool isGrabbingScreen {false};
 
         Position2 grabStartPosition;
@@ -91,6 +100,8 @@ namespace battle
 
         BattleScene();
 
+        void AddCondition(Combatant *, world::character::ConditionData);
+
         BattleMap* GetBattleMap() {return battleMap;}
 
         Turn* GetTurn() {return turn;}
@@ -104,6 +115,12 @@ namespace battle
         CombatGroup * GetComputerGroup() const {return computerGroup;}
 
         bool IsCharactersTurn(Combatant *) const;
+
+        int GetRoundIndex() const;
+
+        int GetTurnIndex() const;
+
+        int GetTurnsPerRound() const;
 
         void EndTurn();
 

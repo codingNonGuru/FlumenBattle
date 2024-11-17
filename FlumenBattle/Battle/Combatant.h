@@ -47,9 +47,9 @@ namespace battle
 
         friend class world::character::Condition;
 
-        friend class SpellCaster;
-
         friend class world::character::ModifierAccessor;
+
+        friend class SpellCaster;
 
         CombatGroup *group;
 
@@ -179,5 +179,7 @@ namespace battle
         void SetRotation(float newRotation) {rotation = newRotation;}
 
         const Pool <world::character::Condition> &GetConditions() const {return conditions.GetConditions();}
+
+        void UpdateConditions(int turnIndex) {conditions.UpdateBattle(turnIndex);}
     };
 }
