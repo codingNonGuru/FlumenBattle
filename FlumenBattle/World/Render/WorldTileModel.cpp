@@ -49,6 +49,8 @@ static Sprite *bootSprite = nullptr;
 
 static Sprite *metalSprite = nullptr;
 
+static Sprite *foodSprite = nullptr;
+
 static Sprite *dotSprite = nullptr;
 
 static Sprite *xSprite = nullptr;
@@ -71,6 +73,8 @@ WorldTileModel::WorldTileModel()
     bootSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("TravelBoot")); 
 
     metalSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("Metal"));
+
+    foodSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("Radish"));
 
     dotSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("Dot")); 
 
@@ -656,9 +660,28 @@ void WorldTileModel::Render()
         }
     }
 
-    //RenderGroupSightings();
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
 
-    auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    if(WorldController::Get()->ShouldDisplayNearbyFood() == true)
+    {
+        auto playerTile = playerGroup->GetTile();
+        auto &nearbyTiles = playerTile->GetNearbyTiles(5);
+
+        for(auto &tile : nearbyTiles.Tiles)
+        {
+            auto foodAmount = tile->GetResource(settlement::ResourceTypes::FOOD);
+            if(foodAmount > 0)
+            {
+                for(auto i = 0; i < foodAmount; ++i)
+                {
+                    auto positionOffset = ((float)i + 0.5f - (float)foodAmount * 0.5f) * Position2(-10.0f, 0.0f);
+                    foodSprite->Draw(camera, {tile->Position + positionOffset, Scale2(0.75f, 0.75f), Opacity(1.0f), DrawOrder(-2)});
+                }
+            }
+        }
+    }
+
+    //RenderGroupSightings();
 
     for(auto &group : *worldScene->groups)
     {

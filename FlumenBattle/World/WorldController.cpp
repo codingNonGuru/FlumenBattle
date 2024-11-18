@@ -36,6 +36,8 @@ static const auto TRAVEL_MODE_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_T;
 
 static const auto SCREEN_GRAB_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_LALT;
 
+static const auto FOOD_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_F, {InputHandler::CTRL}};
+
 namespace world
 {
     WorldController::WorldController() {}
@@ -66,6 +68,7 @@ namespace world
         InputHandler::RegisterContinualEvent(SDL_Scancode::SDL_SCANCODE_RIGHT, {this, &WorldController::HandlePanRight});
         InputHandler::RegisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LEFT, {this, &WorldController::HandlePanLeft});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_M, {this, &WorldController::HandleResourceDisplayPressed});
+        InputHandler::RegisterEvent(FOOD_DISPLAY_KEY, {this, &WorldController::HandleFoodDisplayPressed});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_1, {this, &WorldController::HandleCharacterSelected});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_2, {this, &WorldController::HandleCharacterSelected});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_3, {this, &WorldController::HandleCharacterSelected});
@@ -207,7 +210,6 @@ namespace world
 
     void WorldController::HandleBattleStarted()
     {
-        std::cout<<"start battle\n";
         auto scene = WorldScene::Get();
         scene->StopTime();
 
@@ -284,6 +286,18 @@ namespace world
         }
     }
 
+    void WorldController::HandleFoodDisplayPressed()
+    {
+        if(isFoodDisplayActive)
+        {
+            isFoodDisplayActive = false;
+        }
+        else
+        {
+            isFoodDisplayActive = true;
+        }
+    }
+
     void WorldController::HandleCharacterSelected()
     {
         int index = 0;
@@ -348,6 +362,7 @@ namespace world
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_RIGHT);
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LEFT);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_M);
+        InputHandler::UnregisterEvent(FOOD_DISPLAY_KEY);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_1);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_2);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_3);
