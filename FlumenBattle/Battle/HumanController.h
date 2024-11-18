@@ -41,6 +41,12 @@ namespace battle
 
         void HandleSpacePressed();
 
+        template <int>
+        void HandleNumberPressed();
+
+        template <int>
+        void HandleCtrlNumberPressed();
+
         void HandleOnePressed();
 
         void HandleTwoPressed();
@@ -49,7 +55,7 @@ namespace battle
 
         void HandleFourPressed();
 
-        void ChangeActionSelection(Integer);
+        void ChangeActionSelection(Integer, bool);
 
         void HandleMPressed();
 

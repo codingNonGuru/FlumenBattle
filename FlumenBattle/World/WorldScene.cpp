@@ -31,6 +31,7 @@
 #include "FlumenBattle/Utility/Utility.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 #include "FlumenBattle/World/SimulationMap.h"
+#include "FlumenBattle/World/Group/HumanMind.h"
 
 #define AWAIT(length) \
     static float timer = 0.0f;\
@@ -51,7 +52,9 @@ namespace world
 
         battle::BattleScene::Get()->OnRoundEnded += {this, &WorldScene::HandleBattleRoundEnded};
 
-        WorldInterface::Get()->Initialize();        
+        WorldInterface::Get()->Initialize();
+
+        group::HumanMind::Get()->Enable();        
     }
 
     void WorldScene::SpeedUpTime()

@@ -289,17 +289,17 @@ void WorldInfoPanel::HandleConfigure()
     muleCounter->Enable();
 
     playerDomainInfoBox = ElementFactory::BuildElement <Element>(
-        {Size(400, 70), drawOrder_ + 1, {Position2(0.0f, 5.0f), ElementAnchors::LOWER_CENTER, ElementPivots::MIDDLE_CENTER, this}, {false}, Opacity(0.8f)}
+        {Size(400, 70), drawOrder_ + 2, {Position2(0.0f, 5.0f), ElementAnchors::LOWER_CENTER, ElementPivots::MIDDLE_CENTER, this}, {false}, Opacity(0.8f)}
     );
 
     playerDomainInfoBorder = ElementFactory::BuildElement <Element>(
-        {playerDomainInfoBox->GetSize(), drawOrder_ + 2, {playerDomainInfoBox}, {"panel-border-007", true}, Opacity(0.6f)}
+        {playerDomainInfoBox->GetSize(), drawOrder_ + 3, {playerDomainInfoBox}, {"panel-border-007", true}, Opacity(0.6f)}
     );
     playerDomainInfoBorder->SetSpriteColor(BORDER_COLOR);
     playerDomainInfoBorder->Enable();
 
     playerDomainInfo = ElementFactory::BuildText(
-        {drawOrder_ + 2, {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, playerDomainInfoBox}}, 
+        {drawOrder_ + 3, {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, playerDomainInfoBox}}, 
         {{"Small"}, TEXT_COLOR}
     );
     playerDomainInfo->Enable();

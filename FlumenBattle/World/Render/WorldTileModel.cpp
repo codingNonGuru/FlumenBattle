@@ -632,7 +632,7 @@ void WorldTileModel::Render()
 
     FarmModel::Get()->Render();
 
-    //RenderSnow();
+    RenderSnow();
 
     //RenderPaths();
 

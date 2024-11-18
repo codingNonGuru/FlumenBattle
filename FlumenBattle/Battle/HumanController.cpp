@@ -48,15 +48,33 @@ void HumanController::Initialize()
     battleScene->OnUpdate += {this, &HumanController::HandleSceneUpdate};
 }
 
+static const SDL_Scancode keys[] = {SDL_Scancode::SDL_SCANCODE_1, SDL_Scancode::SDL_SCANCODE_2, SDL_Scancode::SDL_SCANCODE_3, SDL_Scancode::SDL_SCANCODE_4};
+
 void HumanController::EnablePlayerInput()
 {
+    static const Event numberEvents[] = {
+        {this, &HumanController::HandleNumberPressed <0>}, 
+        {this, &HumanController::HandleNumberPressed <1>},
+        {this, &HumanController::HandleNumberPressed <2>},
+        {this, &HumanController::HandleNumberPressed <3>}
+    };
+
+    static const Event ctrlNumberEvents[] = {
+        {this, &HumanController::HandleCtrlNumberPressed <0>}, 
+        {this, &HumanController::HandleCtrlNumberPressed <1>},
+        {this, &HumanController::HandleCtrlNumberPressed <2>},
+        {this, &HumanController::HandleCtrlNumberPressed <3>}
+    };
+    
+    for(int i = 0; i < std::size(keys); ++i)
+    {
+        InputHandler::RegisterEvent(keys[i], numberEvents[i]);    
+        InputHandler::RegisterEvent({keys[i], {InputHandler::SupportKeys::CTRL}}, ctrlNumberEvents[i]);    
+    }
+
     InputHandler::OnInputUpdate += {this, &HumanController::CheckTileSelection};
     InputHandler::OnLeftMouseClick += {this, &HumanController::CheckCharacterMovement};
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, {this, &HumanController::HandleSpacePressed});
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_1, {this, &HumanController::HandleOnePressed});
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_2, {this, &HumanController::HandleTwoPressed});
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_3, {this, &HumanController::HandleThreePressed});
-    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_4, {this, &HumanController::HandleFourPressed});
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_M, {this, &HumanController::HandleMPressed});
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_T, {this, &HumanController::HandleTPressed});
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_A, {this, &HumanController::HandleAPressed});
@@ -64,13 +82,15 @@ void HumanController::EnablePlayerInput()
 
 void HumanController::DisablePlayerInput()
 {
+    for(int i = 0; i < std::size(keys); ++i)
+    {
+        InputHandler::UnregisterEvent(keys[i]);    
+        InputHandler::UnregisterEvent({keys[i], {InputHandler::SupportKeys::CTRL}});
+    }
+
     InputHandler::OnInputUpdate -= {this, &HumanController::CheckTileSelection};
     InputHandler::OnLeftMouseClick -= {this, &HumanController::CheckCharacterMovement};
     InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE);
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_1);
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_2);
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_3);
-    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_4);
     InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_M);
     InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_T);
     InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_A);
@@ -117,27 +137,19 @@ void HumanController::HandleSpacePressed()
     battleController->EndTurn();
 }
 
-void HumanController::HandleOnePressed()
+template <int N>
+void HumanController::HandleNumberPressed()
 {
-    ChangeActionSelection(0);
+    ChangeActionSelection(N, false);
 }
 
-void HumanController::HandleTwoPressed()
+template <int N>
+void HumanController::HandleCtrlNumberPressed()
 {
-    ChangeActionSelection(1);
+    ChangeActionSelection(N, true);
 }
 
-void HumanController::HandleThreePressed()
-{
-    ChangeActionSelection(2);
-}
-
-void HumanController::HandleFourPressed()
-{
-    ChangeActionSelection(3);
-}
-
-void HumanController::ChangeActionSelection(Integer actionIndex)
+void HumanController::ChangeActionSelection(Integer actionIndex, bool isSubaction)
 {
     auto battleController = BattleController::Get();
     auto selectedCombatant = battleController->selectedCombatant;
@@ -147,7 +159,7 @@ void HumanController::ChangeActionSelection(Integer actionIndex)
 
     auto character = selectedCombatant->GetCharacter();
 
-    if(InputHandler::IsPressed(SDL_Scancode::SDL_SCANCODE_LCTRL))
+    if(isSubaction == true)
     {
         auto currentIndex = character->GetSelectedSubactionIndex();
         battleController->SelectSubaction(actionIndex);

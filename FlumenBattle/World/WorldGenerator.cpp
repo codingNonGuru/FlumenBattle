@@ -471,8 +471,8 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
         settlement.SetupSimulation();
     }
 
-    /*newSettlement->GetPolity()->SetController(true);
-    scene.playerGroup->SetDomain(newSettlement->GetPolity());*/
+    newSettlement->GetPolity()->SetController(true);
+    scene.playerGroup->SetDomain(newSettlement->GetPolity());
 }
 
 int WorldGenerator::GetMaximumPolityCount(int worldSize) const
