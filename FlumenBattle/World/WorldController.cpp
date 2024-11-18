@@ -80,6 +80,7 @@ namespace world
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_6, {this, &WorldController::HandleCharacterSelected});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_I, {this, &WorldController::HandleInventoryPressed});
 
+        InputHandler::RegisterContinualEvent(TRAVEL_MODE_INPUT_KEY, {this, &WorldController::HandleTravelPressed}, {this, &WorldController::HandleTravelReleased});
         InputHandler::RegisterContinualEvent(SCREEN_GRAB_INPUT_KEY, {this, &WorldController::HandleGrabPressed}, {this, &WorldController::HandleGrabReleased});
 
         //InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_C, {this, &WorldController::HandleColonizationSwitch});
@@ -175,15 +176,6 @@ namespace world
             camera->ZoomDynamically(-zoomSpeed);
         }
 
-        if(InputHandler::IsPressed(TRAVEL_MODE_INPUT_KEY) == true)
-        {
-            isTravelPlanActive = true;
-        }
-        else
-        {
-            isTravelPlanActive = false;
-        }
-
         if(isGrabbingScreen == true)
         {
             camera->Translate({grabPositionDelta.x, grabPositionDelta.y, 0.0f});
@@ -258,6 +250,16 @@ namespace world
     void WorldController::HandleGrabReleased()
     {
         isGrabbingScreen = false;
+    }
+
+    void WorldController::HandleTravelPressed()
+    {
+        isTravelPlanActive = true;
+    }
+
+    void WorldController::HandleTravelReleased()
+    {
+        isTravelPlanActive = false;
     }
 
     void WorldController::HandleSpacePressed()
@@ -391,7 +393,8 @@ namespace world
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_6);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_I);
 
-        InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LALT);
+        InputHandler::UnregisterContinualEvent(SCREEN_GRAB_INPUT_KEY);
+        InputHandler::UnregisterContinualEvent(TRAVEL_MODE_INPUT_KEY);
     }
 
     bool WorldController::CanBuyFood()

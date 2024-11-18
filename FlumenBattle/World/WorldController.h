@@ -82,6 +82,8 @@ namespace world
 
         void HandleTravelPressed();
 
+        void HandleTravelReleased();
+
         void HandleResourceDisplayPressed();
 
         void HandleFoodDisplayPressed();
