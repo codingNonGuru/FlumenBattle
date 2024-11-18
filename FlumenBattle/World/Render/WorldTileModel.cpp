@@ -51,6 +51,8 @@ static Sprite *metalSprite = nullptr;
 
 static Sprite *foodSprite = nullptr;
 
+static Sprite *timberSprite = nullptr;
+
 static Sprite *dotSprite = nullptr;
 
 static Sprite *xSprite = nullptr;
@@ -75,6 +77,8 @@ WorldTileModel::WorldTileModel()
     metalSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("Metal"));
 
     foodSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("Radish"));
+
+    timberSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("Timber"));
 
     dotSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("Dot")); 
 
@@ -662,20 +666,22 @@ void WorldTileModel::Render()
 
     static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
 
-    if(WorldController::Get()->ShouldDisplayNearbyFood() == true)
+    if(WorldController::Get()->ShouldDisplayNearbyFood() == true || WorldController::Get()->ShouldDisplayNearbyTimber() == true)
     {
         auto playerTile = playerGroup->GetTile();
         auto &nearbyTiles = playerTile->GetNearbyTiles(5);
 
         for(auto &tile : nearbyTiles.Tiles)
         {
-            auto foodAmount = tile->GetResource(settlement::ResourceTypes::FOOD);
-            if(foodAmount > 0)
+            auto resourceAmount = tile->GetResource(WorldController::Get()->ShouldDisplayNearbyFood() ? settlement::ResourceTypes::FOOD : settlement::ResourceTypes::TIMBER);
+            if(resourceAmount > 0)
             {
-                for(auto i = 0; i < foodAmount; ++i)
-                {
-                    auto positionOffset = ((float)i + 0.5f - (float)foodAmount * 0.5f) * Position2(-10.0f, 0.0f);
-                    foodSprite->Draw(camera, {tile->Position + positionOffset, Scale2(0.75f, 0.75f), Opacity(1.0f), DrawOrder(-2)});
+                for(auto i = 0; i < resourceAmount; ++i)
+                {   
+                    auto sprite = WorldController::Get()->ShouldDisplayNearbyFood() == true ? foodSprite : timberSprite;
+
+                    auto positionOffset = ((float)i + 0.5f - (float)resourceAmount * 0.5f) * Position2(-10.0f, 0.0f);
+                    sprite->Draw(camera, {tile->Position + positionOffset, Scale2(0.75f, 0.75f), Opacity(1.0f), DrawOrder(-2)});
                 }
             }
         }
