@@ -538,6 +538,17 @@ Integer Settlement::GetWorkedTiles() const
     return tileCount;
 }
 
+bool Settlement::IsTileImproved(WorldTile* tile) const
+{
+    for(auto &settlementTile : tiles)
+    {
+        if(settlementTile.Tile == tile && settlementTile.IsBuilt == true)
+            return true;
+    }
+    
+    return false;
+}
+
 Settlement *Settlement::GetRuler() const
 {
     return polity->GetRuler();

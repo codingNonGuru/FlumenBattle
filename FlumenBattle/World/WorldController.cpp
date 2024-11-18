@@ -40,6 +40,8 @@ static const auto FOOD_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCA
 
 static const auto TIMBER_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_T, {InputHandler::CTRL}};
 
+static const auto IMPROVEMENT_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_I, {InputHandler::CTRL}};
+
 namespace world
 {
     WorldController::WorldController() {}
@@ -72,6 +74,7 @@ namespace world
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_M, {this, &WorldController::HandleResourceDisplayPressed});
         InputHandler::RegisterEvent(FOOD_DISPLAY_KEY, {this, &WorldController::HandleFoodDisplayPressed});
         InputHandler::RegisterEvent(TIMBER_DISPLAY_KEY, {this, &WorldController::HandleTimberDisplayPressed});
+        InputHandler::RegisterEvent(IMPROVEMENT_DISPLAY_KEY, {this, &WorldController::HandleImprovementDisplayPressed});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_1, {this, &WorldController::HandleCharacterSelected});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_2, {this, &WorldController::HandleCharacterSelected});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_3, {this, &WorldController::HandleCharacterSelected});
@@ -319,6 +322,18 @@ namespace world
         }
     }
 
+    void WorldController::HandleImprovementDisplayPressed()
+    {
+        if(isImprovementDisplayActive)
+        {
+            isImprovementDisplayActive = false;
+        }
+        else
+        {
+            isImprovementDisplayActive = true;
+        }
+    }
+
     void WorldController::HandleCharacterSelected()
     {
         int index = 0;
@@ -385,6 +400,7 @@ namespace world
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_M);
         InputHandler::UnregisterEvent(FOOD_DISPLAY_KEY);
         InputHandler::UnregisterEvent(TIMBER_DISPLAY_KEY);
+        InputHandler::UnregisterEvent(IMPROVEMENT_DISPLAY_KEY);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_1);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_2);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_3);

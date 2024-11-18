@@ -41,6 +41,8 @@ namespace world
 
         bool isTimberDisplayActive {false};
 
+        bool isImprovementDisplayActive {false};
+
         bool isTravelPlanActive {false};
 
         bool canColonize {true};
@@ -90,6 +92,8 @@ namespace world
 
         void HandleTimberDisplayPressed();
 
+        void HandleImprovementDisplayPressed();
+
         void HandleCharacterSelected();
 
         void HandleInventoryPressed();
@@ -132,6 +136,8 @@ namespace world
         bool ShouldDisplayNearbyFood() const {return isFoodDisplayActive;}
 
         bool ShouldDisplayNearbyTimber() const {return isTimberDisplayActive;}
+
+        bool ShouldDisplayImprovements() const {return isImprovementDisplayActive;}
 
         bool CanColonize() const {return canColonize;}
 

@@ -53,6 +53,8 @@ static Sprite *foodSprite = nullptr;
 
 static Sprite *timberSprite = nullptr;
 
+static Sprite *farmSprite = nullptr;
+
 static Sprite *dotSprite = nullptr;
 
 static Sprite *xSprite = nullptr;
@@ -79,6 +81,8 @@ WorldTileModel::WorldTileModel()
     foodSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("Radish"));
 
     timberSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("Timber"));
+
+    farmSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("FarmImprovement"));
 
     dotSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("Dot")); 
 
@@ -602,6 +606,29 @@ void WorldTileModel::RenderGroupSightings()
     }
 }
 
+void WorldTileModel::RenderImprovements()
+{
+    if(WorldController::Get()->ShouldDisplayImprovements() == false)
+        return;
+
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+    const auto playerTile = playerGroup->GetTile();
+    const auto &nearbyTiles = playerTile->GetNearbyTiles(5);
+
+    for(auto &tile : nearbyTiles.Tiles)
+    {
+        if(tile->IsOwned() == false)
+            continue;
+
+        const auto owner = tile->GetOwner();        
+        if(owner->IsTileImproved(tile) == false)
+            continue;
+
+        farmSprite->Draw(camera, {tile->Position + Position2(0.0f, -15.0f), Scale2(0.55f, 0.55f), Opacity(1.0f), DrawOrder(-2)});
+    }
+}
+
 void WorldTileModel::Render() 
 {
     static auto index = 0;
@@ -688,6 +715,8 @@ void WorldTileModel::Render()
     }
 
     //RenderGroupSightings();
+
+    RenderImprovements();
 
     for(auto &group : *worldScene->groups)
     {

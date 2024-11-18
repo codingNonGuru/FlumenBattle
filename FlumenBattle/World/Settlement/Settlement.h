@@ -193,6 +193,8 @@ namespace world::settlement
 
         Integer GetWorkedTiles() const;
 
+        bool IsTileImproved(WorldTile *) const;
+
         const group::GroupDynamics &GetGroupDynamics() const {return *groupDynamics;}
 
         polity::Polity *GetPolity() const {return polity;}

@@ -46,6 +46,8 @@ namespace world::render
 
         void RenderGroupSightings();
 
+        void RenderImprovements();
+
     public:
         void Initialize() override;
 
