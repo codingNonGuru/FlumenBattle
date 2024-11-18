@@ -22,6 +22,7 @@ namespace world
     {
         class Polity;
         class Faction;
+        class MachineMind;
     }
 
     namespace group
@@ -90,6 +91,8 @@ namespace world::settlement
         friend class BuildingDamager;
 
         friend struct Resource;
+
+        friend class polity::MachineMind;
 
         Word name;
 
@@ -194,6 +197,8 @@ namespace world::settlement
         Integer GetWorkedTiles() const;
 
         bool IsTileImproved(WorldTile *) const;
+
+        Integer GetFreeWorkerCount() const;
 
         const group::GroupDynamics &GetGroupDynamics() const {return *groupDynamics;}
 

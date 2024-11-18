@@ -40,6 +40,7 @@
 #include "FlumenBattle/World/Interface/ProductionDecisionMenu.h"
 #include "FlumenBattle/World/Interface/ConquestPopup.h"
 #include "FlumenBattle/World/Interface/RecruitmentMenu.h"
+#include "FlumenBattle/World/Interface/WorkerPlaceCursor.h"
 
 using namespace world;
 
@@ -164,11 +165,17 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
         {Size(210, 320), DrawOrder(3), {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, nullptr}, {false}, Opacity(0.6f)}
     );
 
+    travelBackdrop = ElementFactory::BuildElement <Element>
+    (
+        {Size(200, 50), DrawOrder(3), {Position2(0.0f, 200.0f), canvas}, {false}, Opacity(0.5f)}
+    );
+
     travelLabel = ElementFactory::BuildText
     (
-        {Size(200, 50), DrawOrder(3), {Position2(0.0f, 200.0f), canvas}},
+        {DrawOrder(4), {travelBackdrop}},
         {{"Medium"}, Color::RED * 0.5f, "Plan your travel"}
     );
+    travelLabel->Enable();
 
     /*pathLabels.Initialize(1024);
     for(int i = 0; i < 1024; i++)
@@ -189,6 +196,16 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
         }
     );
     vendorCursor->FollowMouse();
+
+    workerPlaceCursor = ElementFactory::BuildElement <interface::WorkerPlaceCursor>
+    (
+        {
+            DrawOrder(7), 
+            {canvas}, 
+            {"WorkHammer", false}
+        }
+    );
+    workerPlaceCursor->FollowMouse();
 
     itemHoverInfo = ElementFactory::BuildElement <interface::ItemHoverInfo>
     (
@@ -352,6 +369,8 @@ void WorldInterface::Initialize()
     controller->onCharacterSelected += {this, &WorldInterface::HandleCharacterSelected};
 
     group::HumanMind::Get()->OnSellModeEntered += {this, &WorldInterface::HandleSellModeEntered};
+
+    WorldController::Get()->onWorkerPlaceModeEntered += {this, &WorldInterface::HandleWorkerPlaceModeEntered};
 }
 
 void WorldInterface::Enable()
@@ -389,6 +408,11 @@ void WorldInterface::HandleConsoleToggled()
 void WorldInterface::HandleSellModeEntered()
 {
     vendorCursor->Enable();
+}
+
+void WorldInterface::HandleWorkerPlaceModeEntered()
+{
+    workerPlaceCursor->Enable();
 }
 
 void WorldInterface::HandlePlayerEncounter()
@@ -699,11 +723,11 @@ void WorldInterface::Update()
 
     if(controller->IsTravelPlanActive() == true)
     {
-        travelLabel->Enable();
+        travelBackdrop->Enable();
     }
     else
     {
-        travelLabel->Disable();
+        travelBackdrop->Disable();
     }
 
     /*auto playerGroup = WorldScene::Get()->GetPlayerGroup();

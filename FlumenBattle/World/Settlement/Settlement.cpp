@@ -538,6 +538,11 @@ Integer Settlement::GetWorkedTiles() const
     return tileCount;
 }
 
+Integer Settlement::GetFreeWorkerCount() const
+{
+    return 1 + population - GetWorkedTiles();
+}
+
 bool Settlement::IsTileImproved(WorldTile* tile) const
 {
     for(auto &settlementTile : tiles)
@@ -754,7 +759,7 @@ void Settlement::Update()
         }
     }
 
-    WorkNewTile();
+    //WorkNewTile();
 
     currentProduction->AddProgress(currentProduction->Is(ProductionOptions::NONE) ? 1 : GetIndustrialProduction());
     

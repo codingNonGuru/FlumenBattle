@@ -43,6 +43,8 @@ namespace world
 
         bool isImprovementDisplayActive {false};
 
+        bool isWorkerPlaceModeActive {false};
+
         bool isTravelPlanActive {false};
 
         bool canColonize {true};
@@ -57,6 +59,8 @@ namespace world
         Delegate onInventoryPressed;
 
         Delegate onCharacterSelected;
+
+        Delegate onWorkerPlaceModeEntered;
 
         WorldController();
 
@@ -94,6 +98,8 @@ namespace world
 
         void HandleImprovementDisplayPressed();
 
+        void HandleWorkerPlacePressed();
+
         void HandleCharacterSelected();
 
         void HandleInventoryPressed();
@@ -101,6 +107,8 @@ namespace world
         void HandleColonizationSwitch();
 
         void HandleTravelModeToggle();
+
+        void HandleSettlementExited();
 
         void EnableHardInput();
 
@@ -138,6 +146,8 @@ namespace world
         bool ShouldDisplayNearbyTimber() const {return isTimberDisplayActive;}
 
         bool ShouldDisplayImprovements() const {return isImprovementDisplayActive;}
+
+        bool IsWorkerPlaceModeActive() const {return isWorkerPlaceModeActive;}
 
         bool CanColonize() const {return canColonize;}
 

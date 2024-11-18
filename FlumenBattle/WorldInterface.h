@@ -36,6 +36,7 @@ namespace world
         class ProductionDecisionMenu;
         class ConquestPopup;
         class RecruitmentMenu;
+        class WorkerPlaceCursor;
     }
 
     namespace settlement
@@ -74,9 +75,13 @@ namespace world
 
         settlement::HoverExtension *hoverExtension;
 
+        Element *travelBackdrop;
+
         Text *travelLabel;
 
         interface::VendorCursor *vendorCursor;
+
+        interface::WorkerPlaceCursor *workerPlaceCursor;
 
         interface::ItemHoverInfo *itemHoverInfo;
 
@@ -147,6 +152,8 @@ namespace world
         void HandleCharacterSelected();
 
         void HandleSellModeEntered();
+
+        void HandleWorkerPlaceModeEntered();
 
         void HandleConsoleToggled();
 

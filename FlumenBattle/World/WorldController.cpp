@@ -19,6 +19,7 @@
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
+#include "FlumenBattle/World/Polity/HumanMind.h"
 
 static const Float CAMERA_PAN_SPEED = 800.0f;
 
@@ -42,6 +43,8 @@ static const auto TIMBER_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_S
 
 static const auto IMPROVEMENT_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_I, {InputHandler::CTRL}};
 
+static const auto WORKER_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_W, {InputHandler::CTRL}};
+
 namespace world
 {
     WorldController::WorldController() {}
@@ -54,7 +57,7 @@ namespace world
 
         WorldScene::Get()->OnPlayerBattleStarted += {this, &WorldController::HandleBattleStarted};
 
-        group::HumanMind::Get();
+        group::HumanMind::Get()->OnSettlementExited += {this, &WorldController::HandleSettlementExited};
     }
 
     void WorldController::Enable()
@@ -75,6 +78,7 @@ namespace world
         InputHandler::RegisterEvent(FOOD_DISPLAY_KEY, {this, &WorldController::HandleFoodDisplayPressed});
         InputHandler::RegisterEvent(TIMBER_DISPLAY_KEY, {this, &WorldController::HandleTimberDisplayPressed});
         InputHandler::RegisterEvent(IMPROVEMENT_DISPLAY_KEY, {this, &WorldController::HandleImprovementDisplayPressed});
+        InputHandler::RegisterEvent(WORKER_DISPLAY_KEY, {this, &WorldController::HandleWorkerPlacePressed});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_1, {this, &WorldController::HandleCharacterSelected});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_2, {this, &WorldController::HandleCharacterSelected});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_3, {this, &WorldController::HandleCharacterSelected});
@@ -116,6 +120,9 @@ namespace world
         auto controller = group::HumanMind::Get();
         controller->DisableInput();
 
+        auto polityController = polity::HumanMind::Get();
+        polityController->DisableInput();
+
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_COMMA);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_PERIOD);
@@ -125,6 +132,9 @@ namespace world
     {
         auto controller = group::HumanMind::Get();
         controller->EnableInput();
+
+        auto polityController = polity::HumanMind::Get();
+        polityController->EnableInput();
 
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_SPACE, {this, &WorldController::HandleSpacePressed});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_COMMA, {this, &WorldController::HandleSpeedUpTime});
@@ -334,6 +344,20 @@ namespace world
         }
     }
 
+    void WorldController::HandleWorkerPlacePressed()
+    {
+        if(isWorkerPlaceModeActive)
+        {
+            isWorkerPlaceModeActive = false;
+        }
+        else
+        {
+            isWorkerPlaceModeActive = true;
+
+            onWorkerPlaceModeEntered.Invoke();
+        }
+    }
+
     void WorldController::HandleCharacterSelected()
     {
         int index = 0;
@@ -389,6 +413,13 @@ namespace world
         onInventoryPressed.Invoke();
     }
 
+    void WorldController::HandleSettlementExited()
+    {
+        isWorkerPlaceModeActive = false;
+
+        isImprovementDisplayActive = false;
+    }
+
     void WorldController::Disable()
     {
         DisableHardInput();
@@ -401,6 +432,7 @@ namespace world
         InputHandler::UnregisterEvent(FOOD_DISPLAY_KEY);
         InputHandler::UnregisterEvent(TIMBER_DISPLAY_KEY);
         InputHandler::UnregisterEvent(IMPROVEMENT_DISPLAY_KEY);
+        InputHandler::UnregisterEvent(WORKER_DISPLAY_KEY);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_1);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_2);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_3);

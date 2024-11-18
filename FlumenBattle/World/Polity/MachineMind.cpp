@@ -9,6 +9,11 @@ void MachineMind::MakeDecision(Polity &polity) const
 {
     for(auto &settlement : polity.GetSettlements())
     {
+        settlement->WorkNewTile();
+    }
+
+    for(auto &settlement : polity.GetSettlements())
+    {
         if(settlement->GetCurrentProduction()->Is(settlement::ProductionOptions::NONE) == false)
             continue;
 

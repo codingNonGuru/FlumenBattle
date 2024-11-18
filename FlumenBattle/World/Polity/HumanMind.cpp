@@ -1,11 +1,17 @@
 #include "SDL2/SDL.h"
 
 #include "FlumenEngine/Core/InputHandler.hpp"
+#include "FlumenEngine/Interface/Element.hpp"
 
 #include "HumanMind.h"
 #include "FlumenBattle/World/Polity/Polity.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
+#include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/WorldInterface.h"
+#include "FlumenBattle/World/WorldController.h"
+#include "FlumenBattle/World/WorldTile.h"
 
 using namespace world;
 using namespace world::polity;
@@ -23,6 +29,18 @@ static auto commands = container::Array <Command> (MAXIMUM_COMMAND_COUNT);
 
 HumanMind::HumanMind()
 {
+}
+
+void HumanMind::EnableInput()
+{
+    static const auto canvas = WorldInterface::Get()->GetCanvas();
+    canvas->GetLeftClickEvents() += {this, &HumanMind::HandleWorkerPlacement};
+}
+
+void HumanMind::DisableInput()
+{
+    static const auto canvas = WorldInterface::Get()->GetCanvas();
+    canvas->GetLeftClickEvents() -= {this, &HumanMind::HandleWorkerPlacement};
 }
 
 void HumanMind::MakeDecision(Polity &polity) const
@@ -47,4 +65,35 @@ void HumanMind::ProcessProductionInput(settlement::ProductionOptions option, set
     }
 
     *commands.Add() = {option, settlement};
+}
+
+void HumanMind::HandleWorkerPlacement()
+{
+    if(WorldController::Get()->IsWorkerPlaceModeActive() == false)
+        return;
+
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    const auto playerSettlement = playerGroup->GetCurrentSettlement();
+
+    const auto hoveredTile = WorldController::Get()->GetHoveredTile();
+    if(hoveredTile->GetOwner() != playerSettlement)
+        return;
+
+    for(auto &tile : playerSettlement->GetTiles())
+    {
+        if(tile.Tile != hoveredTile)
+            continue;
+
+        if(tile.Tile == playerSettlement->GetLocation())
+            continue;
+
+        if(tile.IsWorked == true)
+        {
+            tile.IsWorked = false;
+        }
+        else if(playerSettlement->GetFreeWorkerCount() > 0)
+        {
+            tile.IsWorked = true;
+        }
+    }
 }
