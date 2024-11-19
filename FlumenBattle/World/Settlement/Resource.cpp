@@ -2,26 +2,65 @@
 #include "FlumenBattle/World/Settlement/Types.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Settlement/Building.h"
 
 using namespace world::settlement;
 
 struct Food : public ResourceType
 {
-    Food() : ResourceType(ResourceTypes::FOOD, 10, true) {PopulationConsumption = 1;}
+    Food() : ResourceType(ResourceTypes::FOOD, 10, true) {PopulationConsumption = 1; IsProductionTileBased = true;}
 };
 
 struct Timber : public ResourceType
 {
-    Timber() : ResourceType(ResourceTypes::TIMBER, 10) {}
+    Timber() : ResourceType(ResourceTypes::TIMBER, 10) {IsProductionTileBased = true;}
 };
 
 struct Metal : public ResourceType
 {
-    Metal() : ResourceType(ResourceTypes::METAL, 10) {}
+    Metal() : ResourceType(ResourceTypes::METAL, 10) {IsProductionTileBased = true;}
 };
 
-int Resource::GetProduction(const Settlement &settlement) const
+struct Lumber : public ResourceType
 {
+    Lumber() : ResourceType(ResourceTypes::LUMBER, 25) {IsProductionTileBased = false;}
+};
+
+int Resource::GetProductionFromBuildings(const Settlement &settlement) const
+{
+    if(Type->IsProductionTileBased == true)
+        return 0;
+
+    auto &buildings = settlement.GetBuildingsThatProduce(Type->Type);
+
+    bool canProduce = true;
+    for(auto &building : buildings)
+    {
+        auto inputResource = building->GetInputResource();
+        auto resource = settlement.GetResource(inputResource.Resource);
+        if(resource->Order > resource->Storage)
+        {
+            canProduce = false;
+        }
+    }
+
+    if(canProduce == false)
+        return 0;
+
+    auto production = 0;
+    for(auto &building : buildings)
+    {
+        production += building->GetOutputResource().Amount;
+    }
+
+    return production;
+}
+
+int Resource::GetProductionFromTiles(const Settlement &settlement) const
+{
+    if(Type->IsProductionTileBased == false)
+        return 0;
+
     auto production = 0;
     for(auto &tile : settlement.tiles)
     {
@@ -29,10 +68,6 @@ int Resource::GetProduction(const Settlement &settlement) const
             continue;
 
         production += tile.Tile->GetResource(Type->Type);
-        /*if(Type->Type == ResourceTypes::METAL)
-        {
-            std::cout<<tile.Tile->GetResource(Type->Type)<<"\n";
-        }*/
 
         if(Type->DoesImprovementWorkAnywhere == true)
         {
@@ -58,13 +93,30 @@ int Resource::GetProduction(const Settlement &settlement) const
     return production;
 }
 
-void Resource::Update(Settlement &settlement)
+void Resource::PlaceOrders(const Settlement &settlement)
 {
-    Production = GetProduction(settlement);
+    auto consumption = 0;
 
-    auto consumption = settlement.population * Type->PopulationConsumption;
+    for(const auto &building : settlement.GetBuildings())
+    {
+        consumption += building.GetResourceConsumption(Type->Type);    
+    }
 
-    int availableAmount = Production;
+    consumption += settlement.GetPopulation() * Type->PopulationConsumption;
+
+    Order = consumption;
+}
+
+void Resource::ExecuteOrders(const Settlement &settlement)
+{
+    Production = GetProductionFromTiles(settlement) + GetProductionFromBuildings(settlement);
+}
+
+void Resource::UpdateAbundance(Settlement &settlement)
+{
+    auto availableAmount = Production;
+
+    auto consumption = Order;
 
     LongTermAbundance = AbundanceLevels();
     if(availableAmount >= consumption * 3)
@@ -119,8 +171,13 @@ void Resource::Update(Settlement &settlement)
     {
         ShortTermAbundance = AbundanceLevels::SORELY_LACKING;
     }
+}
 
-    Storage += Production - consumption;
+void Resource::UpdateStorage(Settlement &settlement)
+{
+    Storage += Production;
+
+    Storage -= Order;
 
     if(Storage > settlement.storage)
     {
@@ -142,13 +199,51 @@ void ResourceHandler::Initialize()
 
     static const auto metal = Metal();
     *resources.Add() = {&metal};
+
+    static const auto lumber = Lumber();
+    *resources.Add() = {&lumber};
+}
+
+void ResourceHandler::ResetOrders()
+{
+    for(auto &resource : resources)
+    {
+        resource.ResetOrder();
+    }
+}
+
+void ResourceHandler::PlaceOrders(Settlement &settlement)
+{
+    for(auto &resource : resources)
+    {
+        resource.PlaceOrders(settlement);
+    }
+}
+
+void ResourceHandler::ExecuteOrders(Settlement &settlement)
+{
+    for(auto &resource : resources)
+    {
+        resource.ExecuteOrders(settlement);
+    }
 }
 
 void ResourceHandler::Update(Settlement &settlement)
 {
+    ResetOrders();
+
+    PlaceOrders(settlement);
+
+    ExecuteOrders(settlement);
+
     for(auto &resource : resources)
     {
-        resource.Update(settlement);
+        resource.UpdateAbundance(settlement);
+    }
+
+    for(auto &resource : resources)
+    {
+        resource.UpdateStorage(settlement);
     }
 }
 

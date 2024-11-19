@@ -136,6 +136,8 @@ namespace world::settlement
 
         const SettlementProductionType *BuildHousingProduction();
 
+        const SettlementProductionType *BuildLumberMillProduction();
+
         const SettlementProductionType *BuildNoneProduction();
 
     public:
@@ -157,6 +159,8 @@ namespace world::settlement
         static void FinishIrrigation(Settlement &);  
 
         static void FinishLibrary(Settlement &);  
+
+        static void FinishLumberMill(Settlement &);
 
         static void FinishHousing(Settlement &);  
     };

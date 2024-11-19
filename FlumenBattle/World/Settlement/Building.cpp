@@ -46,6 +46,16 @@ namespace world::settlement
             
         }
     };
+
+    class LumberMill : public BuildingType
+    {
+        using BuildingType::BuildingType; 
+
+        void HandleApplyEffect(Settlement &settlement) const override
+        {
+            
+        }
+    };
 }
 
 void Building::ApplyEffect(Settlement &settlement) const
@@ -81,6 +91,24 @@ Building BuildingFactory::Create(BuildingTypes type)
             [&] {static const auto buildingType = Housing(type, 200, true); return &buildingType;} (), 
             false
         };
+    case BuildingTypes::LUMBER_MILL:
+        return 
+        {
+            [&] {static const auto buildingType = LumberMill(type, 200, true, {ResourceTypes::LUMBER, 1}, {ResourceTypes::TIMBER, 2}); return &buildingType;} (), 
+            false
+        };
+    }
+}
+
+int Building::GetResourceConsumption(ResourceTypes resource) const
+{
+    if(type->InputResource.Resource == resource)
+    {
+        return type->InputResource.Amount;
+    }
+    else
+    {
+        return 0;
     }
 }
 
@@ -105,6 +133,23 @@ int BuildingManager::GetBuildingCount(BuildingTypes type) const
     {
         return building->GetAmount();
     }
+}
+
+const container::Array <Building *> &BuildingManager::GetBuildingsThatProduce(ResourceTypes resource) const
+{
+    static auto buildings = container::Array <Building *> (32);
+
+    buildings.Reset();
+
+    for(auto &building : buildingSet.buildings)
+    {
+        if(building.DoesProduce(resource) == false)
+            continue;
+
+        *buildings.Allocate() = &building;
+    }
+
+    return buildings;
 }
 
 void BuildingManager::AddBuilding(BuildingTypes type)

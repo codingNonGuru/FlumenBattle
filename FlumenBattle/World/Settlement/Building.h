@@ -23,7 +23,22 @@ namespace world::settlement
 
         bool IsTall;
 
+        struct Throughput
+        {
+            ResourceTypes Resource;
+
+            int Amount;
+        };
+
+        Throughput InputResource {ResourceTypes::NONE, 0};
+
+        Throughput OutputResource {ResourceTypes::NONE, 0};
+
         explicit BuildingType(BuildingTypes type, int cost, bool isTall) : Type(type), Cost(cost), IsTall(isTall) {}
+
+        explicit BuildingType(BuildingTypes type, int cost, bool isTall, Throughput output) : Type(type), Cost(cost), IsTall(isTall), OutputResource(output) {}
+
+        explicit BuildingType(BuildingTypes type, int cost, bool isTall, Throughput output, Throughput input) : Type(type), Cost(cost), IsTall(isTall), OutputResource(output), InputResource(input) {}
 
         virtual void HandleApplyEffect(Settlement &) const = 0;
     };
@@ -35,6 +50,8 @@ namespace world::settlement
         bool isDamaged;
 
         int amount {1};
+
+        bool hasWorker {false};
 
     public:
         Building() : type(nullptr), isDamaged(false) {}
@@ -56,6 +73,14 @@ namespace world::settlement
         int GetAmount() const {return amount;}
 
         BuildingTypes GetType() const {return type->Type;}
+
+        bool DoesProduce(ResourceTypes resource) const {return type->OutputResource.Resource == resource;}
+
+        int GetResourceConsumption(ResourceTypes resource) const;
+
+        BuildingType::Throughput GetInputResource() const {return type->InputResource;}
+
+        BuildingType::Throughput GetOutputResource() const {return type->OutputResource;}
     };
 
     class BuildingSet
@@ -102,6 +127,8 @@ namespace world::settlement
         int GetBuildingCount(BuildingTypes) const;
 
         const container::Pool <Building> &GetBuildings() const {return buildingSet.Get();}
+
+        const container::Array <Building *> &GetBuildingsThatProduce(ResourceTypes) const;
     };
 
     class BuildingSetAllocator

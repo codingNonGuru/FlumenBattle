@@ -18,7 +18,8 @@ namespace world::settlement
         SEWAGE,
         IRRIGATION,
         LIBRARY,
-        HOUSING
+        HOUSING,
+        LUMBER_MILL
     };
 
     enum class BuildingTypes
@@ -29,7 +30,8 @@ namespace world::settlement
         MONUMENT,
         IRRIGATION,
         LIBRARY,
-        HOUSING
+        HOUSING,
+        LUMBER_MILL
     };
 
     enum class AbundanceLevels
@@ -71,17 +73,19 @@ namespace world::settlement
         WELL_PAVED
     };
 
-    #define GOODS_TYPES_COUNT 5
+    #define GOODS_TYPES_COUNT 16
 
     #define BASIC_RESOURCES_COUNT 5
 
     enum class ResourceTypes
     {
+        NONE,
         FOOD,
         TIMBER,
         METAL,
         WOOL,
-        STONE
+        STONE,
+        LUMBER
         //LEATHER
         //POTTERY
         //FURNITURE

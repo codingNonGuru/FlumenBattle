@@ -43,7 +43,7 @@ void HoverExtension::ResourceWidget::HandleUpdate()
     Phrase text;
     if(IsTrackingProduction == true)
     {
-        text << Parent->settlement->GetResource(Resource)->GetProduction(*Parent->settlement);
+        text << Parent->settlement->GetResource(Resource)->GetProduction();
     }
     else
     {
@@ -405,6 +405,9 @@ void HoverExtension::HandleUpdate()
             break;
         case BuildingTypes::LIBRARY:
             text << "L";
+            break;
+        case BuildingTypes::LUMBER_MILL:
+            text << "LM";
             break;
         case BuildingTypes::HOUSING:
             text << settlement->GetBuildingCount(BuildingTypes::HOUSING);

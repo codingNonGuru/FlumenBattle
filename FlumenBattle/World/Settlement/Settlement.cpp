@@ -498,6 +498,11 @@ int Settlement::GetBuildingCount(BuildingTypes type) const
     return buildingManager->GetBuildingCount(type);
 }
 
+const container::Array <Building *> &Settlement::GetBuildingsThatProduce(ResourceTypes resource) const
+{
+    return buildingManager->GetBuildingsThatProduce(resource);
+}
+
 AbundanceLevels Settlement::GetHousingAdequacy() const
 {
     auto housingAmount = GetBuildingCount(BuildingTypes::HOUSING);

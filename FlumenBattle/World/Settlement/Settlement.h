@@ -224,6 +224,8 @@ namespace world::settlement
 
         int GetBuildingCount(BuildingTypes) const;
 
+        const container::Array <Building *> &GetBuildingsThatProduce(ResourceTypes) const;
+
         polity::Faction *GetFaction() const {return faction;}
 
         world::SimulationLevels GetSimulationLevel() const;

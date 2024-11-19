@@ -19,6 +19,8 @@ namespace world::settlement
 
         bool DoesImprovementWorkAnywhere {false};
 
+        bool IsProductionTileBased {false};
+
         ResourceType(ResourceTypes type, int value, bool doesImprovement) : Type(type), Value(value), DoesImprovementWorkAnywhere(doesImprovement) {}
 
         ResourceType(ResourceTypes type, int value) : Type(type), Value(value) {}
@@ -34,13 +36,27 @@ namespace world::settlement
 
         int Balance {0};
 
+        int Order {0};
+
         AbundanceLevels ShortTermAbundance;
 
         AbundanceLevels LongTermAbundance;
 
-        void Update(Settlement &);
+        int GetProduction() const {return Production;}
 
-        int GetProduction(const Settlement &) const;
+        int GetProductionFromTiles(const Settlement &) const;
+
+        int GetProductionFromBuildings(const Settlement &) const;
+
+        void ResetOrder() {Order = 0;}
+
+        void PlaceOrders(const Settlement &);
+
+        void ExecuteOrders(const Settlement &);
+
+        void UpdateAbundance(Settlement &);
+
+        void UpdateStorage(Settlement &);
 
         bool operator==(ResourceTypes type) {return Type->Type == type;}
     };
@@ -62,6 +78,12 @@ namespace world::settlement
         //int GetAmount(ResourceTypes);
 
         void Initialize();
+
+        void ResetOrders();
+
+        void PlaceOrders(Settlement &);
+
+        void ExecuteOrders(Settlement &);
 
         void Update(Settlement &);
 
