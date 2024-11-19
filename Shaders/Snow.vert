@@ -20,11 +20,20 @@ layout (std430, binding = 1) buffer TEMPERATURES
 	float temperatures[];	
 };
 
+layout (std430, binding = 2) buffer TEXTURES
+{
+	int textures[];	
+};
+
 // TEXTURES
 
 // OUTPUT
 
 out float temperature;
+
+out vec2 texCoords;
+
+out float texIndex;
 
 void main()
 {	
@@ -55,4 +64,12 @@ void main()
 	gl_Position = viewMatrix * vec4(position.x, position.y, depth, 1.0f);
 
 	temperature = temperatures[objectIndex];
+
+	position = vertices[vertexIndex] * 0.55f;
+
+	position += 0.5f;
+
+	texCoords = position;
+
+	texIndex = float(textures[objectIndex]);
 }

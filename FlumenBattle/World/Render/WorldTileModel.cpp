@@ -382,7 +382,7 @@ void WorldTileModel::RenderGlobalLight()
 
 void WorldTileModel::RenderTilesAdvanced()
 {
-    auto map = worldScene->GetWorldMap();
+    static const auto map = worldScene->GetWorldMap();
 
     auto newHexShader = ShaderManager::GetShader("BetterHex");
 
@@ -407,9 +407,32 @@ void WorldTileModel::RenderTilesAdvanced()
 
 void WorldTileModel::RenderSnow()
 {
-    auto map = worldScene->GetWorldMap();
+    static const DataBuffer *iceTileIndexBuffer = nullptr;
+    if(iceTileIndexBuffer == nullptr)
+    {
+        static const auto map = worldScene->GetWorldMap();
 
-    auto snowShader = ShaderManager::GetShader("Snow");
+        static auto indices = container::Array <int> (map->GetTileCount());
+
+        for(auto tile = map->GetTiles().GetStart(); tile != map->GetTiles().GetEnd(); ++tile)
+        {
+            *indices.Add() = utility::RollD100Dice() < 50 ? 0 : 1;
+        }
+
+        iceTileIndexBuffer = new DataBuffer(indices.GetMemorySize(), indices.GetStart());
+    }
+
+    static const auto map = worldScene->GetWorldMap();
+
+    static const auto snowShader = ShaderManager::GetShader("Snow");
+
+    static const auto iceTileSprite = new Sprite(snowShader, "IceTile1");
+
+    static const auto iceTile2Sprite = new Sprite(snowShader, "IceTile2");
+
+    static const auto iceTileShrunkSprite = new Sprite(snowShader, "IceTileShrunk1");
+
+    static const auto iceTileShrunk2Sprite = new Sprite(snowShader, "IceTileShrunk2");
 
     snowShader->Bind();
 
@@ -430,6 +453,16 @@ void WorldTileModel::RenderSnow()
     positionBuffer->Bind(0);
 
     heatBuffer->Bind(1);
+
+    iceTileIndexBuffer->Bind(2);
+
+    iceTileSprite->BindTexture("diffuse");
+
+    iceTile2Sprite->BindTexture("diffuse2");
+
+    iceTileShrunkSprite->BindTexture("diffuseShrunk");
+
+    iceTileShrunk2Sprite->BindTexture("diffuseShrunk2");
 
     glDrawArrays(GL_TRIANGLES, 0, 18 * map->GetTileCount());
 
