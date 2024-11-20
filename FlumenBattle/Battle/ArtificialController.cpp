@@ -638,7 +638,7 @@ namespace battle
 
         if(action->Destination != nullptr)
         {
-            battleController->TargetTile(action->Destination);
+            battleController->TargetTileForMovement(action->Destination);
 
             battleController->Move(*action->Path);
         }

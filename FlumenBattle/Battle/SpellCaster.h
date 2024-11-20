@@ -6,6 +6,7 @@ namespace battle
 {
     class Combatant;
     struct CharacterActionData;
+    class BattleTile;
 }
 
 namespace world::character
@@ -41,7 +42,9 @@ namespace battle
 
         static CharacterActionData ApplyBless(Combatant &, const world::character::Spell &);
 
+        static CharacterActionData ApplyFireball(Combatant &, BattleTile &, const world::character::Spell &);
+
     public:
-        static CharacterActionData ApplyEffect(Combatant &, const world::character::Spell &);
+        static CharacterActionData ApplyEffect(Combatant *, BattleTile *, const world::character::Spell &);
     };
 }

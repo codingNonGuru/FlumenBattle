@@ -12,7 +12,7 @@ namespace battle
     {
         world::character::CharacterActions ActionType;
 
-        class Combatant * Combatant;
+        class Combatant *Combatant;
 
         Integer AttackRoll;
 
@@ -22,9 +22,17 @@ namespace battle
 
         bool HasSucceeded;
 
+        bool IsTargetingTile;
+
         CharacterActionData() : Combatant(nullptr) {}
 
-        CharacterActionData(world::character::CharacterActions actionType, class Combatant * combatant, Integer attackRoll, Integer targetArmor, Integer damage, bool hasSucceeded)
+        CharacterActionData(world::character::CharacterActions actionType, 
+            class Combatant * combatant, 
+            Integer attackRoll, 
+            Integer targetArmor, 
+            Integer damage, 
+            bool hasSucceeded, 
+            bool isTargetingTile = false)
         {
             ActionType = actionType;
             Combatant = combatant;
@@ -32,6 +40,7 @@ namespace battle
             TargetArmorClass = targetArmor;
             Damage = damage;
             HasSucceeded = hasSucceeded;
+            IsTargetingTile = isTargetingTile;
         }
     };
 }

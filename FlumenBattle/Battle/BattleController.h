@@ -80,7 +80,9 @@ namespace battle
 
         void TargetCombatant(Combatant *);
 
-        void TargetTile(BattleTile * tile) {targetedTile = tile;}
+        void TargetTile(BattleTile *);
+
+        void TargetTileForMovement(BattleTile * tile) {targetedTile = tile;}
 
         BattleTile * GetTargetedTile() const {return targetedTile;}
 

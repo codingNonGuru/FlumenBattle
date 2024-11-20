@@ -8,6 +8,7 @@
 #include "FlumenBattle/World/Character/Condition.h"
 #include "FlumenBattle/Utility/Utility.h"
 #include "FlumenBattle/Battle/BattleScene.h"
+#include "FlumenBattle/Battle/BattleTile.h"
 
 using namespace battle;
 using namespace world::character;
@@ -31,12 +32,12 @@ struct SpellResult
 
 static SpellResult spellResult;
 
-void SpellCaster::ComputeDifficultyClass(Combatant& combatant)
+void SpellCaster::ComputeDifficultyClass(Combatant& caster)
 {
-    spellResult.DifficultyClass = 8 + combatant.GetCharacter()->GetSpellCastingAbility().Modifier + combatant.GetCharacter()->GetMagicProficiencyBonus();
+    spellResult.DifficultyClass = 8 + caster.GetCharacter()->GetSpellCastingAbility().Modifier + caster.GetCharacter()->GetMagicProficiencyBonus();
 }
 
-void SpellCaster::RollDamage(Combatant &combatant, const Spell & spell)
+void SpellCaster::RollDamage(Combatant &target, const Spell & spell)
 {
     Integer damage = 0;
     if(spellResult.HasHit)
@@ -58,7 +59,7 @@ void SpellCaster::RollDamage(Combatant &combatant, const Spell & spell)
 
     if(spellResult.HasHit == true || (spellResult.HasHit == false && spellResult.IsCritical == false))
     {
-        combatant.GetTarget()->SufferDamage(damage);
+        target.SufferDamage(damage);
     }
 
     spellResult.Damage = damage;
@@ -86,8 +87,6 @@ void SpellCaster::RollAttack(Combatant &combatant)
 
 void SpellCaster::RollSavingThrow(Combatant &combatant, const Spell &spell)
 {
-    ComputeDifficultyClass(combatant);
-
     auto savingThrow = [&]
     {
         switch(spell.SaveType.Type)
@@ -105,80 +104,102 @@ void SpellCaster::RollSavingThrow(Combatant &combatant, const Spell &spell)
     spellResult.IsCritical = savingThrow.IsCriticalFailure() || savingThrow.IsCriticalSuccess();
 }
 
-CharacterActionData SpellCaster::ApplyFrostRay(Combatant &combatant, const Spell & spell)
+CharacterActionData SpellCaster::ApplyFrostRay(Combatant &caster, const Spell & spell)
 {
-    RollAttack(combatant);
+    RollAttack(caster);
 
     if(spellResult.HasHit)
     {
-        RollDamage(combatant, spell);
+        RollDamage(*caster.GetTarget(), spell);
 
-        BattleScene::Get()->AddCondition(combatant.GetTarget(), {world::character::Conditions::HOBBLED, 3, 1});
+        BattleScene::Get()->AddCondition(caster.GetTarget(), {world::character::Conditions::HOBBLED, 3, 1});
     }
 }
 
-CharacterActionData SpellCaster::ApplyShockingGrasp(Combatant &combatant, const Spell & spell)
+CharacterActionData SpellCaster::ApplyShockingGrasp(Combatant &caster, const Spell & spell)
 {
-    RollAttack(combatant);
+    RollAttack(caster);
 
-    RollDamage(combatant, spell);   
+    RollDamage(*caster.GetTarget(), spell);   
 }
 
-CharacterActionData SpellCaster::ApplySacredFlame(Combatant &combatant, const Spell & spell)
+CharacterActionData SpellCaster::ApplySacredFlame(Combatant &caster, const Spell & spell)
 {
-    RollSavingThrow(combatant, spell);
+    ComputeDifficultyClass(caster);
 
-    RollDamage(combatant, spell);
+    RollSavingThrow(*caster.GetTarget(), spell);
+
+    RollDamage(*caster.GetTarget(), spell);
 }
 
-CharacterActionData SpellCaster::ApplyFireBolt(Combatant &combatant, const Spell & spell)
+CharacterActionData SpellCaster::ApplyFireBolt(Combatant &caster, const Spell & spell)
 {
-    RollAttack(combatant);
+    RollAttack(caster);
 
-    RollDamage(combatant, spell);   
+    RollDamage(*caster.GetTarget(), spell);   
 }
 
-CharacterActionData SpellCaster::ApplyCureWounds(Combatant &combatant, const Spell &spell)
+CharacterActionData SpellCaster::ApplyCureWounds(Combatant &caster, const Spell &spell)
 {
-    RollHealing(combatant, spell);
+    RollHealing(caster, spell);
 }
 
-CharacterActionData SpellCaster::ApplyHealingWord(Combatant &combatant, const Spell &spell)
+CharacterActionData SpellCaster::ApplyHealingWord(Combatant &caster, const Spell &spell)
 {
-    RollHealing(combatant, spell);
+    RollHealing(caster, spell);
 }
 
-CharacterActionData SpellCaster::ApplyBless(Combatant &combatant, const Spell &spell)
+CharacterActionData SpellCaster::ApplyBless(Combatant &caster, const Spell &spell)
 {
-    BattleScene::Get()->AddCondition(combatant.GetTarget(), {world::character::Conditions::BLESSED, 3, 1});
+    BattleScene::Get()->AddCondition(caster.GetTarget(), {world::character::Conditions::BLESSED, 3, 1});
 }
 
-CharacterActionData SpellCaster::ApplyEffect(Combatant &combatant, const Spell &spell)
+CharacterActionData SpellCaster::ApplyFireball(Combatant &caster, BattleTile &tile, const Spell &spell)
+{
+    ComputeDifficultyClass(caster);
+
+    auto &nearbyTiles = tile.GetNearbyTiles(1);
+
+    for(auto &tile : nearbyTiles)
+    {
+        if(tile->Combatant == nullptr)
+            continue;
+
+        RollSavingThrow(*tile->Combatant, spell);
+
+        RollDamage(*tile->Combatant, spell);
+    }
+}
+
+CharacterActionData SpellCaster::ApplyEffect(Combatant *caster, BattleTile *tile, const Spell &spell)
 {
     spellResult.Reset();
 
     switch(spell.Type)
     {
         case SpellTypes::FROST_RAY:
-            ApplyFrostRay(combatant, spell);
+            ApplyFrostRay(*caster, spell);
             break;
         case SpellTypes::SHOCKING_GRASP:
-            ApplyShockingGrasp(combatant, spell);
+            ApplyShockingGrasp(*caster, spell);
             break;
         case SpellTypes::SACRED_FLAME:
-            ApplySacredFlame(combatant, spell);
+            ApplySacredFlame(*caster, spell);
             break;
         case SpellTypes::FIRE_BOLT:
-            ApplyFireBolt(combatant, spell);
+            ApplyFireBolt(*caster, spell);
             break;
         case SpellTypes::CURE_WOUNDS:
-            ApplyCureWounds(combatant, spell);
+            ApplyCureWounds(*caster, spell);
             break;
         case SpellTypes::HEALING_WORD:
-            ApplyHealingWord(combatant, spell);
+            ApplyHealingWord(*caster, spell);
             break;
         case SpellTypes::BLESS:
-            ApplyBless(combatant, spell);
+            ApplyBless(*caster, spell);
+            break;
+        case SpellTypes::FIRE_BALL:
+            ApplyFireball(*caster, *tile, spell);
             break;
         default:
             return CharacterActionData();    
@@ -188,15 +209,16 @@ CharacterActionData SpellCaster::ApplyEffect(Combatant &combatant, const Spell &
     {
         //auto slot = combatant.character->spellSlots.Get(spell.Level - 1);
         //slot->Current--;
-        combatant.GetCharacter()->spellUseCount--;
+        caster->GetCharacter()->spellUseCount--;
     }
 
     return CharacterActionData(
         world::character::CharacterActions::CAST_SPELL, 
-        &combatant, 
+        caster, 
         spellResult.AttackRoll, 
-        combatant.GetTarget()->armorClass, 
+        tile == nullptr ? caster->GetTarget()->armorClass : 0, 
         spellResult.Damage,
-        spellResult.HasHit
+        spellResult.HasHit,
+        tile != nullptr
         );
 }

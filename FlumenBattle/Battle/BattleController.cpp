@@ -115,6 +115,8 @@ void BattleController::SelectSubaction(Integer actionIndex)
         if(actionIndex != currentIndex)
         {
             targetedCombatant = nullptr;
+
+            targetedTile = nullptr;
         }
 
         OnSubactionSelected.Invoke();
@@ -131,6 +133,8 @@ void BattleController::SelectAction(Integer actionIndex)
         if(actionIndex != currentIndex)
         {
             targetedCombatant = nullptr;
+
+            targetedTile = nullptr;
         }
 
         OnActionSelected.Invoke();
@@ -145,19 +149,32 @@ void BattleController::Act()
     if(battleScene->IsCharactersTurn(selectedCombatant) == false)
         return;
 
-    if(selectedCombatant->CanAct(targetedCombatant) == false)
+    bool canActAgainstCombatant = targetedCombatant != nullptr && selectedCombatant->CanAct(targetedCombatant) == true;
+    bool canActAgainstTile = targetedTile != nullptr && selectedCombatant->CanAct(targetedTile) == true;
+    if(canActAgainstCombatant == false && canActAgainstTile == false)
         return;
 
-    lastActionData = selectedCombatant->Act(targetedCombatant);
+    if(canActAgainstCombatant)
+    {
+        lastActionData = selectedCombatant->Act(targetedCombatant);
+    }
+    else if(canActAgainstTile)
+    {
+        lastActionData = selectedCombatant->Act(targetedTile);
+    }
 
     OnCharacterActed.Invoke();
 
     targetedCombatant = nullptr;
+
+    targetedTile = nullptr;
 }
 
 void BattleController::EndTurn()
 {
     targetedCombatant = nullptr;
+
+    targetedTile = nullptr;
 
     for(auto group : {battleScene->GetPlayerGroup(), battleScene->GetComputerGroup()})
     {
@@ -232,6 +249,27 @@ void BattleController::TargetCombatant(Combatant *target)
     else
     {
         targetedCombatant = nullptr;    
+    }
+}
+
+void BattleController::TargetTile(BattleTile *target)
+{
+    if(selectedCombatant == nullptr)
+        return;
+
+    if(target == nullptr)
+        return;
+
+    if(battleScene->IsCharactersTurn(selectedCombatant) == false)
+        return;
+
+    if(selectedCombatant->CanAct(target) == true)
+    {
+        targetedTile = target;
+    }
+    else
+    {
+        targetedTile = nullptr;    
     }
 }
 

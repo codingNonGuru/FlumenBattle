@@ -198,7 +198,33 @@ bool Combatant::CanAct(Combatant *possibleTarget)
     }
     else if(character->selectedAction->Type == world::character::CharacterActions::CAST_SPELL)
     {
-        return CanCastSpell();
+        return CanCastSpell(true);
+    }
+    else if(character->selectedAction->Type == world::character::CharacterActions::DODGE)
+    {
+        return CanDodge();
+    }
+    else if(character->selectedAction->Type == world::character::CharacterActions::DASH)
+    {
+        return CanDash();
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool Combatant::CanAct(BattleTile *possibleTarget)
+{
+    targetTile = possibleTarget;
+
+    if(character->selectedAction->Type == world::character::CharacterActions::ATTACK)
+    {
+        return false;
+    }
+    else if(character->selectedAction->Type == world::character::CharacterActions::CAST_SPELL)
+    {
+        return CanCastSpell(false);
     }
     else if(character->selectedAction->Type == world::character::CharacterActions::DODGE)
     {
@@ -235,15 +261,9 @@ bool Combatant::CanStrike() const
     return true;
 }
 
-bool Combatant::CanCastSpell() const
+bool Combatant::CanCastSpell(bool isCombatantTargeted) const
 {
-    if(target == nullptr)
-        return false;
-
-    if((character->selectedSpell->IsOffensive && GetGroup() == target->GetGroup()) || (!character->selectedSpell->IsOffensive && GetGroup() != target->GetGroup()))
-        return false;
-
-    if(!character->IsAlive())
+    if(character->IsAlive() == false)
         return false;
 
     if(character->selectedSpell->IsBonusAction)
@@ -257,7 +277,21 @@ bool Combatant::CanCastSpell() const
             return false;
     }
 
-    auto distance = tile->GetDistanceTo(*(target->tile));
+    if(isCombatantTargeted == true)
+    {
+        if(target == nullptr)
+            return false;
+
+        if((character->selectedSpell->IsOffensive && GetGroup() == target->GetGroup()) || (!character->selectedSpell->IsOffensive && GetGroup() != target->GetGroup()))
+            return false;
+    }
+    else
+    {
+        if(targetTile == nullptr)
+            return false;
+    }
+
+    auto distance = tile->GetDistanceTo(isCombatantTargeted ? *(target->tile) : *targetTile);
     if(distance > character->GetActionRange())
         return false;
 
@@ -266,6 +300,9 @@ bool Combatant::CanCastSpell() const
     
     auto slot = character->spellUseCount;//character->spellSlots.Get(character->selectedSpell->Level - 1);
     if(slot == 0)
+        return false;
+
+    if(isCombatantTargeted == false && character->selectedSpell->CanTargetTiles == false)
         return false;
 
     return true;
@@ -357,6 +394,36 @@ CharacterActionData Combatant::Act(Combatant *finalTarget)
 {
     target = finalTarget;
 
+    targetTile = nullptr;
+
+    if(character->selectedAction->Type == world::character::CharacterActions::ATTACK)
+    {
+        return Strike();
+    }
+    else if(character->selectedAction->Type == world::character::CharacterActions::CAST_SPELL)
+    {
+        return CastSpell();
+    }
+    else if(character->selectedAction->Type == world::character::CharacterActions::DODGE)
+    {
+        return Dodge();
+    }
+    else if(character->selectedAction->Type == world::character::CharacterActions::DASH)
+    {
+        return Dash();
+    }
+    else
+    {
+        return CharacterActionData();
+    }
+}
+
+CharacterActionData Combatant::Act(BattleTile *finalTarget)
+{
+    targetTile = finalTarget;
+
+    target = nullptr;
+
     if(character->selectedAction->Type == world::character::CharacterActions::ATTACK)
     {
         return Strike();
@@ -422,7 +489,7 @@ CharacterActionData Combatant::Strike()
 
 CharacterActionData Combatant::CastSpell()
 {
-    auto actionData = SpellCaster::ApplyEffect(*this, *character->selectedSpell);
+    auto actionData = SpellCaster::ApplyEffect(this, targetTile, *character->selectedSpell);
 
     if(character->selectedSpell->IsBonusAction)
     {

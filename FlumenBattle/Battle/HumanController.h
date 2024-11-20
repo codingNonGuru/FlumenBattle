@@ -78,6 +78,8 @@ namespace battle
 
         void TargetCombatant(Combatant *);
 
+        void TargetTile(BattleTile *);
+
         BattleTile * GetHoveredTile() const {return hoveredTile;}
 
         const utility::PathData <BattleTile> &GetHoveredPath();

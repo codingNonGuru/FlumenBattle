@@ -98,17 +98,21 @@ void HumanController::DisablePlayerInput()
 
 void HumanController::CheckCharacterMovement()
 {
-    if(isInitiatingMove == false)
-        return;
+    if(isInitiatingMove == true)
+    {
+        isInitiatingMove = false;
 
-    isInitiatingMove = false;
+        if(hoveredTile->IsObstacle)
+            return;
 
-    if(hoveredTile->IsObstacle)
-        return;
+        battleController->TargetTileForMovement(hoveredTile);
 
-    battleController->TargetTile(hoveredTile);
-
-    battleController->Move(hoveredPathData);
+        battleController->Move(hoveredPathData);
+    }
+    else if(isInitiatingTargeting == true)
+    {
+        TargetTile(hoveredTile);
+    }
 }
 
 void HumanController::CheckTileSelection()
@@ -209,7 +213,7 @@ void HumanController::HandleTPressed()
     if(selectedCombatant->CanTarget() == false)
         return;
 
-    if(isInitiatingTargeting)
+    if(isInitiatingTargeting == true)
     {
         isInitiatingTargeting = false;
 
@@ -234,21 +238,24 @@ void HumanController::HandleAPressed()
 
 void HumanController::HandleSceneUpdate()
 {
-    if(hoveredTile == nullptr || isInitiatingMove == false)
+    if(hoveredTile == nullptr)
         return;
 
-    if(hoveredTile->IsObstacle == true || hoveredTile->Combatant != nullptr)
+    if(isInitiatingMove == true)
     {
-        hoveredPathData.Tiles.Clear();
-        return;
-    }
+        if(hoveredTile->IsObstacle == true || hoveredTile->Combatant != nullptr)
+        {
+            hoveredPathData.Tiles.Clear();
+            return;
+        }
 
-    auto battleController = BattleController::Get();
-    auto selectedCombatant = battleController->GetSelectedCombatant();
+        auto battleController = BattleController::Get();
+        auto selectedCombatant = battleController->GetSelectedCombatant();
 
-    if(hoveredTile->GetDistanceTo(*selectedCombatant->GetTile()) <= MAXIMUM_PATH_LENGTH)
-    {
-        hoveredPathData = utility::Pathfinder <BattleTile>::Get()->FindPathAsGeneric(hoveredTile, selectedCombatant->GetTile(), MAXIMUM_PATH_LENGTH - 3);
+        if(hoveredTile->GetDistanceTo(*selectedCombatant->GetTile()) <= MAXIMUM_PATH_LENGTH)
+        {
+            hoveredPathData = utility::Pathfinder <BattleTile>::Get()->FindPathAsGeneric(hoveredTile, selectedCombatant->GetTile(), MAXIMUM_PATH_LENGTH - 3);
+        }
     }
 }
 
@@ -258,6 +265,18 @@ void HumanController::TargetCombatant(Combatant *target)
         return;
 
     battleController->TargetCombatant(target);
+
+    isInitiatingTargeting = false;
+
+    OnTargetAbandoned->Invoke();
+}
+
+void HumanController::TargetTile(BattleTile *target)
+{
+    if(isInitiatingTargeting == false)
+        return;
+
+    battleController->TargetTile(target);
 
     isInitiatingTargeting = false;
 

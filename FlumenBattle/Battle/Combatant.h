@@ -67,6 +67,8 @@ namespace battle
 
         Combatant *target; 
 
+        BattleTile *targetTile; 
+
         bool isSavingAgainstDeath; 
 
         Integer deathThrowSuccesCount; 
@@ -105,9 +107,11 @@ namespace battle
 
         bool CanAct(Combatant *);
 
+        bool CanAct(BattleTile *);
+
         bool CanStrike() const;
 
-        bool CanCastSpell() const;
+        bool CanCastSpell(bool) const;
 
         bool HasSlot(SpellTypes);
 
@@ -116,6 +120,8 @@ namespace battle
         bool CanDash() const;
 
         CharacterActionData Act(Combatant *);
+
+        CharacterActionData Act(BattleTile *);
 
         CharacterActionData Strike();
 

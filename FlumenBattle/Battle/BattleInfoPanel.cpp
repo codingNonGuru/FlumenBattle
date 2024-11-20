@@ -52,7 +52,15 @@ void BattleInfoPanel::HandleCharacterAction()
     }
     else if(actionData.ActionType == world::character::CharacterActions::CAST_SPELL)
     {
-        string << " cast " << character->GetSelectedSpell()->Name << " on " << actionData.Combatant->GetTarget()->GetCharacter()->GetClassName() << ".";
+        if(actionData.IsTargetingTile == true)
+        {
+            string << " cast " << character->GetSelectedSpell()->Name << " on ground.";
+        }
+        else
+        {
+            string << " cast " << character->GetSelectedSpell()->Name << " on " << actionData.Combatant->GetTarget()->GetCharacter()->GetClassName() << ".";
+        }
+
         if(character->GetSelectedSpell()->IsOffensive)
         {
             if(actionData.HasSucceeded)
