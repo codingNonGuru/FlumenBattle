@@ -10,6 +10,7 @@ class LayoutGroup;
 namespace world::settlement
 {
     class Settlement;
+    struct Resource;
 }
 
 namespace world::interface
@@ -23,13 +24,21 @@ namespace world::interface
 
         Text *nameLabel;
 
-        Element *border;
+        Text *outputLabel;
 
-        settlement::ResourceTypes resourceType;
+        Text *storedLabel;
 
-        void Setup(settlement::ResourceTypes);
+        Text *inputLabel;
+
+        Element *icon;
+
+        const settlement::Resource *resource;
+
+        void Setup(const settlement::Resource *);
 
         void HandleConfigure() override;
+
+        void HandleUpdate() override;
     };
 
     class RuleMenu : public Element

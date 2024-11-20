@@ -8,32 +8,32 @@ using namespace world::settlement;
 
 struct Food : public ResourceType
 {
-    Food() : ResourceType(ResourceTypes::FOOD, "Food", 10, true) {PopulationConsumption = 1; IsProductionTileBased = true;}
+    Food() : ResourceType(ResourceTypes::FOOD, "Food", "Radish", 10, true) {PopulationConsumption = 1; IsProductionTileBased = true;}
 };
 
 struct Timber : public ResourceType
 {
-    Timber() : ResourceType(ResourceTypes::TIMBER, "Timber", 10) {IsProductionTileBased = true;}
+    Timber() : ResourceType(ResourceTypes::TIMBER, "Timber", "Timber", 10) {IsProductionTileBased = true;}
 };
 
 struct Metal : public ResourceType
 {
-    Metal() : ResourceType(ResourceTypes::METAL, "Metal", 10) {IsProductionTileBased = true;}
+    Metal() : ResourceType(ResourceTypes::METAL, "Metal", "Metal", 10) {IsProductionTileBased = true;}
 };
 
 struct Lumber : public ResourceType
 {
-    Lumber() : ResourceType(ResourceTypes::LUMBER, "Lumber", 25) {IsProductionTileBased = false;}
+    Lumber() : ResourceType(ResourceTypes::LUMBER, "Lumber", "Plank", 25) {IsProductionTileBased = false;}
 };
 
 struct Wool : public ResourceType
 {
-    Wool() : ResourceType(ResourceTypes::WOOL, "Wool", 10) {IsProductionTileBased = true;}
+    Wool() : ResourceType(ResourceTypes::WOOL, "Wool", "Wool", 10) {IsProductionTileBased = true;}
 };
 
 struct Stone : public ResourceType
 {
-    Stone() : ResourceType(ResourceTypes::STONE, "Stone", 10) {IsProductionTileBased = true;}
+    Stone() : ResourceType(ResourceTypes::STONE, "Stone", "Stone", 10) {IsProductionTileBased = true;}
 };
 
 int Resource::GetPotentialProduction(const Settlement &settlement) const
@@ -59,13 +59,26 @@ int Resource::GetProductionFromBuildings(const Settlement &settlement) const
         }
     }
 
-    if(canProduce == false)
-        return 0;
+    if(Storage == settlement.storage)
+        canProduce = false;
 
     auto production = 0;
-    for(auto &building : buildings)
+    if(canProduce == false)
     {
-        production += building->GetOutputResource().Amount;
+        for(auto &building : buildings)
+        {
+            auto inputResource = building->GetInputResource();
+            auto resource = settlement.GetResource(inputResource.Resource);
+            
+            resource->Order -= inputResource.Amount;
+        }
+    }
+    else
+    {
+        for(auto &building : buildings)
+        {
+            production += building->GetOutputResource().Amount;
+        }
     }
 
     return production;

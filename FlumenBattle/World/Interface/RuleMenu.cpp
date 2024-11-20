@@ -16,20 +16,63 @@ void ResourceItem::HandleConfigure()
 {
     SetSpriteColor(BORDER_COLOR);
 
+    icon = ElementFactory::BuildElement <Element>
+    (
+        { 
+            drawOrder_ + 1, 
+            {Position2(5.0f, 0.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}, 
+            {"Radish", false}
+        }
+    );
+    icon->Enable();
+
     nameLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {Position2(30.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
+        {drawOrder_ + 1, {Position2(40.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
         {{"Small"}, TEXT_COLOR, "Wool"}
     );
     nameLabel->Enable();
+
+    storedLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {Position2(120.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
+        {{"Small"}, TEXT_COLOR, "100"}
+    );
+    storedLabel->Enable();
+
+    outputLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {Position2(180.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
+        {{"Small"}, TEXT_COLOR, "+1"}
+    );
+    outputLabel->Enable();
+
+    inputLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {Position2(240.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
+        {{"Small"}, TEXT_COLOR, "+1"}
+    );
+    inputLabel->Enable();
 }
 
-void ResourceItem::Setup(settlement::ResourceTypes resource)
+void ResourceItem::HandleUpdate()
 {
-    resourceType = resource;
+    auto text = Word() << resource->Storage;
 
-    auto type = settlement::ResourceFactory::Get()->CreateType(resource);
+    storedLabel->Setup(text);
 
-    nameLabel->Setup(type->Name);
+    text = Word("+") << resource->Production;
+
+    outputLabel->Setup(text);
+
+    text = Word() << resource->Order;
+
+    inputLabel->Setup(text);
+}
+
+void ResourceItem::Setup(const settlement::Resource *resource)
+{
+    this->resource = resource;
+
+    nameLabel->Setup(resource->Type->Name);
+
+    icon->SetTexture(resource->Type->TextureName);
 }
 
 void RuleMenu::HandleConfigure()
@@ -78,7 +121,6 @@ void RuleMenu::HandleConfigure()
                 {"panel-border-001", true}
             }
         );
-        item->Setup(settlement::ResourceTypes(i));
         item->Enable();
 
         *resourceItems.Allocate() = item;
@@ -101,4 +143,19 @@ void RuleMenu::HandleEnable()
 void RuleMenu::SetCurrentSettlement(settlement::Settlement *settlement) 
 {
     this->settlement = settlement;
+
+    for(int i = 0; i < (int)settlement::ResourceTypes::NONE; ++i)
+    {
+        auto item = *resourceItems.Get(i);
+
+        auto resource = settlement->GetResource(settlement::ResourceTypes(i));
+        if(resource == nullptr)
+        {
+            item->Disable();
+            continue;
+        }
+
+        item->Enable();
+        item->Setup(resource);
+    }
 }

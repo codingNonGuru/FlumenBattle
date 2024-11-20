@@ -16,6 +16,8 @@ namespace world::settlement
 
         Word Name;
 
+        Word TextureName;
+
         int Value;
 
         int PopulationConsumption {0};
@@ -24,9 +26,9 @@ namespace world::settlement
 
         bool IsProductionTileBased {false};
 
-        ResourceType(ResourceTypes type, Word name, int value, bool doesImprovement) : Type(type), Name(name), Value(value), DoesImprovementWorkAnywhere(doesImprovement) {}
+        ResourceType(ResourceTypes type, Word name, Word textureName, int value, bool doesImprovement) : Type(type), Name(name), TextureName(textureName), Value(value), DoesImprovementWorkAnywhere(doesImprovement) {}
 
-        ResourceType(ResourceTypes type, Word name, int value) : Type(type), Name(name), Value(value) {}
+        ResourceType(ResourceTypes type, Word name, Word textureName, int value) : Type(type), Name(name), TextureName(textureName), Value(value) {}
     };
 
     struct Resource
