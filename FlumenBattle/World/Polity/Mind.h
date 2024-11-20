@@ -8,5 +8,7 @@ namespace world::polity
     {
     public:
         virtual void MakeDecision(Polity &) const = 0;
+
+        virtual void UpdateWorkforce(Polity &) const = 0;
     };
 }

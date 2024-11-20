@@ -23,6 +23,7 @@ namespace world
         class Polity;
         class Faction;
         class MachineMind;
+        class HumanMind;
     }
 
     namespace group
@@ -93,6 +94,8 @@ namespace world::settlement
         friend struct Resource;
 
         friend class polity::MachineMind;
+
+        friend class polity::HumanMind;
 
         Word name;
 
@@ -166,8 +169,6 @@ namespace world::settlement
         } pathData;
 
         void Initialize(Word, Color, world::WorldTile *, const Race *);
-
-        void WorkNewTile();
 
         void GrowBorders();
 

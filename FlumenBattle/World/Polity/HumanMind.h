@@ -33,6 +33,8 @@ namespace world::polity
 
         virtual void MakeDecision(Polity &) const override;
 
+        virtual void UpdateWorkforce(Polity &) const override;
+
         void HandleWorkerPlacement();
 
     public:

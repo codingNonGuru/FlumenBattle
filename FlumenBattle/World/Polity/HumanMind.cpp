@@ -56,6 +56,11 @@ void HumanMind::MakeDecision(Polity &polity) const
     commands.Reset();
 }
 
+void HumanMind::UpdateWorkforce(Polity &polity) const
+{
+
+}
+
 void HumanMind::ProcessProductionInput(settlement::ProductionOptions option, settlement::Settlement *settlement)
 {
     for(auto &command : commands)

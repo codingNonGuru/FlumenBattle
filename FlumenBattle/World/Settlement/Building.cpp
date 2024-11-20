@@ -94,7 +94,7 @@ Building BuildingFactory::Create(BuildingTypes type)
     case BuildingTypes::LUMBER_MILL:
         return 
         {
-            [&] {static const auto buildingType = LumberMill(type, 200, true, {ResourceTypes::LUMBER, 1}, {ResourceTypes::TIMBER, 2}); return &buildingType;} (), 
+            [&] {static const auto buildingType = LumberMill(type, 200, true, {ResourceTypes::LUMBER, 1}, {ResourceTypes::TIMBER, 3}); return &buildingType;} (), 
             false
         };
     }

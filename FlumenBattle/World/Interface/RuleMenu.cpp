@@ -33,19 +33,19 @@ void ResourceItem::HandleConfigure()
     nameLabel->Enable();
 
     storedLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {Position2(120.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
+        {drawOrder_ + 1, {Position2(160.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
         {{"Small"}, TEXT_COLOR, "100"}
     );
     storedLabel->Enable();
 
     outputLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {Position2(180.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
+        {drawOrder_ + 1, {Position2(230.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
         {{"Small"}, TEXT_COLOR, "+1"}
     );
     outputLabel->Enable();
 
     inputLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {Position2(240.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
+        {drawOrder_ + 1, {Position2(300.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
         {{"Small"}, TEXT_COLOR, "+1"}
     );
     inputLabel->Enable();

@@ -93,7 +93,7 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location,
 
     AddBuilding(BuildingTypes::HOUSING);
 
-    WorkNewTile();
+    this->needsToReorganizeWork = true;
 }
 
 void Settlement::AddPath(Path *path) 
@@ -214,78 +214,6 @@ world::WorldTile * Settlement::FindColonySpot()
     {
         return *candidate;
     }
-}
-
-void Settlement::WorkNewTile()
-{
-    if(needsToReorganizeWork == false)
-        return;
-
-    needsToReorganizeWork = false;
-
-    if(population == 0)
-    {
-        for(auto &tile : tiles)
-        {
-            if(tile.Tile == location)
-                continue;
-
-            tile.IsWorked = false;
-        }
-        return;
-    }
-
-    if(population > tiles.GetSize())
-        return;
-
-    auto workedTileCount = GetWorkedTiles();
-    if(workedTileCount == population + 1)
-        return;
-
-    if(workedTileCount == tiles.GetSize())
-        return;
-
-    for(auto &tile : tiles)
-    {
-        if(tile.Tile == location)
-            continue;
-
-        tile.IsWorked = false;
-    }
-
-    auto workerCount = population;
-    
-    auto placeWorkersOnTilesOfType = [&] (world::WorldBiomes biomeType) -> bool
-    {
-        for(auto &tile : tiles)
-        {
-            if(tile.IsWorked == true)
-                continue;
-
-            if(tile.Tile->Biome->Type != biomeType)
-                continue;
-
-            tile.IsWorked = true;
-            workerCount--;
-
-            if(workerCount == 0)
-                return true;
-        }
-
-        return false;
-    };
-
-    auto hasUsedAllWorkers = placeWorkersOnTilesOfType(world::WorldBiomes::STEPPE);
-
-    if(hasUsedAllWorkers == true)
-        return;
-
-    hasUsedAllWorkers = placeWorkersOnTilesOfType(world::WorldBiomes::WOODS);
-
-    if(hasUsedAllWorkers == true)
-        return;
-
-    placeWorkersOnTilesOfType(world::WorldBiomes::DESERT);
 }
 
 void Settlement::GrowBorders() 
@@ -612,13 +540,27 @@ void Settlement::SetPolity(polity::Polity *polity)
 
 void Settlement::KillPopulation()
 {
+    auto freeWorkerCount = GetFreeWorkerCount();
+
     population--;
     if(population < 0)
     {
         population = 0;
     }
 
+    if(freeWorkerCount > 0)
+        return;
+
     needsToReorganizeWork = true;
+
+    for(auto &tile : tiles)
+    {
+        if(tile.IsWorked == true && tile.Tile != location)
+        {
+            tile.IsWorked = false;
+            return;
+        }
+    }
 }
 
 void Settlement::StrengthenPatrol()
@@ -765,6 +707,7 @@ void Settlement::Update()
     }
 
     //WorkNewTile();
+
 
     currentProduction->AddProgress(currentProduction->Is(ProductionOptions::NONE) ? 1 : GetIndustrialProduction());
     

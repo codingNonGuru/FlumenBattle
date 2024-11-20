@@ -9,5 +9,7 @@ namespace world::polity
     class MachineMind : public Mind, public core::Singleton <MachineMind>
     {
         virtual void MakeDecision(Polity &) const override;
+
+        virtual void UpdateWorkforce(Polity &) const override;
     };
 }
