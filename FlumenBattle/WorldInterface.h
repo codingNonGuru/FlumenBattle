@@ -37,6 +37,7 @@ namespace world
         class ConquestPopup;
         class RecruitmentMenu;
         class WorkerPlaceCursor;
+        class RuleMenu;
     }
 
     namespace settlement
@@ -65,6 +66,8 @@ namespace world
 
         bool isInInventoryMode {false};
 
+        bool isInRuleMode {false};
+
         interface::SettlementMenu *settlementMenu;
 
         interface::ExplorationMenu *explorationMenu;
@@ -92,6 +95,8 @@ namespace world
         interface::QuestPopup *questPopup;
 
         interface::QuestMenu *questMenu;
+
+        interface::RuleMenu *ruleMenu;
 
         container::Pool <interface::ActionPopup *> actionPopups;
 
@@ -178,6 +183,8 @@ namespace world
         void HandleSettlementExited();
 
         void HandlePlayerConquest();
+
+        void HandleRuleMenuPressed();
 
         WorldInterface();
 

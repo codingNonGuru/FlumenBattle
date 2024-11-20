@@ -45,6 +45,8 @@ static const auto IMPROVEMENT_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::
 
 static const auto WORKER_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_W, {InputHandler::CTRL}};
 
+static const auto RULE_MENU_OPEN_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_P};
+
 namespace world
 {
     WorldController::WorldController() {}
@@ -79,6 +81,7 @@ namespace world
         InputHandler::RegisterEvent(TIMBER_DISPLAY_KEY, {this, &WorldController::HandleTimberDisplayPressed});
         InputHandler::RegisterEvent(IMPROVEMENT_DISPLAY_KEY, {this, &WorldController::HandleImprovementDisplayPressed});
         InputHandler::RegisterEvent(WORKER_DISPLAY_KEY, {this, &WorldController::HandleWorkerPlacePressed});
+        InputHandler::RegisterEvent(RULE_MENU_OPEN_KEY, {this, &WorldController::HandleRuleMenuPressed});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_1, {this, &WorldController::HandleCharacterSelected});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_2, {this, &WorldController::HandleCharacterSelected});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_3, {this, &WorldController::HandleCharacterSelected});
@@ -413,6 +416,11 @@ namespace world
         onInventoryPressed.Invoke();
     }
 
+    void WorldController::HandleRuleMenuPressed()
+    {
+        onRuleMenuPressed.Invoke();
+    }
+
     void WorldController::HandleSettlementExited()
     {
         isWorkerPlaceModeActive = false;
@@ -433,6 +441,7 @@ namespace world
         InputHandler::UnregisterEvent(TIMBER_DISPLAY_KEY);
         InputHandler::UnregisterEvent(IMPROVEMENT_DISPLAY_KEY);
         InputHandler::UnregisterEvent(WORKER_DISPLAY_KEY);
+        InputHandler::UnregisterEvent(RULE_MENU_OPEN_KEY);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_1);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_2);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_3);

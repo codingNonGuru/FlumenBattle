@@ -8,23 +8,38 @@ using namespace world::settlement;
 
 struct Food : public ResourceType
 {
-    Food() : ResourceType(ResourceTypes::FOOD, 10, true) {PopulationConsumption = 1; IsProductionTileBased = true;}
+    Food() : ResourceType(ResourceTypes::FOOD, "Food", 10, true) {PopulationConsumption = 1; IsProductionTileBased = true;}
 };
 
 struct Timber : public ResourceType
 {
-    Timber() : ResourceType(ResourceTypes::TIMBER, 10) {IsProductionTileBased = true;}
+    Timber() : ResourceType(ResourceTypes::TIMBER, "Timber", 10) {IsProductionTileBased = true;}
 };
 
 struct Metal : public ResourceType
 {
-    Metal() : ResourceType(ResourceTypes::METAL, 10) {IsProductionTileBased = true;}
+    Metal() : ResourceType(ResourceTypes::METAL, "Metal", 10) {IsProductionTileBased = true;}
 };
 
 struct Lumber : public ResourceType
 {
-    Lumber() : ResourceType(ResourceTypes::LUMBER, 25) {IsProductionTileBased = false;}
+    Lumber() : ResourceType(ResourceTypes::LUMBER, "Lumber", 25) {IsProductionTileBased = false;}
 };
+
+struct Wool : public ResourceType
+{
+    Wool() : ResourceType(ResourceTypes::WOOL, "Wool", 10) {IsProductionTileBased = true;}
+};
+
+struct Stone : public ResourceType
+{
+    Stone() : ResourceType(ResourceTypes::STONE, "Stone", 10) {IsProductionTileBased = true;}
+};
+
+int Resource::GetPotentialProduction(const Settlement &settlement) const
+{
+    return GetProductionFromBuildings(settlement) + GetProductionFromTiles(settlement);
+}
 
 int Resource::GetProductionFromBuildings(const Settlement &settlement) const
 {
@@ -250,4 +265,29 @@ void ResourceHandler::Update(Settlement &settlement)
 Resource *ResourceHandler::Get(ResourceTypes type) const
 {
     return resources.Find(type);
+}
+
+const ResourceType *ResourceFactory::CreateType(ResourceTypes type)
+{
+    switch(type)
+    {
+    case ResourceTypes::FOOD:
+        static const auto food = Food();
+        return &food;
+    case ResourceTypes::TIMBER:
+        static const auto timber = Timber();
+        return &timber;
+    case ResourceTypes::METAL:
+        static const auto metal = Metal();
+        return &metal;
+    case ResourceTypes::LUMBER:
+        static const auto lumber = Lumber();
+        return &lumber;
+    case ResourceTypes::WOOL:
+        static const auto wool = Wool();
+        return &wool;
+    case ResourceTypes::STONE:
+        static const auto stone = Stone();
+        return &stone;
+    }
 }

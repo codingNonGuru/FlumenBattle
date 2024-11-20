@@ -1,5 +1,6 @@
 #pragma once
 
+#include "FlumenCore/Conventions.hpp"
 #include "FlumenCore/Container/Array.hpp"
 #include "FlumenCore/Singleton.h"
 
@@ -13,6 +14,8 @@ namespace world::settlement
     {
         ResourceTypes Type;
 
+        Word Name;
+
         int Value;
 
         int PopulationConsumption {0};
@@ -21,9 +24,9 @@ namespace world::settlement
 
         bool IsProductionTileBased {false};
 
-        ResourceType(ResourceTypes type, int value, bool doesImprovement) : Type(type), Value(value), DoesImprovementWorkAnywhere(doesImprovement) {}
+        ResourceType(ResourceTypes type, Word name, int value, bool doesImprovement) : Type(type), Name(name), Value(value), DoesImprovementWorkAnywhere(doesImprovement) {}
 
-        ResourceType(ResourceTypes type, int value) : Type(type), Value(value) {}
+        ResourceType(ResourceTypes type, Word name, int value) : Type(type), Name(name), Value(value) {}
     };
 
     struct Resource
@@ -42,7 +45,7 @@ namespace world::settlement
 
         AbundanceLevels LongTermAbundance;
 
-        int GetProduction() const {return Production;}
+        int GetPotentialProduction(const Settlement &) const;
 
         int GetProductionFromTiles(const Settlement &) const;
 
@@ -90,12 +93,11 @@ namespace world::settlement
         Resource *Get(ResourceTypes) const;
     };
 
-    /*class ResourceFactory : public core::Singleton <ResourceFactory>
+    class ResourceFactory : public core::Singleton <ResourceFactory>
     {
-        friend class ResourceManager;
-
-        Resource Create(ResourceTypes);
-    };*/
+    public:
+        const ResourceType *CreateType(ResourceTypes);
+    };
 
     class ResourceAllocator
     {

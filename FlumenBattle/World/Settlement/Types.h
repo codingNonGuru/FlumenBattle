@@ -79,13 +79,13 @@ namespace world::settlement
 
     enum class ResourceTypes
     {
-        NONE,
         FOOD,
         TIMBER,
         METAL,
         WOOL,
         STONE,
-        LUMBER
+        LUMBER,
+        NONE
         //LEATHER
         //POTTERY
         //FURNITURE

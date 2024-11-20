@@ -41,6 +41,7 @@
 #include "FlumenBattle/World/Interface/ConquestPopup.h"
 #include "FlumenBattle/World/Interface/RecruitmentMenu.h"
 #include "FlumenBattle/World/Interface/WorkerPlaceCursor.h"
+#include "FlumenBattle/World/Interface/RuleMenu.h"
 
 using namespace world;
 
@@ -317,6 +318,18 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     );
     recruitmentMenu->SetupBasicAnimations();
 
+    ruleMenu = ElementFactory::BuildElement <interface::RuleMenu>
+    (
+        {
+            Size(660, 420), 
+            DrawOrder(7), 
+            {canvas}, 
+            {false}, 
+            Opacity(0.9f)
+        }
+    );
+    ruleMenu->SetupBasicAnimations();
+
     group::HumanMind::Get()->OnSpottingHovered += {this, &WorldInterface::HandleSpottingHovered};
 
     group::HumanMind::Get()->OnQuestStarted += {this, &WorldInterface::HandleQuestStarted};
@@ -367,6 +380,8 @@ void WorldInterface::Initialize()
     controller->onInventoryPressed += {this, &WorldInterface::HandleInventoryPressed};
 
     controller->onCharacterSelected += {this, &WorldInterface::HandleCharacterSelected};
+
+    controller->onRuleMenuPressed += {this, &WorldInterface::HandleRuleMenuPressed};
 
     group::HumanMind::Get()->OnSellModeEntered += {this, &WorldInterface::HandleSellModeEntered};
 
@@ -479,6 +494,28 @@ void WorldInterface::HandleInventoryPressed()
         {
             questMenu->Disable();
         }
+    }
+}
+
+void WorldInterface::HandleRuleMenuPressed()
+{
+    if(isInInventoryMode == true)
+        return;
+
+    if(isInRuleMode == true)
+    {
+        ruleMenu->Disable();
+
+        isInRuleMode = false;
+    }
+    else
+    {
+        ruleMenu->Enable();
+
+        isInRuleMode = true;
+
+        auto playerSettlement = WorldScene::Get()->GetPlayerGroup()->GetCurrentSettlement();
+        ruleMenu->SetCurrentSettlement(playerSettlement);
     }
 }
 

@@ -62,6 +62,8 @@ namespace world
 
         Delegate onWorkerPlaceModeEntered;
 
+        Delegate onRuleMenuPressed;
+
         WorldController();
 
         void CheckTileSelection();
@@ -109,6 +111,8 @@ namespace world
         void HandleTravelModeToggle();
 
         void HandleSettlementExited();
+
+        void HandleRuleMenuPressed();
 
         void EnableHardInput();
 

@@ -43,7 +43,7 @@ void HoverExtension::ResourceWidget::HandleUpdate()
     Phrase text;
     if(IsTrackingProduction == true)
     {
-        text << Parent->settlement->GetResource(Resource)->GetProduction();
+        text << Parent->settlement->GetResource(Resource)->GetPotentialProduction(*Parent->settlement);
     }
     else
     {
