@@ -27,7 +27,9 @@ struct SpellResult
 
     utility::Success Success;
 
-    void Reset() {AttackRoll = 0; HasHit = false; IsCritical = false; Damage = 0; DifficultyClass = 0;}
+    container::Array <SpellEffect> Effects {32};
+
+    void Reset() {AttackRoll = 0; HasHit = false; IsCritical = false; Damage = 0; DifficultyClass = 0; Effects.Reset();}
 };
 
 static SpellResult spellResult;
@@ -37,7 +39,7 @@ void SpellCaster::ComputeDifficultyClass(Combatant& caster)
     spellResult.DifficultyClass = 8 + caster.GetCharacter()->GetSpellCastingAbility().Modifier + caster.GetCharacter()->GetMagicProficiencyBonus();
 }
 
-void SpellCaster::RollDamage(Combatant &target, const Spell & spell)
+void SpellCaster::RollDamage(Combatant &target, const Spell & spell, bool hasThrownSave)
 {
     Integer damage = 0;
     if(spellResult.HasHit)
@@ -62,7 +64,15 @@ void SpellCaster::RollDamage(Combatant &target, const Spell & spell)
         target.SufferDamage(damage);
     }
 
-    spellResult.Damage = damage;
+    if(hasThrownSave == true)
+    {
+        auto lastEffect = spellResult.Effects.GetLast();
+        lastEffect->Damage = damage;
+    }
+    else
+    {
+        spellResult.Damage = damage;
+    }
 }
 
 void SpellCaster::RollHealing(Combatant &combatant, const Spell & spell)
@@ -102,6 +112,8 @@ void SpellCaster::RollSavingThrow(Combatant &combatant, const Spell &spell)
 
     spellResult.HasHit = savingThrow.IsAnyFailure();
     spellResult.IsCritical = savingThrow.IsCriticalFailure() || savingThrow.IsCriticalSuccess();
+
+    *spellResult.Effects.Allocate() = {{&combatant, savingThrow}, 0};
 }
 
 CharacterActionData SpellCaster::ApplyFrostRay(Combatant &caster, const Spell & spell)
@@ -110,7 +122,9 @@ CharacterActionData SpellCaster::ApplyFrostRay(Combatant &caster, const Spell & 
 
     if(spellResult.HasHit)
     {
-        RollDamage(*caster.GetTarget(), spell);
+        RollSavingThrow(*caster.GetTarget(), spell);
+
+        RollDamage(*caster.GetTarget(), spell, true);
 
         BattleScene::Get()->AddCondition(caster.GetTarget(), {world::character::Conditions::HOBBLED, 3, 1});
     }
@@ -129,7 +143,7 @@ CharacterActionData SpellCaster::ApplySacredFlame(Combatant &caster, const Spell
 
     RollSavingThrow(*caster.GetTarget(), spell);
 
-    RollDamage(*caster.GetTarget(), spell);
+    RollDamage(*caster.GetTarget(), spell, true);
 }
 
 CharacterActionData SpellCaster::ApplyFireBolt(Combatant &caster, const Spell & spell)
@@ -167,7 +181,7 @@ CharacterActionData SpellCaster::ApplyFireball(Combatant &caster, BattleTile &ti
 
         RollSavingThrow(*tile->Combatant, spell);
 
-        RollDamage(*tile->Combatant, spell);
+        RollDamage(*tile->Combatant, spell, true);
     }
 }
 
@@ -212,13 +226,16 @@ CharacterActionData SpellCaster::ApplyEffect(Combatant *caster, BattleTile *tile
         caster->GetCharacter()->spellUseCount--;
     }
 
-    return CharacterActionData(
+    auto actionData = CharacterActionData(
         world::character::CharacterActions::CAST_SPELL, 
         caster, 
         spellResult.AttackRoll, 
         tile == nullptr ? caster->GetTarget()->armorClass : 0, 
         spellResult.Damage,
         spellResult.HasHit,
+        &spellResult.Effects,
         tile != nullptr
         );
+
+    return actionData;
 }

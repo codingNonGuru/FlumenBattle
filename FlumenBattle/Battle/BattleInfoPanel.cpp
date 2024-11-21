@@ -40,7 +40,7 @@ void BattleInfoPanel::HandleCharacterAction()
     auto character = actionData.Combatant->GetCharacter();
 
     auto string = Phrase();
-    string << character->GetClassName();
+    string << character->GetName() << " the " << character->GetClassName();
 
     if(actionData.ActionType == world::character::CharacterActions::DODGE)
     {
@@ -52,39 +52,98 @@ void BattleInfoPanel::HandleCharacterAction()
     }
     else if(actionData.ActionType == world::character::CharacterActions::CAST_SPELL)
     {
+        const auto spell = character->GetSelectedSpell();
         if(actionData.IsTargetingTile == true)
         {
-            string << " cast " << character->GetSelectedSpell()->Name << " on ground.";
+            string << " cast " << spell->Name << " on ground.";
         }
         else
         {
-            string << " cast " << character->GetSelectedSpell()->Name << " on " << actionData.Combatant->GetTarget()->GetCharacter()->GetClassName() << ".";
+            string << " cast " << spell->Name << " on " << actionData.Combatant->GetTarget()->GetCharacter()->GetName() << ".";
         }
 
-        if(character->GetSelectedSpell()->IsOffensive)
+        if(spell->IsOffensive)
         {
-            if(actionData.HasSucceeded)
+            string << "\n";
+
+            if(spell->SaveType.HasSave == true)
             {
-                string << " Hit! The victim suffers " << actionData.Damage << " damage.";
+                auto index = 0;
+                for(auto &effect : *actionData.SpellEffects)
+                {
+                    if(index != 0)
+                    {
+                        string << "\n";
+                    }
+
+                    if(effect.Throw.Result.IsAnySuccess() == true)
+                    {
+                        string << "Save! "; 
+                    }
+                    else
+                    {
+                        string << "Fail! "; 
+                    }
+
+                    string << "(" << effect.Throw.Result.Roll + effect.Throw.Result.Modifier << " vs. " << effect.Throw.Result.DC << ")";
+
+                    if(effect.Damage > 0)
+                    {   
+                        string << " - " << effect.Throw.Combatant->GetCharacter()->GetName() << " suffers " << effect.Damage << " damage.";
+                    }
+                    else
+                    {
+                        string << " - " << effect.Throw.Combatant->GetCharacter()->GetName() << " suffers no damage.";
+                    }
+
+                    index++;
+                }   
             }
             else
             {
-                string << " Miss!";
+                if(actionData.HasSucceeded == true)
+                {
+                    string << "Hit! ";
+                }
+                else
+                {
+                    string << "Miss! ";
+                }
+
+                string << "(" << actionData.AttackRoll << " vs. " << actionData.TargetArmorClass << ")";
+
+                if(actionData.Damage > 0)
+                {
+                    string << " - " << actionData.Combatant->GetTarget()->GetCharacter()->GetName() << " suffers " << actionData.Damage << " damage.";
+                }
+                else
+                {
+                    string << " - " << actionData.Combatant->GetTarget()->GetCharacter()->GetName() << " suffers no damage.";
+                }
             }
             
         }
     }
     else if(actionData.ActionType == world::character::CharacterActions::ATTACK)
     {
-        string << " attacked " << actionData.Combatant->GetTarget()->GetCharacter()->GetClassName() << ".";
+        string << " attacked " << actionData.Combatant->GetTarget()->GetCharacter()->GetName() << ".";
+
+        string << "\n";
 
         if(actionData.HasSucceeded)
         {
-            string << " Hit! The victim suffers " << actionData.Damage << " damage.";
+            string << "Hit! ";
         }
         else
         {
-            string << " Miss!";
+            string << "Miss! ";
+        }
+
+        string << "(" << actionData.AttackRoll << " vs. " << actionData.TargetArmorClass << ")";
+
+        if(actionData.HasSucceeded)
+        {
+            string << " - " << actionData.Combatant->GetTarget()->GetCharacter()->GetName() << " suffers " << actionData.Damage << " damage.";
         }
     }
 

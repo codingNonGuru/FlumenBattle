@@ -3,10 +3,25 @@
 #include "FlumenCore/Conventions.hpp"
 
 #include "FlumenBattle/World/Character/Types.h"
+#include "FlumenBattle/Utility/Utility.h"
 
 namespace battle
 {
     class Combatant;
+
+    struct SavingThrow
+    {
+        Combatant *Combatant;
+
+        utility::Success Result;
+    };
+
+    struct SpellEffect
+    {
+        SavingThrow Throw;
+
+        int Damage;
+    };
 
     struct CharacterActionData
     {
@@ -24,6 +39,8 @@ namespace battle
 
         bool IsTargetingTile;
 
+        container::Array <SpellEffect> *SpellEffects;
+
         CharacterActionData() : Combatant(nullptr) {}
 
         CharacterActionData(world::character::CharacterActions actionType, 
@@ -31,7 +48,8 @@ namespace battle
             Integer attackRoll, 
             Integer targetArmor, 
             Integer damage, 
-            bool hasSucceeded, 
+            bool hasSucceeded,
+            container::Array <SpellEffect> *effects = nullptr,
             bool isTargetingTile = false)
         {
             ActionType = actionType;
@@ -40,6 +58,7 @@ namespace battle
             TargetArmorClass = targetArmor;
             Damage = damage;
             HasSucceeded = hasSucceeded;
+            SpellEffects = effects;
             IsTargetingTile = isTargetingTile;
         }
     };

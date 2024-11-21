@@ -484,7 +484,7 @@ CharacterActionData Combatant::Strike()
 
     remainingActionCount--;
 
-    return CharacterActionData(character->selectedAction->Type, this, attackBonus, targetArmor, damage, hasHit);
+    return CharacterActionData(character->selectedAction->Type, this, attackRoll.Roll + attackRoll.Modifier, targetArmor, damage, hasHit);
 }
 
 CharacterActionData Combatant::CastSpell()

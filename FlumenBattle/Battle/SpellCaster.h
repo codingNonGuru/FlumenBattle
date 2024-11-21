@@ -22,7 +22,7 @@ namespace battle
 
         static void RollAttack(Combatant &);
 
-        static void RollDamage(Combatant &, const world::character::Spell &);
+        static void RollDamage(Combatant &, const world::character::Spell &, bool = false);
 
         static void RollHealing(Combatant &, const world::character::Spell &);
 

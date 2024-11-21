@@ -123,7 +123,7 @@ namespace world::character
 
         static const Spell BuildFireBolt()
         {
-            static Spell spell = {SpellTypes::FIRE_BOLT, 0, utility::RollDies::D10, 1, 24, "Fire Bolt", true, true, false, false, SavingThrows::REFLEX};
+            static Spell spell = {SpellTypes::FIRE_BOLT, 0, utility::RollDies::D10, 1, 24, "Fire Bolt", true, true, false, false};
             return spell;
         }
 
