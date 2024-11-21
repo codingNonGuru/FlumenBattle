@@ -11,6 +11,7 @@
 #include "FlumenBattle/PreGame/NewWorldMenu.h"
 #include "FlumenBattle/PreGame/GeneratorPopup.h"
 #include "FlumenBattle/PreGame/GeneratedWorldMenu.h"
+#include "FlumenBattle/PreGame/PartySetupMenu.h"
 #include "FlumenBattle/World/WorldGenerator.h"
 #include "FlumenBattle/World/WorldState.h"
 
@@ -22,30 +23,29 @@ namespace pregame
     {
         canvas = ElementFactory::BuildCanvas();
 
-        mainMenu = ElementFactory::BuildElement<MainMenu>(
+        mainMenu = ElementFactory::BuildElement <MainMenu>(
             {Size(480, 300), DrawOrder(3), {canvas}, {false}, DEFAULT_MENU_OPACITY}
         );
-        mainMenu->Disable();
 
-        newGameMenu = ElementFactory::BuildElement<NewGameMenu>(
+        newGameMenu = ElementFactory::BuildElement <NewGameMenu>(
             {Size(480, 300), DrawOrder(3), {canvas}, {false}, DEFAULT_MENU_OPACITY}
         );
-        newGameMenu->Disable();
 
-        newWorldMenu = ElementFactory::BuildElement<NewWorldMenu>(
+        newWorldMenu = ElementFactory::BuildElement <NewWorldMenu>(
             {Size(480, 300), DrawOrder(3), {canvas}, {false}, DEFAULT_MENU_OPACITY}
         );
-        newWorldMenu->Disable();
 
-        generatorPopup = ElementFactory::BuildElement<GeneratorPopup>(
+        generatorPopup = ElementFactory::BuildElement <GeneratorPopup>(
             {Size(480, 300), DrawOrder(3), {canvas}, {false}, DEFAULT_MENU_OPACITY}
         );
-        generatorPopup->Disable();
 
-        generatedWorldMenu = ElementFactory::BuildElement<GeneratedWorldMenu>(
+        generatedWorldMenu = ElementFactory::BuildElement <GeneratedWorldMenu>(
             {Size(480, 300), DrawOrder(3), {canvas}, {false}, DEFAULT_MENU_OPACITY}
         );
-        generatedWorldMenu->Disable();
+
+        partySetupMenu = ElementFactory::BuildElement <PartySetupMenu>(
+            {Size(480, 300), DrawOrder(3), {canvas}, {false}, DEFAULT_MENU_OPACITY}
+        );
     }
 
     void PreGameState::OpenMainMenu()
@@ -61,6 +61,16 @@ namespace pregame
     void PreGameState::OpenNewWorldMenu()
     {
         newWorldMenu->Enable();
+    }
+
+    void PreGameState::OpenPartySetupMenu()
+    {
+        partySetupMenu->Enable();
+    }
+
+    void PreGameState::OpenGeneratedWorldMenu()
+    {
+        generatedWorldMenu->Enable();
     }
 
     static auto perlinNoise = container::Grid <float> (128, 128);

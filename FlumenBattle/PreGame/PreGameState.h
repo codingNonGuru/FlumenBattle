@@ -21,6 +21,7 @@ namespace pregame
     class NewWorldMenu;
     class GeneratorPopup;
     class GeneratedWorldMenu;
+    class PartySetupMenu;
 
     class PreGameState : public State
     {
@@ -38,6 +39,8 @@ namespace pregame
 
         GeneratedWorldMenu *generatedWorldMenu;
 
+        PartySetupMenu *partySetupMenu;
+
         PreGameState();
 
         void HandleEnter() override;
@@ -52,6 +55,10 @@ namespace pregame
         void OpenNewWorldMenu();
 
         void OpenNewGameMenu();
+
+        void OpenPartySetupMenu();
+
+        void OpenGeneratedWorldMenu();
 
         void GenerateNewWorld(NewWorldData);
 

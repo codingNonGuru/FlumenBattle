@@ -6,19 +6,17 @@ class Text;
 
 namespace pregame
 {
-    class GeneratedWorldMenu : public Element
+    class PartySetupMenu : public Element
     {
         friend class PreGameState;
 
-        Element *backdrop;
-
-        Text *sizeLabel;
+        Text *titleLabel;
 
         Text *startGameLabel;
 
-        Text *changePartyLabel;
+        Text *loadPresetLabel;
 
-        Text *saveWorldLabel;
+        Text *savePresetLabel;
 
         Text *backLabel;
 
@@ -31,8 +29,6 @@ namespace pregame
         void HandleDisable() override;
 
         void OnStartGamePressed();
-
-        void OnChangePartyPressed();
 
         void OnBackPressed();
     };

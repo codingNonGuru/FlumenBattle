@@ -10,23 +10,35 @@
 
 using namespace pregame;
 
+static const auto TEXT_COLOR = Color::RED * 0.5f;
+
+static const auto BORDER_COLOR = Color::RED * 0.25f;
+
+static const auto BORDER_INSET = Size(4, 4);
+
 void GeneratedWorldMenu::HandleConfigure() 
 {
     startGameLabel = ElementFactory::BuildText(
-        {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, -40.0f), this}},
-        {{"Large"}, Color::RED * 0.5f, "[S]tart Game"}
+        {drawOrder_ + 1, {Position2(0.0f, -60.0f), this}},
+        {{"Large"}, TEXT_COLOR, "[S]tart Game"}
     );
     startGameLabel->Enable();
 
+    changePartyLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {Position2(0.0f, -20.0f), this}},
+        {{"Large"}, TEXT_COLOR, "[C]hange Party"}
+    );
+    changePartyLabel->Enable();
+
     saveWorldLabel = ElementFactory::BuildText(
-        {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, 0.0f), this}},
-        {{"Large"}, Color::RED * 0.5f, "[S]ave World"}
+        {drawOrder_ + 1, {Position2(0.0f, 20.0f), this}},
+        {{"Large"}, TEXT_COLOR, "[S]ave World"}
     );
     saveWorldLabel->Enable();
 
     backLabel = ElementFactory::BuildText(
-        {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, 40.0f), this}},
-        {{"Large"}, Color::RED * 0.5f, "[B]ack"}
+        {drawOrder_ + 1, {Position2(0.0f, 60.0f), this}},
+        {{"Large"}, TEXT_COLOR, "[B]ack"}
     );
     backLabel->Enable();
 
@@ -36,16 +48,30 @@ void GeneratedWorldMenu::HandleConfigure()
     backdrop->Enable();
 
     sizeLabel = ElementFactory::BuildText(
-        {Size(150, 50), drawOrder_ + 1, {Position2(0.0f, 5.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, backdrop}},
-        {{"Medium"}, Color::RED * 0.5f, "World size: 50"}
+        {drawOrder_ + 1, {Position2(0.0f, 5.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, backdrop}},
+        {{"Medium"}, TEXT_COLOR, "World size: 50"}
     );
     //sizeLabel->SetAlignment(Text::Alignments::LEFT);
     sizeLabel->Enable();
+
+    border = ElementFactory::BuildElement <Element>
+    (
+        {
+            size_ - BORDER_INSET, 
+            drawOrder_ + 1, 
+            {this}, 
+            {"panel-border-031", true}
+        }
+    );
+    border->SetSpriteColor(BORDER_COLOR);
+    border->Enable();
 }
 
 void GeneratedWorldMenu::HandleEnable()
 {
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_S, {this, &GeneratedWorldMenu::OnStartGamePressed});
+
+    InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_C, {this, &GeneratedWorldMenu::OnChangePartyPressed});
 
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_B, {this, &GeneratedWorldMenu::OnBackPressed});
 
@@ -67,6 +93,8 @@ void GeneratedWorldMenu::HandleDisable()
     InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_S);
 
     InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_B);
+
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_C);
 }
 
 void GeneratedWorldMenu::OnStartGamePressed()
@@ -74,7 +102,15 @@ void GeneratedWorldMenu::OnStartGamePressed()
     PreGameState::Get()->StartGame();
 }
 
+void GeneratedWorldMenu::OnChangePartyPressed()
+{
+    Disable();
+
+    PreGameState::Get()->OpenPartySetupMenu();
+}
+
 void GeneratedWorldMenu::OnBackPressed()
 {
+    std::cout<<"aloha\n";
     this->Disable();
 }

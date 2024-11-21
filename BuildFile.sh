@@ -35,6 +35,8 @@ cp Fonts ../../Builds/Flumen --update --recursive
 
 cp Sounds ../../Builds/Flumen --update --recursive
 
+cp Config.json ../../Builds/Flumen --update --recursive
+
 if "$execute"; then
     ../../Builds/Flumen/Battle
 fi
