@@ -7,6 +7,13 @@
 
 namespace world::character
 {
+    struct EffectArea
+    {
+        enum class Shapes {CIRCLE, LINE, NONE} Shape {Shapes::NONE};
+
+        int Size;
+    };
+
     struct SpellSlot
     {
         Integer Current;
@@ -22,6 +29,17 @@ namespace world::character
 
     struct Spell
     {
+        struct SaveType
+        {
+            bool HasSave;
+
+            SavingThrows Type;
+
+            SaveType() : HasSave(false) {}
+
+            SaveType(SavingThrows type) : HasSave(true), Type(type) {}
+        };
+
         SpellTypes Type;
 
         Integer Level;
@@ -40,18 +58,11 @@ namespace world::character
 
         bool IsBonusAction;
 
-        struct SaveType
-        {
-            bool HasSave;
-
-            SavingThrows Type;
-
-            SaveType() : HasSave(false) {}
-
-            SaveType(SavingThrows type) : HasSave(true), Type(type) {}
-        } SaveType;
+        struct SaveType SaveType;
 
         bool CanTargetTiles {false};
+
+        struct EffectArea EffectArea;
 
         //const Phrase & Description;
 
@@ -85,57 +96,69 @@ namespace world::character
             Type(type), Level(level), HitDice(hitDice), RollCount(rollCount), Range(range), Name(name), IsOffensive(isOffensive), IsAttack(isAttack), IsBonusAction(isBonusAction), SaveType(saveType), CanTargetTiles(canTargetTiles) {}
 
         bool operator== (const Spell &other) {return other.Type == this->Type;}
+
+        bool HasAreaOfEffect() const {return EffectArea.Shape != EffectArea::Shapes::NONE;}
     };
 
     class SpellFactory
     {
     public:
-        static Spell BuildFrostRay()
+        static const Spell BuildFrostRay()
         {
-            return {SpellTypes::FROST_RAY, 0, utility::RollDies::D8, 1, 12, "Frost Ray", true, true, false, false, SavingThrows::FORTITUDE};
+            static Spell spell = {SpellTypes::FROST_RAY, 0, utility::RollDies::D8, 1, 12, "Frost Ray", true, true, false, false, SavingThrows::FORTITUDE};
+            return spell;
         }
 
-        static Spell BuildShockingGrasp()
+        static const Spell BuildShockingGrasp()
         {
-            return {SpellTypes::SHOCKING_GRASP, 0, utility::RollDies::D8, 1, 1, "Shocking Grasp", true, true, false, false, SavingThrows::REFLEX};
+            static Spell spell = {SpellTypes::SHOCKING_GRASP, 0, utility::RollDies::D8, 1, 1, "Shocking Grasp", true, true, false, false, SavingThrows::REFLEX};
+            return spell;
         }
 
-        static Spell BuildSacredFlame()
+        static const Spell BuildSacredFlame()
         {
-            return {SpellTypes::SACRED_FLAME, 0, utility::RollDies::D8, 1, 12, "Sacred Flame", true, true, false, false, SavingThrows::REFLEX};
+            static Spell spell = {SpellTypes::SACRED_FLAME, 0, utility::RollDies::D8, 1, 12, "Sacred Flame", true, true, false, false, SavingThrows::REFLEX};
+            return spell;
         }
 
-        static Spell BuildFireBolt()
+        static const Spell BuildFireBolt()
         {
-            return {SpellTypes::FIRE_BOLT, 0, utility::RollDies::D10, 1, 24, "Fire Bolt", true, true, false, false, SavingThrows::REFLEX};
+            static Spell spell = {SpellTypes::FIRE_BOLT, 0, utility::RollDies::D10, 1, 24, "Fire Bolt", true, true, false, false, SavingThrows::REFLEX};
+            return spell;
         }
 
-        static Spell BuildMagicMissile()
+        static const Spell BuildMagicMissile()
         {
-            return {SpellTypes::MAGIC_MISSILE, 1, utility::RollDies::D4, 1, 24, "Magic Missile", true, false, false, false};
+            static Spell spell = {SpellTypes::MAGIC_MISSILE, 1, utility::RollDies::D4, 1, 24, "Magic Missile", true, false, false, false};
+            return spell;
         }
 
-        static Spell BuildCureWounds()
+        static const Spell BuildCureWounds()
         {
-            return {SpellTypes::CURE_WOUNDS, 1, utility::RollDies::D8, 1, 1, "Cure Wounds", false, false, false, false};
+            static Spell spell = {SpellTypes::CURE_WOUNDS, 1, utility::RollDies::D8, 1, 1, "Cure Wounds", false, false, false, false};
+            return spell;
         }
 
-        static Spell BuildHealingWord()
+        static const Spell BuildHealingWord()
         {
-            return {SpellTypes::HEALING_WORD, 1, utility::RollDies::D4, 1, 12, "Healing Word", false, false, true, false};
+            static Spell spell = {SpellTypes::HEALING_WORD, 1, utility::RollDies::D4, 1, 12, "Healing Word", false, false, true, false};
+            return spell;
         }
 
-        static Spell BuildBless()
+        static const Spell BuildBless()
         {
-            return {SpellTypes::BLESS, 1, utility::RollDies::D4, 1, 5, "Bless", false, false, false, false};
+            static Spell spell = {SpellTypes::BLESS, 1, utility::RollDies::D4, 1, 5, "Bless", false, false, false, false};
+            return spell;
         }
 
-        static Spell BuildFireball()
+        static const Spell BuildFireball()
         {
-            return {SpellTypes::FIRE_BALL, 1, utility::RollDies::D6, 3, 12, "Fireball", true, false, false, true, SavingThrows::REFLEX};
+            static Spell spell = {SpellTypes::FIRE_BALL, 1, utility::RollDies::D6, 3, 12, "Fireball", true, false, false, true, SavingThrows::REFLEX};
+            spell.EffectArea = {EffectArea::Shapes::CIRCLE, 2};
+            return spell;
         }
 
-        static Spell Build(SpellTypes type)
+        static const Spell Build(SpellTypes type)
         {
             switch(type)
             {

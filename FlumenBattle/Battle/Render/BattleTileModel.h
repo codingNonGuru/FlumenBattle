@@ -27,6 +27,8 @@ namespace battle::render
 
         void RenderPath();
 
+        void RenderSpellArea();
+
     public:
         void Initialize() override;
 

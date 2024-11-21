@@ -158,7 +158,7 @@ CharacterActionData SpellCaster::ApplyFireball(Combatant &caster, BattleTile &ti
 {
     ComputeDifficultyClass(caster);
 
-    auto &nearbyTiles = tile.GetNearbyTiles(1);
+    auto &nearbyTiles = tile.GetNearbyTiles(spell.EffectArea.Size);
 
     for(auto &tile : nearbyTiles)
     {

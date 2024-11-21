@@ -24,6 +24,8 @@
 #include "FlumenBattle/Battle/CombatGroup.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 #include "FlumenBattle/Battle/Render/CombatantModel.h"
+#include "FlumenBattle/World/Character/CharacterAction.h"
+#include "FlumenBattle/World/Character/Spell.h"
 
 using namespace battle;
 using namespace battle::render;
@@ -199,6 +201,43 @@ void BattleTileModel::RenderPath()
     rangeShader->Unbind();
 }
 
+void BattleTileModel::RenderSpellArea()
+{
+    if(HumanController::Get()->IsInitiatingTargeting() == false)
+        return;
+
+    auto caster = BattleController::Get()->GetSelectedCharacter();
+    if(*caster->GetSelectedAction() != world::character::CharacterActions::CAST_SPELL)
+        return;
+
+    auto spell = caster->GetSelectedSpell();
+    if(spell->HasAreaOfEffect() == false)
+        return;
+
+    auto hoveredTile = humanController->GetHoveredTile();
+    if(hoveredTile == nullptr)
+        return;
+
+    auto &nearbyTiles = hoveredTile->GetNearbyTiles(spell->EffectArea.Size);
+
+    shader->Bind();
+
+    for(auto &tile : nearbyTiles)
+    {
+        shader->SetConstant(tile->Position, "hexPosition");
+
+        shader->SetConstant(BattleMap::TILE_SIZE, "hexSize");
+
+        shader->SetConstant(Color::BLUE, "color");
+
+        shader->SetConstant(0.5f, "opacity");
+
+        glDrawArrays(GL_TRIANGLES, 0, 18);
+    }
+
+    shader->Unbind();
+}
+
 void BattleTileModel::Render() 
 {
 	shader->Bind();
@@ -275,4 +314,6 @@ void BattleTileModel::Render()
     CombatantModel::Get()->Render();
 
     RenderPath();
+
+    RenderSpellArea();
 }
