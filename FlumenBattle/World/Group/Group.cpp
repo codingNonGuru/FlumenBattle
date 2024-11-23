@@ -21,13 +21,6 @@
 
 using namespace world::character;
 
-Array <world::character::CharacterClasses> classMakeup; /*= {
-    CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, 
-    CharacterClasses::RANGER, CharacterClasses::RANGER, CharacterClasses::RANGER, 
-    CharacterClasses::CLERIC,
-    CharacterClasses::WIZARD, CharacterClasses::WIZARD
-    };*/
-
 #define FATIGUE_SAVING_THROW_DC 12
 
 #define MULE_CARRY_CAPACITY 25
@@ -83,41 +76,6 @@ namespace world::group
         tile = nullptr;
         home = nullptr;
         domain = nullptr;
-
-        for(int i = 0; i < size; ++i)
-        {
-            switch(raceType)
-            {
-                case RaceTypes::DWARF:
-                    classMakeup = {CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, CharacterClasses::CLERIC};
-                    break;
-                case RaceTypes::HUMAN:
-                    classMakeup = {CharacterClasses::FIGHTER, CharacterClasses::CLERIC, CharacterClasses::RANGER, CharacterClasses::WIZARD};
-                    break;
-                case RaceTypes::ELF:
-                    classMakeup = {CharacterClasses::RANGER, CharacterClasses::RANGER, CharacterClasses::WIZARD};
-                    break;
-                case RaceTypes::GNOME:
-                    classMakeup = {CharacterClasses::RANGER, CharacterClasses::CLERIC, CharacterClasses::WIZARD, CharacterClasses::WIZARD};
-                    break;
-                case RaceTypes::HALFLING:
-                    classMakeup = {CharacterClasses::RANGER, CharacterClasses::CLERIC};
-                    break;
-                case RaceTypes::GOBLIN:
-                    classMakeup = {CharacterClasses::RANGER, CharacterClasses::CLERIC};
-                    break;
-                case RaceTypes::ORC:
-                    classMakeup = {CharacterClasses::FIGHTER};
-                    break;
-            }
-
-            auto dice = utility::GetRandom(0, classMakeup.GetSize() - 1);
-            CharacterClasses characterClass = *classMakeup.Get(dice);
-
-            auto race = RaceFactory::BuildRace(raceType);
-
-            CharacterFactory::Create(race, &ClassFactory::BuildClass(characterClass), *this);
-        }
 
         leader = nullptr;
         auto charismaModifier = -100;

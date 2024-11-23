@@ -1,0 +1,25 @@
+{
+    "PartyMembers": 
+    [
+        {
+            "Class": "wizard",
+            "Race": "dwarf"
+        },
+        {
+            "Class": "fighter",
+            "Race": "human"
+        },
+        {
+            "Class": "cleric",
+            "Race": "gnome"
+        },
+        {
+            "Class": "ranger",
+            "Race": "human"
+        },
+        {
+            "Class": "fighter",
+            "Race": "orc"
+        }
+    ]
+}

@@ -5,6 +5,11 @@
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/World/Types.h"
 
+namespace pregame
+{
+    struct MemberData;
+}
+
 namespace world::character
 {
     class Character;
@@ -32,11 +37,15 @@ namespace world::group
         RaceTypes Race;
 
         settlement::Settlement *Home;
+
+        const container::Array <pregame::MemberData> *MemberDatas {nullptr};
     };
 
     class GroupFactory
     {
     public:
-        static Group* Create(GroupBuildData); 
+        static Group* CreatePlayerGroup(GroupBuildData); 
+
+        static Group* CreateMachineGroup(GroupBuildData); 
     };
 }

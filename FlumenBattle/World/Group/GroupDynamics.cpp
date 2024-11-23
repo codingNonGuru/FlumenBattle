@@ -100,7 +100,7 @@ void GroupDynamics::UpdateSimulationLevel(settlement::Settlement &settlement)
     {
         if(adventurer.Group == nullptr && simulationLevel == SimulationLevels::ADVANCED)
         {
-            adventurer.Group = group::GroupFactory::Create({group::GroupClasses::ADVENTURER, settlement.GetRace()->Type, &settlement});
+            adventurer.Group = group::GroupFactory::CreateMachineGroup({group::GroupClasses::ADVENTURER, settlement.GetRace()->Type, &settlement});
         }
         else if(adventurer.Group != nullptr && simulationLevel != SimulationLevels::ADVANCED)
         {
@@ -114,7 +114,7 @@ void GroupDynamics::UpdateSimulationLevel(settlement::Settlement &settlement)
     {
         if(merchant.Group == nullptr && simulationLevel != SimulationLevels::BASIC)
         {
-            merchant.Group = group::GroupFactory::Create({group::GroupClasses::MERCHANT, settlement.GetRace()->Type, &settlement});
+            merchant.Group = group::GroupFactory::CreateMachineGroup({group::GroupClasses::MERCHANT, settlement.GetRace()->Type, &settlement});
         }
         else if(merchant.Group != nullptr && simulationLevel == SimulationLevels::BASIC)
         {
@@ -128,7 +128,7 @@ void GroupDynamics::UpdateSimulationLevel(settlement::Settlement &settlement)
     {
         if(bandit.Group == nullptr && simulationLevel == SimulationLevels::ADVANCED)
         {
-            bandit.Group = group::GroupFactory::Create({group::GroupClasses::BANDIT, settlement.GetRace()->Type, &settlement});
+            bandit.Group = group::GroupFactory::CreateMachineGroup({group::GroupClasses::BANDIT, settlement.GetRace()->Type, &settlement});
         }
         else if(bandit.Group != nullptr && simulationLevel != SimulationLevels::ADVANCED)
         {
@@ -142,7 +142,7 @@ void GroupDynamics::UpdateSimulationLevel(settlement::Settlement &settlement)
     {
         if(patrol.Group == nullptr && simulationLevel == SimulationLevels::ADVANCED)
         {
-            patrol.Group = group::GroupFactory::Create({group::GroupClasses::PATROL, settlement.GetRace()->Type, &settlement});
+            patrol.Group = group::GroupFactory::CreateMachineGroup({group::GroupClasses::PATROL, settlement.GetRace()->Type, &settlement});
         }
         else if(patrol.Group != nullptr && simulationLevel != SimulationLevels::ADVANCED)
         {
@@ -156,7 +156,7 @@ void GroupDynamics::UpdateSimulationLevel(settlement::Settlement &settlement)
     {
         if(garrison.Group == nullptr && simulationLevel == SimulationLevels::ADVANCED)
         {
-            garrison.Group = group::GroupFactory::Create({group::GroupClasses::GARRISON, settlement.GetRace()->Type, &settlement});
+            garrison.Group = group::GroupFactory::CreateMachineGroup({group::GroupClasses::GARRISON, settlement.GetRace()->Type, &settlement});
         }
         else if(garrison.Group != nullptr && simulationLevel != SimulationLevels::ADVANCED)
         {
@@ -170,7 +170,7 @@ void GroupDynamics::UpdateSimulationLevel(settlement::Settlement &settlement)
     {
         if(raider.Group == nullptr && simulationLevel == SimulationLevels::ADVANCED)
         {
-            raider.Group = group::GroupFactory::Create({group::GroupClasses::RAIDER, settlement.GetRace()->Type, &settlement});
+            raider.Group = group::GroupFactory::CreateMachineGroup({group::GroupClasses::RAIDER, settlement.GetRace()->Type, &settlement});
         }
         else if(raider.Group != nullptr && simulationLevel != SimulationLevels::ADVANCED)
         {
@@ -193,7 +193,7 @@ void GroupDynamics::AddPatrol(settlement::Settlement &settlement)
     }
     else
     {
-        auto patrol = group::GroupFactory::Create({group::GroupClasses::PATROL, settlement.GetRace()->Type, &settlement});
+        auto patrol = group::GroupFactory::CreateMachineGroup({group::GroupClasses::PATROL, settlement.GetRace()->Type, &settlement});
         *patrols.Add() = {patrol};
     }
 }
@@ -220,7 +220,7 @@ void GroupDynamics::AddAdventurer(settlement::Settlement &settlement)
     }
     else
     {
-        auto adventurer = group::GroupFactory::Create({group::GroupClasses::ADVENTURER, settlement.GetRace()->Type, &settlement});
+        auto adventurer = group::GroupFactory::CreateMachineGroup({group::GroupClasses::ADVENTURER, settlement.GetRace()->Type, &settlement});
         *adventurers.Add() = {adventurer};
     }
 }
@@ -247,7 +247,7 @@ void GroupDynamics::AddMerchant(settlement::Settlement &settlement)
     }
     else
     {
-        auto merchant = group::GroupFactory::Create({group::GroupClasses::MERCHANT, settlement.GetRace()->Type, &settlement});
+        auto merchant = group::GroupFactory::CreateMachineGroup({group::GroupClasses::MERCHANT, settlement.GetRace()->Type, &settlement});
         *merchants.Add() = {merchant};
     }
 }
@@ -270,7 +270,7 @@ void GroupDynamics::AddBandit(settlement::Settlement &settlement)
         }
         else
         {
-            auto bandit = group::GroupFactory::Create({group::GroupClasses::BANDIT, settlement.GetRace()->Type, &settlement});
+            auto bandit = group::GroupFactory::CreateMachineGroup({group::GroupClasses::BANDIT, settlement.GetRace()->Type, &settlement});
             *bandits.Add() = {bandit};
         }
     }
@@ -284,7 +284,7 @@ void GroupDynamics::AddGarrison(settlement::Settlement &settlement)
     const auto simulationLevel = settlement.GetSimulationLevel();
     if(simulationLevel == SimulationLevels::ADVANCED)
     {
-        auto garrison = group::GroupFactory::Create({group::GroupClasses::GARRISON, settlement.GetRace()->Type, &settlement});
+        auto garrison = group::GroupFactory::CreateMachineGroup({group::GroupClasses::GARRISON, settlement.GetRace()->Type, &settlement});
         *garrisons.Add() = {garrison};
     }
     else
@@ -301,7 +301,7 @@ void GroupDynamics::AddRaider(settlement::Settlement &settlement)
     const auto simulationLevel = settlement.GetSimulationLevel();
     if(simulationLevel == SimulationLevels::ADVANCED)
     {
-        auto raider = group::GroupFactory::Create({group::GroupClasses::RAIDER, settlement.GetRace()->Type, &settlement});
+        auto raider = group::GroupFactory::CreateMachineGroup({group::GroupClasses::RAIDER, settlement.GetRace()->Type, &settlement});
         *raiders.Add() = {raider};
     }
     else

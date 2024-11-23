@@ -122,6 +122,8 @@ CharacterActionData SpellCaster::ApplyFrostRay(Combatant &caster, const Spell & 
 
     if(spellResult.HasHit)
     {
+        ComputeDifficultyClass(caster);
+        
         RollSavingThrow(*caster.GetTarget(), spell);
 
         RollDamage(*caster.GetTarget(), spell, true);

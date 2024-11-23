@@ -8,10 +8,19 @@
 #include "FlumenBattle/World/Group/GroupAllocator.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Character/CharacterFactory.h"
+#include "FlumenBattle/RaceFactory.h"
+#include "FlumenBattle/World/Character/ClassFactory.h"
+#include "FlumenBattle/PreGame/Types.h"
 
 Array <Color> colors = {Color::RED, Color::GREEN, Color::CYAN, Color::RED * 0.5f, Color::GREEN * 0.5f, Color::GREEN, Color::BLUE};
 
-int nameIndex = 0;
+Array <world::character::CharacterClasses> classMakeup; /*= {
+    CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, CharacterClasses::FIGHTER, 
+    CharacterClasses::RANGER, CharacterClasses::RANGER, CharacterClasses::RANGER, 
+    CharacterClasses::CLERIC,
+    CharacterClasses::WIZARD, CharacterClasses::WIZARD
+    };*/
 
 namespace world::group
 {
@@ -27,7 +36,37 @@ namespace world::group
         return color;
     }
 
-    Group* GroupFactory::Create(GroupBuildData buildData)
+    Group* GroupFactory::CreatePlayerGroup(GroupBuildData buildData)
+    {
+        auto group = new Group(); 
+
+        auto type = GroupTypeFactory::BuildGroupType(buildData.Type);
+
+        auto size = buildData.MemberDatas->GetSize();
+
+        auto color = GetColor();
+
+        group->muleCount = 0;
+
+        for(auto &memberData : *buildData.MemberDatas)
+        {
+            auto characterClass = &character::ClassFactory::BuildClass(memberData.Class);
+
+            auto race = RaceFactory::BuildRace(memberData.Race);
+
+            character::CharacterFactory::Create(race, characterClass, *group);
+        }
+
+        group->Initialize(type, size, color, buildData.Race);
+
+        group->SetHome(buildData.Home);
+
+        group->SetTile(buildData.Home->GetLocation());
+
+        return group;
+    }
+
+    Group* GroupFactory::CreateMachineGroup(GroupBuildData buildData)
     {
         auto group = new Group(); 
 
@@ -44,6 +83,41 @@ namespace world::group
         else
         {
             group->muleCount = 0;
+        }
+
+        for(int i = 0; i < size; ++i)
+        {
+            switch(buildData.Race)
+            {
+                case RaceTypes::DWARF:
+                    classMakeup = {character::CharacterClasses::FIGHTER, character::CharacterClasses::FIGHTER, character::CharacterClasses::CLERIC};
+                    break;
+                case RaceTypes::HUMAN:
+                    classMakeup = {character::CharacterClasses::FIGHTER, character::CharacterClasses::CLERIC, character::CharacterClasses::RANGER, character::CharacterClasses::WIZARD};
+                    break;
+                case RaceTypes::ELF:
+                    classMakeup = {character::CharacterClasses::RANGER, character::CharacterClasses::RANGER, character::CharacterClasses::WIZARD};
+                    break;
+                case RaceTypes::GNOME:
+                    classMakeup = {character::CharacterClasses::RANGER, character::CharacterClasses::CLERIC, character::CharacterClasses::WIZARD, character::CharacterClasses::WIZARD};
+                    break;
+                case RaceTypes::HALFLING:
+                    classMakeup = {character::CharacterClasses::RANGER, character::CharacterClasses::CLERIC};
+                    break;
+                case RaceTypes::GOBLIN:
+                    classMakeup = {character::CharacterClasses::RANGER, character::CharacterClasses::CLERIC};
+                    break;
+                case RaceTypes::ORC:
+                    classMakeup = {character::CharacterClasses::FIGHTER};
+                    break;
+            }
+
+            auto dice = utility::GetRandom(0, classMakeup.GetSize() - 1);
+            character::CharacterClasses characterClass = *classMakeup.Get(dice);
+
+            auto race = RaceFactory::BuildRace(buildData.Race);
+
+            character::CharacterFactory::Create(race, &character::ClassFactory::BuildClass(characterClass), *group);
         }
 
         group->Initialize(type, size, color, buildData.Race);
@@ -76,8 +150,6 @@ namespace world::group
         {
             group->SetTile(buildData.Home->GetLocation());
         }
-
-        nameIndex++;
 
         return group;
     }

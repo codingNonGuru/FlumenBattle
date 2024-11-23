@@ -13,6 +13,7 @@ file(GLOB_RECURSE SOURCE_FILES
 	"${PROJECT_SOURCE_DIR}/*"
 )
 
+include_directories(/home/andrei/Documents/Code/Libraries/nlohmann)
 include_directories(/home/andrei/Documents/Code/Libraries/glm)
 include_directories(/home/andrei/Documents/Code/Libraries/FlumenCore)
 include_directories(/home/andrei/Documents/Code/Libraries/FlumenEngine)

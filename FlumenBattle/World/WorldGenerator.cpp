@@ -18,6 +18,7 @@
 #include "FlumenBattle/World/Polity/PolityAllocator.h"
 #include "FlumenBattle/World/SimulationMap.h"
 #include "FlumenBattle/World/Polity/Polity.h"
+#include "FlumenBattle/PreGame/PartyLoader.h"
 
 using namespace world;
 
@@ -462,7 +463,9 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
     auto battles = group::GroupAllocator::Get()->GetBattles();
     scene.battles = battles;
 
-    scene.playerGroup = group::GroupFactory::Create({group::GroupClasses::PLAYER, RaceTypes::HUMAN, scene.settlements->GetRandom()});
+    const auto &partyMemberData = pregame::PartyLoader::Get()->LoadDefaultPreset();
+
+    scene.playerGroup = group::GroupFactory::CreatePlayerGroup({group::GroupClasses::PLAYER, RaceTypes::HUMAN, scene.settlements->GetRandom(), &partyMemberData});
 
     SimulationMap::Get()->Initialize();
 
