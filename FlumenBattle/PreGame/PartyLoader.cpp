@@ -26,7 +26,7 @@ container::Array <MemberData> memberDatas = []
     return container::Array <MemberData> (size);
 } ();
 
-const container::Array <MemberData> &PartyLoader::LoadPreset(const char *fileName)
+const container::Array <MemberData> *PartyLoader::LoadPreset(const char *fileName)
 {
     auto file = engine::FileManager::Get()->GetFile(fileName);
 
@@ -99,10 +99,10 @@ const container::Array <MemberData> &PartyLoader::LoadPreset(const char *fileNam
         }
     }
 
-    return memberDatas;
+    return &memberDatas;
 }
 
-const container::Array <MemberData> &PartyLoader::LoadDefaultPreset()
+const container::Array <MemberData> *PartyLoader::LoadDefaultPreset()
 {
     return LoadPreset(DEFAULT_PRESET_NAME);
 }

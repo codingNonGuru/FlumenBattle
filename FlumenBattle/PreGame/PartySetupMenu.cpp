@@ -62,6 +62,10 @@ void PartySetupMenu::HandleConfigure()
         {Size(780, 300), DrawOrder(3), {Position2(0.0f, 30.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, this}, {false}, DEFAULT_MENU_OPACITY}
     );
     setupPanel->Enable();
+
+    const auto partyMemberData = PreGameState::Get()->GetPartyMemberData();
+
+    setupPanel->Setup(*partyMemberData);
 }
 
 void PartySetupMenu::HandleEnable()
@@ -69,10 +73,6 @@ void PartySetupMenu::HandleEnable()
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_S, {this, &PartySetupMenu::OnStartGamePressed});
 
     InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_B, {this, &PartySetupMenu::OnBackPressed});
-
-    const auto &partyMemberData = PartyLoader::Get()->LoadDefaultPreset();
-
-    setupPanel->Setup(partyMemberData);
 }
 
 void PartySetupMenu::HandleDisable()

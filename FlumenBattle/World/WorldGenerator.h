@@ -8,6 +8,7 @@
 namespace pregame
 {
     struct NewWorldData;
+    struct MemberData;
 }
 
 namespace world
@@ -28,5 +29,7 @@ namespace world
         int GetMaximumSettlementCount(int) const;
 
         int GetMaximumGroupCount(int) const;
+
+        void GeneratePlayerGroup(const container::Array <pregame::MemberData> &);
     };
 }

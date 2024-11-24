@@ -19,6 +19,7 @@
 #include "FlumenBattle/World/SimulationMap.h"
 #include "FlumenBattle/World/Polity/Polity.h"
 #include "FlumenBattle/PreGame/PartyLoader.h"
+#include "FlumenBattle/PreGame/Types.h"
 
 using namespace world;
 
@@ -407,7 +408,7 @@ int WorldGenerator::GenerateWorld(
 
 void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
 {
-    auto &scene = *WorldScene::Get();
+    static auto &scene = *WorldScene::Get();
 
     auto worldMap = scene.worldMap;
 
@@ -449,7 +450,7 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
         }
     };
     
-    settlement::Settlement *newSettlement;
+    settlement::Settlement *newSettlement = nullptr;
 
     for(auto i = 0; i < 1; ++i)
     {
@@ -462,8 +463,13 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
 
     auto battles = group::GroupAllocator::Get()->GetBattles();
     scene.battles = battles;
+}
 
-    const auto &partyMemberData = pregame::PartyLoader::Get()->LoadDefaultPreset();
+void WorldGenerator::GeneratePlayerGroup(const container::Array <pregame::MemberData> &partyMemberData)
+{
+    static auto &scene = *WorldScene::Get();
+
+    auto settlements = settlement::SettlementAllocator::Get()->GetSettlements();
 
     scene.playerGroup = group::GroupFactory::CreatePlayerGroup({group::GroupClasses::PLAYER, RaceTypes::HUMAN, scene.settlements->GetRandom(), &partyMemberData});
 
@@ -474,8 +480,10 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
         settlement.SetupSimulation();
     }
 
-    newSettlement->GetPolity()->SetController(true);
-    scene.playerGroup->SetDomain(newSettlement->GetPolity());
+    auto homeSettlement = settlements->GetRandom();
+
+    homeSettlement->GetPolity()->SetController(true);
+    scene.playerGroup->SetDomain(homeSettlement->GetPolity());
 }
 
 int WorldGenerator::GetMaximumPolityCount(int worldSize) const

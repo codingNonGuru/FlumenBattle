@@ -10,8 +10,8 @@ namespace pregame
     class PartyLoader : public core::Singleton <PartyLoader>
     {
     public:
-        const container::Array <MemberData> &LoadPreset(const char *);
+        const container::Array <MemberData> *LoadPreset(const char *);
 
-        const container::Array <MemberData> &LoadDefaultPreset();
+        const container::Array <MemberData> *LoadDefaultPreset();
     };
 }

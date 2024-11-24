@@ -1,6 +1,7 @@
 #pragma once
 
 #include "FlumenCore/Observer.h"
+#include "FlumenCore/Singleton.h"
 
 #include "FlumenEngine/Core/State.hpp"
 
@@ -22,9 +23,12 @@ namespace pregame
     class GeneratorPopup;
     class GeneratedWorldMenu;
     class PartySetupMenu;
+    struct MemberData;
 
-    class PreGameState : public State
+    class PreGameState : public State, public core::Singleton <PreGameState>
     {
+        static PreGameState *instance;
+
         PreGameController *controller;
 
         Element *canvas;
@@ -41,14 +45,14 @@ namespace pregame
 
         PartySetupMenu *partySetupMenu;
 
-        PreGameState();
-
         void HandleEnter() override;
 
         void HandleExit() override;
 
     public:
         Delegate OnWorldGenerationFinished;
+
+        PreGameState();
 
         void OpenMainMenu();
 
@@ -66,11 +70,6 @@ namespace pregame
 
         void StartGame();
 
-        static PreGameState * Get()
-        {
-            static PreGameState state;
-
-            return &state;
-        }
+        const container::Array <MemberData> *GetPartyMemberData();
     };
 }

@@ -14,10 +14,13 @@
 #include "FlumenBattle/PreGame/PartySetupMenu.h"
 #include "FlumenBattle/World/WorldGenerator.h"
 #include "FlumenBattle/World/WorldState.h"
+#include "FlumenBattle/PreGame/PartyLoader.h"
 
 namespace pregame
 {
     static const auto DEFAULT_MENU_OPACITY = Opacity(0.85f);
+
+    static const container::Array <MemberData> *partyMemberData = nullptr;
 
     PreGameState::PreGameState()
     {
@@ -42,6 +45,8 @@ namespace pregame
         generatedWorldMenu = ElementFactory::BuildElement <GeneratedWorldMenu>(
             {Size(480, 300), DrawOrder(3), {canvas}, {false}, DEFAULT_MENU_OPACITY}
         );
+
+        partyMemberData = PartyLoader::Get()->LoadDefaultPreset();
 
         partySetupMenu = ElementFactory::BuildElement <PartySetupMenu>(
             {Size(480, 300), DrawOrder(3), {canvas}, {false}, DEFAULT_MENU_OPACITY}
@@ -118,6 +123,8 @@ namespace pregame
 
     void PreGameState::StartGame()
     {
+        world::WorldGenerator::Get()->GeneratePlayerGroup(*partyMemberData);
+
         generatedWorldMenu->Disable();
 
         world::WorldState::Get()->Enter();
@@ -137,5 +144,10 @@ namespace pregame
         PreGameController::Get()->Disable();
 
         canvas->Disable();
+    }
+
+    const container::Array <MemberData> *PreGameState::GetPartyMemberData()
+    {
+        return partyMemberData;
     }
 }
