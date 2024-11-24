@@ -9,6 +9,7 @@
 #include "FlumenBattle/World/Character/ClassFactory.h"
 #include "FlumenBattle/World/Character/CharacterClass.h"
 #include "FlumenBattle/RaceFactory.h"
+#include "FlumenBattle/Config.h"
 
 using namespace pregame;
 
@@ -19,6 +20,14 @@ static const auto BORDER_COLOR = Color::RED * 0.25f;
 static const auto BORDER_INSET = Size(4, 4);
 
 static const auto DEFAULT_MENU_OPACITY = Opacity(0.85f);
+
+static const auto VISIBLE_ITEM_COUNT = 6;
+
+static const auto ITEM_SIZE = Size(120, 180);
+
+static const auto ITEM_DISTANCE = 10.0f;
+
+static const auto ITEM_LAYOUT_OFFSET = Position2(30.0f, 0.0f);
 
 void PartySetupMenu::HandleConfigure()
 {
@@ -58,8 +67,10 @@ void PartySetupMenu::HandleConfigure()
     border->SetSpriteColor(BORDER_COLOR);
     border->Enable();
 
+    auto width = ITEM_SIZE.x * VISIBLE_ITEM_COUNT + ITEM_DISTANCE * (VISIBLE_ITEM_COUNT - 1) + 2 * ITEM_LAYOUT_OFFSET.x;
+
     setupPanel = ElementFactory::BuildElement <PartySetupPanel>(
-        {Size(780, 300), DrawOrder(3), {Position2(0.0f, 30.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, this}, {false}, DEFAULT_MENU_OPACITY}
+        {Size(width, 300), DrawOrder(3), {Position2(0.0f, 30.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, this}, {false}, DEFAULT_MENU_OPACITY}
     );
     setupPanel->Enable();
 
@@ -111,22 +122,25 @@ void PartySetupPanel::HandleConfigure()
     border->SetSpriteColor(BORDER_COLOR);
     border->Enable();
 
+    static const auto itemCount = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_CHARACTERS_PER_GROUP).Integer;
+
     itemLayout = ElementFactory::BuildElement <LayoutGroup> 
     (
-        {drawOrder_, {Position2(30.0f, 0.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}
+        {drawOrder_, {ITEM_LAYOUT_OFFSET, ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}
     );
-    itemLayout->SetDistancing(32, 10.0f);
+    itemLayout->SetDistancing(VISIBLE_ITEM_COUNT, ITEM_DISTANCE);
     itemLayout->Enable();
 
-    items.Initialize(6);
+    itemLayout->MakeScrollable(VISIBLE_ITEM_COUNT, VISIBLE_ITEM_COUNT);
+
+    items.Initialize(itemCount);
     for(int i = 0; i < items.GetCapacity(); ++i)
     {
         auto item = ElementFactory::BuildElement <PartyMemberItem>
         (
-            {Size(120, 180), drawOrder_ + 1, {itemLayout}, {"panel-border-031", true}, DEFAULT_MENU_OPACITY}
+            {ITEM_SIZE, drawOrder_ + 1, {itemLayout}, {"panel-border-031", true}, DEFAULT_MENU_OPACITY}
         );
         item->SetSpriteColor(BORDER_COLOR);
-        item->Enable();       
 
         *items.Allocate() = item;
     }
@@ -149,6 +163,8 @@ void PartySetupPanel::Setup(const container::Array <MemberData> &memberDatas)
 
         item++;
     }
+
+    itemLayout->SetScrollableChildCount(memberDatas.GetSize());
 }
 
 void PartyMemberItem::HandleConfigure()

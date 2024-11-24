@@ -20,6 +20,18 @@
         {
             "Class": "fighter",
             "Race": "orc"
+        },
+        {
+            "Class": "cleric",
+            "Race": "gnome"
+        },
+        {
+            "Class": "ranger",
+            "Race": "human"
+        },
+        {
+            "Class": "fighter",
+            "Race": "orc"
         }
     ]
 }
