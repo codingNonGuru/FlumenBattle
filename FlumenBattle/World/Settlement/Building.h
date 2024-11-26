@@ -24,6 +24,8 @@ namespace world::settlement
 
         bool IsTall;
 
+        Word Name;
+
         Word TextureName;
 
         struct Throughput
@@ -37,11 +39,14 @@ namespace world::settlement
 
         Throughput OutputResource {ResourceTypes::NONE, 0};
 
-        explicit BuildingType(BuildingTypes type, int cost, bool isTall, Word textureName) : Type(type), Cost(cost), IsTall(isTall), TextureName(textureName) {}
+        explicit BuildingType(BuildingTypes type, int cost, bool isTall, Word name, Word textureName) : 
+            Type(type), Cost(cost), IsTall(isTall), Name(name), TextureName(textureName) {}
 
-        explicit BuildingType(BuildingTypes type, int cost, bool isTall, Word textureName, Throughput output) : Type(type), Cost(cost), IsTall(isTall), TextureName(textureName), OutputResource(output) {}
+        explicit BuildingType(BuildingTypes type, int cost, bool isTall, Word name, Word textureName, Throughput output) : 
+            Type(type), Cost(cost), IsTall(isTall), Name(name), TextureName(textureName), OutputResource(output) {}
 
-        explicit BuildingType(BuildingTypes type, int cost, bool isTall, Word textureName, Throughput output, Throughput input) : Type(type), Cost(cost), IsTall(isTall), TextureName(textureName), OutputResource(output), InputResource(input) {}
+        explicit BuildingType(BuildingTypes type, int cost, bool isTall, Word name, Word textureName, Throughput output, Throughput input) : 
+            Type(type), Cost(cost), IsTall(isTall), Name(name), TextureName(textureName), OutputResource(output), InputResource(input) {}
 
         virtual void HandleApplyEffect(Settlement &) const = 0;
     };
@@ -84,6 +89,8 @@ namespace world::settlement
         BuildingType::Throughput GetInputResource() const {return type->InputResource;}
 
         BuildingType::Throughput GetOutputResource() const {return type->OutputResource;}
+
+        Word GetName() const {return type->Name;}
 
         Word GetTextureName() const {return type->TextureName;}
     };

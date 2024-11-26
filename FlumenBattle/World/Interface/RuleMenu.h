@@ -17,6 +17,8 @@ namespace world::settlement
 namespace world::interface
 {
     class Counter;
+    class BuildingHoverInfo;
+    class RuleMenu;
 
     struct ResourceItem : public Element
     {
@@ -55,11 +57,18 @@ namespace world::interface
 
         const settlement::Building *building;
 
-        void Setup(const settlement::Building *);
+        RuleMenu *ruleMenu;
+
+        void Setup(const settlement::Building *, RuleMenu *);
 
         void HandleConfigure() override;
 
         void HandleUpdate() override;
+
+        void HandleHover() override;
+
+    public:
+        const settlement::Building *GetBuilding() const {return building;}
     };
 
     class RuleMenu : public Element
@@ -82,6 +91,8 @@ namespace world::interface
 
         settlement::Settlement *settlement {nullptr};
 
+        BuildingHoverInfo *buildingHoverInfo;
+
         void HandleConfigure() override;
 
         void HandleUpdate() override;
@@ -90,5 +101,7 @@ namespace world::interface
 
     public:
         void SetCurrentSettlement(settlement::Settlement *);
+
+        BuildingHoverInfo *GetHoverDevice() {return buildingHoverInfo;}
     };
 }

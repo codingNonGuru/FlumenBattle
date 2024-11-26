@@ -7,6 +7,7 @@
 #include "FlumenBattle/World/Settlement/Resource.h"
 #include "FlumenBattle/World/Settlement/Building.h"
 #include "FlumenBattle/World/Interface/Counter.h"
+#include "FlumenBattle/World/Interface/BuildingHoverInfo.h"
 
 using namespace world::interface;
 
@@ -121,9 +122,23 @@ void BuildingItem::HandleUpdate()
     }
 }
 
-void BuildingItem::Setup(const settlement::Building *building)
+void BuildingItem::HandleHover()
+{
+    if(building == nullptr)
+        return;
+
+    auto hoverInfo = ruleMenu->GetHoverDevice();
+
+    hoverInfo->Setup(this);
+
+    hoverInfo->Enable();
+}
+
+void BuildingItem::Setup(const settlement::Building *building, RuleMenu *ruleMenu)
 {
     this->building = building;
+
+    this->ruleMenu = ruleMenu;
 
     if(building != nullptr)
     {
@@ -215,6 +230,15 @@ void RuleMenu::HandleConfigure()
 
         *buildingItems.Allocate() = item;
     }
+
+    buildingHoverInfo = ElementFactory::BuildElement <interface::BuildingHoverInfo>
+    (
+        {
+            GetDrawOrder() + 5,
+            {ElementAnchors::MIDDLE_CENTER, ElementPivots::UPPER_CENTER, this},
+            {false}
+        }
+    );
 }
 
 void RuleMenu::HandleUpdate()
@@ -227,14 +251,18 @@ void RuleMenu::HandleUpdate()
     auto item = buildingItems.GetStart();
     for(auto &building : settlement->GetBuildings())
     {
-        (*item)->Setup(&building);
+        (*item)->Setup(&building, this);
+
+        (*item)->SetInteractivity(true);
         
         item++;
     }
 
     while(item != buildingItems.GetEnd())
     {
-        (*item)->Setup(nullptr);
+        (*item)->Setup(nullptr, nullptr);
+
+        (*item)->SetInteractivity(false);
 
         item++;
     }
