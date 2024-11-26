@@ -6,6 +6,7 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/Resource.h"
 #include "FlumenBattle/World/Settlement/Building.h"
+#include "FlumenBattle/World/Interface/Counter.h"
 
 using namespace world::interface;
 
@@ -92,11 +93,32 @@ void BuildingItem::HandleConfigure()
     );
     icon->SetTextureScale(Scale2(0.8f));
     icon->Enable();
+
+    counter = ElementFactory::BuildElement <Counter>
+    (
+        {drawOrder_ + 1, {Position2(0.0f, 0.0f), ElementAnchors::LOWER_RIGHT, ElementPivots::LOWER_RIGHT, this}, {"WhiteDotBackdrop", false}}
+    );
+    counter->Setup(&buildingCount, Scale2(1.0f), "Medium");
 }
 
 void BuildingItem::HandleUpdate()
 {
- 
+    if(this->building == nullptr)
+    {
+        counter->Disable();
+        return;
+    }
+
+    buildingCount = building->GetAmount();
+
+    if(buildingCount == 1)
+    {
+        counter->Disable();
+    }
+    else
+    {
+        counter->Enable();
+    }
 }
 
 void BuildingItem::Setup(const settlement::Building *building)

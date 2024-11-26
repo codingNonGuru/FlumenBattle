@@ -17,7 +17,6 @@ namespace world::settlement
 namespace world::interface
 {
     class Counter;
-    class ResourceCounter;
 
     struct ResourceItem : public Element
     {
@@ -49,6 +48,10 @@ namespace world::interface
         //Text *nameLabel;
 
         Element *icon;
+
+        Counter *counter;
+
+        int buildingCount;
 
         const settlement::Building *building;
 
