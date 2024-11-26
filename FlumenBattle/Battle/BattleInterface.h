@@ -18,6 +18,7 @@ namespace battle
         class CharacterHoverInfo;
         class ActionInfoPanel;
         class TargetCursor;
+        class ConditionPopup;
     }
 
     class BattleInfoPanel;
@@ -51,11 +52,15 @@ namespace battle
 
         interface::TargetCursor *targetCursor;
 
+        container::Pool <interface::ConditionPopup *> conditionPopups;
+
         BattleInterface();
 
         void HandleTargetInitiated();
 
         void HandleTargetAbandoned();
+
+        void HandleConditionApplied();
 
     public:
         void Initialize();
@@ -64,6 +69,8 @@ namespace battle
 
         void Disable();
 
+        void Update();
+
         interface::BattleCounter *GetDamageCounter(int, Combatant *);
 
         void RemoveDamageCounter(interface::BattleCounter *);
@@ -71,5 +78,7 @@ namespace battle
         void EnableHoverExtension(CharacterInfo *);
 
         Combatant *GetHoveredCombatant();
+
+        void RemoveConditionPopup(interface::ConditionPopup *);
     };
 }

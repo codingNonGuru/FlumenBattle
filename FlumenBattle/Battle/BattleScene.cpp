@@ -38,6 +38,8 @@ static const Length BATTLE_MAP_SIZE = 55;
 
 static const auto SCREEN_GRAB_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_LALT;
 
+static auto latestConditionData = world::character::ApplyData();
+
 namespace battle
 {
     BattleScene::BattleScene() 
@@ -137,6 +139,15 @@ namespace battle
         data.TimeInitiated = turnIndex;
 
         combatant->AddCondition(data);
+
+        latestConditionData = world::character::ApplyData{data.Type, combatant};
+
+        OnConditionAdded.Invoke();
+    }
+
+    const world::character::ApplyData &BattleScene::GetLatestConditionData() const
+    {
+        return latestConditionData;
     }
 
     void BattleScene::EndTurn()

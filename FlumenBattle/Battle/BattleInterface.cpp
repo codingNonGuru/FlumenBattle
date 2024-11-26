@@ -1,7 +1,11 @@
+#include <chrono>
+
 #include "FlumenCore/Observer.h"
+#include "FlumenCore/Container/Queue.h"
 
 #include "FlumenEngine/Core/SceneManager.hpp"
 #include "FlumenEngine/Interface/ElementFactory.h"
+#include "FlumenEngine/Core/Engine.hpp"
 
 #include "FlumenBattle/Battle/BattleInterface.h"
 #include "FlumenBattle/World/Character/Condition.h"
@@ -19,6 +23,9 @@
 #include "FlumenBattle/Battle/Interface/CharacterHoverInfo.h"
 #include "FlumenBattle/Battle/HumanController.h"
 #include "FlumenBattle/Battle/Interface/TargetCursor.h"
+#include "FlumenBattle/Battle/Interface/ConditionPopup.h"
+
+using namespace battle;
 
 #define MAXIMUM_INFO_COUNT 32
 
@@ -26,9 +33,31 @@
 
 const auto MAXIMUM_DAMAGE_COUNTERS = 32;
 
-using namespace battle;
+static const auto CONDITION_POPUP_CAPACITY = 32;
+
+#define TIME_BETWEEN_FADING_POPUPS 300
 
 static Combatant *hoveredCombatant = nullptr;
+
+struct PopupData
+{
+    world::character::Conditions ConditionType;
+};
+
+struct CombatantPopupData
+{
+    Combatant *Combatant;
+
+    std::chrono::_V2::steady_clock::time_point LastPopupTimestamp;
+
+    container::Queue <PopupData> PopupQueue = container::Queue <PopupData> (8);
+
+    CombatantPopupData() {}
+
+    CombatantPopupData(class Combatant *combatant) : Combatant(combatant), LastPopupTimestamp(std::chrono::steady_clock::now()) {}
+};
+
+container::Array <CombatantPopupData> combatantPopupDatas;
 
 BattleInterface::BattleInterface()
 {
@@ -49,6 +78,8 @@ BattleInterface::BattleInterface()
         *characterInfos.Allocate() = characterInfo;
         characterInfo->SetInteractivity(true);
     }
+
+    combatantPopupDatas.Initialize(MAXIMUM_INFO_COUNT);
 
     battleInfoPanel = ElementFactory::BuildElement<BattleInfoPanel>(
         {Size(620, 140), DrawOrder(3), {Position2(-640.0f, 460.0f), canvas}, sprite, Opacity(ELEMENT_OPACITY)}
@@ -74,7 +105,7 @@ BattleInterface::BattleInterface()
     {
         auto counter = ElementFactory::BuildElement <interface::BattleCounter>
         (
-            {DrawOrder(1), {canvas}}
+            {DrawOrder(10), {canvas}}
         );
 
         *damageCounters.Add() = counter;
@@ -104,6 +135,17 @@ BattleInterface::BattleInterface()
     );
     targetCursor->FollowMouse();
     targetCursor->Disable();
+
+    conditionPopups.Initialize(CONDITION_POPUP_CAPACITY);
+    for(int i = 0; i < CONDITION_POPUP_CAPACITY; ++i)
+    {
+        *conditionPopups.Add() = ElementFactory::BuildElement <interface::ConditionPopup>
+        (
+            {DrawOrder(6), {canvas}}
+        );
+    }
+
+    conditionPopups.Reset();
 }
 
 void BattleInterface::Initialize()
@@ -111,6 +153,8 @@ void BattleInterface::Initialize()
     *HumanController::Get()->OnTargetInitiated += {this, &BattleInterface::HandleTargetInitiated};
 
     *HumanController::Get()->OnTargetAbandoned += {this, &BattleInterface::HandleTargetAbandoned};
+
+    BattleScene::Get()->OnConditionAdded += {this, &BattleInterface::HandleConditionApplied};
 }
 
 void BattleInterface::Enable()
@@ -126,6 +170,34 @@ void BattleInterface::Enable()
         {
             (*characterInfo)->SetCombatant(combatant);
             (*characterInfo)->Enable();
+
+            *combatantPopupDatas.Allocate() = {combatant};
+        }
+    }
+
+    Engine::OnInterfaceUpdateStarted += {this, &BattleInterface::Update};
+}
+
+void BattleInterface::Update()
+{
+    for(auto &popupData : combatantPopupDatas)
+    {
+        if(popupData.PopupQueue.IsEmpty() == true)
+            continue;
+
+        auto timestamp = std::chrono::steady_clock::now();
+
+        if(std::chrono::duration_cast<std::chrono::milliseconds>(timestamp - popupData.LastPopupTimestamp).count() > TIME_BETWEEN_FADING_POPUPS)
+        {
+            auto data = popupData.PopupQueue.Pop();
+
+            auto popup = *conditionPopups.Add();
+
+            popup->Setup(popupData.Combatant, data->ConditionType);
+
+            popup->Enable();
+
+            popupData.LastPopupTimestamp = timestamp;
         }
     }
 }
@@ -148,9 +220,13 @@ void BattleInterface::Disable()
         info->Disable();
     }
 
+    combatantPopupDatas.Reset();
+
     canvas->Disable();
 
     battleEndMessage->Disable();
+
+    Engine::OnInterfaceUpdateStarted -= {this, &BattleInterface::Update};
 }
 
 Combatant *BattleInterface::GetHoveredCombatant()
@@ -178,5 +254,40 @@ void BattleInterface::EnableHoverExtension(CharacterInfo *characterInfo)
 
     hoverInfo->Setup(characterInfo);
     hoverInfo->Enable();
+}
+
+void BattleInterface::RemoveConditionPopup(interface::ConditionPopup *popup)
+{
+    conditionPopups.Remove(popup);
+}
+
+void BattleInterface::HandleConditionApplied()
+{
+    auto timestamp = std::chrono::steady_clock::now();
+
+    auto conditionData = BattleScene::Get()->GetLatestConditionData();
+
+    for(auto &popupData : combatantPopupDatas)
+    {
+        if(conditionData.Combatant != popupData.Combatant)
+            continue;
+
+        if(std::chrono::duration_cast<std::chrono::milliseconds>(timestamp - popupData.LastPopupTimestamp).count() < TIME_BETWEEN_FADING_POPUPS)
+        {
+            *popupData.PopupQueue.Grow() = {conditionData.Type};
+        }
+        else
+        {
+            auto popup = *conditionPopups.Add();
+
+            popup->Setup(conditionData.Combatant, conditionData.Type);
+
+            popup->Enable();
+
+            popupData.LastPopupTimestamp = timestamp;
+        }
+
+        break;
+    }
 }
 

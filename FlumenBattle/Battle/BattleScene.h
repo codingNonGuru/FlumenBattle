@@ -12,6 +12,7 @@ class CharacterInfo;
 namespace world::character
 {
     struct ConditionData;
+    struct ApplyData;
 }
 
 namespace battle
@@ -98,6 +99,8 @@ namespace battle
 
         Delegate OnUpdate;
 
+        Delegate OnConditionAdded;
+
         BattleScene();
 
         void AddCondition(Combatant *, world::character::ConditionData);
@@ -113,6 +116,8 @@ namespace battle
         CombatGroup * GetPlayerGroup() const {return playerGroup;}
 
         CombatGroup * GetComputerGroup() const {return computerGroup;}
+
+        const world::character::ApplyData &GetLatestConditionData() const;
 
         bool IsCharactersTurn(Combatant *) const;
 
