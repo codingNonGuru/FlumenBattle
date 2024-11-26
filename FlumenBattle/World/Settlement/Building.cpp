@@ -70,31 +70,31 @@ Building BuildingFactory::Create(BuildingTypes type)
     case BuildingTypes::LIBRARY:
         return 
         {
-            [&] {static const auto buildingType = Library(type, 200, true); return &buildingType;} (), 
+            [&] {static const auto buildingType = Library(type, 200, true, "Library"); return &buildingType;} (), 
             false
         };
     case BuildingTypes::SEWAGE:
         return 
         {
-            [&] {static const auto buildingType = Sewage(type, 200, false); return &buildingType;} (), 
+            [&] {static const auto buildingType = Sewage(type, 200, false, "Sewage"); return &buildingType;} (), 
             false
         };
     case BuildingTypes::IRRIGATION:
         return 
         {
-            [&] {static const auto buildingType = Irrigation(type, 200, false); return &buildingType;} (), 
+            [&] {static const auto buildingType = Irrigation(type, 200, false, "Irrigation"); return &buildingType;} (), 
             false
         };
     case BuildingTypes::HOUSING:
         return 
         {
-            [&] {static const auto buildingType = Housing(type, 200, true); return &buildingType;} (), 
+            [&] {static const auto buildingType = Housing(type, 200, true, "Houses64"); return &buildingType;} (), 
             false
         };
     case BuildingTypes::LUMBER_MILL:
         return 
         {
-            [&] {static const auto buildingType = LumberMill(type, 200, true, {ResourceTypes::LUMBER, 1}, {ResourceTypes::TIMBER, 3}); return &buildingType;} (), 
+            [&] {static const auto buildingType = LumberMill(type, 200, true, "LumberMill", {ResourceTypes::LUMBER, 1}, {ResourceTypes::TIMBER, 3}); return &buildingType;} (), 
             false
         };
     }

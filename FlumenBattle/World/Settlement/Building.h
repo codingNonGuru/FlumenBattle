@@ -1,6 +1,7 @@
 #pragma once
 
 #include "FlumenCore/Container/Pool.hpp"
+#include "FlumenCore/Conventions.hpp"
 
 #include "FlumenCore/Singleton.h"
 
@@ -23,6 +24,8 @@ namespace world::settlement
 
         bool IsTall;
 
+        Word TextureName;
+
         struct Throughput
         {
             ResourceTypes Resource;
@@ -34,11 +37,11 @@ namespace world::settlement
 
         Throughput OutputResource {ResourceTypes::NONE, 0};
 
-        explicit BuildingType(BuildingTypes type, int cost, bool isTall) : Type(type), Cost(cost), IsTall(isTall) {}
+        explicit BuildingType(BuildingTypes type, int cost, bool isTall, Word textureName) : Type(type), Cost(cost), IsTall(isTall), TextureName(textureName) {}
 
-        explicit BuildingType(BuildingTypes type, int cost, bool isTall, Throughput output) : Type(type), Cost(cost), IsTall(isTall), OutputResource(output) {}
+        explicit BuildingType(BuildingTypes type, int cost, bool isTall, Word textureName, Throughput output) : Type(type), Cost(cost), IsTall(isTall), TextureName(textureName), OutputResource(output) {}
 
-        explicit BuildingType(BuildingTypes type, int cost, bool isTall, Throughput output, Throughput input) : Type(type), Cost(cost), IsTall(isTall), OutputResource(output), InputResource(input) {}
+        explicit BuildingType(BuildingTypes type, int cost, bool isTall, Word textureName, Throughput output, Throughput input) : Type(type), Cost(cost), IsTall(isTall), TextureName(textureName), OutputResource(output), InputResource(input) {}
 
         virtual void HandleApplyEffect(Settlement &) const = 0;
     };
@@ -81,6 +84,8 @@ namespace world::settlement
         BuildingType::Throughput GetInputResource() const {return type->InputResource;}
 
         BuildingType::Throughput GetOutputResource() const {return type->OutputResource;}
+
+        Word GetTextureName() const {return type->TextureName;}
     };
 
     class BuildingSet

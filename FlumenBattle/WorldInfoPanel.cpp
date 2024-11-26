@@ -305,7 +305,7 @@ void WorldInfoPanel::HandleConfigure()
     playerDomainInfo->Enable();
 
     subjectCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
-        {drawOrder_ + 1, {Position2(-80.0f, -25.0f), ElementAnchors::LOWER_CENTER, ElementPivots::MIDDLE_CENTER, playerDomainInfoBox}}
+        {drawOrder_ + 2, {Position2(-80.0f, -25.0f), ElementAnchors::LOWER_CENTER, ElementPivots::MIDDLE_CENTER, playerDomainInfoBox}}
     );
     subjectCounter->Setup(
         "Castle", 
@@ -323,7 +323,7 @@ void WorldInfoPanel::HandleConfigure()
     subjectCounter->Enable();
 
     populationCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
-        {drawOrder_ + 1, {Position2(0.0f, -25.0f), ElementAnchors::LOWER_CENTER, ElementPivots::MIDDLE_CENTER, playerDomainInfoBox}}
+        {drawOrder_ + 2, {Position2(0.0f, -25.0f), ElementAnchors::LOWER_CENTER, ElementPivots::MIDDLE_CENTER, playerDomainInfoBox}}
     );
     populationCounter->Setup(
         "Houses", 
@@ -341,7 +341,7 @@ void WorldInfoPanel::HandleConfigure()
     populationCounter->Enable();
 
     industryCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
-        {drawOrder_ + 1, {Position2(80.0f, -25.0f), ElementAnchors::LOWER_CENTER, ElementPivots::MIDDLE_CENTER, playerDomainInfoBox}}
+        {drawOrder_ + 2, {Position2(80.0f, -25.0f), ElementAnchors::LOWER_CENTER, ElementPivots::MIDDLE_CENTER, playerDomainInfoBox}}
     );
     industryCounter->Setup(
         "WorkHammer", 

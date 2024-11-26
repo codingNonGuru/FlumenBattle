@@ -5,12 +5,15 @@
 #include "RuleMenu.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/Resource.h"
+#include "FlumenBattle/World/Settlement/Building.h"
 
 using namespace world::interface;
 
 static const auto BORDER_COLOR = Color::RED * 0.25f;
 
 static const auto TEXT_COLOR = Color::RED * 0.5f;
+
+#define MAXIMUM_BUILDING_COUNT 16
 
 void ResourceItem::HandleConfigure()
 {
@@ -75,6 +78,42 @@ void ResourceItem::Setup(const settlement::Resource *resource)
     icon->SetTexture(resource->Type->TextureName);
 }
 
+void BuildingItem::HandleConfigure()
+{
+    SetSpriteColor(BORDER_COLOR);
+
+    icon = ElementFactory::BuildElement <Element>
+    (
+        { 
+            drawOrder_ + 1, 
+            {this}, 
+            {"Radish", false}
+        }
+    );
+    icon->SetTextureScale(Scale2(0.8f));
+    icon->Enable();
+}
+
+void BuildingItem::HandleUpdate()
+{
+ 
+}
+
+void BuildingItem::Setup(const settlement::Building *building)
+{
+    this->building = building;
+
+    if(building != nullptr)
+    {
+        icon->SetTexture(building->GetTextureName());
+        icon->Enable();
+    }
+    else
+    {
+        icon->Disable();
+    }
+}
+
 void RuleMenu::HandleConfigure()
 {
     border = ElementFactory::BuildElement <Element>
@@ -99,7 +138,7 @@ void RuleMenu::HandleConfigure()
     (
         { 
             drawOrder_, 
-            {this}, 
+            {Position2{0.0f, -30.0f}, this}, 
             {false},
             Opacity(0.0f)
         }
@@ -125,6 +164,35 @@ void RuleMenu::HandleConfigure()
 
         *resourceItems.Allocate() = item;
     }
+
+    buildingLayout = ElementFactory::BuildElement <LayoutGroup>
+    (
+        { 
+            drawOrder_,
+            {Position2{0.0f, -10.0f}, ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, this}, 
+            {this},
+            Opacity(0.0f)
+        }
+    );
+    buildingLayout->SetDistancing(MAXIMUM_BUILDING_COUNT / 2, 5.0f, 5.0f);
+    buildingLayout->Enable();
+
+    buildingItems.Initialize(MAXIMUM_BUILDING_COUNT);
+    for(auto i = 0; i < buildingItems.GetCapacity(); ++i)
+    {
+        auto item = ElementFactory::BuildElement <BuildingItem>
+        (
+            {
+                Size(64, 64), 
+                drawOrder_ + 1, 
+                {buildingLayout}, 
+                {"panel-border-001", true}
+            }
+        );
+        item->Enable();
+
+        *buildingItems.Allocate() = item;
+    }
 }
 
 void RuleMenu::HandleUpdate()
@@ -133,6 +201,21 @@ void RuleMenu::HandleUpdate()
         return;
 
     nameLabel->Setup(settlement->GetName());
+
+    auto item = buildingItems.GetStart();
+    for(auto &building : settlement->GetBuildings())
+    {
+        (*item)->Setup(&building);
+        
+        item++;
+    }
+
+    while(item != buildingItems.GetEnd())
+    {
+        (*item)->Setup(nullptr);
+
+        item++;
+    }
 }
 
 void RuleMenu::HandleEnable()

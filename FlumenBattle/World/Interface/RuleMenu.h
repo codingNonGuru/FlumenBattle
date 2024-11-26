@@ -11,6 +11,7 @@ namespace world::settlement
 {
     class Settlement;
     struct Resource;
+    struct Building;
 }
 
 namespace world::interface
@@ -41,6 +42,23 @@ namespace world::interface
         void HandleUpdate() override;
     };
 
+    struct BuildingItem : public Element
+    {
+        friend class RuleMenu;
+
+        //Text *nameLabel;
+
+        Element *icon;
+
+        const settlement::Building *building;
+
+        void Setup(const settlement::Building *);
+
+        void HandleConfigure() override;
+
+        void HandleUpdate() override;
+    };
+
     class RuleMenu : public Element
     {
         Text *nameLabel;
@@ -53,7 +71,11 @@ namespace world::interface
 
         container::Array <ResourceItem *> resourceItems;
 
+        container::Array <BuildingItem *> buildingItems;
+
         LayoutGroup *itemLayout;
+
+        LayoutGroup *buildingLayout;
 
         settlement::Settlement *settlement {nullptr};
 
