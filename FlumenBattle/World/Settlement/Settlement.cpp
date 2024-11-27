@@ -473,7 +473,15 @@ Integer Settlement::GetWorkedTiles() const
 
 Integer Settlement::GetFreeWorkerCount() const
 {
-    return 1 + population - GetWorkedTiles();
+    auto buildingPersonnelCount = 0;
+    for(auto &building : GetBuildings())
+    {
+        buildingPersonnelCount += building.GetPersonnelCount();
+    }
+
+    auto populationWithoutTileWorkers = 1 + population - GetWorkedTiles();
+
+    return populationWithoutTileWorkers - buildingPersonnelCount;
 }
 
 bool Settlement::IsTileImproved(WorldTile* tile) const
@@ -581,6 +589,31 @@ void Settlement::AddCondition(ConditionData conditionData)
 void Settlement::AddBuilding(BuildingTypes type)
 {
     buildingManager->AddBuilding(type);
+}
+
+void Settlement::HireWorker(Building *building)
+{
+    if(building->GetOutputResource().Resource == world::settlement::ResourceTypes::NONE)
+        return;
+
+    if(building->GetAmount() == building->GetPersonnelCount())
+        return;
+
+    if(GetFreeWorkerCount() == 0)
+        return;
+
+    building->AddPersonnel();
+}
+
+void Settlement::FireWorker(Building *building)
+{
+    if(building->GetOutputResource().Resource == world::settlement::ResourceTypes::NONE)
+        return;
+
+    if(building->GetPersonnelCount() == 0)
+        return;
+
+    building->RemovePersonnel();
 }
 
 void Settlement::ProcessEarthquake(const disaster::Earthquake &earthquake)

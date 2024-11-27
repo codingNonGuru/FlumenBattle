@@ -98,9 +98,15 @@ void BuildingItem::HandleConfigure()
 
     counter = ElementFactory::BuildElement <Counter>
     (
-        {drawOrder_ + 1, {Position2(0.0f, 0.0f), ElementAnchors::LOWER_RIGHT, ElementPivots::LOWER_RIGHT, this}, {"WhiteDotBackdrop", false}}
+        {drawOrder_ + 1, {Position2(-8.0f, -8.0f), ElementAnchors::LOWER_RIGHT, ElementPivots::LOWER_RIGHT, this}, {"WhiteDotBackdrop", false}}
     );
     counter->Setup(&buildingCount, Scale2(1.0f), "Medium");
+
+    workerCounter = ElementFactory::BuildElement <Counter>
+    (
+        {drawOrder_ + 1, {Position2(-8.0f, 8.0f), ElementAnchors::UPPER_RIGHT, ElementPivots::UPPER_RIGHT, this}, {"WhiteDotBackdrop", false}}
+    );
+    workerCounter->Setup(&workerCount, Scale2(0.8f), "Small");
 }
 
 void BuildingItem::HandleUpdate()
@@ -121,6 +127,17 @@ void BuildingItem::HandleUpdate()
     {
         counter->Enable();
     }
+
+    workerCount = building->GetPersonnelCount();
+
+    if(building->GetOutputResource().Resource != world::settlement::ResourceTypes::NONE)
+    {
+        workerCounter->Enable();
+    }
+    else
+    {
+        workerCounter->Disable();
+    }
 }
 
 void BuildingItem::HandleHover()
@@ -135,7 +152,23 @@ void BuildingItem::HandleHover()
     hoverInfo->Enable();
 }
 
-void BuildingItem::Setup(const settlement::Building *building, RuleMenu *ruleMenu)
+void BuildingItem::HandleLeftClick()
+{
+    if(building == nullptr)
+        return;
+
+    ruleMenu->GetCurrentSettlement()->HireWorker(building);
+}
+
+void BuildingItem::HandleRightClick()
+{
+    if(building == nullptr)
+        return;
+
+    ruleMenu->GetCurrentSettlement()->FireWorker(building);
+}
+
+void BuildingItem::Setup(settlement::Building *building, RuleMenu *ruleMenu)
 {
     this->building = building;
 

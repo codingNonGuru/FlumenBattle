@@ -249,6 +249,10 @@ namespace world::settlement
 
         void AddBuilding(BuildingTypes);
 
+        void HireWorker(Building *);
+
+        void FireWorker(Building *);
+
         void StrengthenPatrol();
 
         void ProcessEarthquake(const disaster::Earthquake &);

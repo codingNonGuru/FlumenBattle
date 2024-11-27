@@ -70,14 +70,14 @@ int Resource::GetProductionFromBuildings(const Settlement &settlement) const
             auto inputResource = building->GetInputResource();
             auto resource = settlement.GetResource(inputResource.Resource);
             
-            resource->Order -= inputResource.Amount;
+            resource->Order -= inputResource.Amount * building->GetPersonnelCount();
         }
     }
     else
     {
         for(auto &building : buildings)
         {
-            production += building->GetOutputResource().Amount;
+            production += building->GetOutputResource().Amount * building->GetPersonnelCount();
         }
     }
 
@@ -127,7 +127,7 @@ void Resource::PlaceOrders(const Settlement &settlement)
 
     for(const auto &building : settlement.GetBuildings())
     {
-        consumption += building.GetResourceConsumption(Type->Type);    
+        consumption += building.GetResourceConsumption(Type->Type) * building.GetPersonnelCount();    
     }
 
     consumption += settlement.GetPopulation() * Type->PopulationConsumption;

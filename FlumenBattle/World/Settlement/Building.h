@@ -59,7 +59,7 @@ namespace world::settlement
 
         int amount {1};
 
-        bool hasWorker {false};
+        int activePersonnelCount {0};
 
     public:
         Building() : type(nullptr), isDamaged(false) {}
@@ -93,6 +93,12 @@ namespace world::settlement
         Word GetName() const {return type->Name;}
 
         Word GetTextureName() const {return type->TextureName;}
+
+        int GetPersonnelCount() const {return activePersonnelCount;}
+
+        void AddPersonnel() {activePersonnelCount++;}
+
+        void RemovePersonnel() {activePersonnelCount--;}
     };
 
     class BuildingSet

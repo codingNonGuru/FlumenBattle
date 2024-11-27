@@ -53,19 +53,27 @@ namespace world::interface
 
         Counter *counter;
 
+        Counter *workerCounter;
+
         int buildingCount;
 
-        const settlement::Building *building;
+        int workerCount;
+
+        settlement::Building *building;
 
         RuleMenu *ruleMenu;
 
-        void Setup(const settlement::Building *, RuleMenu *);
+        void Setup(settlement::Building *, RuleMenu *);
 
         void HandleConfigure() override;
 
         void HandleUpdate() override;
 
         void HandleHover() override;
+
+        void HandleLeftClick() override;
+
+        void HandleRightClick() override;
 
     public:
         const settlement::Building *GetBuilding() const {return building;}
@@ -105,5 +113,7 @@ namespace world::interface
         void SetCurrentSettlement(settlement::Settlement *);
 
         BuildingHoverInfo *GetHoverDevice() {return buildingHoverInfo;}
+
+        settlement::Settlement *GetCurrentSettlement() {return settlement;}
     };
 }
