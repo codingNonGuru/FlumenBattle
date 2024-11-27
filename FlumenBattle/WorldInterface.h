@@ -212,5 +212,9 @@ namespace world
         void RemoveItemPopup(interface::ItemPopup *);
 
         void OpenRecruitmentMenu();
+
+        bool IsAnyMajorMenuEnabled() const;
+        
+        bool IsMajorMenu(Element *) const;
     };
 }

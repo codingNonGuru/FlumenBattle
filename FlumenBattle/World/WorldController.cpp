@@ -20,6 +20,7 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
+#include "FlumenBattle/WorldInterface.h"
 
 static const Float CAMERA_PAN_SPEED = 800.0f;
 
@@ -179,6 +180,11 @@ namespace world
 
     void WorldController::Update()
     {
+        if(WorldInterface::Get()->IsAnyMajorMenuEnabled() == true)
+        {
+            CancelActiveModes();
+        }
+
         CheckTileSelection();
 
         auto zoomSpeed = CAMERA_ZOOM_SPEED * Time::GetDelta();
@@ -270,6 +276,9 @@ namespace world
 
     void WorldController::HandleTravelPressed()
     {
+        if(WorldInterface::Get()->IsAnyMajorMenuEnabled() == true)
+            return;
+
         isTravelPlanActive = true;
     }
 
@@ -349,6 +358,9 @@ namespace world
 
     void WorldController::HandleWorkerPlacePressed()
     {
+        if(WorldInterface::Get()->IsAnyMajorMenuEnabled() == true)
+            return;
+
         if(isWorkerPlaceModeActive)
         {
             isWorkerPlaceModeActive = false;
@@ -511,5 +523,12 @@ namespace world
     utility::PathData <WorldTile> WorldController::GetPlannedPath() const
     {
         return plannedPath;
+    }
+
+    void WorldController::CancelActiveModes()
+    {
+        isWorkerPlaceModeActive = false;
+
+        isTravelPlanActive = false;
     }
 }

@@ -59,6 +59,8 @@ auto popupTimestamp = std::chrono::steady_clock::now();
 
 #define TIME_BETWEEN_FADING_POPUPS 300
 
+static auto majorCentralMenus = container::Array <Element *> (32);
+
 WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
 {
     canvas = ElementFactory::BuildCanvas();
@@ -92,6 +94,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
             Opacity(0.9f)
         }
     );
+    *majorCentralMenus.Allocate() = inventoryMenu;
 
     reputationMenu = ElementFactory::BuildElement <interface::ReputationMenu>
     (
@@ -103,6 +106,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
             Opacity(0.9f)
         }
     );
+    *majorCentralMenus.Allocate() = reputationMenu;
 
     questMenu = ElementFactory::BuildElement <interface::QuestMenu>
     (
@@ -114,18 +118,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
             Opacity(0.9f)
         }
     );
-
-    reputationMenu = ElementFactory::BuildElement <interface::ReputationMenu>
-    (
-        {
-            Size(480, 540), 
-            DrawOrder(7), 
-            {canvas}, 
-            {false}, 
-            Opacity(0.9f)
-        }
-    );
-    reputationMenu->Disable();
+    *majorCentralMenus.Allocate() = questMenu;
 
     settlementMenu = ElementFactory::BuildElement <interface::SettlementMenu>
     (
@@ -318,6 +311,8 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     );
     recruitmentMenu->SetupBasicAnimations();
 
+    *majorCentralMenus.Allocate() = recruitmentMenu;
+
     ruleMenu = ElementFactory::BuildElement <interface::RuleMenu>
     (
         {
@@ -329,6 +324,8 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
         }
     );
     ruleMenu->SetupBasicAnimations();
+
+    *majorCentralMenus.Allocate() = ruleMenu;
 
     group::HumanMind::Get()->OnSpottingHovered += {this, &WorldInterface::HandleSpottingHovered};
 
@@ -767,21 +764,6 @@ void WorldInterface::Update()
         travelBackdrop->Disable();
     }
 
-    /*auto playerGroup = WorldScene::Get()->GetPlayerGroup();
-    auto currentSettlement = playerGroup->GetCurrentSettlement();
-    if(currentSettlement == nullptr)
-    {
-        settlementMenu->Disable();
-    }
-    else
-    {
-        if(settlementMenu->IsLocallyActive() == false)
-        {
-            settlementMenu->Setup(currentSettlement);
-            settlementMenu->Enable();
-        }
-    }*/
-
     if(popupQueue.IsEmpty() == false)
     {
         auto timestamp = std::chrono::steady_clock::now();
@@ -894,4 +876,26 @@ void WorldInterface::OpenRecruitmentMenu()
     recruitmentMenu->Setup(currentSettlement);
 
     recruitmentMenu->Open();
+}
+
+bool WorldInterface::IsAnyMajorMenuEnabled() const
+{
+    for(auto &menu : majorCentralMenus)
+    {
+        if(menu->IsGloballyActive() == true)
+            return true;
+    }
+
+    return false;
+}
+
+bool WorldInterface::IsMajorMenu(Element *menu) const
+{
+    for(auto &majorMenu : majorCentralMenus)
+    {
+        if(menu == majorMenu)
+            return true;
+    }
+
+    return false;
 }

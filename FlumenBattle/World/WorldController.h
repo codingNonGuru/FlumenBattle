@@ -158,5 +158,7 @@ namespace world
         bool IsTravelPlanActive() const {return isTravelPlanActive;}
 
         utility::PathData <WorldTile> GetPlannedPath() const;
+
+        void CancelActiveModes();
     };
 }
