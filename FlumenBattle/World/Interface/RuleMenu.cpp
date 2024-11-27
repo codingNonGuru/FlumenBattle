@@ -8,6 +8,7 @@
 #include "FlumenBattle/World/Settlement/Building.h"
 #include "FlumenBattle/World/Interface/Counter.h"
 #include "FlumenBattle/World/Interface/BuildingHoverInfo.h"
+#include "FlumenBattle/Race.h"
 
 using namespace world::interface;
 
@@ -171,6 +172,18 @@ void RuleMenu::HandleConfigure()
     );
     nameLabel->Enable();
 
+    populationLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, nameLabel}}, 
+        {{"Small"}, TEXT_COLOR, ""}
+    );
+    populationLabel->Enable();
+
+    workerLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, populationLabel}}, 
+        {{"Small"}, TEXT_COLOR, ""}
+    );
+    workerLabel->Enable();
+
     itemLayout = ElementFactory::BuildElement <LayoutGroup>
     (
         { 
@@ -247,6 +260,12 @@ void RuleMenu::HandleUpdate()
         return;
 
     nameLabel->Setup(settlement->GetName());
+
+    auto text = Phrase() << settlement->GetPopulation() << " " << settlement->GetRace()->PluralName << " live in this jolly settlement, part of the realm of " << settlement->GetRuler()->GetName() << ".";
+    populationLabel->Setup(text);
+
+    text = Phrase() << settlement->GetName() << " has " << settlement->GetFreeWorkerCount() << " free workers.";
+    workerLabel->Setup(text);
 
     auto item = buildingItems.GetStart();
     for(auto &building : settlement->GetBuildings())

@@ -77,6 +77,8 @@ namespace world::interface
 
         Text *populationLabel;
 
+        Text *workerLabel;
+
         Text *rulerLabel;
 
         Element *border;

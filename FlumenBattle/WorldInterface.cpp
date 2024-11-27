@@ -321,7 +321,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     ruleMenu = ElementFactory::BuildElement <interface::RuleMenu>
     (
         {
-            Size(660, 420), 
+            Size(720, 480), 
             DrawOrder(7), 
             {canvas}, 
             {false}, 
@@ -884,7 +884,9 @@ void WorldInterface::RemoveItemPopup(interface::ItemPopup *popup)
 void WorldInterface::OpenRecruitmentMenu()
 {
     if(recruitmentMenu->IsLocallyActive() == true)
+    {
         return;
+    }
 
     static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     auto currentSettlement = playerGroup->GetCurrentSettlement();
