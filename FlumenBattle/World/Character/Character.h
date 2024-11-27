@@ -128,6 +128,8 @@ namespace world::character
 
         void Initialize();
 
+        void Setup();
+
         void AddProficiency(Proficiency);
 
         void AddModifier(Modifier modifier) {modifiers.AddModifier(modifier);}
@@ -174,6 +176,10 @@ namespace world::character
         Integer GetWillSaveBonus();
 
         Integer GetSkillProficiency(SkillTypes skill) {return proficiencies.GetSkillBonus(*this, skill);}
+
+        bool IsTrainedInSkill(SkillTypes) const;
+
+        Word GetSkillTexture(SkillTypes) const;
 
         const Array <world::character::CharacterAction> &GetActions();
 

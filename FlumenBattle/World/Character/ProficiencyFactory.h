@@ -11,25 +11,25 @@ namespace world::character
     {
         static const ProficiencyType & BuildSurvivalSkill()
         {
-            static const ProficiencyType type = {CheckClasses::SKILL, "Survival", SkillTypes::SURVIVAL, AbilityTypes::WISDOM};
+            static const ProficiencyType type = {CheckClasses::SKILL, "Survival", SkillTypes::SURVIVAL, AbilityTypes::WISDOM, "SkillSurvival"};
             return type;
         }
 
         static const ProficiencyType & BuildPersuasionSkill()
         {
-            static const ProficiencyType type = {CheckClasses::SKILL, "Persuasion", SkillTypes::PERSUASION, AbilityTypes::CHARISMA};
+            static const ProficiencyType type = {CheckClasses::SKILL, "Persuasion", SkillTypes::PERSUASION, AbilityTypes::CHARISMA, "SkillPersuasion"};
             return type;
         }
 
         static const ProficiencyType & BuildPerceptionSkill()
         {
-            static const ProficiencyType type = {CheckClasses::SKILL, "Perception", SkillTypes::PERCEPTION, AbilityTypes::WISDOM};
+            static const ProficiencyType type = {CheckClasses::SKILL, "Perception", SkillTypes::PERCEPTION, AbilityTypes::WISDOM, "SkillPerception"};
             return type;
         }
 
         static const ProficiencyType & BuildStealthSkill()
         {
-            static const ProficiencyType type = {CheckClasses::SKILL, "Stealth", SkillTypes::STEALTH, AbilityTypes::DEXTERITY};
+            static const ProficiencyType type = {CheckClasses::SKILL, "Stealth", SkillTypes::STEALTH, AbilityTypes::DEXTERITY, "SkillStealth"};
             return type;
         }
 
@@ -131,7 +131,7 @@ namespace world::character
                 case SkillTypes::STEALTH:
                     return BuildStealthSkill();
                 default:
-                    return {CheckClasses::SKILL, "None", SkillTypes::NONE, AbilityTypes::STRENGTH};
+                    return {CheckClasses::SKILL, "None", SkillTypes::NONE, AbilityTypes::STRENGTH, "Placeholder"};
             }
         }
     };

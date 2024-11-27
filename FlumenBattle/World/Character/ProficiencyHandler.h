@@ -35,6 +35,8 @@ namespace world::character
 
         Integer GetSkillBonus(const Character &, SkillTypes);
 
+        bool IsTrainedInSkill(const Character &, SkillTypes) const;
+
         void AddProficiency(Proficiency proficiency);
     };
 }

@@ -94,6 +94,19 @@ Integer ProficiencyHandler::GetSkillBonus(const Character &character, SkillTypes
     return modifier;
 }
 
+bool ProficiencyHandler::IsTrainedInSkill(const Character &character, SkillTypes skillType) const
+{
+    for(auto &skill : skills)
+    {
+        if(skill.Type->Identifier.SkillType == skillType)
+        {
+            return skill.Level != ProficiencyLevels::UNTRAINED;
+        }
+    }
+
+    return false;
+}
+
 void ProficiencyHandler::AddProficiency(Proficiency proficiency)
 {
     switch(proficiency.Type->Class)

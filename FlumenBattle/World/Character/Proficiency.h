@@ -36,13 +36,6 @@ namespace world::character
         bool operator== (SkillTypes skillType) const {return SkillType == skillType;}
     };
 
-    struct CheckType
-    {
-        CheckClasses Class;
-
-        ProficiencyIdentifier Identifier;
-    };
-
     struct ProficiencyType
     {
         CheckClasses Class;
@@ -53,8 +46,10 @@ namespace world::character
 
         AbilityTypes AssociatedAbility;
 
-        ProficiencyType(CheckClasses proficiencyClass, Word name, ProficiencyIdentifier identifier, AbilityTypes ability) :
-            Class(proficiencyClass), Name(name), Identifier(identifier), AssociatedAbility(ability) {}
+        Word TextureName;
+
+        ProficiencyType(CheckClasses proficiencyClass, Word name, ProficiencyIdentifier identifier, AbilityTypes ability, Word textureName) :
+            Class(proficiencyClass), Name(name), Identifier(identifier), AssociatedAbility(ability), TextureName(textureName) {}
 
         ProficiencyType(CheckClasses proficiencyClass, Word name, ProficiencyIdentifier identifier) :
             Class(proficiencyClass), Name(name), Identifier(identifier) {}

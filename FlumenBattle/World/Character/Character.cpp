@@ -12,6 +12,7 @@
 #include "FlumenBattle/Battle/Combatant.h"
 #include "FlumenBattle/World/Character/CharacterClass.h"
 #include "FlumenBattle/World/Character/CharacterAction.h"
+#include "FlumenBattle/World/Character/ProficiencyFactory.h"
 
 namespace world::character
 {
@@ -24,11 +25,8 @@ namespace world::character
 
     void Character::Initialize()
     {
-        currentHitPoints = maximumHitPoints / 2;
-
         selectedAction = type->Actions.GetStart();
         selectedSpell = nullptr;//spells.GetStart();
-        spellUseCount = 3;
 
         //*spellSlots.Add() = {2};
 
@@ -37,6 +35,13 @@ namespace world::character
         proficiencies.Initialize();
 
         //isFatigued = false;
+    }
+
+    void Character::Setup()
+    {
+        currentHitPoints = maximumHitPoints / 2;
+
+        spellUseCount = 3;
     }
 
     bool Character::IsAlive() const
@@ -101,6 +106,16 @@ namespace world::character
     Integer Character::GetWillSaveBonus()
     {
         return proficiencies.GetSaveBonus(*this, SavingThrows::WILL) + abilities.GetModifier(AbilityTypes::WISDOM);
+    }
+
+    bool Character::IsTrainedInSkill(SkillTypes skill) const
+    {
+        return proficiencies.IsTrainedInSkill(*this, skill);
+    }
+
+    Word Character::GetSkillTexture(SkillTypes skill) const
+    {
+        return ProficiencyFactory::BuildSkillType(skill).TextureName;
     }
 
     const Array <world::character::CharacterAction> &Character::GetActions() 

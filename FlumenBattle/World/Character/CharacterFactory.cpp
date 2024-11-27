@@ -57,6 +57,8 @@ Character *CharacterFactory::Create(const Race *race, const CharacterClass *type
         }   
     }
 
+    character->Initialize();
+
     switch(type->Class)
     {
     case CharacterClasses::FIGHTER:
@@ -117,6 +119,7 @@ Character *CharacterFactory::Create(const Race *race, const CharacterClass *type
 
         character->AddProficiency(ProficiencyFactory::BuildSkillProficiency(SkillTypes::SURVIVAL, ProficiencyLevels::TRAINED));
         character->AddProficiency(ProficiencyFactory::BuildSkillProficiency(SkillTypes::PERCEPTION, ProficiencyLevels::APPRENTICE));
+        character->AddProficiency(ProficiencyFactory::BuildSkillProficiency(SkillTypes::STEALTH, ProficiencyLevels::APPRENTICE));
         break;
     case CharacterClasses::CLERIC:
         character->abilities.SetScore(AbilityTypes::WISDOM, abilityScores[0]);
@@ -148,6 +151,7 @@ Character *CharacterFactory::Create(const Race *race, const CharacterClass *type
         character->AddProficiency(ProficiencyFactory::BuildDivineMagicProficiency(ProficiencyLevels::TRAINED));
 
         character->AddProficiency(ProficiencyFactory::BuildSkillProficiency(SkillTypes::PERCEPTION, ProficiencyLevels::APPRENTICE));
+        character->AddProficiency(ProficiencyFactory::BuildSkillProficiency(SkillTypes::PERSUASION, ProficiencyLevels::APPRENTICE));
         break;
     case CharacterClasses::WIZARD:
         character->abilities.SetScore(AbilityTypes::INTELLIGENCE, abilityScores[0]);
@@ -209,7 +213,7 @@ Character *CharacterFactory::Create(const Race *race, const CharacterClass *type
 
     character->defaultSpeed = 5;//utility::GetRandom(4, 6);
 
-    character->Initialize();
+    character->Setup();
 
     return character;
 }

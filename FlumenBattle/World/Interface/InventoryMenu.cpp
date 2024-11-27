@@ -21,6 +21,8 @@ using namespace world::interface;
 
 #define MAXIMUM_SLOT_COUNT 12
 
+#define MAXIMUM_SKILL_ITEM_COUNT 6
+
 static auto color = Color::RED * 0.25f;
 
 static auto TEXT_COLOR = Color::RED * 0.5f;
@@ -126,7 +128,7 @@ void InventoryMenu::HandleConfigure()
     classLabel->Enable();
 
     Text **labels[] = {&healthLabel, &armorLabel, &attackLabel, &damageLabel};
-    auto height = 120.0f;
+    auto height = 90.0f;
     for(auto label : labels)
     {
         *label = ElementFactory::BuildText(
@@ -242,6 +244,35 @@ void InventoryMenu::HandleConfigure()
     weightCounter->Setup("CrateShadowed", std::function <Word(void)> (fetcher));
     weightCounter->SetOffset(7.0f);
     weightCounter->Enable();
+
+    skillLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {Position2(20.0f, 175.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}}, 
+        {{"Small"}, TEXT_COLOR, "Skills"}
+    );
+    skillLabel->Enable();
+
+    skillItemLayout = ElementFactory::BuildElement <LayoutGroup>
+    (
+        { 
+            drawOrder_, 
+            {Position2(-10.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, skillLabel}
+        }
+    );
+    skillItemLayout->SetDistancing(1, 32.0f);
+    skillItemLayout->Enable();
+
+    skillItems.Initialize(MAXIMUM_SKILL_ITEM_COUNT);
+    for(int i = 0; i < skillItems.GetCapacity(); ++i)
+    {
+        auto item = ElementFactory::BuildElement <SkillItem>
+        (
+            {drawOrder_ + 1, {skillItemLayout}, {false}, Opacity(0.3f)}
+        );
+        item->Enable();
+        //item->SetInteractivity(true);
+
+        *skillItems.Add() = item;
+    }
 }
 
 void InventoryMenu::SelectSlot(InventorySlot *slot)
@@ -407,6 +438,22 @@ void InventoryMenu::SelectCharacter(character::Character *newCharacter)
     mainHandSlot->SetItem(character->GetItem(character::ItemPositions::MAIN_HAND));
     bodySlot->SetItem(character->GetItem(character::ItemPositions::BODY));
     headSlot->SetItem(character->GetItem(character::ItemPositions::HEAD));
+
+    for(auto &item : skillItems)
+        item->Disable();
+
+    auto item = skillItems.GetStart();
+    for(int i = 0; i < (int)character::SkillTypes::NONE; ++i)
+    {
+        auto isTrained = newCharacter->IsTrainedInSkill(character::SkillTypes(i));
+        if(isTrained == false)
+            continue;
+
+        (*item)->Setup(character, character::SkillTypes(i));
+        (*item)->Enable();
+
+        item++;
+    }
 }
 
 void InventoryMenu::HandleUpdate()
@@ -496,4 +543,26 @@ void InventoryMenu::HandleItemAdded()
             break;
         }
     }
+}
+
+void SkillItem::HandleConfigure()
+{
+    counter = ElementFactory::BuildElement <ResourceCounter>(
+        {drawOrder_ + 1, {this}}
+    );
+
+    counter->Setup("CrateShadowed", &skillBonus);
+    counter->Enable();
+
+    counter->MakeSignSensitive();
+}
+
+void SkillItem::Setup(character::Character *character, character::SkillTypes skillType)
+{
+    this->character = character;
+    this->skillType = skillType;
+
+    skillBonus = character->GetSkillProficiency(skillType);
+
+    counter->SetIconTexture(character->GetSkillTexture(skillType));
 }

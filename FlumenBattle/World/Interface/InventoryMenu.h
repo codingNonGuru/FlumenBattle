@@ -19,6 +19,22 @@ namespace world::interface
     class Counter;
     class ResourceCounter;
 
+    class SkillItem : public Element
+    {
+        ResourceCounter *counter;
+
+        character::SkillTypes skillType;
+
+        character::Character *character;
+
+        int skillBonus;
+
+        void HandleConfigure() override;
+
+    public:
+        void Setup(character::Character *, character::SkillTypes);
+    };
+
     class InventorySlot : public Element
     {
         friend class InventoryMenu;
@@ -90,6 +106,12 @@ namespace world::interface
         InventorySlot *headSlot;
 
         Element *grabbedItem;
+
+        Text *skillLabel;
+
+        container::Array <SkillItem *> skillItems;
+
+        LayoutGroup *skillItemLayout;
 
         void HandleConfigure() override;
 

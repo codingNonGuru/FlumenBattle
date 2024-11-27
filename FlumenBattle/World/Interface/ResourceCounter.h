@@ -50,5 +50,7 @@ namespace world::interface
         void SetOffset(float);
 
         void MakeSignSensitive() {isSignSensitive = true;}
+
+        void SetIconTexture(Word);
     };
 }

@@ -118,3 +118,8 @@ void ResourceCounter::SetOffset(float newOffset)
 
     label->SetBasePosition({offset, 0.0f});
 }
+
+void ResourceCounter::SetIconTexture(Word textureName)
+{
+    icon->SetTexture(textureName);
+}
