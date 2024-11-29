@@ -26,14 +26,14 @@ void ResourceItem::HandleConfigure()
     (
         { 
             drawOrder_ + 1, 
-            {Position2(5.0f, 0.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}, 
+            {Position2(10.0f, 0.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}, 
             {"Radish", false}
         }
     );
     icon->Enable();
 
     nameLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {Position2(40.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
+        {drawOrder_ + 1, {Position2(50.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
         {{"Small"}, TEXT_COLOR, "Wool"}
     );
     nameLabel->Enable();

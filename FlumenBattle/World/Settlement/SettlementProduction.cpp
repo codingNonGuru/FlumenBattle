@@ -67,6 +67,8 @@ ProductionInquiry SettlementProduction::CanProduce(Settlement &settlement, Produ
         return {settlement.HasBuilding(BuildingTypes::LIBRARY) == false};
     case ProductionOptions::LUMBER_MILL:
         return {settlement.HasBuilding(BuildingTypes::LUMBER_MILL) == false};
+    case ProductionOptions::CARPENTER:
+        return {settlement.HasBuilding(BuildingTypes::CARPENTER) == false};
     default:
         return {true};
     }
@@ -102,6 +104,8 @@ const SettlementProductionType * SettlementProductionFactory::BuildProductionTyp
             return BuildHousingProduction();
         case ProductionOptions::LUMBER_MILL:
             return BuildLumberMillProduction();
+        case ProductionOptions::CARPENTER:
+            return BuildCarpenterProduction();
         case ProductionOptions::NONE:
             return BuildNoneProduction();
     }
@@ -155,6 +159,12 @@ const SettlementProductionType *SettlementProductionFactory::BuildLumberMillProd
     return &productionType;
 }
 
+const SettlementProductionType *SettlementProductionFactory::BuildCarpenterProduction()
+{
+    static const SettlementProductionType productionType = {ProductionOptions::CARPENTER, "Carpenter", 300, &ProductionFinisher::FinishCarpenter};
+    return &productionType;
+}
+
 const SettlementProductionType * SettlementProductionFactory::BuildNoneProduction()
 {
     static const SettlementProductionType productionType = {ProductionOptions::NONE, "Nothing", 6, nullptr};
@@ -179,7 +189,12 @@ void ProductionFinisher::FinishLibrary(Settlement &settlement)
 void ProductionFinisher::FinishLumberMill(Settlement &settlement)
 {
     settlement.AddBuilding(BuildingTypes::LUMBER_MILL);
-} 
+}
+
+void ProductionFinisher::FinishCarpenter(Settlement &settlement)
+{
+    settlement.AddBuilding(BuildingTypes::CARPENTER);
+}
 
 void ProductionFinisher::FinishFarm(Settlement &settlement)
 {

@@ -19,7 +19,8 @@ namespace world::settlement
         IRRIGATION,
         LIBRARY,
         HOUSING,
-        LUMBER_MILL
+        LUMBER_MILL,
+        CARPENTER
     };
 
     enum class BuildingTypes
@@ -31,7 +32,8 @@ namespace world::settlement
         IRRIGATION,
         LIBRARY,
         HOUSING,
-        LUMBER_MILL
+        LUMBER_MILL,
+        CARPENTER
     };
 
     enum class AbundanceLevels
@@ -85,6 +87,7 @@ namespace world::settlement
         WOOL,
         STONE,
         LUMBER,
+        FURNITURE,
         NONE
         //LEATHER
         //POTTERY

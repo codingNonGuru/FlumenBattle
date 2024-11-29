@@ -31,7 +31,8 @@ static const settlement::ProductionOptions options[] = {
     settlement::ProductionOptions::SEWAGE,
     settlement::ProductionOptions::HOUSING,
     settlement::ProductionOptions::FARM,
-    settlement::ProductionOptions::LUMBER_MILL
+    settlement::ProductionOptions::LUMBER_MILL,
+    settlement::ProductionOptions::CARPENTER
     };
 
 #define ITEM_CAPACITY std::size(options)

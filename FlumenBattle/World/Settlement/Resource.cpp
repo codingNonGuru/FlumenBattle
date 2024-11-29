@@ -36,6 +36,11 @@ struct Stone : public ResourceType
     Stone() : ResourceType(ResourceTypes::STONE, "Stone", "Stone", 10) {IsProductionTileBased = true;}
 };
 
+struct Furniture : public ResourceType
+{
+    Furniture() : ResourceType(ResourceTypes::FURNITURE, "Furniture", "Furniture_WildStyle32", 70) {IsProductionTileBased = false;}
+};
+
 int Resource::GetPotentialProduction(const Settlement &settlement) const
 {
     return GetProductionFromBuildings(settlement) + GetProductionFromTiles(settlement);
@@ -230,6 +235,9 @@ void ResourceHandler::Initialize()
 
     static const auto lumber = Lumber();
     *resources.Add() = {&lumber};
+
+    static const auto furniture = Furniture();
+    *resources.Add() = {&furniture};
 }
 
 void ResourceHandler::ResetOrders()
@@ -302,5 +310,8 @@ const ResourceType *ResourceFactory::CreateType(ResourceTypes type)
     case ResourceTypes::STONE:
         static const auto stone = Stone();
         return &stone;
+    case ResourceTypes::FURNITURE:
+        static const auto furniture = Furniture();
+        return &furniture;
     }
 }

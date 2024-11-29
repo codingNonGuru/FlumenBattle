@@ -56,6 +56,16 @@ namespace world::settlement
             
         }
     };
+
+    class Carpenter : public BuildingType
+    {
+        using BuildingType::BuildingType; 
+
+        void HandleApplyEffect(Settlement &settlement) const override
+        {
+            
+        }
+    };
 }
 
 void Building::ApplyEffect(Settlement &settlement) const
@@ -95,6 +105,12 @@ Building BuildingFactory::Create(BuildingTypes type)
         return 
         {
             [&] {static const auto buildingType = LumberMill(type, 200, true, "Lumber mill", "LumberMill", {ResourceTypes::LUMBER, 1}, {ResourceTypes::TIMBER, 3}); return &buildingType;} (), 
+            false
+        };
+    case BuildingTypes::CARPENTER:
+        return 
+        {
+            [&] {static const auto buildingType = Carpenter(type, 200, true, "Carpenter", "LumberMill", {ResourceTypes::FURNITURE, 1}, {ResourceTypes::LUMBER, 3}); return &buildingType;} (), 
             false
         };
     }
