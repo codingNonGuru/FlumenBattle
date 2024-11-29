@@ -4,6 +4,8 @@
 #include "FlumenCore/Container/Array.hpp"
 #include "FlumenCore/Singleton.h"
 
+#include "FlumenBattle/World/Settlement/Types.h"
+
 namespace world::settlement
 {
     class Settlement;
@@ -19,6 +21,8 @@ namespace world::settlement
         Word TextureName;
 
         int Value;
+
+        container::Array <Modifiers> RelatedModifiers;
 
         int PopulationConsumption {0};
 
@@ -64,6 +68,8 @@ namespace world::settlement
         void UpdateStorage(Settlement &);
 
         bool operator==(ResourceTypes type) {return Type->Type == type;}
+
+        bool HasRelatedModifier(Modifiers modifier) const {return Type->RelatedModifiers.Find(modifier) != nullptr;}
     };
 
     class ResourceSet

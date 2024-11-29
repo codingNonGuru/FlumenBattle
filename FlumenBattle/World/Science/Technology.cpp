@@ -22,6 +22,11 @@ void TechnologyApplier::ApplyMasonry(settlement::Settlement &settlement)
     settlement.AddModifier({settlement::Modifiers::BUILDING_SAVING_THROWS_AGAINST_EARTHQUAKES, 1});
 }
 
+void TechnologyApplier::ApplyWoodWorking(settlement::Settlement &settlement)
+{
+    settlement.AddModifier({settlement::Modifiers::WOOD_RELATED_RESOURCE_PRODUCTION, 1});
+}
+
 void TechnologyRoster::StartResearching(Technologies technology)
 {
     researchTarget = &TechnologyFactory::Get()->Create(technology);

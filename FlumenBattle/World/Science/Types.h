@@ -11,6 +11,7 @@ namespace world::science
 		FISHERIES, //+1 food from oceans
 		WAGON_BANDS, //+2 to colonization dice rolls
 		FOOD_RATIONING, //+1 to saving throws against hunger
+		WOOD_WORKING,
 		COUNT
 	};
 }

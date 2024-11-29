@@ -23,7 +23,7 @@ struct Metal : public ResourceType
 
 struct Lumber : public ResourceType
 {
-    Lumber() : ResourceType(ResourceTypes::LUMBER, "Lumber", "Plank", 25) {IsProductionTileBased = false;}
+    Lumber() : ResourceType(ResourceTypes::LUMBER, "Lumber", "Plank", 25) {IsProductionTileBased = false; RelatedModifiers = {Modifiers::WOOD_RELATED_RESOURCE_PRODUCTION};}
 };
 
 struct Wool : public ResourceType
@@ -38,7 +38,7 @@ struct Stone : public ResourceType
 
 struct Furniture : public ResourceType
 {
-    Furniture() : ResourceType(ResourceTypes::FURNITURE, "Furniture", "Furniture_WildStyle32", 70) {IsProductionTileBased = false;}
+    Furniture() : ResourceType(ResourceTypes::FURNITURE, "Furniture", "Furniture_WildStyle32", 70) {IsProductionTileBased = false; RelatedModifiers = {Modifiers::WOOD_RELATED_RESOURCE_PRODUCTION};}
 };
 
 int Resource::GetPotentialProduction(const Settlement &settlement) const
@@ -83,6 +83,11 @@ int Resource::GetProductionFromBuildings(const Settlement &settlement) const
         for(auto &building : buildings)
         {
             production += building->GetOutputResource().Amount * building->GetPersonnelCount();
+
+            for(auto modifier : Type->RelatedModifiers) 
+            {
+                production += settlement.GetModifier(modifier);
+            }
         }
     }
 

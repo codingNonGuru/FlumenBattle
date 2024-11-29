@@ -93,6 +93,8 @@ namespace world::science
         static void ApplyTrainedSentinels(settlement::Settlement &);
 
         static void ApplyMasonry(settlement::Settlement &);
+
+        static void ApplyWoodWorking(settlement::Settlement &);
     };
 
     class TechnologyFactory : public core::Singleton <TechnologyFactory>
@@ -115,6 +117,12 @@ namespace world::science
             return tech;
         }
 
+        const TechnologyType &BuildWoodWorking()
+        {
+            static const TechnologyType tech = {Technologies::WOOD_WORKING, 12000, "Wood working", &TechnologyApplier::ApplyWoodWorking};
+            return tech;
+        }
+
     public:
         const TechnologyType &Create(Technologies technology)
         {
@@ -126,6 +134,8 @@ namespace world::science
                     return BuildTrainedSentinels();
                 case Technologies::MASONRY:
                     return BuildMasonry();
+                case Technologies::WOOD_WORKING:
+                    return BuildWoodWorking();
             }
         }
     };
