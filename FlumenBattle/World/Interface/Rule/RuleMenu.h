@@ -26,7 +26,21 @@ namespace world::interface::rule
 {
     enum class RuleMenuTabs
     {
-        ECONOMY, TECHNOLOGY, COUNT
+        GENERAL, ECONOMY, TECHNOLOGY, COUNT
+    };
+
+    class TabButton : public Element
+    {
+        Text *label;
+
+        void HandleConfigure() override;
+
+    public:
+        void Setup(RuleMenuTabs);
+
+        void Light();
+
+        void Fade();
     };
 
     class RuleMenu : public Element
@@ -47,9 +61,15 @@ namespace world::interface::rule
 
         container::StaticMap <Element *, RuleMenuTabs> tabs;
 
+        LayoutGroup *buttonLayout;
+
+        container::StaticMap <TabButton *, RuleMenuTabs> tabButtons;
+
         void HandleConfigure() override;
 
         void HandleUpdate() override;
+
+        void SetCurrentTab(RuleMenuTabs);
 
     public:
         Delegate OnSettlementChanged;

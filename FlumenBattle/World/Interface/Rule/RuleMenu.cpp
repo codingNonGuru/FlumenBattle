@@ -1,5 +1,6 @@
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/Text.hpp"
+#include "FlumenEngine/Interface/LayoutGroup.h"
 
 #include "RuleMenu.h"
 #include "EconomyTab.h"
@@ -11,6 +12,47 @@ using namespace world::interface::rule;
 static const auto BORDER_COLOR = Color::RED * 0.25f;
 
 static const auto TEXT_COLOR = Color::RED * 0.5f;
+
+static const auto FADED_BUTTON_OPACITY = 0.5f;
+
+void TabButton::HandleConfigure()
+{
+    label = ElementFactory::BuildText(
+        {drawOrder_ + 2, {Position2(0.0f, 3.0f), this}}, 
+        {{"Small"}, Color::WHITE, ""}
+    );
+    label->Enable();
+
+    Fade();
+}
+
+void TabButton::Setup(RuleMenuTabs tab)
+{
+    auto text = [&tab] -> const char *
+    {
+        switch(tab)
+        {
+        case RuleMenuTabs::GENERAL:
+            return "G";
+        case RuleMenuTabs::ECONOMY:
+            return "E";
+        case RuleMenuTabs::TECHNOLOGY:
+            return "T";
+        }
+    } ();
+
+    label->Setup(text);
+}
+
+void TabButton::Light()
+{
+    label->SetOpacity(1.0f);
+}
+
+void TabButton::Fade()
+{
+    label->SetOpacity(FADED_BUTTON_OPACITY);
+}
 
 void RuleMenu::HandleUpdate()
 {
@@ -57,6 +99,37 @@ void RuleMenu::HandleConfigure()
         {{"Small"}, TEXT_COLOR, ""}
     );
     workerLabel->Enable();
+
+    buttonLayout = ElementFactory::BuildElement <LayoutGroup>
+    (
+        { 
+            drawOrder_, 
+            {ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_RIGHT, this}, 
+            {false},
+            Opacity(0.0f)
+        }
+    );
+    buttonLayout->SetDistancing(1, 5.0f);
+    buttonLayout->Enable();
+
+    tabButtons.Initialize((int)RuleMenuTabs::COUNT);
+    
+    for(auto i = 0; i < (int)RuleMenuTabs::COUNT; ++i)
+    {
+        auto button = ElementFactory::BuildElement <TabButton>
+        (
+            { 
+                drawOrder_ + 1, 
+                {buttonLayout}, 
+                {"FrameRound", false}
+            }
+        );
+        button->Setup((RuleMenuTabs)i);
+        button->AdjustSizeToTexture();
+        button->Enable();
+
+        *tabButtons.Add((RuleMenuTabs)i) = button;
+    }
 }
 
 void RuleMenu::Setup()
@@ -77,7 +150,7 @@ void RuleMenu::Setup()
 
     currentTab = RuleMenuTabs::ECONOMY;
 
-    economyTab->Enable();
+    SetCurrentTab(RuleMenuTabs::ECONOMY);
 }
 
 void RuleMenu::SetCurrentSettlement(settlement::Settlement *settlement) 
@@ -85,4 +158,17 @@ void RuleMenu::SetCurrentSettlement(settlement::Settlement *settlement)
     this->settlement = settlement;
 
     OnSettlementChanged.Invoke();
+}
+
+void RuleMenu::SetCurrentTab(RuleMenuTabs tab)
+{
+    (*tabs.Get(currentTab))->Disable();
+
+    (*tabButtons.Get(currentTab))->Fade();
+
+    currentTab = tab;
+
+    (*tabs.Get(currentTab))->Enable();
+
+    (*tabButtons.Get(currentTab))->Light();
 }
