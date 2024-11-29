@@ -37,7 +37,11 @@ namespace world
         class ConquestPopup;
         class RecruitmentMenu;
         class WorkerPlaceCursor;
-        class RuleMenu;
+
+        namespace rule
+        {
+            class RuleMenu;
+        }
     }
 
     namespace settlement
@@ -96,7 +100,7 @@ namespace world
 
         interface::QuestMenu *questMenu;
 
-        interface::RuleMenu *ruleMenu;
+        interface::rule::RuleMenu *ruleMenu;
 
         container::Pool <interface::ActionPopup *> actionPopups;
 
@@ -196,6 +200,8 @@ namespace world
         void Disable();    
 
         settlement::HoverExtension *GetHoverExtension() {return hoverExtension;}
+
+        interface::rule::RuleMenu *GetRuleMenu() const {return ruleMenu;}
 
         Element *GetCanvas() const {return canvas;}
 

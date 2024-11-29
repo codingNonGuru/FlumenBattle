@@ -2,15 +2,16 @@
 #include "FlumenEngine/Interface/Text.hpp"
 #include "FlumenEngine/Interface/LayoutGroup.h"
 
-#include "RuleMenu.h"
+#include "EconomyTab.h"
+#include "FlumenBattle/World/Interface/Rule/RuleMenu.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/Resource.h"
 #include "FlumenBattle/World/Settlement/Building.h"
 #include "FlumenBattle/World/Interface/Counter.h"
-#include "FlumenBattle/World/Interface/BuildingHoverInfo.h"
-#include "FlumenBattle/Race.h"
+#include "FlumenBattle/World/Interface/Rule/BuildingHoverInfo.h"
+#include "FlumenBattle/WorldInterface.h"
 
-using namespace world::interface;
+using namespace world::interface::rule;
 
 static const auto BORDER_COLOR = Color::RED * 0.25f;
 
@@ -145,7 +146,7 @@ void BuildingItem::HandleHover()
     if(building == nullptr)
         return;
 
-    auto hoverInfo = ruleMenu->GetHoverDevice();
+    auto hoverInfo = parentTab->GetHoverDevice();
 
     hoverInfo->Setup(this);
 
@@ -157,6 +158,8 @@ void BuildingItem::HandleLeftClick()
     if(building == nullptr)
         return;
 
+    static const auto ruleMenu = WorldInterface::Get()->GetRuleMenu();
+
     ruleMenu->GetCurrentSettlement()->HireWorker(building);
 }
 
@@ -165,14 +168,16 @@ void BuildingItem::HandleRightClick()
     if(building == nullptr)
         return;
 
+    static const auto ruleMenu = WorldInterface::Get()->GetRuleMenu();
+
     ruleMenu->GetCurrentSettlement()->FireWorker(building);
 }
 
-void BuildingItem::Setup(settlement::Building *building, RuleMenu *ruleMenu)
+void BuildingItem::Setup(settlement::Building *building, EconomyTab *tab)
 {
     this->building = building;
 
-    this->ruleMenu = ruleMenu;
+    this->parentTab = tab;
 
     if(building != nullptr)
     {
@@ -185,38 +190,8 @@ void BuildingItem::Setup(settlement::Building *building, RuleMenu *ruleMenu)
     }
 }
 
-void RuleMenu::HandleConfigure()
+void EconomyTab::HandleConfigure()
 {
-    border = ElementFactory::BuildElement <Element>
-    (
-        {
-            size_ - Size(4, 4), 
-            drawOrder_ + 1, 
-            {this}, 
-            {"panel-border-031", true}
-        }
-    );
-    border->SetSpriteColor(BORDER_COLOR);
-    border->Enable();
-
-    nameLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}}, 
-        {{"Large"}, TEXT_COLOR, "Elric"}
-    );
-    nameLabel->Enable();
-
-    populationLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, nameLabel}}, 
-        {{"Small"}, TEXT_COLOR, ""}
-    );
-    populationLabel->Enable();
-
-    workerLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, populationLabel}}, 
-        {{"Small"}, TEXT_COLOR, ""}
-    );
-    workerLabel->Enable();
-
     itemLayout = ElementFactory::BuildElement <LayoutGroup>
     (
         { 
@@ -277,7 +252,7 @@ void RuleMenu::HandleConfigure()
         *buildingItems.Allocate() = item;
     }
 
-    buildingHoverInfo = ElementFactory::BuildElement <interface::BuildingHoverInfo>
+    buildingHoverInfo = ElementFactory::BuildElement <interface::rule::BuildingHoverInfo>
     (
         {
             GetDrawOrder() + 5,
@@ -285,20 +260,20 @@ void RuleMenu::HandleConfigure()
             {false}
         }
     );
+
+    static const auto ruleMenu = WorldInterface::Get()->GetRuleMenu();
+
+    ruleMenu->OnSettlementChanged += {this, &EconomyTab::HandleSettlementChanged};
 }
 
-void RuleMenu::HandleUpdate()
+void EconomyTab::HandleUpdate()
 {
+    static const auto ruleMenu = WorldInterface::Get()->GetRuleMenu();
+
+    auto settlement = ruleMenu->GetCurrentSettlement();
+
     if(settlement == nullptr)
         return;
-
-    nameLabel->Setup(settlement->GetName());
-
-    auto text = Phrase() << settlement->GetPopulation() << " " << settlement->GetRace()->PluralName << " live in this jolly settlement, part of the realm of " << settlement->GetRuler()->GetName() << ".";
-    populationLabel->Setup(text);
-
-    text = Phrase() << settlement->GetName() << " has " << settlement->GetFreeWorkerCount() << " free workers.";
-    workerLabel->Setup(text);
 
     auto item = buildingItems.GetStart();
     for(auto &building : settlement->GetBuildings())
@@ -320,14 +295,16 @@ void RuleMenu::HandleUpdate()
     }
 }
 
-void RuleMenu::HandleEnable()
+void EconomyTab::HandleEnable()
 {
 
 }
 
-void RuleMenu::SetCurrentSettlement(settlement::Settlement *settlement) 
+void EconomyTab::HandleSettlementChanged() 
 {
-    this->settlement = settlement;
+    static const auto ruleMenu = WorldInterface::Get()->GetRuleMenu();
+    
+    auto settlement = ruleMenu->GetCurrentSettlement();    
 
     for(int i = 0; i < (int)settlement::ResourceTypes::NONE; ++i)
     {

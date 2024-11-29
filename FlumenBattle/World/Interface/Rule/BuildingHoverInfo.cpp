@@ -3,7 +3,7 @@
 #include "FlumenEngine/Interface/Text.hpp"
 
 #include "BuildingHoverInfo.h"
-#include "FlumenBattle/World/Interface/RuleMenu.h"
+#include "FlumenBattle/World/Interface/Rule/EconomyTab.h"
 #include "FlumenBattle/World/Settlement/Building.h"
 
 static const auto BORDER_COLOR = Color::RED * 0.25f;
@@ -22,7 +22,7 @@ static const auto MOUSE_FOLLOW_OFFSET = Position2(0.0f, 10.0f);
 
 static const auto NAME_LABEL_OFFSET = Position2(0.0f, 10.0f);
 
-using namespace world::interface;
+using namespace world::interface::rule;
 
 void BuildingHoverInfo::HandleConfigure() 
 {

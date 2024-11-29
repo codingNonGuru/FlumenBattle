@@ -41,7 +41,7 @@
 #include "FlumenBattle/World/Interface/ConquestPopup.h"
 #include "FlumenBattle/World/Interface/RecruitmentMenu.h"
 #include "FlumenBattle/World/Interface/WorkerPlaceCursor.h"
-#include "FlumenBattle/World/Interface/RuleMenu.h"
+#include "FlumenBattle/World/Interface/Rule/RuleMenu.h"
 
 using namespace world;
 
@@ -313,7 +313,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
 
     *majorCentralMenus.Allocate() = recruitmentMenu;
 
-    ruleMenu = ElementFactory::BuildElement <interface::RuleMenu>
+    ruleMenu = ElementFactory::BuildElement <interface::rule::RuleMenu>
     (
         {
             Size(720, 480), 
@@ -323,6 +323,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
             Opacity(0.9f)
         }
     );
+    ruleMenu->Setup();
     ruleMenu->SetupBasicAnimations();
 
     *majorCentralMenus.Allocate() = ruleMenu;

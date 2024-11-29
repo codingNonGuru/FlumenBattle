@@ -2,12 +2,14 @@
 
 #include "FlumenEngine/Interface/Element.hpp"
 
+class Text;
+
 namespace world::settlement
 {
     class Building;
 }
 
-namespace world::interface
+namespace world::interface::rule
 {
     class BuildingItem;
 
