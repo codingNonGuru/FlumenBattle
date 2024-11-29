@@ -4,8 +4,8 @@
 
 #include "RuleMenu.h"
 #include "EconomyTab.h"
+#include "TechTab.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
-#include "FlumenBattle/Race.h"
 
 using namespace world::interface::rule;
 
@@ -37,7 +37,7 @@ void TabButton::Setup(RuleMenuTabs tab)
         case RuleMenuTabs::ECONOMY:
             return "E";
         case RuleMenuTabs::TECHNOLOGY:
-            return "T";
+            return "K";
         }
     } ();
 
@@ -54,20 +54,6 @@ void TabButton::Fade()
     label->SetOpacity(FADED_BUTTON_OPACITY);
 }
 
-void RuleMenu::HandleUpdate()
-{
-    if(settlement == nullptr)
-        return;
-
-    nameLabel->Setup(settlement->GetName());
-
-    auto text = Phrase() << settlement->GetPopulation() << " " << settlement->GetRace()->PluralName << " live in this jolly settlement, part of the realm of " << settlement->GetRuler()->GetName() << ".";
-    populationLabel->Setup(text);
-
-    text = Phrase() << settlement->GetName() << " has " << settlement->GetFreeWorkerCount() << " free workers.";
-    workerLabel->Setup(text);
-}
-
 void RuleMenu::HandleConfigure()
 {
     border = ElementFactory::BuildElement <Element>
@@ -81,24 +67,6 @@ void RuleMenu::HandleConfigure()
     );
     border->SetSpriteColor(BORDER_COLOR);
     border->Enable();
-
-    nameLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}}, 
-        {{"Large"}, TEXT_COLOR, "Elric"}
-    );
-    nameLabel->Enable();
-
-    populationLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, nameLabel}}, 
-        {{"Small"}, TEXT_COLOR, ""}
-    );
-    populationLabel->Enable();
-
-    workerLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, populationLabel}}, 
-        {{"Small"}, TEXT_COLOR, ""}
-    );
-    workerLabel->Enable();
 
     buttonLayout = ElementFactory::BuildElement <LayoutGroup>
     (
@@ -147,6 +115,18 @@ void RuleMenu::Setup()
     );
 
     *tabs.Add(RuleMenuTabs::ECONOMY) = economyTab;
+
+    auto techTab = ElementFactory::BuildElement <TechTab>
+    (
+        {
+            size_, 
+            drawOrder_, 
+            {this}, 
+            Opacity(0.0f)
+        }
+    );
+
+    *tabs.Add(RuleMenuTabs::TECHNOLOGY) = techTab;
 
     currentTab = RuleMenuTabs::ECONOMY;
 

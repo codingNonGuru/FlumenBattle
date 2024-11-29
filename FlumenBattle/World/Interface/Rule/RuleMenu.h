@@ -45,12 +45,6 @@ namespace world::interface::rule
 
     class RuleMenu : public Element
     {
-        Text *nameLabel;
-
-        Text *populationLabel;
-
-        Text *workerLabel;
-
         Text *rulerLabel;
 
         Element *border;
@@ -66,8 +60,6 @@ namespace world::interface::rule
         container::StaticMap <TabButton *, RuleMenuTabs> tabButtons;
 
         void HandleConfigure() override;
-
-        void HandleUpdate() override;
 
         void SetCurrentTab(RuleMenuTabs);
 

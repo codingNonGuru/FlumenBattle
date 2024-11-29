@@ -10,6 +10,7 @@
 #include "FlumenBattle/World/Interface/Counter.h"
 #include "FlumenBattle/World/Interface/Rule/BuildingHoverInfo.h"
 #include "FlumenBattle/WorldInterface.h"
+#include "FlumenBattle/Race.h"
 
 using namespace world::interface::rule;
 
@@ -192,6 +193,24 @@ void BuildingItem::Setup(settlement::Building *building, EconomyTab *tab)
 
 void EconomyTab::HandleConfigure()
 {
+    nameLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}}, 
+        {{"Large"}, TEXT_COLOR}
+    );
+    nameLabel->Enable();
+
+    populationLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, nameLabel}}, 
+        {{"Small"}, TEXT_COLOR}
+    );
+    populationLabel->Enable();
+
+    workerLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, populationLabel}}, 
+        {{"Small"}, TEXT_COLOR}
+    );
+    workerLabel->Enable();
+
     itemLayout = ElementFactory::BuildElement <LayoutGroup>
     (
         { 
@@ -293,6 +312,14 @@ void EconomyTab::HandleUpdate()
 
         item++;
     }
+
+    nameLabel->Setup(settlement->GetName());
+
+    auto text = Phrase() << settlement->GetPopulation() << " " << settlement->GetRace()->PluralName << " live in this jolly settlement, part of the realm of " << settlement->GetRuler()->GetName() << ".";
+    populationLabel->Setup(text);
+
+    text = Phrase() << settlement->GetName() << " has " << settlement->GetFreeWorkerCount() << " free workers.";
+    workerLabel->Setup(text);
 }
 
 void EconomyTab::HandleEnable()

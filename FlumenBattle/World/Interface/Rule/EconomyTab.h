@@ -86,6 +86,12 @@ namespace world::interface::rule
 
     class EconomyTab : public Element
     {
+        Text *nameLabel;
+
+        Text *populationLabel;
+
+        Text *workerLabel;
+
         container::Array <ResourceItem *> resourceItems;
 
         container::Array <BuildingItem *> buildingItems;

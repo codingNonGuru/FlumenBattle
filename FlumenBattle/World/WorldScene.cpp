@@ -655,4 +655,9 @@ namespace world
     {
         *ownershipChangeQueue.Add() = tile;
     }
+
+    polity::Polity *WorldScene::GetPlayerPolity() const
+    {
+        playerGroup->GetDomain();
+    }
 }

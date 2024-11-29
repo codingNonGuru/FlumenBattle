@@ -131,6 +131,8 @@ namespace world
 
         group::Group * GetPlayerGroup() const {return playerGroup;}
 
+        polity::Polity *GetPlayerPolity() const;
+
         WorldMap * GetWorldMap() const {return worldMap;}
 
         container::Grid <WorldTile> &GetTiles() const;
