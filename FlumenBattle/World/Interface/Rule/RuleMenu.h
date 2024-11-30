@@ -61,6 +61,14 @@ namespace world::interface::rule
 
         void HandleConfigure() override;
 
+        void HandleEnable() override;
+
+        void HandleDisable() override;
+
+        void HandleEconomyPressed();
+
+        void HandleTechnologyPressed();
+
         void SetCurrentTab(RuleMenuTabs);
 
     public:

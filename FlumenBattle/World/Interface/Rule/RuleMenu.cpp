@@ -1,6 +1,7 @@
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/Text.hpp"
 #include "FlumenEngine/Interface/LayoutGroup.h"
+#include "FlumenEngine/Core/InputHandler.hpp"
 
 #include "RuleMenu.h"
 #include "EconomyTab.h"
@@ -14,6 +15,10 @@ static const auto BORDER_COLOR = Color::RED * 0.25f;
 static const auto TEXT_COLOR = Color::RED * 0.5f;
 
 static const auto FADED_BUTTON_OPACITY = 0.5f;
+
+static const auto ECONOMY_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_E, {InputHandler::SHIFT}};
+
+static const auto TECHNOLOGY_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_K, {InputHandler::SHIFT}};
 
 void TabButton::HandleConfigure()
 {
@@ -98,6 +103,30 @@ void RuleMenu::HandleConfigure()
 
         *tabButtons.Add((RuleMenuTabs)i) = button;
     }
+}
+
+void RuleMenu::HandleEnable()
+{
+    InputHandler::RegisterEvent(ECONOMY_DISPLAY_KEY, {this, &RuleMenu::HandleEconomyPressed});
+
+    InputHandler::RegisterEvent(TECHNOLOGY_DISPLAY_KEY, {this, &RuleMenu::HandleTechnologyPressed});
+}
+
+void RuleMenu::HandleDisable()
+{
+    InputHandler::UnregisterEvent(ECONOMY_DISPLAY_KEY);
+
+    InputHandler::UnregisterEvent(TECHNOLOGY_DISPLAY_KEY);
+}
+
+void RuleMenu::HandleEconomyPressed()
+{
+    SetCurrentTab(RuleMenuTabs::ECONOMY);
+}
+
+void RuleMenu::HandleTechnologyPressed()
+{
+    SetCurrentTab(RuleMenuTabs::TECHNOLOGY);
 }
 
 void RuleMenu::Setup()
