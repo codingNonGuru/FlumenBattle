@@ -1,12 +1,15 @@
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/Text.hpp"
 #include "FlumenEngine/Interface/LayoutGroup.h"
+#include "FlumenEngine/Interface/ProgressBar.h"
 
 #include "TechTab.h"
 #include "FlumenBattle/World/Science/Types.h"
 #include "FlumenBattle/World/Science/Technology.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Polity/Polity.h"
+#include "FlumenBattle/World/Polity/HumanMind.h"
+#include "FlumenBattle/World/Interface/ResourceCounter.h"
 
 using namespace world::interface::rule;
 
@@ -21,11 +24,41 @@ void OptionItem::HandleConfigure()
         {{"Small"}, TEXT_COLOR}
     );
     nameLabel->Enable();
+
+    counter = ElementFactory::BuildElement <ResourceCounter>
+    (
+        {drawOrder_ + 1, {Position2(-80.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_CENTER, this}}
+    );
+
+    SetInteractivity(true);
 }
 
 void OptionItem::Setup(const science::TechnologyType *technology, TechTab *tab)
 {
     nameLabel->Setup(technology->Name);
+
+    this->technology = technology;
+
+    counter->Setup("ScienceIcon", &technology->ResearchDuration, "VerySmall", Scale2(0.7f));
+    counter->SetOffset(3.0f);
+    counter->Enable();
+}
+
+void OptionItem::HandleLeftClick()
+{
+    polity::HumanMind::Get()->SetResearchTarget(technology->Type);
+}
+
+void OptionItem::HandleUpdate()
+{
+    if(isHovered_)
+    {
+        SetOpacity(1.0f);
+    }
+    else
+    {
+        SetOpacity(0.5f);
+    }
 }
 
 void TechTab::HandleConfigure()
@@ -42,11 +75,23 @@ void TechTab::HandleConfigure()
     );
     scienceLabel->Enable();
 
+    discoveryProgress = ElementFactory::BuildProgressBar <ProgressBar>(
+        {Size(320, 24), drawOrder_ + 1, {Position2(0.0f, 100.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}, {"BaseBar", true}},
+        {"BaseFillerBlue", {6.0f, 6.0f}}
+    );
+    discoveryProgress->Disable();
+
+    discoveryLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {ElementAnchors::UPPER_CENTER, ElementPivots::LOWER_CENTER, discoveryProgress}}, 
+        {{"Small"}, TEXT_COLOR}
+    );
+    discoveryLabel->Enable();
+
     optionLayout = ElementFactory::BuildElement <LayoutGroup>
     (
         { 
             drawOrder_, 
-            {Position2{0.0f, -30.0f}, this}, 
+            {Position2{0.0f, 150.0f}, ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}, 
             {false},
             Opacity(0.0f)
         }
@@ -85,11 +130,16 @@ void TechTab::HandleUpdate()
 
     const auto playerPolity = WorldScene::Get()->GetPlayerPolity();
 
+    const auto researchTarget = playerPolity->GetResearchTarget();
+
     auto item = optionItems.GetStart();
     for(auto i = 0; i < (int)science::Technologies::COUNT; ++i)
     {
         auto hasTechnology = playerPolity->HasDiscoveredTechnology(science::Technologies(i));
         if(hasTechnology == true)
+            continue;
+
+        if(researchTarget != nullptr && researchTarget->Type == science::Technologies(i))
             continue;
 
         auto &technology = science::TechnologyFactory::Get()->Create(science::Technologies(i));
@@ -100,7 +150,22 @@ void TechTab::HandleUpdate()
         item++;
     }
 
-    auto text = Phrase() << "Research speed is " << playerPolity->GetScientificPower();
+    auto text = Phrase() << "Discovery speed is " << playerPolity->GetScientificPower();
 
     scienceLabel->Setup(text);
+
+    if(researchTarget == nullptr)
+    {
+        discoveryProgress->Disable();
+    }
+    else
+    {
+        discoveryProgress->Enable();
+
+        auto progress = (float)playerPolity->GetResearchProgress() / (float)researchTarget->ResearchDuration;
+
+        discoveryProgress->SetProgress(progress);
+
+        discoveryLabel->Setup(Word() << "Researching " << researchTarget->Name);
+    }
 }

@@ -6,6 +6,7 @@
 
 class Text;
 class LayoutGroup;
+class ProgressBar;
 
 namespace world::settlement
 {
@@ -19,7 +20,7 @@ namespace world::science
 
 namespace world::interface
 {
-    class Counter;
+    class ResourceCounter;
 }
 
 namespace world::interface::rule
@@ -33,15 +34,19 @@ namespace world::interface::rule
 
         Text *nameLabel;
 
-        Counter *counter;
+        ResourceCounter *counter;
 
         TechTab *parentTab;
+
+        const science::TechnologyType *technology;
 
         void Setup(const science::TechnologyType *, TechTab *);
 
         void HandleConfigure() override;
 
-        void HandleLeftClick() override {}
+        void HandleLeftClick() override;
+
+        void HandleUpdate() override;
     };
 
     class TechTab : public Element
@@ -49,6 +54,10 @@ namespace world::interface::rule
         Text *headerLabel;
 
         Text *scienceLabel;
+
+        ProgressBar *discoveryProgress;
+
+        Text *discoveryLabel;
 
         container::Array <OptionItem *> optionItems;
 
