@@ -24,10 +24,16 @@ namespace world::polity
     class Faction;
     struct FactionDecision;
     class Mind;
+    class MachineMind;
+    class HumanMind;
 
     class Polity
     {
         friend class PolityAllocator;
+
+        friend class MachineMind;
+
+        friend class HumanMind;
 
         struct Interest : public core::hex::Tile
         {

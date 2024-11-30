@@ -11,5 +11,7 @@ namespace world::polity
         virtual void MakeDecision(Polity &) const override;
 
         virtual void UpdateWorkforce(Polity &) const override;
+
+        virtual void DecideResearch(Polity &) const override;
     };
 }

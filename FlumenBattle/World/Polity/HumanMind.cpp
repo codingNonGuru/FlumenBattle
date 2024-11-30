@@ -12,6 +12,7 @@
 #include "FlumenBattle/WorldInterface.h"
 #include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Science/Technology.h"
 
 using namespace world;
 using namespace world::polity;
@@ -59,6 +60,20 @@ void HumanMind::MakeDecision(Polity &polity) const
 void HumanMind::UpdateWorkforce(Polity &polity) const
 {
 
+}
+
+void HumanMind::DecideResearch(Polity &polity) const
+{
+
+}
+
+void HumanMind::SetResearchTarget(science::Technologies tech)
+{
+    const auto playerPolity = WorldScene::Get()->GetPlayerPolity();
+
+    auto techRoster = playerPolity->technologyRoster;
+
+    techRoster->StartResearching(tech);
 }
 
 void HumanMind::ProcessProductionInput(settlement::ProductionOptions option, settlement::Settlement *settlement)

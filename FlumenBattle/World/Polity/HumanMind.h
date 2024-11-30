@@ -15,6 +15,11 @@ namespace world
     class WorldController;
 }
 
+namespace world::science
+{
+    enum class Technologies;
+}
+
 namespace world::polity
 {
     class HumanMind : public Mind, public core::Singleton <HumanMind>
@@ -35,9 +40,13 @@ namespace world::polity
 
         virtual void UpdateWorkforce(Polity &) const override;
 
+        virtual void DecideResearch(Polity &) const override;
+
         void HandleWorkerPlacement();
 
     public:
         void ProcessProductionInput(settlement::ProductionOptions, settlement::Settlement *);
+
+        void SetResearchTarget(science::Technologies);
     };
 }

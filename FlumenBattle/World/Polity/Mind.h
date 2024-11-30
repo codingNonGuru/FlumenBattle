@@ -10,5 +10,7 @@ namespace world::polity
         virtual void MakeDecision(Polity &) const = 0;
 
         virtual void UpdateWorkforce(Polity &) const = 0;
+
+        virtual void DecideResearch(Polity &) const = 0;
     };
 }

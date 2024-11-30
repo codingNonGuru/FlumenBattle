@@ -232,33 +232,7 @@ Faction *Polity::FindFaction(settlement::Settlement *settlement)
 
 void Polity::DecideResearch()
 {
-    if(technologyRoster->IsResearchingAnything())
-        return;
-
-    struct Priority
-    {
-        science::Technologies Technology;
-
-        int Level;
-    };
-
-    static const container::Array <Priority> priorities = {
-        {science::Technologies::MASONRY, 0}, 
-        {science::Technologies::HAND_WASHING, 1}, 
-        {science::Technologies::TRAINED_SENTINELS, 2}};
-
-    for(int i = 0; i < 3; ++i)
-    {
-        for(auto priority = priorities.GetStart(); priority != priorities.GetEnd(); ++priority)
-        {
-            if(priority->Level == i && technologyRoster->HasDiscovered(priority->Technology) == false)
-            {
-                technologyRoster->StartResearching(priority->Technology);
-                
-                return;
-            }
-        }
-    }
+    controller->DecideResearch(*this);
 }
 
 void Polity::ApplyTechnologyModifiers(settlement::Settlement *settlement) const

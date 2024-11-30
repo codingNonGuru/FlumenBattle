@@ -4,6 +4,7 @@
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/WorldBiome.h"
+#include "FlumenBattle/World/Science/Technology.h"
 
 using namespace world::polity;
 
@@ -17,6 +18,39 @@ void MachineMind::MakeDecision(Polity &polity) const
             continue;
 
         settlement->DecideProduction();
+    }
+}
+
+void MachineMind::DecideResearch(Polity &polity) const
+{
+    auto &techRoster = polity.technologyRoster;
+
+    if(techRoster->IsResearchingAnything())
+        return;
+
+    struct Priority
+    {
+        science::Technologies Technology;
+
+        int Level;
+    };
+
+    static const container::Array <Priority> priorities = {
+        {science::Technologies::MASONRY, 0}, 
+        {science::Technologies::HAND_WASHING, 1}, 
+        {science::Technologies::TRAINED_SENTINELS, 2}};
+
+    for(int i = 0; i < 3; ++i)
+    {
+        for(auto priority = priorities.GetStart(); priority != priorities.GetEnd(); ++priority)
+        {
+            if(priority->Level == i && techRoster->HasDiscovered(priority->Technology) == false)
+            {
+                techRoster->StartResearching(priority->Technology);
+                
+                return;
+            }
+        }
     }
 }
 
