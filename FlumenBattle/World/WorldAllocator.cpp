@@ -23,7 +23,7 @@ WorldAllocator::WorldAllocator()
 {
     std::cout<<"Memory size of a World Tile is "<<sizeof(WorldTile)<<"\n";
 
-    //nearbyTileMemories[i] = container::Array <WorldTilePointer>::PreallocateMemory(MAXIMUM_WORLD_SIZE * MAXIMUM_WORLD_SIZE);
+    static const auto MAXIMUM_WORLD_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_WORLD_SIZE).Integer;
 
     worldTileMemory = container::Grid <WorldTile>::PreallocateMemory(MAXIMUM_WORLD_SIZE * MAXIMUM_WORLD_SIZE);
 
@@ -70,6 +70,7 @@ void WorldAllocator::AllocateMap(WorldMap &map, int size)
     static const auto GROUPS_PER_BATCH = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUPS_PER_BATCH).Integer;
 
     groupBatchAllocator = container::PoolAllocator <group::Group *> (batchCount * batchCount, GROUPS_PER_BATCH, groupBatchMemory);
+
     for(auto batch = batches.GetStart(); batch != batches.GetEnd(); ++batch)
     {
         group::GroupBatchAllocator::AllocateBatch(*batch, groupBatchAllocator);

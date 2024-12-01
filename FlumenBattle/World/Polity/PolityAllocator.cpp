@@ -2,6 +2,7 @@
 #include "FlumenBattle/World/WorldGenerator.h"
 #include "FlumenBattle/World/Polity/Faction.h"
 #include "FlumenBattle/World/Polity/Polity.h"
+#include "FlumenBattle/Config.h"
 
 using namespace world::polity;
 
@@ -11,6 +12,8 @@ using namespace world::polity;
 
 void PolityAllocator::PreallocateMaximumMemory()
 {
+    static const auto MAXIMUM_WORLD_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_WORLD_SIZE).Integer;
+
     auto worldGenerator = WorldGenerator::Get();
 
     auto polityCount = worldGenerator->GetMaximumPolityCount(MAXIMUM_WORLD_SIZE);

@@ -13,6 +13,7 @@
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldGenerator.h"
 #include "FlumenBattle/World/Settlement/Resource.h"
+#include "FlumenBattle/Config.h"
 
 #define MAXIMUM_TILES_PER_SETTLEMENT 37
 
@@ -46,6 +47,8 @@ using namespace world::settlement;
 
 void SettlementAllocator::PreallocateMaximumMemory()
 {
+    static const auto MAXIMUM_WORLD_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_WORLD_SIZE).Integer;
+
     std::cout<<"Memory size of a Settlement is "<<sizeof(Settlement)<<"\n";
 
     auto worldGenerator = WorldGenerator::Get();

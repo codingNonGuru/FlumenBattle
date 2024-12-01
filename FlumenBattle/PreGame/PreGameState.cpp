@@ -15,6 +15,7 @@
 #include "FlumenBattle/World/WorldGenerator.h"
 #include "FlumenBattle/World/WorldState.h"
 #include "FlumenBattle/PreGame/PartyLoader.h"
+#include "FlumenBattle/Config.h"
 
 namespace pregame
 {
@@ -78,13 +79,20 @@ namespace pregame
         generatedWorldMenu->Enable();
     }
 
-    static auto perlinNoise = container::Grid <float> (128, 128);
+    static const auto MAXIMUM_MAP_SIZE = []
+    {
+        static const auto size = engine::ConfigManager::Get()->GetValue(game::ConfigValues::DEFAULT_WORLD_SIZE).Integer;
 
-    static auto snowNoise = container::Grid <float> (128, 128);
+        return size;
+    } ();
 
-    static auto desertNoise = container::Grid <float> (128, 128);
+    static auto perlinNoise = container::Grid <float> (MAXIMUM_MAP_SIZE, MAXIMUM_MAP_SIZE);
 
-    static auto forestNoise = container::Grid <float> (128, 128);
+    static auto snowNoise = container::Grid <float> (MAXIMUM_MAP_SIZE, MAXIMUM_MAP_SIZE);
+
+    static auto desertNoise = container::Grid <float> (MAXIMUM_MAP_SIZE, MAXIMUM_MAP_SIZE);
+
+    static auto forestNoise = container::Grid <float> (MAXIMUM_MAP_SIZE, MAXIMUM_MAP_SIZE);
 
     void PreGameState::GenerateNewWorld(NewWorldData data)
     {

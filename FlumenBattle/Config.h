@@ -6,6 +6,8 @@ namespace game
 {
     struct ConfigValues
     {
+        static constexpr auto MAXIMUM_WORLD_SIZE = "MAXIMUM_WORLD_SIZE";
+        static constexpr auto MINIMUM_WORLD_SIZE = "MINIMUM_WORLD_SIZE";
         static constexpr auto DEFAULT_WORLD_SIZE = "DEFAULT_WORLD_SIZE";
         static constexpr auto SIMULATION_CHANGE_DELAY = "SIMULATION_CHANGE_DELAY";
         static constexpr auto MAXIMUM_CHARACTERS_PER_GROUP = "MAXIMUM_CHARACTERS_PER_GROUP";

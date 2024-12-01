@@ -18,6 +18,8 @@ namespace world::character
     {
         static const auto MAXIMUM_CHARACTERS_PER_GROUP = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_CHARACTERS_PER_GROUP).Integer;
 
+        static const auto MAXIMUM_WORLD_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_WORLD_SIZE).Integer;
+
         auto worldGenerator = WorldGenerator::Get();
 
         auto groupCount = worldGenerator->GetMaximumGroupCount(MAXIMUM_WORLD_SIZE);

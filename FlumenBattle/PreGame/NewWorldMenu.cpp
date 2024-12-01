@@ -66,6 +66,8 @@ void NewWorldMenu::OnGenerateWorldPressed()
 
 void NewWorldMenu::OnSizeIncreasePressed()
 {
+    static const auto MAXIMUM_WORLD_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_WORLD_SIZE).Integer;
+
     sizeParameterValue++;
     if(sizeParameterValue > MAXIMUM_WORLD_SIZE)
     {
@@ -80,6 +82,8 @@ void NewWorldMenu::OnSizeIncreasePressed()
 
 void NewWorldMenu::OnSizeDecreasePressed()
 {
+    static const auto MINIMUM_WORLD_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MINIMUM_WORLD_SIZE).Integer;
+
     sizeParameterValue--;
     if(sizeParameterValue < MINIMUM_WORLD_SIZE)
     {

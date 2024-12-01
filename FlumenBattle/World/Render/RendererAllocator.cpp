@@ -1,10 +1,13 @@
 #include "RendererAllocator.h"
 #include "FlumenBattle/World/Render/FarmModel.h"
+#include "FlumenBattle/Config.h"
 
 using namespace world::render;
 
 RendererAllocator::RendererAllocator()
 {
+    static const auto MAXIMUM_WORLD_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_WORLD_SIZE).Integer;
+
     auto width = MAXIMUM_WORLD_SIZE;
 
     auto height = MAXIMUM_WORLD_SIZE;

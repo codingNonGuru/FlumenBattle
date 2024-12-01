@@ -22,6 +22,8 @@ namespace world::group
 {
     void GroupAllocator::PreallocateMaximumMemory()
     {
+        static const auto MAXIMUM_WORLD_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_WORLD_SIZE).Integer;
+        
         static const auto MAXIMUM_CHARACTERS_PER_GROUP = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_CHARACTERS_PER_GROUP).Integer;
 
         std::cout<<"Memory size of a Character is "<<sizeof(character::Character)<<"\n";
