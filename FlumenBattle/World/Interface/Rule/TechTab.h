@@ -28,6 +28,21 @@ namespace world::interface::rule
     class RuleMenu;
     class TechTab;
 
+    struct TechItem : public Element
+    {
+        Text *iconLabel;
+
+        TechTab *parentTab;
+
+        const science::TechnologyType *technology;
+
+        void Setup(const science::TechnologyType *, TechTab *);
+
+        void HandleConfigure() override;
+
+        void HandleUpdate() override {}
+    };
+
     struct OptionItem : public Element
     {
         Element *icon;
@@ -61,9 +76,11 @@ namespace world::interface::rule
 
         container::Array <OptionItem *> optionItems;
 
-        //container::Array <BuildingItem *> buildingItems;
+        container::Array <TechItem *> techItems;
 
         LayoutGroup *optionLayout;
+
+        LayoutGroup *techLayout;
 
         void HandleConfigure() override;
 

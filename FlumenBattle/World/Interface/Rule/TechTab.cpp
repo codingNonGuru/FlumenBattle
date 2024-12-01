@@ -17,6 +17,47 @@ static const auto BORDER_COLOR = Color::RED * 0.25f;
 
 static const auto TEXT_COLOR = Color::RED * 0.5f;
 
+void TechItem::HandleConfigure()
+{
+    iconLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {this}}, 
+        {{"Medium"}, TEXT_COLOR}
+    );
+    iconLabel->Enable();
+
+    //SetInteractivity(true);
+}
+
+void TechItem::Setup(const science::TechnologyType *technology, TechTab *tab)
+{
+    this->technology = technology;
+
+    if(technology == nullptr)
+    {
+        iconLabel->Disable();
+    }
+    else
+    {
+        auto text = [&] 
+        { 
+            switch(technology->Type)
+            {
+            case science::Technologies::WOOD_WORKING:
+                return "WW";
+            case science::Technologies::HAND_WASHING:
+                return "HW";
+            case science::Technologies::MASONRY:
+                return "M";
+            case science::Technologies::TRAINED_SENTINELS:
+                return "TS";
+            }
+        } ();
+
+        iconLabel->Setup(text);
+        iconLabel->Enable();
+    }
+}
+
 void OptionItem::HandleConfigure()
 {
     nameLabel = ElementFactory::BuildText(
@@ -116,6 +157,36 @@ void TechTab::HandleConfigure()
 
         *optionItems.Allocate() = item;
     }
+
+    techLayout = ElementFactory::BuildElement <LayoutGroup>
+    (
+        { 
+            drawOrder_, 
+            {Position2{0.0f, -10.0f}, ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, this}, 
+            {false},
+            Opacity(0.0f)
+        }
+    );
+    techLayout->SetDistancing(8, 5.0f);
+    techLayout->Enable();
+
+    techItems.Initialize((int)science::Technologies::COUNT);
+    for(auto i = 0; i < (int)science::Technologies::COUNT; ++i)
+    {
+        auto item = ElementFactory::BuildElement <TechItem>
+        (
+            {
+                Size(64, 64), 
+                drawOrder_ + 1, 
+                {techLayout}, 
+                {"panel-border-007", true}
+            }
+        );
+        item->SetSpriteColor(BORDER_COLOR);
+        item->Enable();
+
+        *techItems.Allocate() = item;
+    }
 }
 
 void TechTab::HandleEnable()
@@ -168,4 +239,20 @@ void TechTab::HandleUpdate()
 
         discoveryLabel->Setup(Word() << "Researching " << researchTarget->Name);
     }
+
+    for(auto &item : techItems)
+        item->Setup(nullptr, this);
+
+    auto techItem = techItems.GetStart();
+    for(auto i = 0; i < (int)science::Technologies::COUNT; ++i)
+    {
+        if(playerPolity->HasDiscoveredTechnology(science::Technologies(i)) == false)
+            continue;
+
+        auto &technology = science::TechnologyFactory::Get()->Create(science::Technologies(i));
+
+        (*techItem)->Setup(&technology, this);
+
+        techItem++;
+    }   
 }
