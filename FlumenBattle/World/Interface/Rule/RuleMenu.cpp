@@ -6,7 +6,10 @@
 #include "RuleMenu.h"
 #include "EconomyTab.h"
 #include "TechTab.h"
+#include "RealmTab.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/Polity/Polity.h"
 
 using namespace world::interface::rule;
 
@@ -20,11 +23,13 @@ static const auto ECONOMY_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_
 
 static const auto TECHNOLOGY_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_K, {InputHandler::SHIFT}};
 
+static const auto REALM_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_R, {InputHandler::SHIFT}};
+
 void TabButton::HandleConfigure()
 {
     label = ElementFactory::BuildText(
         {drawOrder_ + 2, {Position2(0.0f, 3.0f), this}}, 
-        {{"Small"}, Color::WHITE, ""}
+        {{"Small"}, Color::WHITE}
     );
     label->Enable();
 
@@ -37,8 +42,8 @@ void TabButton::Setup(RuleMenuTabs tab)
     {
         switch(tab)
         {
-        case RuleMenuTabs::GENERAL:
-            return "G";
+        case RuleMenuTabs::REALM:
+            return "R";
         case RuleMenuTabs::ECONOMY:
             return "E";
         case RuleMenuTabs::TECHNOLOGY:
@@ -61,6 +66,12 @@ void TabButton::Fade()
 
 void RuleMenu::HandleConfigure()
 {
+    rulerLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {Position2(10.0f, 10.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}}, 
+        {{"Small"}, TEXT_COLOR}
+    );
+    rulerLabel->Enable();
+     
     border = ElementFactory::BuildElement <Element>
     (
         {
@@ -110,6 +121,12 @@ void RuleMenu::HandleEnable()
     InputHandler::RegisterEvent(ECONOMY_DISPLAY_KEY, {this, &RuleMenu::HandleEconomyPressed});
 
     InputHandler::RegisterEvent(TECHNOLOGY_DISPLAY_KEY, {this, &RuleMenu::HandleTechnologyPressed});
+
+    InputHandler::RegisterEvent(REALM_DISPLAY_KEY, {this, &RuleMenu::HandleRealmPressed});
+
+    const auto playerPolity = WorldScene::Get()->GetPlayerPolity();
+
+    rulerLabel->Setup(LongWord() << "Realm of " << playerPolity->GetRuler()->GetName());
 }
 
 void RuleMenu::HandleDisable()
@@ -117,6 +134,8 @@ void RuleMenu::HandleDisable()
     InputHandler::UnregisterEvent(ECONOMY_DISPLAY_KEY);
 
     InputHandler::UnregisterEvent(TECHNOLOGY_DISPLAY_KEY);
+
+    InputHandler::UnregisterEvent(REALM_DISPLAY_KEY);
 }
 
 void RuleMenu::HandleEconomyPressed()
@@ -127,6 +146,11 @@ void RuleMenu::HandleEconomyPressed()
 void RuleMenu::HandleTechnologyPressed()
 {
     SetCurrentTab(RuleMenuTabs::TECHNOLOGY);
+}
+
+void RuleMenu::HandleRealmPressed()
+{
+    SetCurrentTab(RuleMenuTabs::REALM);
 }
 
 void RuleMenu::Setup()
@@ -156,6 +180,18 @@ void RuleMenu::Setup()
     );
 
     *tabs.Add(RuleMenuTabs::TECHNOLOGY) = techTab;
+
+    auto realmTab = ElementFactory::BuildElement <RealmTab>
+    (
+        {
+            size_, 
+            drawOrder_, 
+            {this}, 
+            Opacity(0.0f)
+        }
+    );
+
+    *tabs.Add(RuleMenuTabs::REALM) = realmTab;
 
     currentTab = RuleMenuTabs::ECONOMY;
 

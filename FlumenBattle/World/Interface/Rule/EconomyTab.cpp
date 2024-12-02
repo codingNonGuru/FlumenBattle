@@ -220,14 +220,12 @@ void EconomyTab::HandleConfigure()
             Opacity(0.0f)
         }
     );
-    itemLayout->SetDistancing(1, 0.0f, 5.0f);
+    itemLayout->SetDistancing(1, 5.0f);
     itemLayout->Enable();
 
     resourceItems.Initialize((int)settlement::ResourceTypes::NONE);
     for(auto i = 0; i < (int)settlement::ResourceTypes::NONE; ++i)
     {
-        auto resourceType = settlement::ResourceFactory::Get()->CreateType(settlement::ResourceTypes(i));
-
         auto item = ElementFactory::BuildElement <ResourceItem>
         (
             {

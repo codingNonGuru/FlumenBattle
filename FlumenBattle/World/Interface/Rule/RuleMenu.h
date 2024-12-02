@@ -26,7 +26,7 @@ namespace world::interface::rule
 {
     enum class RuleMenuTabs
     {
-        GENERAL, ECONOMY, TECHNOLOGY, COUNT
+        REALM, ECONOMY, TECHNOLOGY, COUNT
     };
 
     class TabButton : public Element
@@ -68,6 +68,8 @@ namespace world::interface::rule
         void HandleEconomyPressed();
 
         void HandleTechnologyPressed();
+
+        void HandleRealmPressed();
 
         void SetCurrentTab(RuleMenuTabs);
 

@@ -18,11 +18,11 @@ void PolityAllocator::PreallocateMaximumMemory()
 
     auto polityCount = worldGenerator->GetMaximumPolityCount(MAXIMUM_WORLD_SIZE);
 
-    auto settlementCount = worldGenerator->GetMaximumSettlementCount(MAXIMUM_WORLD_SIZE);
-
     polityMemory = container::Pool <Polity>::PreallocateMemory(polityCount);
 
-    politySettlementMemory = container::PoolAllocator <settlement::Settlement *>::PreallocateMemory(polityCount, settlementCount);
+    static const auto MAXIMUM_POLITY_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_POLITY_SIZE).Integer;
+
+    politySettlementMemory = container::PoolAllocator <settlement::Settlement *>::PreallocateMemory(polityCount, MAXIMUM_POLITY_SIZE);
 
     factionMemory = container::PoolAllocator <Faction>::PreallocateMemory(polityCount, POLITY_FACTION_COUNT);
 
@@ -35,11 +35,11 @@ void PolityAllocator::AllocateWorldMemory(int worldSize)
 
     auto polityCount = worldGenerator->GetMaximumPolityCount(worldSize);
 
-    auto settlementCount = worldGenerator->GetMaximumSettlementCount(worldSize);
+    static const auto MAXIMUM_POLITY_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_POLITY_SIZE).Integer;
 
     polities.Initialize(polityCount, polityMemory);
 
-    politySettlementAllocator = container::PoolAllocator <settlement::Settlement *> (polityCount, settlementCount, politySettlementMemory);
+    politySettlementAllocator = container::PoolAllocator <settlement::Settlement *> (polityCount, MAXIMUM_POLITY_SIZE, politySettlementMemory);
 
     factionAllocator = container::PoolAllocator <Faction> (polityCount, POLITY_FACTION_COUNT, factionMemory);
 
