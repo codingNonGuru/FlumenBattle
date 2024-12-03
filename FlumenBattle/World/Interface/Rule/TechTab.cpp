@@ -80,7 +80,7 @@ void OptionItem::Setup(const science::TechnologyType *technology, TechTab *tab)
 
     this->technology = technology;
 
-    counter->Setup("ScienceIcon", &technology->ResearchDuration, "VerySmall", Scale2(0.7f));
+    counter->Setup("ScienceIcon", &technology->ResearchDuration, "VerySmall");
     counter->SetOffset(3.0f);
     counter->Enable();
 }

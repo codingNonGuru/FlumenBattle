@@ -227,7 +227,11 @@ namespace world::settlement
 
         const container::Array <Building *> &GetBuildingsThatProduce(ResourceTypes) const;
 
+        const Building &GetBuilding(BuildingTypes) const;
+
         polity::Faction *GetFaction() const {return faction;}
+
+        int GetDistanceToCapital() const {return distanceToCapital;}
 
         world::SimulationLevels GetSimulationLevel() const;
 

@@ -421,6 +421,11 @@ bool Settlement::HasBuilding(BuildingTypes type) const
     return buildingManager->HasBuilding(type);
 }
 
+const Building &Settlement::GetBuilding(BuildingTypes type) const
+{
+    return buildingManager->GetBuilding(type);
+}
+
 int Settlement::GetBuildingCount(BuildingTypes type) const
 {
     return buildingManager->GetBuildingCount(type);

@@ -26,7 +26,8 @@ namespace world::interface::rule
 {
     enum class RuleMenuTabs
     {
-        REALM, ECONOMY, TECHNOLOGY, COUNT
+        REALM, ECONOMY, TECHNOLOGY, //DIPLOMACY, GROUPS, SETTLEMENT, POPULATION, TRADE
+        COUNT
     };
 
     class TabButton : public Element

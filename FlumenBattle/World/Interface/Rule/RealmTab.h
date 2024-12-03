@@ -10,26 +10,44 @@ class LayoutGroup;
 namespace world::settlement
 {
     class Settlement;
-    struct Resource;
-    struct Building;
 }
 
 namespace world::interface
 {
-    class Counter;
+    class ResourceCounter;
 }
 
 namespace world::interface::rule
 {
     class RuleMenu;
-    class EconomyTab;
-    class BuildingHoverInfo;
 
     struct DomainItem : public Element
     {
         Text *nameLabel;
 
+        ResourceCounter *populationCounter;
+
+        ResourceCounter *housingCounter;
+
+        ResourceCounter *distanceCounter;
+
+        ResourceCounter *scienceCounter;
+
+        ResourceCounter *industryCounter;
+
+        Element *capitalIcon;
+
         settlement::Settlement *settlement;
+
+        int population;
+
+        int housing;
+
+        int distance;
+
+        int science;
+
+        int industry;
 
         void HandleConfigure() override;
 

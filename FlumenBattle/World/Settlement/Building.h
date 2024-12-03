@@ -146,6 +146,8 @@ namespace world::settlement
 
         const container::Pool <Building> &GetBuildings() const {return buildingSet.Get();}
 
+        const Building &GetBuilding(BuildingTypes type) const {return *buildingSet.buildings.Find(type);}
+
         const container::Array <Building *> &GetBuildingsThatProduce(ResourceTypes) const;
     };
 
