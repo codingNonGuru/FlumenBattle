@@ -73,7 +73,9 @@ namespace world::settlement
 
         void HandleApplyEffect(Settlement &settlement) const override
         {
-            settlement.AddModifier({Modifiers::DEFENDER_GROUP_BONUS, 2});
+            auto wallsLevel = settlement.GetBuildingCount(BuildingTypes::WALLS);
+
+            settlement.AddModifier({Modifiers::DEFENDER_GROUP_BONUS_AC, wallsLevel});
         }
     };
 }

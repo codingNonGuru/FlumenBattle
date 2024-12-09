@@ -76,7 +76,7 @@ namespace world::character
     {
         using ConditionType::ConditionType; 
 
-        void HandleApplyEffect(battle::Combatant &combatant) const override
+        void HandleApplyEffect(battle::Combatant &combatant, const Condition *condition) const override
         {
             ModifierAccessor::AddModifier(combatant, {Modifiers::ATTACK_RATING_BONUS, 1});
         }
@@ -86,9 +86,38 @@ namespace world::character
     {
         using ConditionType::ConditionType; 
 
-        void HandleApplyEffect(battle::Combatant &combatant) const override
+        void HandleApplyEffect(battle::Combatant &combatant, const Condition *condition) const override
         {
             ModifierAccessor::AddModifier(combatant, {Modifiers::MOVE_SPEED, -2});
+        }
+    };
+
+    class WallProtection : public ConditionType
+    {
+        using ConditionType::ConditionType; 
+
+        void HandleApplyEffect(battle::Combatant &combatant, const Condition *condition) const override
+        {
+            if(condition->Strength == 1)
+            {
+                ModifierAccessor::AddModifier(combatant, {Modifiers::BONUS_ARMOR_CLASS, 2});
+            }
+            else if(condition->Strength == 2)
+            {
+                ModifierAccessor::AddModifier(combatant, {Modifiers::BONUS_ARMOR_CLASS, 3});
+
+                ModifierAccessor::AddModifier(combatant, {Modifiers::FORTITUDE_BONUS, 1});
+
+                ModifierAccessor::AddModifier(combatant, {Modifiers::REFLEX_BONUS, 1});
+            }
+            else if(condition->Strength == 3)
+            {
+                ModifierAccessor::AddModifier(combatant, {Modifiers::BONUS_ARMOR_CLASS, 4});
+
+                ModifierAccessor::AddModifier(combatant, {Modifiers::FORTITUDE_BONUS, 2});
+
+                ModifierAccessor::AddModifier(combatant, {Modifiers::REFLEX_BONUS, 2});
+            }
         }
     };
 }
@@ -100,7 +129,7 @@ void Condition::ApplyEffect(Character &character) const
 
 void Condition::ApplyEffect(battle::Combatant &combatant) const
 {
-    Type->HandleApplyEffect(combatant);
+    Type->HandleApplyEffect(combatant, this);
 }
 
 Condition ConditionFactory::Create(ConditionData data)
@@ -152,6 +181,13 @@ Condition ConditionFactory::Create(ConditionData data)
             data.Strength,
             data.Duration
         };
+    case Conditions::WALL_PROTECTION:
+        return 
+        {
+            [&] {static const auto conditionType = WallProtection(data.Type, "Wall protection", true); return &conditionType;} (),
+            data.Strength,
+            data.Duration
+        };
     }
 }
 
@@ -163,7 +199,9 @@ bool ConditionManager::HasCondition(Conditions condition)
 void ConditionManager::AddCondition(ConditionData data)
 {
     if(HasCondition(data.Type) == true)
+    {
         return;
+    }
 
     const auto &condition = ConditionFactory::Get()->Create(data);
 

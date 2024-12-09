@@ -87,7 +87,7 @@ void SpellCaster::RollAttack(Combatant &combatant)
 {
     auto attackBonus = combatant.GetCharacter()->GetSpellCastingAbility().Modifier + combatant.GetCharacter()->GetMagicProficiencyBonus();
 
-    auto result = utility::RollD20Dice(combatant.GetTarget()->armorClass, attackBonus);
+    auto result = utility::RollD20Dice(combatant.GetTarget()->GetArmorClass(), attackBonus);
 
     spellResult.IsCritical = result.IsCriticalSuccess() || result.IsCriticalFailure();
 
@@ -232,7 +232,7 @@ CharacterActionData SpellCaster::ApplyEffect(Combatant *caster, BattleTile *tile
         world::character::CharacterActions::CAST_SPELL, 
         caster, 
         spellResult.AttackRoll, 
-        tile == nullptr ? caster->GetTarget()->armorClass : 0, 
+        tile == nullptr ? caster->GetTarget()->GetArmorClass() : 0, 
         spellResult.Damage,
         spellResult.HasHit,
         &spellResult.Effects,

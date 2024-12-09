@@ -117,7 +117,7 @@ void CharacterHoverInfo::HandleConfigure()
 
     conditionLabel = ElementFactory::BuildText(
         {drawOrder_ + 1, {layout}}, 
-        {{"Medium"}, TEXT_COLOR, ""}
+        {{"Small"}, TEXT_COLOR, ""}
     );
     conditionLabel->LockWidth(size_.x - 20);
     conditionLabel->SetAlignment(Text::Alignments::LEFT);
@@ -195,14 +195,14 @@ void CharacterHoverInfo::Setup(CharacterInfo *characterInfo)
 
     armorCounter->Setup(
         "MetalArmor", 
-        std::function <int(void)> ([] () -> int {return BattleInterface::Get()->GetHoveredCombatant()->GetCharacter()->GetArmorClass();}),
+        std::function <int(void)> ([] () -> int {return BattleInterface::Get()->GetHoveredCombatant()->GetArmorClass();}),
         "Medium", 
         Scale2(1.2f)
         );
 
     attackCounter->Setup(
         "MetalSword", 
-        std::function <int(void)> ([] () -> int {return BattleInterface::Get()->GetHoveredCombatant()->GetCharacter()->GetAttackRating();}),
+        std::function <int(void)> ([] () -> int {return BattleInterface::Get()->GetHoveredCombatant()->GetAttackRating();}),
         "Medium", 
         Scale2(1.2f)
         );

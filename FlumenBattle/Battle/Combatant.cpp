@@ -16,6 +16,10 @@
 #include "FlumenBattle/World/Character/Types.h"
 #include "FlumenBattle/Utility/Utility.h"
 #include "FlumenBattle/Config.h"
+#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/Battle/BattleScene.h"
+#include "FlumenBattle/World/Group/Encounter.h"
 
 using namespace battle;
 
@@ -41,8 +45,6 @@ void Combatant::Initialize(CombatGroup *_group, world::character::Character *_ch
     deathThrowFailureCount = 0;
 
     isSavingAgainstDeath = false;
-
-    armorClass = character->type->ArmorClass;
 
     rotation = 0.0f;
 
@@ -116,6 +118,16 @@ Integer Combatant::GetCurrentSpeed() const
     {
         return 0;
     }
+}
+
+Integer Combatant::GetArmorClass() const
+{
+    return character->GetArmorClass() + modifiers.GetAmount(world::character::Modifiers::BONUS_ARMOR_CLASS);
+}
+
+Integer Combatant::GetAttackRating() const
+{
+    return character->GetAttackRating() + modifiers.GetAmount(world::character::Modifiers::ATTACK_RATING_BONUS);
 }
 
 bool Combatant::IsWithinActionRange(BattleTile *tile)
@@ -448,7 +460,7 @@ CharacterActionData Combatant::Act(BattleTile *finalTarget)
 
 CharacterActionData Combatant::Strike()
 {
-    auto targetArmor = target->GetCharacter()->GetArmorClass();
+    auto targetArmor = target->GetArmorClass();
 
     auto distance = GetDistanceTo(target);
     if(distance == 1)
@@ -461,7 +473,7 @@ CharacterActionData Combatant::Strike()
         }
     }
 
-    auto attackBonus = GetCharacter()->GetAttackRating();
+    auto attackBonus = GetAttackRating();
 
     auto attackRoll = utility::RollD20Dice(targetArmor, attackBonus);
 
@@ -633,4 +645,35 @@ void Combatant::AddModifier(world::character::Modifier modifier)
 void Combatant::AddCondition(world::character::ConditionData data)
 {
     conditions.AddCondition(data);
+
+    RefreshModifiers();
+}
+
+void Combatant::ApplyPermanentConditions()
+{
+    const auto settlement = character->GetGroup()->GetCurrentSettlement();
+    if(settlement != nullptr)
+    {
+        const auto battle = character->GetGroup()->GetEncounter();
+        if(battle->GetDefender() == character->GetGroup())
+        {
+            auto modifier = settlement->GetModifier(world::settlement::Modifiers::DEFENDER_GROUP_BONUS_AC);
+            if(modifier != 0)
+            {
+                AddCondition({world::character::Conditions::WALL_PROTECTION, 1, modifier});
+            }
+        }
+    }
+}
+
+void Combatant::UpdateConditions(int turnIndex) 
+{
+    conditions.UpdateBattle(turnIndex);
+}
+
+void Combatant::RefreshModifiers()
+{
+    modifiers.ClearModifiers();
+
+    conditions.ApplyModifiers(*this);
 }

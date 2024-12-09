@@ -606,7 +606,7 @@ void HumanMind::PursueSighting(const GroupSpotting &spotting)
         return;
 
     static auto playerGroup = WorldScene::Get()->GetPlayerGroup();
-    WorldScene::Get()->InitiateEncounter(group, playerGroup);
+    WorldScene::Get()->InitiateEncounter(playerGroup, group);
 }
 
 const utility::PathData <world::WorldTile> HumanMind::GetFullPathData()

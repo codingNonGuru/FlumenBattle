@@ -327,12 +327,12 @@ namespace world
         }
     }
 
-    void WorldScene::InitiateEncounter(group::Group *first, group::Group *second)
+    void WorldScene::InitiateEncounter(group::Group *attacker, group::Group *defender)
     {
         auto battle = battles->Add();
-        battle->Initialize(first, second);
+        battle->Initialize(attacker, defender);
 
-        if(playerGroup == first || playerGroup == second)
+        if(playerGroup == attacker || playerGroup == defender)
         {
             OnPlayerEncounterInitiated.Invoke();
 

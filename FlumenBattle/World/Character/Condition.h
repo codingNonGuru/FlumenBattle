@@ -17,6 +17,8 @@ namespace world::character
     class Character;
     class ModifierManager;
 
+    struct Condition;
+
     struct ConditionData
     {
         Conditions Type;
@@ -53,7 +55,7 @@ namespace world::character
 
         virtual void HandleApplyEffect(Character &) const {}
 
-        virtual void HandleApplyEffect(battle::Combatant &) const {}
+        virtual void HandleApplyEffect(battle::Combatant &, const Condition *condition = nullptr) const {}
     };
 
     struct Condition

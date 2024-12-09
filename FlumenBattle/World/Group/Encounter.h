@@ -24,9 +24,9 @@ namespace world::group
 
         bool isPlayerInvolved;
 
-        Group *first;
+        Group *attacker;
 
-        Group *second;
+        Group *defender;
 
         Group *winner;
 
@@ -43,11 +43,11 @@ namespace world::group
 
         void EndFighting() {isBattle = false; hasBattleEnded = true;}
 
-        group::Group *GetFirst() const {return first;}
+        group::Group *GetAttacker() const {return attacker;}
 
-        group::Group *GetSecond() const {return second;}
+        group::Group *GetDefender() const {return defender;}
 
-        group::Group *GetOtherThan(group::Group *group) const {return group == first ? second : first;}
+        group::Group *GetOtherThan(group::Group *group) const {return group == attacker ? defender : attacker;}
 
         bool IsOngoing() const {return isOngoing;}
 

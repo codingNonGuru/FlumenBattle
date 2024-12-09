@@ -423,12 +423,12 @@ namespace world::group
             return nullptr;
         }
 
-        if(encounter->GetFirst() == this)
+        if(encounter->GetAttacker() == this)
         {
-            return encounter->GetSecond();
+            return encounter->GetDefender();
         }
 
-        return encounter->GetFirst();
+        return encounter->GetAttacker();
     }
 
     world::character::Item *Group::GetItem(int index)

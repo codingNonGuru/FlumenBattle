@@ -69,10 +69,10 @@ namespace battle
         auto GetComputerGroup = [this]
         {
             auto battle = world::WorldController::Get()->GetPlayerBattle();
-            if(world::WorldScene::Get()->GetPlayerGroup() == battle->GetFirst())
-                return battle->GetSecond();
+            if(world::WorldScene::Get()->GetPlayerGroup() == battle->GetAttacker())
+                return battle->GetDefender();
             else
-                return battle->GetFirst();
+                return battle->GetAttacker();
         };  
 
         playerGroup->Initialize(world::WorldScene::Get()->GetPlayerGroup(), centerTile->GetNeighbor(COMBAT_GROUP_OFFSET));
@@ -83,6 +83,22 @@ namespace battle
         turnIndex = 0;
 
         DetermineTurnOrder();
+
+        for(auto &group : {playerGroup, computerGroup})
+        {
+            for(auto &combatant : group->combatants)
+            {
+                combatant.ApplyPermanentConditions();
+            }
+        }
+
+        for(auto &group : {playerGroup, computerGroup})
+        {
+            for(auto &combatant : group->combatants)
+            {
+                combatant.RefreshModifiers();
+            }
+        }
 
         InputHandler::RegisterContinualEvent(SCREEN_GRAB_INPUT_KEY, {this, &BattleScene::HandleGrabPressed}, {this, &BattleScene::HandleGrabReleased});
 
@@ -172,7 +188,23 @@ namespace battle
             {
                 for(auto &combatant : group->combatants)
                 {
+                    combatant.ApplyPermanentConditions();
+                }
+            }
+
+            for(auto &group : {playerGroup, computerGroup})
+            {
+                for(auto &combatant : group->combatants)
+                {
                     combatant.UpdateConditions(turnIndex);
+                }
+            }
+
+            for(auto &group : {playerGroup, computerGroup})
+            {
+                for(auto &combatant : group->combatants)
+                {
+                    combatant.RefreshModifiers();
                 }
             }
 

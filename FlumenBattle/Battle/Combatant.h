@@ -59,8 +59,6 @@ namespace battle
 
         Integer movement; 
 
-        Integer armorClass; 
-
         Integer remainingActionCount; 
 
         Integer bonusActionCount; 
@@ -140,8 +138,6 @@ namespace battle
         bool HealDamage(Integer);
 
         void SaveAgainstDeath();
-
-        //void AddCondition(world::character::Conditions, world::character::Character *);
             
         void Select();
 
@@ -178,6 +174,10 @@ namespace battle
 
         const Integer &GetMovement() const;
 
+        Integer GetArmorClass() const;
+
+        Integer GetAttackRating() const;
+
         bool IsWithinActionRange(BattleTile *);
 
         void SetPosition(Position2 newPosition) {position = newPosition;}
@@ -186,6 +186,10 @@ namespace battle
 
         const Pool <world::character::Condition> &GetConditions() const {return conditions.GetConditions();}
 
-        void UpdateConditions(int turnIndex) {conditions.UpdateBattle(turnIndex);}
+        void ApplyPermanentConditions();
+
+        void UpdateConditions(int);
+
+        void RefreshModifiers();
     };
 }

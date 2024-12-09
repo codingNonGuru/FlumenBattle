@@ -65,7 +65,7 @@ namespace world::settlement
         POPULATION_GROWTH_RATE,
         DISTANCE_TO_CAPITAL_INDEPENDENCE_LIMIT,
         WOOD_RELATED_RESOURCE_PRODUCTION,
-        DEFENDER_GROUP_BONUS
+        DEFENDER_GROUP_BONUS_AC
     };
 
     enum class RoadTypes

@@ -93,6 +93,8 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location,
 
     AddBuilding(BuildingTypes::HOUSING);
 
+    AddBuilding(BuildingTypes::WALLS);
+
     this->needsToReorganizeWork = true;
 }
 

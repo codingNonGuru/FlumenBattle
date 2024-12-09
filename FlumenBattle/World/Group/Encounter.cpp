@@ -9,10 +9,10 @@ namespace world::group
 {
     #define BASE_ATTACK_DC 17
 
-    void Encounter::Initialize(Group * first_, Group * second_)
+    void Encounter::Initialize(Group * attacker_, Group * defender_)
     {
-        first = first_; 
-        second = second_;
+        attacker = attacker_; 
+        defender = defender_;
 
         isOngoing = true;
 
@@ -20,16 +20,16 @@ namespace world::group
 
         hasBattleEnded = false;
 
-        first->EngageGroup(this);
-        second->EngageGroup(this);
+        attacker->EngageGroup(this);
+        defender->EngageGroup(this);
         
         winner = nullptr;
 
         static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
 
-        isPlayerInvolved = playerGroup == first || playerGroup == second;
+        isPlayerInvolved = playerGroup == attacker || playerGroup == defender;
 
-        location = first->GetTile();
+        location = attacker->GetTile();
     }
 
     void Encounter::Update()
@@ -40,24 +40,24 @@ namespace world::group
         if(isOngoing == false)
             return;
 
-        auto firstStrength = first->GetLivingCount();
-        auto secondStrength = second->GetLivingCount();
+        auto firstStrength = attacker->GetLivingCount();
+        auto secondStrength = defender->GetLivingCount();
 
         if(location->HasRelief(WorldReliefs::MOUNTAINS) == true)
         {
-            firstStrength += first->GetHome()->GetModifier(settlement::Modifiers::COMBAT_BONUS_ON_MOUNTAIN_TILES);
-            secondStrength += second->GetHome()->GetModifier(settlement::Modifiers::COMBAT_BONUS_ON_MOUNTAIN_TILES);
+            firstStrength += attacker->GetHome()->GetModifier(settlement::Modifiers::COMBAT_BONUS_ON_MOUNTAIN_TILES);
+            secondStrength += defender->GetHome()->GetModifier(settlement::Modifiers::COMBAT_BONUS_ON_MOUNTAIN_TILES);
         }
         else if(location->HasBiome(WorldBiomes::WOODS) == true)
         {
-            firstStrength += first->GetHome()->GetModifier(settlement::Modifiers::COMBAT_BONUS_ON_WOOD_TILES);
-            secondStrength += second->GetHome()->GetModifier(settlement::Modifiers::COMBAT_BONUS_ON_WOOD_TILES);
+            firstStrength += attacker->GetHome()->GetModifier(settlement::Modifiers::COMBAT_BONUS_ON_WOOD_TILES);
+            secondStrength += defender->GetHome()->GetModifier(settlement::Modifiers::COMBAT_BONUS_ON_WOOD_TILES);
         }
 
         auto firstAttack = utility::RollD20Dice(BASE_ATTACK_DC, firstStrength);
         if(firstAttack.IsAnySuccess() == true)
         {
-            for(auto &character : second->GetCharacters())
+            for(auto &character : defender->GetCharacters())
             {
                 if(character.IsAlive() == false)
                     continue;
@@ -70,7 +70,7 @@ namespace world::group
         auto secondAttack = utility::RollD20Dice(BASE_ATTACK_DC, secondStrength);
         if(secondAttack.IsAnySuccess() == true)
         {
-            for(auto &character : first->GetCharacters())
+            for(auto &character : attacker->GetCharacters())
             {
                 if(character.IsAlive() == false)
                     continue;
@@ -80,16 +80,16 @@ namespace world::group
             }
         }
 
-        firstStrength = first->GetLivingCount();
-        secondStrength = second->GetLivingCount();
+        firstStrength = attacker->GetLivingCount();
+        secondStrength = defender->GetLivingCount();
 
         if(firstStrength == 0)
         {
-            Finish(second);
+            Finish(defender);
         }
         else if(secondStrength == 0)
         {
-            Finish(first);
+            Finish(attacker);
         }
     }
 
@@ -109,8 +109,8 @@ namespace world::group
         if(isPlayerInvolved == true)
             return;
 
-        first->ExitBattle();
+        attacker->ExitBattle();
 
-        second->ExitBattle();
+        defender->ExitBattle();
     }
 }

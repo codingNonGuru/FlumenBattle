@@ -192,7 +192,7 @@ namespace battle
                     }
                     else if(singlingCriterion == SinglingCriteria::IS_LEAST_ARMORED)
                     {
-                        if(combatant->armorClass < searchResult->armorClass)
+                        if(combatant->GetArmorClass() < searchResult->GetArmorClass())
                         {
                             searchResult = combatant;
                         }
