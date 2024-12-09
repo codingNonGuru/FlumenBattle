@@ -21,6 +21,7 @@
 #include "FlumenBattle/World/Polity/Polity.h"
 #include "FlumenBattle/World/Polity/Faction.h"
 #include "FlumenBattle/WorldInterface.h"
+#include "FlumenBattle/World/Interface/ResourceCounter.h"
 
 using namespace world::settlement;
 
@@ -111,7 +112,7 @@ void SettlementLabel::HandleConfigure()
     populationBackdrop->Enable();
 
     populationBorder = ElementFactory::BuildElement <Element>(
-        {populationBackdrop->GetSize(), drawOrder_ + 2, {populationBackdrop}, {"panel-border-015",true}, Opacity(0.8f)}
+        {populationBackdrop->GetSize(), drawOrder_ + 2, {populationBackdrop}, {"panel-border-015", true}, Opacity(0.8f)}
     );
     populationBorder->SetSpriteColor(borderColor);
     populationBorder->Enable();
@@ -122,6 +123,22 @@ void SettlementLabel::HandleConfigure()
     );
     populationLabel->SetAlignment(Text::Alignments::CENTER);
     populationLabel->Enable();
+
+    distanceRelatedBackdrop = ElementFactory::BuildElement <Element>(
+        {Size(size_.x - 30, size_.y), drawOrder_, {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, this}, {false}, Opacity(0.6f)}
+    );
+
+    extensionBorder = ElementFactory::BuildElement <Element>(
+        {distanceRelatedBackdrop->GetSize(), drawOrder_ + 1, {distanceRelatedBackdrop}, {"panel-border-015", true}, Opacity(0.8f)}
+    );
+    extensionBorder->SetSpriteColor(borderColor);
+    extensionBorder->Enable();
+
+    garrisonCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
+        {drawOrder_, {distanceRelatedBackdrop}}
+    );
+    garrisonCounter->Setup("Group", &garrisonCount);
+    garrisonCounter->Enable();
 }
 
 static Text *separator;
@@ -347,6 +364,17 @@ void SettlementLabel::HandleUpdate()
     text = "";
     text << settlement->GetPopulation();
     populationLabel->Setup(text);
+
+    if(camera->GetZoomFactor() < 0.35f && IsSettlementHovered() == false)
+    {
+        distanceRelatedBackdrop->Enable();
+
+        garrisonCount = settlement->GetGroupDynamics().GetGarrisonStrength();
+    }
+    else
+    {
+        distanceRelatedBackdrop->Disable();
+    }
 }
 
 void HoverExtension::HandleUpdate() 

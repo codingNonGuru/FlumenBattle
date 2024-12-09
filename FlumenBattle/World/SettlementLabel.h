@@ -7,6 +7,11 @@ class Text;
 class LayoutGroup;
 class ProgressBar;
 
+namespace world::interface
+{
+    class ResourceCounter;
+}
+
 namespace world::settlement
 {
     class Settlement;
@@ -117,6 +122,14 @@ namespace world::settlement
         Element *populationBackdrop;
 
         Element *populationBorder;
+
+        Element *distanceRelatedBackdrop;
+
+        Element *extensionBorder;
+
+        interface::ResourceCounter *garrisonCounter;
+
+        int garrisonCount;
 
         void HandleConfigure() override;
 
