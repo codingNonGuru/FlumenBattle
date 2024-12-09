@@ -26,5 +26,6 @@ namespace game
         static constexpr auto DELIVER_ITEM_QUEST_BASE_DURATION = "DELIVER_ITEM_QUEST_BASE_DURATION";
         static constexpr auto FLANKING_ARMOR_PENALTY = "FLANKING_ARMOR_PENALTY";
         static constexpr auto MAXIMUM_POLITY_SIZE = "MAXIMUM_POLITY_SIZE";
+        static constexpr auto MAXIMUM_WALLS_LEVEL = "MAXIMUM_WALLS_LEVEL";
     };
 }

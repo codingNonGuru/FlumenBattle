@@ -444,6 +444,9 @@ void HoverExtension::HandleUpdate()
             text << settlement->GetBuildingCount(BuildingTypes::HOUSING);
             text << "H";
             break;
+        case BuildingTypes::WALLS:
+            text << "W";
+            break;
         }
     }
 

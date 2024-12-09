@@ -1,6 +1,7 @@
 #include "ProductionEvaluator.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Group/GroupDynamics.h"
+#include "FlumenBattle/Config.h"
 
 using namespace world::settlement;
 
@@ -112,6 +113,16 @@ NecessityFactor ProductionEvaluator::GetLibraryNecessity(const Settlement &settl
         return 0;
 }
 
+NecessityFactor ProductionEvaluator::GetWallsNecessity(const Settlement &settlement)
+{
+    static const auto MAXIMUM_WALLS_LEVEL = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_WALLS_LEVEL).Integer;
+
+    if(settlement.GetBuildingCount(BuildingTypes::WALLS) < MAXIMUM_WALLS_LEVEL)
+        return 1;
+    else
+        return 0;
+}
+
 NecessityFactor ProductionEvaluator::GetHousingNecessity(const Settlement &settlement)
 {
     auto housingAdequacy = settlement.GetHousingAdequacy();
@@ -147,6 +158,8 @@ NecessityFactor ProductionEvaluator::GetNecessity(const Settlement &settlement, 
         return GetSewageNecessity(settlement);
     case ProductionOptions::HOUSING:
         return GetHousingNecessity(settlement);
+    case ProductionOptions::WALLS:
+        return GetWallsNecessity(settlement);
     default:
         abort();
     }

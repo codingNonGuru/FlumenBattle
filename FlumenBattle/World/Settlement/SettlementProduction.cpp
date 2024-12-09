@@ -8,6 +8,7 @@
 #include "FlumenBattle/World/Settlement/ProductionEvaluator.h"
 #include "FlumenBattle/Race.h"
 #include "FlumenBattle/Utility/Utility.h"
+#include "FlumenBattle/Config.h"
 
 using namespace world::settlement;
 
@@ -65,6 +66,10 @@ ProductionInquiry SettlementProduction::CanProduce(Settlement &settlement, Produ
         return {settlement.HasBuilding(BuildingTypes::IRRIGATION) == false};
     case ProductionOptions::LIBRARY:
         return {settlement.HasBuilding(BuildingTypes::LIBRARY) == false};
+    case ProductionOptions::WALLS:
+        static const auto MAXIMUM_WALLS_LEVEL = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_WALLS_LEVEL).Integer;
+
+        return {settlement.GetBuildingCount(BuildingTypes::WALLS) < MAXIMUM_WALLS_LEVEL};
     case ProductionOptions::LUMBER_MILL:
         return {settlement.HasBuilding(BuildingTypes::LUMBER_MILL) == false};
     case ProductionOptions::CARPENTER:
@@ -106,6 +111,8 @@ const SettlementProductionType * SettlementProductionFactory::BuildProductionTyp
             return BuildLumberMillProduction();
         case ProductionOptions::CARPENTER:
             return BuildCarpenterProduction();
+        case ProductionOptions::WALLS:
+            return BuildWallsProduction();
         case ProductionOptions::NONE:
             return BuildNoneProduction();
     }
@@ -144,6 +151,12 @@ const SettlementProductionType * SettlementProductionFactory::BuildIrrigationPro
 const SettlementProductionType * SettlementProductionFactory::BuildLibraryProduction()
 {
     static const SettlementProductionType productionType = {ProductionOptions::LIBRARY, "Library", 500, &ProductionFinisher::FinishLibrary};
+    return &productionType;
+}
+
+const SettlementProductionType * SettlementProductionFactory::BuildWallsProduction()
+{
+    static const SettlementProductionType productionType = {ProductionOptions::WALLS, "Walls", 500, &ProductionFinisher::FinishWalls};
     return &productionType;
 }
 
@@ -194,6 +207,11 @@ void ProductionFinisher::FinishLumberMill(Settlement &settlement)
 void ProductionFinisher::FinishCarpenter(Settlement &settlement)
 {
     settlement.AddBuilding(BuildingTypes::CARPENTER);
+}
+
+void ProductionFinisher::FinishWalls(Settlement &settlement)
+{
+    settlement.AddBuilding(BuildingTypes::WALLS);
 }
 
 void ProductionFinisher::FinishFarm(Settlement &settlement)

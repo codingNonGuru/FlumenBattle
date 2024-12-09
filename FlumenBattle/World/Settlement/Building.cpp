@@ -66,6 +66,16 @@ namespace world::settlement
             
         }
     };
+
+    class Walls : public BuildingType
+    {
+        using BuildingType::BuildingType; 
+
+        void HandleApplyEffect(Settlement &settlement) const override
+        {
+            settlement.AddModifier({Modifiers::DEFENDER_GROUP_BONUS, 2});
+        }
+    };
 }
 
 void Building::ApplyEffect(Settlement &settlement) const
@@ -77,6 +87,12 @@ Building BuildingFactory::Create(BuildingTypes type)
 {
     switch(type)
     {
+    case BuildingTypes::WALLS:
+        return 
+        {
+            [&] {static const auto buildingType = Walls(type, 300, true, "Walls", "Walls"); return &buildingType;} (), 
+            false
+        };
     case BuildingTypes::LIBRARY:
         return 
         {

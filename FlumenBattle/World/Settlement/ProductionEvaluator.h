@@ -43,6 +43,8 @@ namespace world::settlement
 
         static NecessityFactor GetHousingNecessity(const Settlement &);  
 
+        static NecessityFactor GetWallsNecessity(const Settlement &);  
+
     public:
         static NecessityFactor GetNecessity(const Settlement &, ProductionOptions);
     };

@@ -309,6 +309,7 @@ void Settlement::DecideProduction()
         ProductionOptions::SETTLERS, 
         /*ProductionOptions::IRRIGATION, 
         ProductionOptions::LIBRARY,
+        ProductionOptions::WALLS,
         ProductionOptions::SEWAGE,
         ProductionOptions::HOUSING,
         ProductionOptions::FARM*/
