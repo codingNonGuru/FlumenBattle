@@ -7,6 +7,7 @@
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/WorldBiome.h"
 #include "FlumenBattle/World/Character/Character.h"
+#include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/Utility/Utility.h"
 #include "FlumenBattle/Config.h"
 
@@ -533,7 +534,18 @@ namespace world::group
 
     bool GroupActionValidator::CanFight(Group &group, const GroupActionData &)
     {
-        return group.IsDoing(GroupActions::ENGAGE) && group.GetEncounter()->HasBattleEnded() == false;
+        if(group.IsDoing(GroupActions::ENGAGE) == false)
+            return false;
+
+        if(group.GetEncounter()->HasBattleEnded() == true)
+            return false; 
+            
+        auto other = group.GetEncounter()->GetOtherThan(&group);
+
+        if(other->GetClass() == GroupClasses::GARRISON && (group.DoesRulePolity() == true && group.GetDomain() == other->GetHome()->GetPolity()))
+            return false;
+
+        return true;
     }
 
     bool GroupActionValidator::CanEngage(Group &group, const GroupActionData &)

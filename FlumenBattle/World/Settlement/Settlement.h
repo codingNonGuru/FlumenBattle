@@ -235,6 +235,8 @@ namespace world::settlement
 
         world::SimulationLevels GetSimulationLevel() const;
 
+        bool IsDefended() const;
+
         void SetupSimulation();
 
         world::WorldTile *FindColonySpot();

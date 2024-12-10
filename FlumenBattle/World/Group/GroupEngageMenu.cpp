@@ -167,7 +167,7 @@ void GroupEngageMenu::RefreshOptions()
 
     auto label = optionLabels.GetStart();
 
-    if(encounter->HasBattleEnded() == true && enemy->GetClass() == group::GroupClasses::GARRISON)
+    if(encounter->HasBattleEnded() == true && enemy->GetClass() == group::GroupClasses::GARRISON && enemy->GetCurrentSettlement()->IsDefended() == false)
     {
         (*label)->Enable();
         (*label)->Setup("[C] Conquer the settlement");

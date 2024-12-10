@@ -30,8 +30,8 @@ NecessityFactor ProductionEvaluator::GetPatrolNecessity(const Settlement &settle
 NecessityFactor ProductionEvaluator::GetGarrisonNecessity(const Settlement &settlement)
 {
     auto &groupDynamics = settlement.GetGroupDynamics();
-    auto garrisonStrength = groupDynamics.GetGarrisonStrength();
-    if(garrisonStrength == 0)
+    //auto garrisonStrength = groupDynamics.GetGarrisonStrength();
+    if(groupDynamics.HasMaximumGarrisons() == false)
     {
         return 10;
     }

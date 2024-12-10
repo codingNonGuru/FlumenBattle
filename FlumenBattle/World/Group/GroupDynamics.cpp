@@ -30,7 +30,7 @@ using namespace world::group;
 
 #define PATROL_CAP 4
 
-#define GARRISON_CAP 1
+#define GARRISON_CAP 2
 
 GroupDynamics::GroupDynamics() {}
 
@@ -362,7 +362,22 @@ int GroupDynamics::GetPatrolStrength() const
 
 int GroupDynamics::GetGarrisonStrength() const
 {
-    return garrisons.GetSize();
+    auto strength = 0;
+    for(auto &garrison : garrisons)
+    {
+        if(garrison.Group == nullptr)
+        {
+            strength++;
+            continue;
+        }
+
+        if(garrison.Group->IsAlive() == true)
+        {
+            strength++;
+        }
+    }
+
+    return strength;
 }
 
 int GroupDynamics::GetRaiderStrength() const
@@ -373,4 +388,9 @@ int GroupDynamics::GetRaiderStrength() const
 bool GroupDynamics::HasMaximumGarrisons() const
 {
     return garrisons.GetSize() == GARRISON_CAP;
+}
+
+int GroupDynamics::GetMaximumGarrisons() const
+{
+    return GARRISON_CAP;
 }

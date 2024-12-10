@@ -292,5 +292,7 @@ namespace world::group
         void SetDomain(polity::Polity *);
 
         int GetDomainSettlementCount() const;
+
+        bool HasSameAllegiance(const Group &) const;
     };
 }

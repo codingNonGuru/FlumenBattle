@@ -524,6 +524,12 @@ world::SimulationLevels Settlement::GetSimulationLevel() const
     return simulationLevel;
 }
 
+bool Settlement::IsDefended() const
+{
+    std::cout<<"PPEEEEEELEU "<<groupDynamics->GetGarrisonStrength()<<"\n";
+    return groupDynamics->GetGarrisonStrength() != 0;
+}
+
 int Settlement::GetMulePrice() const
 {
     auto foodPrice = GetResourcePrice(ResourceTypes::FOOD);

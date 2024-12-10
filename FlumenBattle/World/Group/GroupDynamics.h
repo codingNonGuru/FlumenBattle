@@ -74,5 +74,7 @@ namespace world::group
         int GetRaiderStrength() const;
 
         bool HasMaximumGarrisons() const;
+
+        int GetMaximumGarrisons() const;
     };
 }

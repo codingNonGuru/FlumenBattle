@@ -17,6 +17,7 @@
 #include "FlumenBattle/World/Group/GroupBatch.h"
 #include "FlumenBattle/World/Group/GroupBatchMap.h"
 #include "FlumenBattle/World/Polity/Polity.h"
+#include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/Config.h"
 
 using namespace world::character;
@@ -529,5 +530,10 @@ namespace world::group
     int Group::GetDomainSettlementCount() const
     {
         return domain->GetSettlements().GetSize();
+    }
+
+    bool Group::HasSameAllegiance(const Group &other) const
+    {
+        return GetHome()->GetPolity() == other.GetHome()->GetPolity();
     }
 }

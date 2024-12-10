@@ -482,8 +482,8 @@ void WorldGenerator::GeneratePlayerGroup(const container::Array <pregame::Member
 
     auto homeSettlement = settlements->GetRandom();
 
-    //homeSettlement->GetPolity()->SetController(true);
-    //scene.playerGroup->SetDomain(homeSettlement->GetPolity());
+    homeSettlement->GetPolity()->SetController(true);
+    scene.playerGroup->SetDomain(homeSettlement->GetPolity());
 }
 
 int WorldGenerator::GetMaximumPolityCount(int worldSize) const
