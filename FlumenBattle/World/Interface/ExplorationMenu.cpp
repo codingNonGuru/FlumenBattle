@@ -84,10 +84,11 @@ void ExplorationMenu::HandleConfigure()
         auto itemIterator = spottingItems.Add();
         *itemIterator = ElementFactory::BuildElement <SpottingItem>
         (
-            { 
+            {
+                Size(size_.x - 20, 30),
                 drawOrder_ + 1, 
                 {spottingGroup}, 
-                {"panel-border-007", true},
+                {"panel-border-015", true},
             }
         );
         (*itemIterator)->SetInteractivity(true);

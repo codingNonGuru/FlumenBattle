@@ -8,6 +8,7 @@
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
+#include "FlumenBattle/World/Interface/ResourceCounter.h"
 
 using namespace world::interface;
 
@@ -21,25 +22,27 @@ static const auto HOVERED_OPACITY = Opacity(0.9f);
 
 void SpottingItem::HandleConfigure()
 {
-    size_ = Size(280, 30);
-
     opacity_ = BASE_OPACITY;
 
     SetSpriteColor(BORDER_COLOR);
 
     nameLabel = ElementFactory::BuildText 
     (
-        {drawOrder_, {Position2(10.0f, 0.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}},
+        {drawOrder_, {Position2(5.0f, 0.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}},
         {{"VerySmall"}, TEXT_COLOR, ""}
     );
     nameLabel->Enable();
 
-    timeLabel = ElementFactory::BuildText 
-    (
-        {drawOrder_, {Position2(-15.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}},
-        {{"VerySmall"}, TEXT_COLOR, ""}
+    timeCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
+        {drawOrder_, {Position2(-30.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}}
     );
-    timeLabel->Enable();
+    timeCounter->Setup("HourGlass", &time);
+    timeCounter->SetOffset(-3.0f);
+    timeCounter->Enable();
+
+    skullIcon = ElementFactory::BuildElement <Element>(
+        {drawOrder_ + 1, {Position2(-65.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_CENTER, this}, SpriteDescriptor{"Skull", false}}
+    );
 }
 
 void SpottingItem::HandleUpdate()
@@ -51,10 +54,17 @@ void SpottingItem::HandleUpdate()
     nameLabel->Setup(string);
 
     static auto &worldTime = WorldScene::Get()->GetTime();
-    auto lifeTime = worldTime.TotalHourCount - spotting->TimeInHours;
+    time = worldTime.TotalHourCount - spotting->TimeInHours;
 
-    string = Word() << lifeTime;
-    timeLabel->Setup(string);
+    auto group = WorldScene::Get()->GetGroup(spotting->GroupUniqueId);
+    if(group != nullptr && group->IsAlive() == true)
+    {
+        skullIcon->Disable();
+    }
+    else
+    {
+        skullIcon->Enable();
+    }
 
     if(isHovered_ == true)
     {

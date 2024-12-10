@@ -11,13 +11,19 @@ namespace world::group
 
 namespace world::interface
 {
+    class ResourceCounter;
+
     class SpottingItem : public Element
     {
         Element *border;
 
         Text *nameLabel;
 
-        Text *timeLabel;
+        ResourceCounter *timeCounter;
+
+        int time;
+
+        Element *skullIcon;
 
         const group::GroupSpotting *spotting {nullptr};
 
