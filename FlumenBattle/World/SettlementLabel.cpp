@@ -135,10 +135,16 @@ void SettlementLabel::HandleConfigure()
     extensionBorder->Enable();
 
     garrisonCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
-        {drawOrder_, {distanceRelatedBackdrop}}
+        {drawOrder_, {Position2(30.0f, 0.0f), distanceRelatedBackdrop}}
     );
-    garrisonCounter->Setup("Group", &garrisonCount);
+    garrisonCounter->Setup("Group", &garrisonCount, "Small");
     garrisonCounter->Enable();
+
+    wallCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
+        {drawOrder_, {Position2(-30.0f, 0.0f), distanceRelatedBackdrop}}
+    );
+    wallCounter->Setup("Walls", &wallsLevel, "Small", Scale2(0.5f));
+    wallCounter->Enable();
 }
 
 static Text *separator;
@@ -370,6 +376,8 @@ void SettlementLabel::HandleUpdate()
         distanceRelatedBackdrop->Enable();
 
         garrisonCount = settlement->GetGroupDynamics().GetGarrisonStrength();
+
+        wallsLevel = settlement->GetBuildingCount(BuildingTypes::WALLS);
     }
     else
     {

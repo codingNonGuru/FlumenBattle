@@ -129,7 +129,11 @@ namespace world::settlement
 
         interface::ResourceCounter *garrisonCounter;
 
+        interface::ResourceCounter *wallCounter;
+
         int garrisonCount;
+
+        int wallsLevel;
 
         void HandleConfigure() override;
 
