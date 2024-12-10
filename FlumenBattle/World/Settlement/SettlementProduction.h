@@ -124,6 +124,8 @@ namespace world::settlement
 
         const SettlementProductionType *BuildPatrolProduction();
 
+        const SettlementProductionType *BuildGarrisonProduction();
+
         const SettlementProductionType *BuildFarmProduction();
 
         const SettlementProductionType *BuildSewageProduction();
@@ -152,7 +154,9 @@ namespace world::settlement
     {
         friend class SettlementProductionFactory;
 
-        static void FinishPatrol(Settlement &);       
+        static void FinishPatrol(Settlement &);
+
+        static void FinishGarrison(Settlement &);
 
         static void FinishSewage(Settlement &);       
 

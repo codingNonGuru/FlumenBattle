@@ -40,6 +40,10 @@ ProductionInquiry SettlementProduction::CanProduce(Settlement &settlement, Produ
             return {true, {colonySpot}};
         }
     }
+    case ProductionOptions::GARRISON:
+    {
+        return {settlement.GetGroupDynamics().HasMaximumGarrisons() == false};
+    }
     case ProductionOptions::FARM:
     {
         SettlementTile *improvementTarget = nullptr;
@@ -95,6 +99,8 @@ const SettlementProductionType * SettlementProductionFactory::BuildProductionTyp
     {
         case ProductionOptions::PATROL:
             return BuildPatrolProduction();
+        case ProductionOptions::GARRISON:
+            return BuildGarrisonProduction();
         case ProductionOptions::FARM:
             return BuildFarmProduction();
         case ProductionOptions::SETTLERS:
@@ -121,6 +127,12 @@ const SettlementProductionType * SettlementProductionFactory::BuildProductionTyp
 const SettlementProductionType * SettlementProductionFactory::BuildPatrolProduction()
 {
     static const SettlementProductionType productionType = {ProductionOptions::PATROL, "Patrol", 200, &ProductionFinisher::FinishPatrol};
+    return &productionType;
+}
+
+const SettlementProductionType * SettlementProductionFactory::BuildGarrisonProduction()
+{
+    static const SettlementProductionType productionType = {ProductionOptions::GARRISON, "Garrison", 200, &ProductionFinisher::FinishGarrison};
     return &productionType;
 }
 
@@ -187,6 +199,11 @@ const SettlementProductionType * SettlementProductionFactory::BuildNoneProductio
 void ProductionFinisher::FinishPatrol(Settlement &settlement)
 {
     settlement.StrengthenPatrol();
+}
+
+void ProductionFinisher::FinishGarrison(Settlement &settlement)
+{
+    settlement.StrengthenGarrison();
 }
 
 void ProductionFinisher::FinishSewage(Settlement &settlement)

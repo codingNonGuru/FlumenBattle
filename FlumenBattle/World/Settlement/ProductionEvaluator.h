@@ -29,7 +29,9 @@ namespace world::settlement
 
     class ProductionEvaluator
     {
-        static NecessityFactor GetPatrolNecessity(const Settlement &);       
+        static NecessityFactor GetPatrolNecessity(const Settlement &);
+
+        static NecessityFactor GetGarrisonNecessity(const Settlement &);       
 
         static NecessityFactor GetSewageNecessity(const Settlement &);       
 

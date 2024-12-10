@@ -259,6 +259,8 @@ namespace world::settlement
 
         void StrengthenPatrol();
 
+        void StrengthenGarrison();
+
         void ProcessEarthquake(const disaster::Earthquake &);
 
         void Update();

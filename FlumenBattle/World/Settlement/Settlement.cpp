@@ -309,6 +309,7 @@ void Settlement::DecideProduction()
     static const ProductionOptions options[] = {
         //ProductionOptions::PATROL, 
         ProductionOptions::SETTLERS, 
+        ProductionOptions::GARRISON,
         /*ProductionOptions::IRRIGATION, 
         ProductionOptions::LIBRARY,
         ProductionOptions::WALLS,
@@ -582,6 +583,11 @@ void Settlement::KillPopulation()
 void Settlement::StrengthenPatrol()
 {
     groupDynamics->AddPatrol(*this);
+}
+
+void Settlement::StrengthenGarrison()
+{
+    groupDynamics->AddGarrison(*this);
 }
 
 void Settlement::AddModifier(Modifier modifier)

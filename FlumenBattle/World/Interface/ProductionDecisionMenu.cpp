@@ -26,6 +26,7 @@ static constexpr auto OPTION_LAYOUT_POSITION = Position2(10.0f, 80.0f);
 static const settlement::ProductionOptions options[] = {
     settlement::ProductionOptions::WALLS,
     settlement::ProductionOptions::PATROL, 
+    settlement::ProductionOptions::GARRISON,
     settlement::ProductionOptions::SETTLERS, 
     settlement::ProductionOptions::IRRIGATION, 
     settlement::ProductionOptions::LIBRARY,

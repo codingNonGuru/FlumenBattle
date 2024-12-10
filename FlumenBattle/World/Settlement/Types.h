@@ -10,6 +10,7 @@ namespace world::settlement
     {
         NONE,
         PATROL,
+        GARRISON,
         FARM,
         SETTLERS,
         MONUMENT,

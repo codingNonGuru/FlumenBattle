@@ -25,7 +25,21 @@ NecessityFactor ProductionEvaluator::GetPatrolNecessity(const Settlement &settle
     {
         return 0;
     }
-}     
+}
+
+NecessityFactor ProductionEvaluator::GetGarrisonNecessity(const Settlement &settlement)
+{
+    auto &groupDynamics = settlement.GetGroupDynamics();
+    auto garrisonStrength = groupDynamics.GetGarrisonStrength();
+    if(garrisonStrength == 0)
+    {
+        return 10;
+    }
+    else
+    {
+        return 0;
+    }
+}
 
 NecessityFactor ProductionEvaluator::GetSewageNecessity(const Settlement &settlement)
 {
@@ -154,6 +168,8 @@ NecessityFactor ProductionEvaluator::GetNecessity(const Settlement &settlement, 
         return GetSettlersNecessity(settlement);
     case ProductionOptions::PATROL:
         return GetPatrolNecessity(settlement);
+    case ProductionOptions::GARRISON:
+        return GetGarrisonNecessity(settlement);
     case ProductionOptions::SEWAGE:
         return GetSewageNecessity(settlement);
     case ProductionOptions::HOUSING:

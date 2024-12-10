@@ -30,6 +30,8 @@ using namespace world::group;
 
 #define PATROL_CAP 4
 
+#define GARRISON_CAP 1
+
 GroupDynamics::GroupDynamics() {}
 
 void GroupDynamics::Initialize(settlement::Settlement &settlement)
@@ -47,7 +49,7 @@ void GroupDynamics::Update(settlement::Settlement &settlement)
 
     AddBandit(settlement);
 
-    AddGarrison(settlement);
+    //AddGarrison(settlement);
 
     AddRaider(settlement);
 
@@ -278,7 +280,7 @@ void GroupDynamics::AddBandit(settlement::Settlement &settlement)
 
 void GroupDynamics::AddGarrison(settlement::Settlement &settlement)
 {
-    if(garrisons.GetSize() == 1)
+    if(garrisons.GetSize() == GARRISON_CAP)
         return;
 
     const auto simulationLevel = settlement.GetSimulationLevel();
@@ -366,4 +368,9 @@ int GroupDynamics::GetGarrisonStrength() const
 int GroupDynamics::GetRaiderStrength() const
 {
     return raiders.GetSize();
+}
+
+bool GroupDynamics::HasMaximumGarrisons() const
+{
+    return garrisons.GetSize() == GARRISON_CAP;
 }
