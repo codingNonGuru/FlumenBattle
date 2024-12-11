@@ -237,6 +237,10 @@ namespace world::settlement
 
         bool IsDefended() const;
 
+        int GetDefenceSneakDC() const;
+
+        int GetWallsLevel() const;
+
         void SetupSimulation();
 
         world::WorldTile *FindColonySpot();

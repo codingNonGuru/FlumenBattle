@@ -97,6 +97,9 @@ void ActionPopup::Setup(group::GroupActions actionType, bool hasActionStarted)
     case group::GroupActions::TAKE_SHORT_REST:
         label->Setup("Quick rest");
         break;
+    case group::GroupActions::BYPASS_DEFENCES:
+        label->Setup("Sneak");
+        break;
     case group::GroupActions::ENGAGE:
         label->Setup("Engage");
         break;

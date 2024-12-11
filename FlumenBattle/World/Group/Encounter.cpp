@@ -30,6 +30,20 @@ namespace world::group
         isPlayerInvolved = playerGroup == attacker || playerGroup == defender;
 
         location = attacker->GetTile();
+
+        if(location->GetSettlement() != nullptr)
+        {
+            isSiege = true;
+        }
+        else
+        {
+            isSiege = false;
+        }
+    }
+
+    void Encounter::SetSiege(bool isSiege)
+    {
+        this->isSiege = isSiege;
     }
 
     void Encounter::Update()

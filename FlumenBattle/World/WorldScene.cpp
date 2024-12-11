@@ -340,6 +340,13 @@ namespace world
         }
     }
 
+    void WorldScene::InitiateDefenceBypass()
+    {
+        playerGroup->SelectAction(group::GroupActions::BYPASS_DEFENCES);
+
+        this->StartTime(1);
+    }
+
     void WorldScene::InitiatePlayerPersuasion()
     {
         playerGroup->SelectAction(group::GroupActions::PERSUADE);

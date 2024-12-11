@@ -25,6 +25,8 @@ namespace battle::interface
 
         LayoutGroup *layout;
 
+        LayoutGroup *labelLayout;
+
         Text *nameLabel;
 
         Text *classLabel;

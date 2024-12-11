@@ -193,6 +193,7 @@ namespace world::group
         travelActionData.Intensity = ActionIntensities::NORMAL;
 
         auto result = action->Initiate(*this, actionData);
+        result.Content.isAlreadyEngaged = actionData.IsEngaged;
 
         controller->RegisterActionInitiation(*this, result);
 

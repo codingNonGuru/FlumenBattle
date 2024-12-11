@@ -655,7 +655,7 @@ void Combatant::ApplyPermanentConditions()
     if(settlement != nullptr)
     {
         const auto battle = character->GetGroup()->GetEncounter();
-        if(battle->GetDefender() == character->GetGroup())
+        if(battle->GetDefender() == character->GetGroup() && battle->IsSiege() == true)
         {
             auto modifier = settlement->GetModifier(world::settlement::Modifiers::DEFENDER_GROUP_BONUS_AC);
             if(modifier != 0)

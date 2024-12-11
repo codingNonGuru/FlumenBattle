@@ -529,6 +529,16 @@ bool Settlement::IsDefended() const
     return groupDynamics->GetGarrisonStrength() != 0;
 }
 
+int Settlement::GetWallsLevel() const
+{
+    return GetBuildingCount(BuildingTypes::WALLS);
+}
+
+int Settlement::GetDefenceSneakDC() const
+{
+    return 10;
+}
+
 int Settlement::GetMulePrice() const
 {
     auto foodPrice = GetResourcePrice(ResourceTypes::FOOD);

@@ -18,7 +18,7 @@ namespace world::group
     {
         WorldTile *TravelDestination;
 
-        bool IsEngaged;
+        bool IsEngaged {false};
 
         GroupActionData() {}
 
@@ -43,11 +43,15 @@ namespace world::group
 
             int foragedFood;
 
+            bool isAlreadyEngaged;
+
             SpecificContent() {}
 
             SpecificContent(Group *group) : spottedGroup(group) {}
 
             SpecificContent(int food) : foragedFood(food) {}
+
+            SpecificContent(bool isEngaged) : isAlreadyEngaged(isEngaged) {}
         } Content;
 
         GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill) : 
@@ -58,6 +62,9 @@ namespace world::group
 
         GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill, int foragedFood) : 
         ActionType(actionType), HasRolled(true), Success(success), Skill(skill), Content{foragedFood} {}
+
+        GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill, bool isEngaged) : 
+        ActionType(actionType), HasRolled(true), Success(success), Skill(skill), Content{isEngaged} {}
 
         GroupActionResult() : HasRolled(false) {}
 

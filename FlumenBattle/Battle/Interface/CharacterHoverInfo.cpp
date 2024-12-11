@@ -35,18 +35,27 @@ void CharacterHoverInfo::HandleConfigure()
     (
         {drawOrder_, {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}}
     );
-    layout->SetDistancing(1, 0.0f, 0.0f);
+    layout->SetDistancing(1, 5.0f);
+    layout->AlignToCenter();
     layout->Enable();
 
+    labelLayout = ElementFactory::BuildElement <LayoutGroup> 
+    (
+        {drawOrder_, {layout}}
+    );
+    labelLayout->SetDistancing(1);
+    labelLayout->AlignToCenter();
+    labelLayout->Enable();
+
     nameLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {layout}}, 
-        {{"Large"}, TEXT_COLOR, ""}
+        {drawOrder_ + 1, {labelLayout}}, 
+        {{"Large"}, TEXT_COLOR}
     );
     nameLabel->Enable();
 
     classLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {layout}}, 
-        {{"Medium"}, TEXT_COLOR, ""}
+        {drawOrder_ + 1, {labelLayout}}, 
+        {{"Medium"}, TEXT_COLOR}
     );
     classLabel->Enable();
 
@@ -54,9 +63,9 @@ void CharacterHoverInfo::HandleConfigure()
     (
         {drawOrder_, {layout}}
     );
-    counterGroup->LockHeight(80.0f);
+    counterGroup->LockHeight(90.0f);
     counterGroup->SetDistancing(2, 60.0f, 35.0f);
-    counterGroup->SetOffset({-10.0f, 0.0f});
+    counterGroup->SetOffset({-10.0f, 15.0f});
     counterGroup->Enable();
 
     healthCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> 

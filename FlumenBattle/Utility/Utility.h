@@ -86,6 +86,21 @@ namespace utility
 
         bool operator ==(const SuccessTypes &other) const {return other == Type;}
 
+        const char *GetString() const 
+        {
+            switch(Type)
+            {
+            case SuccessTypes::CRITICAL_SUCCESS:
+                return "critical success";
+            case SuccessTypes::SUCCESS:
+                return "success";
+            case SuccessTypes::FAILURE:
+                return "failure";
+            case SuccessTypes::CRITICAL_FAILURE:
+                return "critical failure";
+            }
+        }
+
         operator SuccessTypes() {return Type;}
     };
 

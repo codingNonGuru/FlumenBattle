@@ -614,6 +614,11 @@ void WorldInterface::HandleActionInitiated()
 
     auto action = group::HumanMind::Get()->GetSelectedActionResult();
 
+    if(action.ActionType == group::GroupActions::ENGAGE && action.Content.isAlreadyEngaged == true)
+    {
+        return;
+    }
+
     if(std::chrono::duration_cast<std::chrono::milliseconds>(timestamp - popupTimestamp).count() < TIME_BETWEEN_FADING_POPUPS)
     {
         *popupQueue.Grow() = {PopupTypes::ACTION, {action.ActionType, true}};

@@ -31,6 +31,8 @@ namespace world::group
                 return BuildEngage();
             case GroupActions::FIGHT:
                 return BuildFight();
+            case GroupActions::BYPASS_DEFENCES:
+                return BuildBypassDefences();
             case GroupActions::DISENGAGE:
                 return BuildDisengage();
             case GroupActions::TRAVEL:
@@ -93,10 +95,22 @@ namespace world::group
     {
         static GroupAction action = {
             GroupActions::FIGHT, 
-            0 * GroupAction::BASE_PROGRESS_RATE,
+            0,
             false,
             &GroupActionValidator::CanFight, 
             &GroupActionPerformer::Fight
+            };
+        return &action;
+    }
+
+    const GroupAction * GroupActionFactory::BuildBypassDefences()
+    {
+        static GroupAction action = {
+            GroupActions::BYPASS_DEFENCES, 
+            0,
+            false,
+            &GroupActionValidator::CanBypassDefences, 
+            &GroupActionPerformer::BypassDefences
             };
         return &action;
     }
@@ -131,7 +145,7 @@ namespace world::group
     {
         static GroupAction action = {
             GroupActions::PERSUADE, 
-            0 * GroupAction::BASE_PROGRESS_RATE,
+            0,
             false, 
             &GroupActionValidator::CanPersuade, 
             &GroupActionPerformer::Persuade 
@@ -171,6 +185,8 @@ namespace world::group
             group.attitude = utility::GetRandom(1, 20) > 15 ? Attitudes::HOSTILE : Attitudes::INDIFFERENT;
 
             group.hasAttemptedPersuasion = false;
+
+            group.hasAttemptedBypassingDefences = false;
         }
     }
 
@@ -342,6 +358,50 @@ namespace world::group
     GroupActionResult GroupActionPerformer::Fight(Group& group)
     {
         
+    }
+
+    GroupActionResult GroupActionPerformer::BypassDefences(Group& group)
+    {
+        //sneak
+        //critical succes: +1 initiative, cancel siege mode
+        //succes: cancel siege mode
+        //fail: -
+        //critical failure: -2 initiative
+
+        //bribe
+        //critical succes: half money paid, cancel siege mode
+        //succes: pay money, cancel siege mode
+        //fail: 
+        //critical failure: lose money
+
+        //smash
+        //critical succes: +1 initiative, cancel siege mode
+        //succes: cancel siege mode
+        //fail: 2+1d6 damage per member
+        //critical failure: 4+2d6 damage per member, fatigued (fortitude dc 15)
+
+        const auto settlement = group.GetCurrentSettlement();
+        const auto sneakDC = settlement->GetDefenceSneakDC();
+
+        auto stealthBonus = group.GetMostSkilledMember(character::SkillTypes::STEALTH).Bonus;
+
+        auto checkResult = utility::RollD20Dice(sneakDC, stealthBonus);
+        if(checkResult.IsAnySuccess() == true)
+        {
+            group.GetEncounter()->SetSiege(false);
+        }
+        else
+        {
+            group.GetEncounter()->SetSiege(true);
+        }
+
+        group.hasAttemptedBypassingDefences = true;
+
+        group.GetOther()->attitude = Attitudes::HOSTILE;
+
+        group.SelectAction(GroupActions::ENGAGE, {true});
+
+        return {GroupActions::BYPASS_DEFENCES, checkResult, character::SkillTypes::STEALTH};
     }
 
     GroupActionResult GroupActionPerformer::Engage(Group& group)
@@ -589,6 +649,16 @@ namespace world::group
         group.GetOther()->attitude == Attitudes::HOSTILE && 
         group.GetEncounter()->HasBattleEnded() == false &&
         group.hasAttemptedPersuasion == false;
+    }
+
+    bool GroupActionValidator::CanBypassDefences(Group &group, const GroupActionData &data)
+    {
+        return group.IsDoing(GroupActions::ENGAGE) && 
+        group.GetEncounter()->GetAttacker() == &group &&
+        group.GetCurrentSettlement()->IsDefended() == true &&
+        group.GetCurrentSettlement()->GetWallsLevel() > 0 && 
+        group.GetEncounter()->HasBattleEnded() == false &&
+        group.hasAttemptedBypassingDefences == false;
     }
 
     bool GroupActionValidator::CanForage(Group &group, const GroupActionData &)

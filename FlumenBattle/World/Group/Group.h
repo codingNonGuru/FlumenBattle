@@ -133,6 +133,8 @@ namespace world::group
 
         bool hasAttemptedPersuasion;
 
+        bool hasAttemptedBypassingDefences;
+
         struct GroupLocation
         {
             friend class Group;
@@ -294,5 +296,7 @@ namespace world::group
         int GetDomainSettlementCount() const;
 
         bool HasSameAllegiance(const Group &) const;
+
+        bool HasAttemptedBypassingDefences() const {return hasAttemptedBypassingDefences;}
     };
 }

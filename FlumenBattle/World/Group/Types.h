@@ -15,7 +15,7 @@ namespace world::group
 
     enum class GroupActions
     {
-        TAKE_SHORT_REST, TAKE_LONG_REST, SEARCH, ENGAGE, FIGHT, DISENGAGE, TRAVEL, PERSUADE, FORAGE, NONE
+        TAKE_SHORT_REST, TAKE_LONG_REST, SEARCH, ENGAGE, FIGHT, DISENGAGE, TRAVEL, PERSUADE, FORAGE, BYPASS_DEFENCES, NONE
     };
 
     enum class ActionIntensities

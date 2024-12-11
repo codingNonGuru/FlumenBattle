@@ -1,4 +1,5 @@
 #include "FlumenEngine/Interface/Text.hpp"
+#include "FlumenEngine/Interface/LayoutGroup.h"
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Core/InputHandler.hpp"
 
@@ -20,29 +21,42 @@ static auto TEXT_COLOR = Color::RED * 0.5f;
 
 void GroupEngageMenu::HandleConfigure()
 {
+    mainLayout = ElementFactory::BuildElement <LayoutGroup> 
+    (
+        {drawOrder_, {Position2(20.0f, 20.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}}
+    );
+    mainLayout->SetDistancing(1, 15.0f);
+    mainLayout->Enable();
+
     descriptionLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {Position2(20.0f, 20.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}},
-        {{"Large"}, TEXT_COLOR, "You come across a band of travellers most merry..."}
+        {drawOrder_ + 1, {mainLayout}},
+        {{"Medium"}, TEXT_COLOR}
     );
     descriptionLabel->SetAlignment(Text::Alignments::LEFT);
     descriptionLabel->Enable();
 
     lootLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {ElementAnchors::LOWER_LEFT, ElementPivots::UPPER_LEFT, descriptionLabel}},
-        {{"Small"}, TEXT_COLOR, "You empty your foes pockets, bagging "}
+        {drawOrder_ + 1, {mainLayout}},
+        {{"Small"}, TEXT_COLOR}
     );
     lootLabel->SetAlignment(Text::Alignments::LEFT);
-    lootLabel->Disable();
+
+    resultLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {mainLayout}},
+        {{"Small"}, TEXT_COLOR}
+    );
+    resultLabel->SetAlignment(Text::Alignments::LEFT);
 
     coinIcon = ElementFactory::BuildElement <Element>
     (
-        {
-            Size(64, 64), 
+        { 
             drawOrder_ + 1, 
-            {ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, lootLabel}, 
+            {Position2(0.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, lootLabel}, 
             {"Coin", false}
         }
     );
+    coinIcon->AdjustSizeToTexture();
+    coinIcon->UpdatePositionConstantly();
     coinIcon->Enable();
 
     border = ElementFactory::BuildElement <Element>
@@ -57,22 +71,26 @@ void GroupEngageMenu::HandleConfigure()
     border->SetSpriteColor(BORDER_COLOR);
     border->Enable();
 
-    optionLabels.Initialize(MAXIMUM_OPTION_COUNT);
+    optionLayout = ElementFactory::BuildElement <LayoutGroup> 
+    (
+        {drawOrder_, {mainLayout}}
+    );
+    optionLayout->SetDistancing(1);
+    optionLayout->SetOffset(Position2(20.0f, 0.0f));
+    optionLayout->Enable();
 
-    auto startPosition = Position2(45.0f, 95.0f);
+    optionLabels.Initialize(MAXIMUM_OPTION_COUNT);
 
     for(int i = 0; i < MAXIMUM_OPTION_COUNT; ++i)
     {
         auto optionLabel = ElementFactory::BuildText(
-            {Size(100, 100), drawOrder_ + 1, {startPosition, ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}},
-            {{"Medium"}, Color::RED * 0.5f, "[F] Do battle with these treacherous arseholes"}
+            {drawOrder_ + 1, {optionLayout}},
+            {{"Small"}, TEXT_COLOR}
         );
         optionLabel->SetAlignment(Text::Alignments::LEFT);
         optionLabel->Disable();
 
         *optionLabels.Add() = optionLabel;
-
-        startPosition.y += optionLabel->GetSize().y;
     }
 }
 
@@ -104,6 +122,11 @@ void GroupEngageMenu::HandleFightPressed()
     Disable();
 
     WorldScene::Get()->InitiatePlayerBattle();
+}
+
+void GroupEngageMenu::HandleSneakPressed()
+{
+    WorldScene::Get()->InitiateDefenceBypass();
 }
 
 void GroupEngageMenu::HandlePersuadePressed()
@@ -141,6 +164,8 @@ void GroupEngageMenu::RefreshOptions()
     const auto encounter = WorldController::Get()->GetPlayerBattle();
     const auto enemy = encounter->GetOtherThan(player);
 
+    bool youAreLayingSiege = encounter->GetDefender() == enemy && enemy->GetCurrentSettlement() != nullptr && enemy->GetCurrentSettlement() == player->GetCurrentSettlement() && enemy->GetCurrentSettlement()->GetWallsLevel() != 0;
+
     if(encounter->HasBattleEnded() == true)
     {
         Phrase text("My liege, we have made short-shrift of their wretched kin.");
@@ -150,14 +175,39 @@ void GroupEngageMenu::RefreshOptions()
         text = "You empty your foes pockets, bagging ";
         text << enemy->GetMoney();
 
-        lootLabel->Enable();
         lootLabel->Setup(text);
+        lootLabel->Enable();
+
+        resultLabel->Disable();
     }
     else
     {
-        descriptionLabel->Setup("You come across a band of travellers most merry...");
+        Phrase text("You come across a ");
+        text << utility::GetClassName(enemy->GetClass()) << " of " << enemy->GetHome()->GetName() << ".";
+
+        if(youAreLayingSiege == true)
+        {
+            text << '\n';
+            text << "They are protected by walls.";
+        }
+
+        descriptionLabel->Setup(text);
 
         lootLabel->Disable();
+
+        if(player->HasAttemptedBypassingDefences())
+        {
+            auto &result = group::HumanMind::Get()->GetPerformedActionResult();
+
+            auto text = Phrase("Your attempt to bypass defences was a ") << result.Success.GetString() << " (" << result.Success.Roll + result.Success.Modifier << ")";
+            resultLabel->Setup(text);
+
+            resultLabel->Enable();
+        }
+        else
+        {
+            resultLabel->Disable();
+        }
     }
 
     for(auto label : optionLabels)
@@ -166,7 +216,7 @@ void GroupEngageMenu::RefreshOptions()
     }
 
     auto label = optionLabels.GetStart();
-
+    
     if(encounter->HasBattleEnded() == true && enemy->GetClass() == group::GroupClasses::GARRISON && enemy->GetCurrentSettlement()->IsDefended() == false)
     {
         (*label)->Enable();
@@ -183,6 +233,16 @@ void GroupEngageMenu::RefreshOptions()
         label++;
 
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_F, {this, &GroupEngageMenu::HandleFightPressed});
+
+        if(player->ValidateAction(group::GroupActions::BYPASS_DEFENCES) == true)
+        {
+            (*label)->Enable();
+            auto text = Phrase("[S] Sneak to bypass their defences (DC ") << enemy->GetCurrentSettlement()->GetDefenceSneakDC() << ")";
+            (*label)->Setup(text);
+            label++;
+
+            InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_S, {this, &GroupEngageMenu::HandleSneakPressed});
+        }
     }
 
     if(player->ValidateAction(group::GroupActions::DISENGAGE) == true)
@@ -209,4 +269,5 @@ void GroupEngageMenu::DisableInput()
     InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_L);
     InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_P);
     InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_C);
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_S);
 }

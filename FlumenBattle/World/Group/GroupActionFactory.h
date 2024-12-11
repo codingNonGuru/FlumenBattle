@@ -28,7 +28,9 @@ namespace world::group
 
         const GroupAction * BuildPersuade();
 
-        const GroupAction *BuildForage();
+        const GroupAction * BuildForage();
+
+        const GroupAction * BuildBypassDefences();
 
     public:
         const GroupAction * BuildAction(GroupActions);
@@ -61,6 +63,8 @@ namespace world::group
         static GroupActionResult Persuade(Group &group);
 
         static GroupActionResult Forage(Group &group);
+
+        static GroupActionResult BypassDefences(Group &group);
     };
 
     class GroupActionValidator
@@ -76,6 +80,8 @@ namespace world::group
         static bool CanEngage(Group &, const GroupActionData &);
 
         static bool CanFight(Group &, const GroupActionData &);
+
+        static bool CanBypassDefences(Group &, const GroupActionData &);
 
         static bool CanDisengage(Group &, const GroupActionData &);
 

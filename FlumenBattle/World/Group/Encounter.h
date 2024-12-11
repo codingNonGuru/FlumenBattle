@@ -20,6 +20,8 @@ namespace world::group
 
         bool isBattle;
 
+        bool isSiege;
+
         bool hasBattleEnded;
 
         bool isPlayerInvolved;
@@ -37,6 +39,8 @@ namespace world::group
 
         void Initialize(Group *, Group *);
 
+        void SetSiege(bool);
+
         void Update();
 
         void StartFighting() {isBattle = true;}
@@ -52,6 +56,8 @@ namespace world::group
         bool IsOngoing() const {return isOngoing;}
 
         bool IsBattle() const {return isBattle;}
+
+        bool IsSiege() const {return isSiege;}
 
         bool HasBattleEnded() const {return hasBattleEnded;}
 
