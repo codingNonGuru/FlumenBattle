@@ -64,6 +64,31 @@ const GroupBuffer GroupBatchMap::GetNearbyGroups(WorldTile *tile, int maximumGro
     return std::move(*newBuffer);
 }
 
+const GroupBuffer GroupBatchMap::GetGroupsInTile(WorldTile *tile) const
+{
+    static const auto GROUP_BATCH_TILE_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_BATCH_TILE_SIZE).Integer;
+
+    auto newBuffer = buffers.Add();
+
+    newBuffer->Groups.Reset();
+
+    auto x = tile->SquareCoordinates.x / GROUP_BATCH_TILE_SIZE;
+    auto y = tile->SquareCoordinates.y / GROUP_BATCH_TILE_SIZE;
+
+    auto batch = batches.Get(x, y);
+
+    auto &groups = batch->GetGroups();
+    for(auto &group : groups)
+    {
+        if(group->GetTile() != tile)
+            continue;
+
+        *newBuffer->Groups.Add() = group;
+    }
+
+    return std::move(*newBuffer);
+}
+
 GroupBuffer::GroupBuffer() : Groups(GROUPS_PER_VICINITY_BUFFER) {}
 
 GroupBuffer::~GroupBuffer()

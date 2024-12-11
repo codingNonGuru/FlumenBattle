@@ -21,6 +21,7 @@
 #include "FlumenBattle/Utility/Pathfinder.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
 #include "FlumenBattle/WorldInterface.h"
+#include "FlumenBattle/World/Group/GroupDynamics.h"
 
 static const Float CAMERA_PAN_SPEED = 800.0f;
 
@@ -466,6 +467,23 @@ namespace world
         InputHandler::UnregisterContinualEvent(TRAVEL_MODE_INPUT_KEY);
     }
 
+    bool WorldController::CanAttackGarrison()
+    {
+        static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+        auto playerSettlement = playerGroup->GetCurrentSettlement();
+        if(playerSettlement == nullptr)
+            return false;
+
+        if(playerSettlement->IsDefended() == false)
+            return false;
+
+        if(playerGroup->GetDomain() == playerSettlement->GetPolity())
+            return false;
+
+        return true;
+    }
+
     bool WorldController::CanBuyFood()
     {
         auto playerGroup = WorldScene::Get()->GetPlayerGroup();
@@ -501,6 +519,27 @@ namespace world
             return false;
 
         return true;
+    }
+
+    void WorldController::AttackGarrison()
+    {
+        static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+        auto playerSettlement = playerGroup->GetCurrentSettlement();
+
+        auto localGroups = WorldScene::Get()->GetGroupsInTile(playerSettlement->GetLocation());
+        
+        group::Group *garrison = nullptr;
+        for(auto &group : localGroups.Groups)
+        {
+            if(group->GetClass() != group::GroupClasses::GARRISON)
+                continue;
+
+            garrison = group;
+            break;
+        }
+
+        WorldScene::Get()->InitiateEncounter(playerGroup, garrison);
     }
 
     void WorldController::BuyFood()

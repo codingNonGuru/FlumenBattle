@@ -44,5 +44,7 @@ namespace world::group
         const container::Grid <GroupBatch> &GetBatches() const {return batches;}
 
         const GroupBuffer GetNearbyGroups(WorldTile *, int = 1) const;
+
+        const GroupBuffer GetGroupsInTile(WorldTile *) const;
     };
 }

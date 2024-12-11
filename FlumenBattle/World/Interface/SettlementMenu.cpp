@@ -76,6 +76,7 @@ void SettlementMenu::HandleConfigure()
     optionLayout->Enable();
 
     auto options = {
+        SettlementMenuOptions::ATTACK, 
         SettlementMenuOptions::BUY_FOOD, 
         SettlementMenuOptions::BUY_MULE, 
         SettlementMenuOptions::SIGN_UP_TO_DELIVER_ITEM, 
@@ -128,6 +129,12 @@ void SettlementMenu::ProcessOptionInput(SettlementMenuOptions option)
 {
     switch(option)
     {
+    case SettlementMenuOptions::ATTACK:
+        if(WorldController::Get()->CanAttackGarrison() == true)
+        {
+            WorldController::Get()->AttackGarrison();
+        }
+        break;
     case SettlementMenuOptions::BUY_FOOD:
         if(WorldController::Get()->CanBuyFood() == true)
         {

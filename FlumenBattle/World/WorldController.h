@@ -137,9 +137,13 @@ namespace world
 
         void DisableEncounterMode();
 
+        bool CanAttackGarrison();
+
         bool CanBuyFood();
 
         bool CanBuyMule();
+
+        void AttackGarrison();
 
         void BuyFood();
 

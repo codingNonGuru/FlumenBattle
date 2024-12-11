@@ -159,6 +159,8 @@ namespace world
 
         const group::GroupBuffer GetNearbyGroups(WorldTile *, int = 1);
 
+        const group::GroupBuffer GetGroupsInTile(WorldTile *);
+
         void InitiateEncounter(group::Group *, group::Group *);
 
         void InitiatePlayerPersuasion();

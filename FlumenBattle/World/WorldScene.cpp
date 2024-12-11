@@ -646,6 +646,11 @@ namespace world
         return group::GroupBatchMap::Get()->GetNearbyGroups(tile, maximumGroupDistance);
     }
 
+    const group::GroupBuffer WorldScene::GetGroupsInTile(WorldTile *tile)
+    {
+        return group::GroupBatchMap::Get()->GetGroupsInTile(tile);
+    }
+
     settlement::Settlement *WorldScene::GetConqueredSettlement() const
     {
         return conqueredSettlement;

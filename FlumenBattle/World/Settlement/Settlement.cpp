@@ -526,7 +526,6 @@ world::SimulationLevels Settlement::GetSimulationLevel() const
 
 bool Settlement::IsDefended() const
 {
-    std::cout<<"PPEEEEEELEU "<<groupDynamics->GetGarrisonStrength()<<"\n";
     return groupDynamics->GetGarrisonStrength() != 0;
 }
 
