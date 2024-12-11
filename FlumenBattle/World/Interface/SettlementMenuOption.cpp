@@ -51,6 +51,9 @@ void SettlementMenuOption::Setup(SettlementMenu *newMenu, SettlementMenuOptions 
     case SettlementMenuOptions::ATTACK:
         label->Setup("Attack");
         break;
+    case SettlementMenuOptions::CONQUER:
+        label->Setup("Conquer");
+        break;
     case SettlementMenuOptions::BUY_FOOD:
         priceCounter->Setup("Coin", std::function <int(void)> ([] -> int {
             auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
@@ -112,6 +115,22 @@ void SettlementMenuOption::HandleUpdate()
     {
     case SettlementMenuOptions::ATTACK:
         if(WorldController::Get()->CanAttackGarrison() == false)
+        {
+            SetInteractivity(false);
+
+            SetOpacity(BASE_OPTION_OPACITY);
+
+            label->SetOpacity(BASE_OPTION_OPACITY);
+        }
+        else
+        {
+            SetInteractivity(true);
+
+            label->SetOpacity(HOVERED_OPTION_OPACITY);
+        }
+        break;
+    case SettlementMenuOptions::CONQUER:
+        if(WorldController::Get()->CanConquerSettlement() == false)
         {
             SetInteractivity(false);
 

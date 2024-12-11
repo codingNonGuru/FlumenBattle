@@ -484,6 +484,23 @@ namespace world
         return true;
     }
 
+    bool WorldController::CanConquerSettlement()
+    {
+        static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+        auto playerSettlement = playerGroup->GetCurrentSettlement();
+        if(playerSettlement == nullptr)
+            return false;
+
+        if(playerSettlement->IsDefended() == true)
+            return false;
+
+        if(playerGroup->GetDomain() == playerSettlement->GetPolity())
+            return false;
+
+        return true;
+    }
+
     bool WorldController::CanBuyFood()
     {
         auto playerGroup = WorldScene::Get()->GetPlayerGroup();

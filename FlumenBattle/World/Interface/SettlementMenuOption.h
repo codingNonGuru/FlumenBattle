@@ -12,6 +12,7 @@ namespace world::interface
     enum class SettlementMenuOptions
     {
         ATTACK,
+        CONQUER,
         BUY_FOOD,
         BUY_MULE,
         SIGN_UP_TO_DELIVER_ITEM,

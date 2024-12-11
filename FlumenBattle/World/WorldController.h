@@ -139,6 +139,8 @@ namespace world
 
         bool CanAttackGarrison();
 
+        bool CanConquerSettlement();
+
         bool CanBuyFood();
 
         bool CanBuyMule();

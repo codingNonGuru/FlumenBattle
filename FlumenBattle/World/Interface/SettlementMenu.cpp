@@ -77,6 +77,7 @@ void SettlementMenu::HandleConfigure()
 
     auto options = {
         SettlementMenuOptions::ATTACK, 
+        SettlementMenuOptions::CONQUER,
         SettlementMenuOptions::BUY_FOOD, 
         SettlementMenuOptions::BUY_MULE, 
         SettlementMenuOptions::SIGN_UP_TO_DELIVER_ITEM, 
@@ -133,6 +134,12 @@ void SettlementMenu::ProcessOptionInput(SettlementMenuOptions option)
         if(WorldController::Get()->CanAttackGarrison() == true)
         {
             WorldController::Get()->AttackGarrison();
+        }
+        break;
+    case SettlementMenuOptions::CONQUER:
+        if(WorldController::Get()->CanConquerSettlement() == true)
+        {
+            WorldScene::Get()->AccomplishPlayerConquest(currentSettlement);
         }
         break;
     case SettlementMenuOptions::BUY_FOOD:
