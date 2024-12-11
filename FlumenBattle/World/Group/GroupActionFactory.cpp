@@ -353,11 +353,11 @@ namespace world::group
     {
         if(group.encounter->IsWinner(&group) == true)
         {
-            group.money += group.GetOther()->money;
+            group.AddMoney(group.GetOther()->money);
         }
         else if(group.encounter->IsWinner(group.GetOther()) == true)
         {
-            group.GetOther()->money += group.money;
+            group.GetOther()->AddMoney(group.money);
         }
 
         group.CancelAction();
