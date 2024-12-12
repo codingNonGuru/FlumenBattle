@@ -98,7 +98,7 @@ void CharacterHoverInfo::HandleConfigure()
     (
         {drawOrder_, {layout}}
     );
-    saveThrowGroup->LockHeight(50.0f);
+    saveThrowGroup->LockHeight(40.0f);
     saveThrowGroup->SetDistancing(3, 60.0f);
     saveThrowGroup->SetOffset({-10.0f, 0.0f});
     saveThrowGroup->Enable();

@@ -536,7 +536,7 @@ int Settlement::GetWallsLevel() const
 
 int Settlement::GetDefenceSneakDC() const
 {
-    return 10;
+    return 12;
 }
 
 int Settlement::GetMulePrice() const

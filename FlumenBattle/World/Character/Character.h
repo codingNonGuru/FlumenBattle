@@ -199,6 +199,8 @@ namespace world::character
 
         const Pool <Condition> &GetConditions() const;
 
+        int GetInitiativeModifier() const;
+
         bool SelectAction(Index);
 
         bool SelectActionOption(Index);
@@ -236,6 +238,8 @@ namespace world::character
         void TakeLongRest();
 
         void AddCondition(ConditionData);
+
+        void RemoveCondition(Conditions);
 
         void Update();
 

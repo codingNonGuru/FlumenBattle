@@ -138,6 +138,17 @@ namespace world::character
         return conditions.GetConditions();
     }
 
+    int Character::GetInitiativeModifier() const
+    {
+        auto initiative = abilities.GetModifier(world::character::AbilityTypes::DEXTERITY);
+
+        initiative += GetModifier(Modifiers::INITIATIVE_BONUS);
+
+        initiative -= GetModifier(Modifiers::INITIATIVE_PENALTY);
+
+        return initiative;
+    }
+
     Integer Character::GetArmorClass() const
     {
         if(GetItem(ItemPositions::BODY) != nullptr)
@@ -353,6 +364,11 @@ namespace world::character
     void Character::AddCondition(ConditionData data)
     {
         conditions.AddCondition(data);
+    }
+
+    void Character::RemoveCondition(Conditions condition)
+    {
+        conditions.RemoveCondition(condition);
     }
 
     void Character::Update()

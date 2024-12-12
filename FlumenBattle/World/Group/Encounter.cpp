@@ -112,6 +112,16 @@ namespace world::group
         isOngoing = false;
 
         this->winner = winner;
+
+        for(auto &character : winner->GetCharacters())
+        {
+            character.RemoveCondition(character::Conditions::SURPRISED);
+        }
+
+        for(auto &character : GetOtherThan(winner)->GetCharacters())
+        {
+            character.RemoveCondition(character::Conditions::SURPRISED);
+        }
     }
 
     void Encounter::Terminate()

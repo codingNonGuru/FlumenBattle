@@ -38,6 +38,11 @@ namespace battle
         {
             return Initiative > other.Initiative;
         }
+
+        bool operator < (const Turn &other)
+        {
+            return Initiative < other.Initiative;
+        }
     };
 
     class BattleScene : public Scene, public core::Singleton <BattleScene>

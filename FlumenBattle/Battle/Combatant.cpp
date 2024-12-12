@@ -156,8 +156,10 @@ void Combatant::StartTurn()
 
 Integer Combatant::RollInitiative() const
 {
-    auto initiative = utility::GetRandom(1, 20);
-    initiative += character->abilities.GetModifier(world::character::AbilityTypes::DEXTERITY);
+    auto initiative = utility::RollD20Dice();
+
+    initiative += character->GetInitiativeModifier();
+
     return initiative;
 }
 

@@ -25,7 +25,7 @@ namespace world::character
     {
         using ConditionType::ConditionType; 
 
-        void HandleApplyEffect(Character &character) const override
+        void HandleApplyEffect(Character &character, const Condition *condition) const override
         {
             ModifierAccessor::AddModifier(character, {Modifiers::ALL_ROLLS_PENALTY, 1});
         }
@@ -35,7 +35,7 @@ namespace world::character
     {
         using ConditionType::ConditionType; 
 
-        void HandleApplyEffect(Character &character) const override
+        void HandleApplyEffect(Character &character, const Condition *condition) const override
         {
             ModifierAccessor::AddModifier(character, {Modifiers::ALL_ROLLS_PENALTY, 1});
         }
@@ -45,7 +45,7 @@ namespace world::character
     {
         using ConditionType::ConditionType; 
 
-        void HandleApplyEffect(Character &character) const override
+        void HandleApplyEffect(Character &character, const Condition *condition) const override
         {
             ModifierAccessor::AddModifier(character, {Modifiers::ALL_ROLLS_PENALTY, 1});
         }
@@ -55,7 +55,7 @@ namespace world::character
     {
         using ConditionType::ConditionType; 
 
-        void HandleApplyEffect(Character &character) const override
+        void HandleApplyEffect(Character &character, const Condition *condition) const override
         {
             ModifierAccessor::AddModifier(character, {Modifiers::ALL_ROLLS_PENALTY, 1});
         }
@@ -65,7 +65,7 @@ namespace world::character
     {
         using ConditionType::ConditionType; 
 
-        void HandleApplyEffect(Character &character) const override
+        void HandleApplyEffect(Character &character, const Condition *condition) const override
         {
             ModifierAccessor::AddModifier(character, {Modifiers::DAMAGE_BONUS, 1});
             ModifierAccessor::AddModifier(character, {Modifiers::FORTITUDE_BONUS, 1});
@@ -89,6 +89,16 @@ namespace world::character
         void HandleApplyEffect(battle::Combatant &combatant, const Condition *condition) const override
         {
             ModifierAccessor::AddModifier(combatant, {Modifiers::MOVE_SPEED, -2});
+        }
+    };
+
+    class Surprised : public ConditionType
+    {
+        using ConditionType::ConditionType; 
+
+        void HandleApplyEffect(Character &character, const Condition *condition) const override
+        {
+            ModifierAccessor::AddModifier(character, {Modifiers::INITIATIVE_PENALTY, condition->Strength});
         }
     };
 
@@ -124,7 +134,7 @@ namespace world::character
 
 void Condition::ApplyEffect(Character &character) const
 {
-    Type->HandleApplyEffect(character);
+    Type->HandleApplyEffect(character, this);
 }
 
 void Condition::ApplyEffect(battle::Combatant &combatant) const
@@ -185,6 +195,13 @@ Condition ConditionFactory::Create(ConditionData data)
         return 
         {
             [&] {static const auto conditionType = WallProtection(data.Type, "Wall protection", true); return &conditionType;} (),
+            data.Strength,
+            data.Duration
+        };
+    case Conditions::SURPRISED:
+        return 
+        {
+            [&] {static const auto conditionType = Surprised(data.Type, "Surprised", false); return &conditionType;} (),
             data.Strength,
             data.Duration
         };

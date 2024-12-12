@@ -53,7 +53,7 @@ namespace world::character
 
         explicit ConditionType(Conditions type, ShortWord name, bool isTimeDependent) : Type(type), Name(name), IsTimeDependent(isTimeDependent) {}
 
-        virtual void HandleApplyEffect(Character &) const {}
+        virtual void HandleApplyEffect(Character &, const Condition *condition = nullptr) const {}
 
         virtual void HandleApplyEffect(battle::Combatant &, const Condition *condition = nullptr) const {}
     };

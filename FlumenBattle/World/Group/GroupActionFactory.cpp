@@ -389,10 +389,26 @@ namespace world::group
         if(checkResult.IsAnySuccess() == true)
         {
             group.GetEncounter()->SetSiege(false);
+
+            if(checkResult.IsCriticalSuccess() == true)
+            {
+                for(auto &character : group.GetOther()->GetCharacters())
+                {
+                    character.AddCondition({character::Conditions::SURPRISED, 0, 1});
+                }
+            }
         }
         else
         {
             group.GetEncounter()->SetSiege(true);
+
+            if(checkResult.IsCriticalFailure() == true)
+            {
+                for(auto &character : group.GetCharacters())
+                {
+                    character.AddCondition({character::Conditions::SURPRISED, 0, 2});
+                }
+            }
         }
 
         group.hasAttemptedBypassingDefences = true;
