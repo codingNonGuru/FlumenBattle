@@ -32,4 +32,9 @@ WorldMixer::WorldMixer()
         auto sound = COIN_SOUNDS.GetRandom();
         engine::SoundManager::Get()->PlaySound(*sound);
     };
+
+    group::HumanMind::Get()->OnSettlementLooted += [] {
+        auto sound = COIN_SOUNDS.GetRandom();
+        engine::SoundManager::Get()->PlaySound(*sound);
+    };
 }

@@ -118,6 +118,9 @@ void ActionPopup::Setup(group::GroupActions actionType, bool hasActionStarted)
     case group::GroupActions::FORAGE:
         label->Setup("Forage");
         break;
+    case group::GroupActions::LOOT_SETTLEMENT:
+        label->Setup("Loot");
+        break;
     }
 
     backdrop->SetWidth(label->GetWidth() + BACKDROP_SIZE_DELTA);

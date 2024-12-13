@@ -206,6 +206,15 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
         OnSkillCheckRolled.Invoke();
     }
 
+    if(result.ActionType == GroupActions::LOOT_SETTLEMENT)
+    {
+        moneyChange = result.Content.lootedMoney;
+
+        OnPlayerWealthChanged.Invoke();
+
+        OnSettlementLooted.Invoke();
+    }
+
     OnActionPerformed.Invoke();
 }
 

@@ -41,6 +41,8 @@ namespace world::group
                 return BuildPersuade();
             case GroupActions::FORAGE:
                 return BuildForage();
+            case GroupActions::LOOT_SETTLEMENT:
+                return BuildLootSettlement();
         }
     }
 
@@ -161,6 +163,18 @@ namespace world::group
             false, 
             &GroupActionValidator::CanForage, 
             &GroupActionPerformer::Forage 
+            };
+        return &action;
+    }
+
+    const GroupAction * GroupActionFactory::BuildLootSettlement()
+    {
+        static GroupAction action = {
+            GroupActions::LOOT_SETTLEMENT, 
+            3 * WorldTime::HOUR_SIZE * GroupAction::BASE_PROGRESS_RATE,
+            false, 
+            &GroupActionValidator::CanLootSettlement, 
+            &GroupActionPerformer::LootSettlement
             };
         return &action;
     }
@@ -590,7 +604,21 @@ namespace world::group
 
         group.CancelAction();
 
-        return {GroupActions::FORAGE, skillCheck, character::SkillTypes::SURVIVAL, foragedFood};
+        return {GroupActions::FORAGE, skillCheck, character::SkillTypes::SURVIVAL, GroupActionResult::Food(foragedFood)};
+    }
+
+    GroupActionResult GroupActionPerformer::LootSettlement(Group& group)
+    {
+        if(group.actionProgress != group.action->BaseDuration)
+            return {};
+
+        auto money = 100;
+
+        group.AddMoney(money);
+
+        group.CancelAction();
+
+        return {GroupActions::LOOT_SETTLEMENT, GroupActionResult::Money(money)};
     }
 
     bool GroupActionValidator::CanTakeShortRest(Group &group, const GroupActionData &)
@@ -680,5 +708,10 @@ namespace world::group
     bool GroupActionValidator::CanForage(Group &group, const GroupActionData &)
     {
         return true;
+    }
+
+    bool GroupActionValidator::CanLootSettlement(Group &group, const GroupActionData &data)
+    {
+        return group.GetCurrentSettlement()->IsDefended() == false;
     }
 }

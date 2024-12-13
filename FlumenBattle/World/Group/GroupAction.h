@@ -19,7 +19,7 @@ namespace world::group
 
         bool (*onCheck) (Group &, const GroupActionData &);
 
-        GroupActionResult (*onInitiate) (Group &, const GroupActionData &);
+        GroupActionResult (*onInitiate) (Group &, const GroupActionData &) {nullptr};
 
         int (*onGetDuration) (const Group &);
 
@@ -31,7 +31,7 @@ namespace world::group
             bool hasVaryingIntensity, 
             bool (*_onCheck) (Group &, const GroupActionData &), 
             GroupActionResult (*_onPerform) (Group &),
-            GroupActionResult (*_onInitiate) (Group &, const GroupActionData &) = nullptr,
+            GroupActionResult (*_onInitiate) (Group &, const GroupActionData &) = NULL,
             int (*_onGetDuration) (const Group &) = nullptr) : 
             Type(type), BaseDuration(duration), HasVaryingIntensity(hasVaryingIntensity), onCheck(_onCheck), onInitiate(_onInitiate), onGetDuration(_onGetDuration), onPerform(_onPerform) {}
 
@@ -50,7 +50,7 @@ namespace world::group
 
         GroupActionResult Initiate(Group &group, const GroupActionData &data = GroupActionData()) const
         {
-            if(onInitiate)
+            if(onInitiate != nullptr)
             {
                 onInitiate(group, data);
             }
@@ -60,7 +60,7 @@ namespace world::group
 
         int GetDuration(const Group &group) const
         {
-            if(onGetDuration)
+            if(onGetDuration != nullptr)
             {
                 return onGetDuration(group);
             }

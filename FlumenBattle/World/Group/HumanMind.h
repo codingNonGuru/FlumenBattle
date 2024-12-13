@@ -119,6 +119,8 @@ namespace world::group
 
         Delegate OnMarketTransaction;
 
+        Delegate OnSettlementLooted;
+
         Delegate OnHeroJoinedParty;
 
         Delegate OnCurrentRecruitPoolUpdate;

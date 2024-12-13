@@ -8,6 +8,11 @@
 namespace world
 {
     class WorldTile;
+
+    namespace settlement
+    {
+        class Settlement;
+    }
 }
 
 namespace world::group
@@ -18,17 +23,27 @@ namespace world::group
     {
         WorldTile *TravelDestination;
 
+        settlement::Settlement *LootTarget;
+
         bool IsEngaged {false};
 
         GroupActionData() {}
 
         GroupActionData(WorldTile *travelDestination) : TravelDestination(travelDestination) {}
 
+        GroupActionData(settlement::Settlement *lootTarget) : LootTarget(lootTarget) {}
+
         GroupActionData(bool isEngaged) : IsEngaged(isEngaged) {}
     };
 
     struct GroupActionResult
     {
+        #define STRONGLY_TYPED_INTEGER(Type) struct Type {int value; operator int() {return value;}}
+
+        STRONGLY_TYPED_INTEGER(Food);
+
+        STRONGLY_TYPED_INTEGER(Money);
+
         GroupActions ActionType;
 
         bool HasRolled;
@@ -41,17 +56,21 @@ namespace world::group
         {
             Group *spottedGroup;
 
-            int foragedFood;
+            Food foragedFood;
 
             bool isAlreadyEngaged;
+
+            Money lootedMoney;
 
             SpecificContent() {}
 
             SpecificContent(Group *group) : spottedGroup(group) {}
 
-            SpecificContent(int food) : foragedFood(food) {}
+            explicit SpecificContent(Food food) : foragedFood(food) {}
 
             SpecificContent(bool isEngaged) : isAlreadyEngaged(isEngaged) {}
+
+            explicit SpecificContent(Money money) : lootedMoney(money) {}
         } Content;
 
         GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill) : 
@@ -60,11 +79,14 @@ namespace world::group
         GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill, Group *spottedGroup) : 
         ActionType(actionType), HasRolled(true), Success(success), Skill(skill), Content{spottedGroup} {}
 
-        GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill, int foragedFood) : 
+        GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill, Food foragedFood) : 
         ActionType(actionType), HasRolled(true), Success(success), Skill(skill), Content{foragedFood} {}
 
         GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill, bool isEngaged) : 
         ActionType(actionType), HasRolled(true), Success(success), Skill(skill), Content{isEngaged} {}
+
+        GroupActionResult(GroupActions actionType, Money money) : 
+        ActionType(actionType), HasRolled(false), Content{money} {}
 
         GroupActionResult() : HasRolled(false) {}
 

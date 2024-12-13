@@ -501,6 +501,23 @@ namespace world
         return true;
     }
 
+    bool WorldController::CanLootSettlement()
+    {
+        static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+        auto playerSettlement = playerGroup->GetCurrentSettlement();
+        if(playerSettlement == nullptr)
+            return false;
+
+        if(playerSettlement->IsDefended() == true)
+            return false;
+
+        if(playerGroup->GetDomain() == playerSettlement->GetPolity())
+            return false;
+
+        return true;
+    }
+
     bool WorldController::CanBuyFood()
     {
         auto playerGroup = WorldScene::Get()->GetPlayerGroup();
@@ -557,6 +574,15 @@ namespace world
         }
 
         WorldScene::Get()->InitiateEncounter(playerGroup, garrison);
+    }
+
+    void WorldController::LootSettlement()
+    {
+        static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+        auto playerSettlement = playerGroup->GetCurrentSettlement();
+
+        playerGroup->SelectAction(group::GroupActions::LOOT_SETTLEMENT, {playerSettlement});
     }
 
     void WorldController::BuyFood()

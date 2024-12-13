@@ -13,6 +13,7 @@ namespace world::interface
     {
         ATTACK,
         CONQUER,
+        LOOT,
         BUY_FOOD,
         BUY_MULE,
         SIGN_UP_TO_DELIVER_ITEM,

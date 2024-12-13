@@ -141,11 +141,15 @@ namespace world
 
         bool CanConquerSettlement();
 
+        bool CanLootSettlement();
+
         bool CanBuyFood();
 
         bool CanBuyMule();
 
         void AttackGarrison();
+
+        void LootSettlement();
 
         void BuyFood();
 

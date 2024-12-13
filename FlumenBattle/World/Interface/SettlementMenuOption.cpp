@@ -54,6 +54,9 @@ void SettlementMenuOption::Setup(SettlementMenu *newMenu, SettlementMenuOptions 
     case SettlementMenuOptions::CONQUER:
         label->Setup("Conquer");
         break;
+    case SettlementMenuOptions::LOOT:
+        label->Setup("Loot");
+        break;
     case SettlementMenuOptions::BUY_FOOD:
         priceCounter->Setup("Coin", std::function <int(void)> ([] -> int {
             auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
@@ -131,6 +134,22 @@ void SettlementMenuOption::HandleUpdate()
         break;
     case SettlementMenuOptions::CONQUER:
         if(WorldController::Get()->CanConquerSettlement() == false)
+        {
+            SetInteractivity(false);
+
+            SetOpacity(BASE_OPTION_OPACITY);
+
+            label->SetOpacity(BASE_OPTION_OPACITY);
+        }
+        else
+        {
+            SetInteractivity(true);
+
+            label->SetOpacity(HOVERED_OPTION_OPACITY);
+        }
+        break;
+    case SettlementMenuOptions::LOOT:
+        if(WorldController::Get()->CanLootSettlement() == false)
         {
             SetInteractivity(false);
 
