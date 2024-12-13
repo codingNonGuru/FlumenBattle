@@ -41,20 +41,20 @@ void ResourceItem::HandleConfigure()
     nameLabel->Enable();
 
     storedLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {Position2(160.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
-        {{"Small"}, TEXT_COLOR, "100"}
+        {drawOrder_ + 1, {Position2(250.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
+        {{"Small"}, TEXT_COLOR}
     );
     storedLabel->Enable();
 
     outputLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {Position2(230.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
-        {{"Small"}, TEXT_COLOR, "+1"}
+        {drawOrder_ + 1, {Position2(350.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
+        {{"Small"}, TEXT_COLOR}
     );
     outputLabel->Enable();
 
     inputLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {Position2(300.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
-        {{"Small"}, TEXT_COLOR, "+1"}
+        {drawOrder_ + 1, {Position2(450.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
+        {{"Small"}, TEXT_COLOR}
     );
     inputLabel->Enable();
 }
@@ -229,7 +229,7 @@ void EconomyTab::HandleConfigure()
         auto item = ElementFactory::BuildElement <ResourceItem>
         (
             {
-                Size(400, 35), 
+                Size(500, 35), 
                 drawOrder_ + 1, 
                 {itemLayout}, 
                 {"panel-border-001", true}

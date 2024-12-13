@@ -371,7 +371,7 @@ void SettlementLabel::HandleUpdate()
     text << settlement->GetPopulation();
     populationLabel->Setup(text);
 
-    if(camera->GetZoomFactor() < 0.35f && IsSettlementHovered() == false)
+    if(camera->GetZoomFactor() < 0.45f && IsSettlementHovered() == false)
     {
         distanceRelatedBackdrop->Enable();
 
@@ -390,8 +390,7 @@ void HoverExtension::HandleUpdate()
     if(this->settlement == nullptr)
         return;
 
-    Phrase text;
-    text = "Growth ";
+    Phrase text("Growth ");
     //text << settlement->GetGrowth();
     growthLabel->Setup(text);
 

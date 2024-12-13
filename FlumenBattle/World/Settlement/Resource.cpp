@@ -41,6 +41,11 @@ struct Furniture : public ResourceType
     Furniture() : ResourceType(ResourceTypes::FURNITURE, "Furniture", "Furniture_WildStyle32", 70) {IsProductionTileBased = false; RelatedModifiers = {Modifiers::WOOD_RELATED_RESOURCE_PRODUCTION};}
 };
 
+struct CookedFood : public ResourceType
+{
+    CookedFood() : ResourceType(ResourceTypes::COOKED_FOOD, "Cooked food", "Drumstick", 70) {IsProductionTileBased = false;}
+};
+
 int Resource::GetPotentialProduction(const Settlement &settlement) const
 {
     return GetProductionFromBuildings(settlement) + GetProductionFromTiles(settlement);
@@ -243,6 +248,9 @@ void ResourceHandler::Initialize()
 
     static const auto furniture = Furniture();
     *resources.Add() = {&furniture};
+
+    static const auto cookedFood = CookedFood();
+    *resources.Add() = {&cookedFood};
 }
 
 void ResourceHandler::ResetOrders()
@@ -318,5 +326,8 @@ const ResourceType *ResourceFactory::CreateType(ResourceTypes type)
     case ResourceTypes::FURNITURE:
         static const auto furniture = Furniture();
         return &furniture;
+    case ResourceTypes::COOKED_FOOD:
+        static const auto cookedFood = CookedFood();
+        return &cookedFood;
     }
 }

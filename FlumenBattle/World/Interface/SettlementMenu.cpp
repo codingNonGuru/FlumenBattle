@@ -1,6 +1,6 @@
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/Text.hpp"
-#include "FlumenEngine/Interface/LayoutGroup.h"
+#include "FlumenEngine/Interface/SimpleList.h"
 
 #include "SettlementMenu.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
@@ -68,13 +68,6 @@ void SettlementMenu::HandleConfigure()
     );
     attitudeLabel->Enable();
 
-    optionLayout = ElementFactory::BuildElement <LayoutGroup> 
-    (
-        {drawOrder_, {Position2(10.0f, 80.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}}
-    );
-    optionLayout->SetDistancing(1, 5.0f);
-    optionLayout->Enable();
-
     auto options = {
         SettlementMenuOptions::ATTACK, 
         SettlementMenuOptions::CONQUER,
@@ -85,6 +78,16 @@ void SettlementMenu::HandleConfigure()
         SettlementMenuOptions::FINISH_ITEM_DELIVERY,
         SettlementMenuOptions::RECRUIT_HEROES
         };
+
+    optionLayout = ElementFactory::BuildSimpleList
+    (
+        {drawOrder_, {Position2(10.0f, 80.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}},
+        20, 
+        ListOrientations::VERTICAL, 
+        5.0f
+    );
+    optionLayout->MakeScrollable(7, options.size());
+    optionLayout->Enable();
 
     for(auto &option : options)
     {

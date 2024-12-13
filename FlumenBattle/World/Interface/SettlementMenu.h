@@ -3,7 +3,7 @@
 #include "FlumenEngine/Interface/Element.hpp"
 
 class Text;
-class LayoutGroup;
+class SimpleList;
 
 namespace world::settlement
 {
@@ -22,7 +22,7 @@ namespace world::interface
 
         Text *attitudeLabel;
 
-        LayoutGroup *optionLayout;
+        SimpleList *optionLayout;
 
         settlement::Settlement *currentSettlement {nullptr};
 

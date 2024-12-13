@@ -91,6 +91,7 @@ namespace world::settlement
         STONE,
         LUMBER,
         FURNITURE,
+        COOKED_FOOD,
         NONE
         //LEATHER
         //POTTERY
