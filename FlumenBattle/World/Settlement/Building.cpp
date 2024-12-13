@@ -92,44 +92,37 @@ Building BuildingFactory::Create(BuildingTypes type)
     case BuildingTypes::WALLS:
         return 
         {
-            [&] {static const auto buildingType = Walls(type, 300, true, "Walls", "Walls"); return &buildingType;} (), 
-            false
+            [&] {static const auto buildingType = Walls(type, 300, true, "Walls", "Walls"); return &buildingType;} ()
         };
     case BuildingTypes::LIBRARY:
         return 
         {
-            [&] {static const auto buildingType = Library(type, 200, true, "Library", "Library"); return &buildingType;} (), 
-            false
+            [&] {static const auto buildingType = Library(type, 200, true, "Library", "Library"); return &buildingType;} ()
         };
     case BuildingTypes::SEWAGE:
         return 
         {
-            [&] {static const auto buildingType = Sewage(type, 200, false, "Sewage", "Sewage"); return &buildingType;} (), 
-            false
+            [&] {static const auto buildingType = Sewage(type, 200, false, "Sewage", "Sewage"); return &buildingType;} ()
         };
     case BuildingTypes::IRRIGATION:
         return 
         {
-            [&] {static const auto buildingType = Irrigation(type, 200, false, "Irrigation", "Irrigation"); return &buildingType;} (), 
-            false
+            [&] {static const auto buildingType = Irrigation(type, 200, false, "Irrigation", "Irrigation"); return &buildingType;} ()
         };
     case BuildingTypes::HOUSING:
         return 
         {
-            [&] {static const auto buildingType = Housing(type, 200, true, "Housing", "Houses64"); return &buildingType;} (), 
-            false
+            [&] {static const auto buildingType = Housing(type, 200, true, "Housing", "Houses64"); return &buildingType;} ()
         };
     case BuildingTypes::LUMBER_MILL:
         return 
         {
-            [&] {static const auto buildingType = LumberMill(type, 200, true, "Lumber mill", "LumberMill", {ResourceTypes::LUMBER, 1}, {ResourceTypes::TIMBER, 3}); return &buildingType;} (), 
-            false
+            [&] {static const auto buildingType = LumberMill(type, 200, true, "Lumber mill", "LumberMill", {ResourceTypes::LUMBER, 1}, {ResourceTypes::TIMBER, 3}); return &buildingType;} ()
         };
     case BuildingTypes::CARPENTER:
         return 
         {
-            [&] {static const auto buildingType = Carpenter(type, 200, true, "Carpenter", "LumberMill", {ResourceTypes::FURNITURE, 1}, {ResourceTypes::LUMBER, 3}); return &buildingType;} (), 
-            false
+            [&] {static const auto buildingType = Carpenter(type, 200, true, "Carpenter", "LumberMill", {ResourceTypes::FURNITURE, 1}, {ResourceTypes::LUMBER, 3}); return &buildingType;} ()
         };
     }
 }
@@ -169,6 +162,30 @@ int BuildingManager::GetBuildingCount(BuildingTypes type) const
     }
 }
 
+int BuildingManager::GetBuildingCount() const
+{
+    auto count = 0;
+
+    for(auto &building : buildingSet.buildings)
+    {
+        count += building.GetAmount();
+    }
+
+    return count;
+}
+
+int BuildingManager::GetStandingBuildingCount() const
+{
+    auto count = 0;
+
+    for(auto &building : buildingSet.buildings)
+    {
+        count += building.GetAmount() - building.GetDamagedCount();
+    }
+
+    return count;
+}
+
 const container::Array <Building *> &BuildingManager::GetBuildingsThatProduce(ResourceTypes resource) const
 {
     static auto buildings = container::Array <Building *> (32);
@@ -184,6 +201,18 @@ const container::Array <Building *> &BuildingManager::GetBuildingsThatProduce(Re
     }
 
     return buildings;
+}
+
+Building &BuildingManager::GetRandomStandingBuilding()
+{
+    while(true)
+    {
+        auto building = buildingSet.buildings.GetRandom();
+        if(building->GetDamagedCount() < building->GetAmount())
+        {
+            return *building;
+        }
+    }
 }
 
 void BuildingManager::AddBuilding(BuildingTypes type)

@@ -27,5 +27,6 @@ namespace game
         static constexpr auto FLANKING_ARMOR_PENALTY = "FLANKING_ARMOR_PENALTY";
         static constexpr auto MAXIMUM_POLITY_SIZE = "MAXIMUM_POLITY_SIZE";
         static constexpr auto MAXIMUM_WALLS_LEVEL = "MAXIMUM_WALLS_LEVEL";
+        static constexpr auto VOLUME_PER_RESOURCE_UNIT = "VOLUME_PER_RESOURCE_UNIT";
     };
 }

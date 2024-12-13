@@ -33,7 +33,7 @@ WorldMixer::WorldMixer()
         engine::SoundManager::Get()->PlaySound(*sound);
     };
 
-    group::HumanMind::Get()->OnSettlementLooted += [] {
+    group::HumanMind::Get()->OnMoneyLooted += [] {
         auto sound = COIN_SOUNDS.GetRandom();
         engine::SoundManager::Get()->PlaySound(*sound);
     };

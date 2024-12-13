@@ -55,18 +55,16 @@ namespace world::settlement
     {
         const BuildingType *type;
 
-        bool isDamaged;
+        int damagedCount {0};
 
         int amount {1};
 
         int activePersonnelCount {0};
 
     public:
-        Building() : type(nullptr), isDamaged(false) {}
+        Building() : type(nullptr), damagedCount(0) {}
 
-        Building(const BuildingType *type, bool isDamaged) : 
-        type(type), 
-        isDamaged(isDamaged) {} 
+        Building(const BuildingType *type) : type(type), amount(1), damagedCount(0), activePersonnelCount(0) {} 
 
         void ApplyEffect(Settlement &) const;
 
@@ -79,6 +77,8 @@ namespace world::settlement
         void Destroy() {amount--;}
 
         int GetAmount() const {return amount;}
+
+        int GetDamagedCount() const {return damagedCount;}
 
         BuildingTypes GetType() const {return type->Type;}
 
@@ -99,6 +99,10 @@ namespace world::settlement
         void AddPersonnel() {activePersonnelCount++;}
 
         void RemovePersonnel() {activePersonnelCount--;}
+
+        void Damage() {damagedCount++;}
+
+        void Repair() {damagedCount--;}
     };
 
     class BuildingSet
@@ -144,11 +148,17 @@ namespace world::settlement
 
         int GetBuildingCount(BuildingTypes) const;
 
+        int GetBuildingCount() const;
+
+        int GetStandingBuildingCount() const;
+
         const container::Pool <Building> &GetBuildings() const {return buildingSet.Get();}
 
         const Building &GetBuilding(BuildingTypes type) const {return *buildingSet.buildings.Find(type);}
 
         const container::Array <Building *> &GetBuildingsThatProduce(ResourceTypes) const;
+
+        Building &GetRandomStandingBuilding();
     };
 
     class BuildingSetAllocator

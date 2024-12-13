@@ -241,6 +241,12 @@ namespace world::settlement
 
         int GetWallsLevel() const;
 
+        int GetStandingBuildingCount() const;
+
+        bool IsLootable() const;
+
+        int Loot(bool, int);
+
         void SetupSimulation();
 
         world::WorldTile *FindColonySpot();

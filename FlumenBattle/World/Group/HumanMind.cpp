@@ -49,8 +49,6 @@ static const auto DICE_ROLL_SOUND = "DiceRoll";
 
 static const auto DICE_SOUND_INTERVAL = 1000;
 
-static const auto VOLUME_PER_MARKET_ITEM = 10;
-
 GroupActionResult selectedActionResult;
 
 GroupActionResult performedActionResult;
@@ -202,17 +200,26 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
 
             OnItemAdded.Invoke();
         }
+        else if(result.ActionType == GroupActions::LOOT_SETTLEMENT)
+        {
+            if(result.Content.lootedStuff.Money != 0)
+            {
+                moneyChange = result.Content.lootedStuff.Money;
+
+                OnPlayerWealthChanged.Invoke();
+
+                OnMoneyLooted.Invoke();
+            }
+
+            if(result.Content.lootedStuff.Food != 0)
+            {
+                itemChange = {character::ItemTypes::FOOD, result.Content.lootedStuff.Food};
+
+                OnItemAdded.Invoke();
+            }
+        }
 
         OnSkillCheckRolled.Invoke();
-    }
-
-    if(result.ActionType == GroupActions::LOOT_SETTLEMENT)
-    {
-        moneyChange = result.Content.lootedMoney;
-
-        OnPlayerWealthChanged.Invoke();
-
-        OnSettlementLooted.Invoke();
     }
 
     OnActionPerformed.Invoke();
@@ -547,6 +554,8 @@ void HumanMind::HandleBattleEnded()
 
 void HumanMind::BuyFood()
 {
+    static const int VOLUME_PER_RESOURCE_UNIT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::VOLUME_PER_RESOURCE_UNIT).Integer;
+
     static auto playerGroup = WorldScene::Get()->GetPlayerGroup();
 
     auto playerSettlement = playerGroup->GetCurrentSettlement();
@@ -555,9 +564,9 @@ void HumanMind::BuyFood()
     auto foodPrice = foodResource->Type->Value;
 
     playerGroup->money -= foodPrice;
-    playerGroup->AddItem(character::ItemTypes::FOOD, VOLUME_PER_MARKET_ITEM);
+    playerGroup->AddItem(character::ItemTypes::FOOD, VOLUME_PER_RESOURCE_UNIT);
 
-    itemChange = {character::ItemTypes::FOOD, VOLUME_PER_MARKET_ITEM};
+    itemChange = {character::ItemTypes::FOOD, VOLUME_PER_RESOURCE_UNIT};
 
     OnItemAdded.Invoke();
 

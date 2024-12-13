@@ -119,7 +119,7 @@ namespace world::group
 
         Delegate OnMarketTransaction;
 
-        Delegate OnSettlementLooted;
+        Delegate OnMoneyLooted;
 
         Delegate OnHeroJoinedParty;
 

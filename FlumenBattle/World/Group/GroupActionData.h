@@ -44,6 +44,8 @@ namespace world::group
 
         STRONGLY_TYPED_INTEGER(Money);
 
+        struct LootData {Food Food; Money Money;};
+
         GroupActions ActionType;
 
         bool HasRolled;
@@ -60,7 +62,7 @@ namespace world::group
 
             bool isAlreadyEngaged;
 
-            Money lootedMoney;
+            LootData lootedStuff;
 
             SpecificContent() {}
 
@@ -70,7 +72,7 @@ namespace world::group
 
             SpecificContent(bool isEngaged) : isAlreadyEngaged(isEngaged) {}
 
-            explicit SpecificContent(Money money) : lootedMoney(money) {}
+            explicit SpecificContent(Food food, Money money) : lootedStuff{food, money} {}
         } Content;
 
         GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill) : 
@@ -85,8 +87,8 @@ namespace world::group
         GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill, bool isEngaged) : 
         ActionType(actionType), HasRolled(true), Success(success), Skill(skill), Content{isEngaged} {}
 
-        GroupActionResult(GroupActions actionType, Money money) : 
-        ActionType(actionType), HasRolled(false), Content{money} {}
+        GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill, Food food, Money money) : 
+        ActionType(actionType), HasRolled(true), Success(success), Skill(skill), Content{food, money} {}
 
         GroupActionResult() : HasRolled(false) {}
 

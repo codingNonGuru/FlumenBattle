@@ -22,6 +22,7 @@
 #include "FlumenBattle/World/SimulationDomain.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 #include "FlumenBattle/Utility/SettlementPathfinder.h"
+#include "FlumenBattle/Utility/Utility.h"
 #include "FlumenBattle/Config.h"
 #include "FlumenBattle/ThreadedResourceHandler.h"
 #include "FlumenBattle/Race.h"
@@ -549,6 +550,41 @@ int Settlement::GetMulePrice() const
 bool Settlement::IsPlayerControlled() const
 {
     return polity->IsPlayerControlled();
+}
+
+int Settlement::GetStandingBuildingCount() const
+{
+    return buildingManager->GetStandingBuildingCount();
+}
+
+bool Settlement::IsLootable() const
+{
+    if(buildingManager->GetStandingBuildingCount() > 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+int Settlement::Loot(bool hasSparedBuilding, int requestedFood)
+{
+    if(hasSparedBuilding == false)
+    {
+        auto &building = buildingManager->GetRandomStandingBuilding();
+        building.Damage();
+    }
+
+    if(requestedFood > GetResource(ResourceTypes::FOOD)->Storage)
+    {
+        requestedFood = GetResource(ResourceTypes::FOOD)->Storage;
+    }
+
+    GetResource(ResourceTypes::FOOD)->Storage -= requestedFood;
+
+    return requestedFood;
 }
 
 void Settlement::SetupSimulation()

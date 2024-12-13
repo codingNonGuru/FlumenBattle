@@ -512,6 +512,9 @@ namespace world
         if(playerSettlement->IsDefended() == true)
             return false;
 
+        if(playerSettlement->GetStandingBuildingCount() == 0)
+            return false;
+
         if(playerGroup->GetDomain() == playerSettlement->GetPolity())
             return false;
 
