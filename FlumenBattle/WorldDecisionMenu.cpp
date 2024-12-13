@@ -3,6 +3,7 @@
 
 #include "FlumenEngine/Interface/Text.hpp"
 #include "FlumenEngine/Interface/ElementFactory.h"
+#include "FlumenEngine/Interface/ProgressBar.h"
 
 #include "FlumenBattle/WorldDecisionMenu.h"
 #include "FlumenBattle/World/WorldScene.h"
@@ -15,6 +16,8 @@
 
 #define ROLL_LABEL_COUNT 7
 
+static const auto BORDER_COLOR = Color::RED * 0.25f;
+
 Array <Phrase> rollLabelTexts = Array <Phrase> (ROLL_LABEL_COUNT);
 
 Array <Color> rollLabelColors = Array <Color> (ROLL_LABEL_COUNT);
@@ -26,6 +29,12 @@ using namespace group;
 
 void WorldDecisionMenu::HandleConfigure() 
 {
+    border = ElementFactory::BuildElement <Element>(
+        {size_ - Size(4, 4), drawOrder_ + 1, {this}, {"panel-border-031", true}, Opacity(0.8f)}
+    );
+    border->SetSpriteColor(BORDER_COLOR);
+    border->Enable();
+
     rollLabels.Initialize(ROLL_LABEL_COUNT);
 
     for(Index i = 0; i < ROLL_LABEL_COUNT; ++i)
@@ -36,7 +45,7 @@ void WorldDecisionMenu::HandleConfigure()
         auto opacity = 0.4f + (float)i * 0.1f;
         auto rollLabel = ElementFactory::BuildText(
             {Size(size_.x - 10, 150), drawOrder_ + 1, {position, this}},
-            {{"Small"}, Color::RED, defaultText}
+            {{"Small"}, Color::RED, ""}
         );
         rollLabel->SetAlignment(Text::Alignments::LEFT);
         rollLabel->SetOpacity(opacity);
@@ -47,29 +56,24 @@ void WorldDecisionMenu::HandleConfigure()
         *rollLabelTexts.Add() = Phrase(defaultText);
         *rollLabelColors.Add() = Color::RED;
     }
-    /*travelLabel = ElementFactory::BuildText(
-        {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, 30.0f), this}},
-        {{"Medium"}, Color::RED * 0.5f, "Press [T] to travel to location."}
-    );
-    travelLabel->Enable();
-
-    searchLabel = ElementFactory::BuildText(
-        {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, 0.0f), this}},
-        {{"Medium"}, Color::RED * 0.5f, "Press [S] to search for enemies."}
-    );
-    searchLabel->Enable();
-
-    restLabel = ElementFactory::BuildText(
-        {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, -30.0f), this}},
-        {{"Medium"}, Color::RED * 0.5f, "Press [R] to rest."}
-    );
-    restLabel->Enable();*/
 
     statusLabel = ElementFactory::BuildText(
-        {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, -85.0f), this}},
+        {drawOrder_ + 1, {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}},
         {{"Medium"}, Color::RED * 0.5f, "Current action: None"}
     );
     statusLabel->Enable();
+
+    actionProgress = ElementFactory::BuildProgressBar <ProgressBar>(
+        {Size(80, 32), drawOrder_ + 1, {Position2(5.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, statusLabel}, {"BaseBar", true}},
+        {"BaseFillerRed", {6.0f, 6.0f}}
+    );
+    actionProgress->Enable();
+
+    timeLabel = ElementFactory::BuildText(
+        {drawOrder_ + 2, {actionProgress}},
+        {{"VerySmall"}, Color::WHITE}
+    );
+    timeLabel->Enable();
 
     group::HumanMind::Get()->OnSkillCheckRolled += {this, &WorldDecisionMenu::HandleActionSelected};
 }
@@ -79,7 +83,7 @@ void WorldDecisionMenu::HandleUpdate()
     Phrase text = "Current action: ";
     
     auto group = WorldScene::Get()->GetPlayerGroup();
-    if(group->GetAction())
+    if(group->GetAction() != nullptr)
     {
         switch(group->GetAction()->Type)
         {
@@ -136,11 +140,17 @@ void WorldDecisionMenu::HandleUpdate()
         if(duration < 0)
             duration = 0;
 
-        text << " (" << duration << " hours left)";
+        timeLabel->Setup(Word() << duration << " hrs");
+
+        actionProgress->SetProgress(group->GetActionProgress());
+
+        actionProgress->Enable();
     }
     else
     {
         text << "None";
+
+        actionProgress->Disable();
     }
 
     statusLabel->Setup(text);

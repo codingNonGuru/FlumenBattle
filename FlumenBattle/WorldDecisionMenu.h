@@ -3,20 +3,21 @@
 #include "FlumenEngine/Interface/Element.hpp"
 
 class Text;
+class ProgresBar;
 
 namespace world
 {
     class WorldDecisionMenu : public Element
     {
-        Text *travelLabel;
-        
-        Text *searchLabel;
-
-        Text *restLabel;
+        Element *border;
 
         Text *statusLabel;
 
+        Text *timeLabel;
+
         Array <Text *> rollLabels;
+
+        ProgressBar *actionProgress;
 
         void HandleConfigure() override;
 

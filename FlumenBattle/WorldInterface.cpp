@@ -67,7 +67,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     canvas->SetInteractivity(true);
 
     decisionMenu = ElementFactory::BuildElement <WorldDecisionMenu>(
-        {Size(1080, 220), DrawOrder(6), {Position2(0.0f, 420.0f), canvas}, {false}, Opacity(0.75f)}
+        {Size(1080, 220), DrawOrder(6), {Position2(0.0f, -5.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, canvas}, {false}, Opacity(0.75f)}
     );
     decisionMenu->Enable();
 
