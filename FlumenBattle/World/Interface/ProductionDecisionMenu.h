@@ -3,8 +3,9 @@
 #include "FlumenEngine/Interface/Element.hpp"
 
 class Text;
-class LayoutGroup;
+class SimpleList;
 class ProgressBar;
+class LayoutGroup;
 
 namespace world::settlement
 {
@@ -29,7 +30,7 @@ namespace world::interface
 
         ResourceCounter *laborCounter;
 
-        LayoutGroup *optionLayout;
+        SimpleList *optionLayout;
 
         container::Array <ProductionDecisionItem *> optionItems;
 

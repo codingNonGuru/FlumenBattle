@@ -61,11 +61,13 @@ int Resource::GetProductionFromBuildings(const Settlement &settlement) const
     bool canProduce = true;
     for(auto &building : buildings)
     {
-        auto inputResource = building->GetInputResource();
-        auto resource = settlement.GetResource(inputResource.Resource);
-        if(resource->Order > resource->Storage)
+        for(auto &inputResource : building->GetInputResources())
         {
-            canProduce = false;
+            auto resource = settlement.GetResource(inputResource.Resource);
+            if(resource->Order > resource->Storage)
+            {
+                canProduce = false;
+            }
         }
     }
 
@@ -77,10 +79,12 @@ int Resource::GetProductionFromBuildings(const Settlement &settlement) const
     {
         for(auto &building : buildings)
         {
-            auto inputResource = building->GetInputResource();
-            auto resource = settlement.GetResource(inputResource.Resource);
+            for(auto &inputResource : building->GetInputResources())
+            {
+                auto resource = settlement.GetResource(inputResource.Resource);
             
-            resource->Order -= inputResource.Amount * building->GetPersonnelCount();
+                resource->Order -= inputResource.Amount * building->GetPersonnelCount();
+            }
         }
     }
     else

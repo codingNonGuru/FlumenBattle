@@ -35,7 +35,7 @@ namespace world::settlement
             int Amount;
         };
 
-        Throughput InputResource {ResourceTypes::NONE, 0};
+        container::Array <Throughput> InputResources; 
 
         Throughput OutputResource {ResourceTypes::NONE, 0};
 
@@ -45,8 +45,8 @@ namespace world::settlement
         explicit BuildingType(BuildingTypes type, int cost, bool isTall, Word name, Word textureName, Throughput output) : 
             Type(type), Cost(cost), IsTall(isTall), Name(name), TextureName(textureName), OutputResource(output) {}
 
-        explicit BuildingType(BuildingTypes type, int cost, bool isTall, Word name, Word textureName, Throughput output, Throughput input) : 
-            Type(type), Cost(cost), IsTall(isTall), Name(name), TextureName(textureName), OutputResource(output), InputResource(input) {}
+        explicit BuildingType(BuildingTypes type, int cost, bool isTall, Word name, Word textureName, Throughput output, std::initializer_list <Throughput> input) : 
+            Type(type), Cost(cost), IsTall(isTall), Name(name), TextureName(textureName), OutputResource(output), InputResources(input) {}
 
         virtual void HandleApplyEffect(Settlement &) const = 0;
     };
@@ -86,7 +86,7 @@ namespace world::settlement
 
         int GetResourceConsumption(ResourceTypes resource) const;
 
-        BuildingType::Throughput GetInputResource() const {return type->InputResource;}
+        container::Array <BuildingType::Throughput> GetInputResources() const {return type->InputResources;}
 
         BuildingType::Throughput GetOutputResource() const {return type->OutputResource;}
 

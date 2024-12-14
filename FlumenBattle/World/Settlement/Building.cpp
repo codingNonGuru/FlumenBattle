@@ -67,6 +67,16 @@ namespace world::settlement
         }
     };
 
+    class Bakery : public BuildingType
+    {
+        using BuildingType::BuildingType; 
+
+        void HandleApplyEffect(Settlement &settlement) const override
+        {
+            
+        }
+    };
+
     class Walls : public BuildingType
     {
         using BuildingType::BuildingType; 
@@ -117,26 +127,32 @@ Building BuildingFactory::Create(BuildingTypes type)
     case BuildingTypes::LUMBER_MILL:
         return 
         {
-            [&] {static const auto buildingType = LumberMill(type, 200, true, "Lumber mill", "LumberMill", {ResourceTypes::LUMBER, 1}, {ResourceTypes::TIMBER, 3}); return &buildingType;} ()
+            [&] {static const auto buildingType = LumberMill(type, 200, true, "Lumber mill", "LumberMill", {ResourceTypes::LUMBER, 1}, {{ResourceTypes::TIMBER, 3}}); return &buildingType;} ()
         };
     case BuildingTypes::CARPENTER:
         return 
         {
-            [&] {static const auto buildingType = Carpenter(type, 200, true, "Carpenter", "LumberMill", {ResourceTypes::FURNITURE, 1}, {ResourceTypes::LUMBER, 3}); return &buildingType;} ()
+            [&] {static const auto buildingType = Carpenter(type, 200, true, "Carpenter", "LumberMill", {ResourceTypes::FURNITURE, 1}, {{ResourceTypes::LUMBER, 3}}); return &buildingType;} ()
+        };
+    case BuildingTypes::BAKERY:
+        return 
+        {
+            [&] {static const auto buildingType = Bakery(type, 200, true, "Bakery", "LumberMill", {ResourceTypes::COOKED_FOOD, 2}, {{ResourceTypes::FOOD, 3}, {ResourceTypes::TIMBER, 1}}); return &buildingType;} ()
         };
     }
 }
 
-int Building::GetResourceConsumption(ResourceTypes resource) const
+int Building::GetResourceConsumption(ResourceTypes resourceType) const
 {
-    if(type->InputResource.Resource == resource)
+    for(auto &resource : type->InputResources)
     {
-        return type->InputResource.Amount;
+        if(resource.Resource == resourceType)
+        {
+            return resource.Amount;
+        }
     }
-    else
-    {
-        return 0;
-    }
+
+    return 0;
 }
 
 void BuildingManager::Initialize(Settlement *settlement)

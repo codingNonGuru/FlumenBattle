@@ -1,5 +1,6 @@
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/Text.hpp"
+#include "FlumenEngine/Interface/SimpleList.h"
 #include "FlumenEngine/Interface/LayoutGroup.h"
 #include "FlumenEngine/Interface/ProgressBar.h"
 
@@ -34,7 +35,8 @@ static const settlement::ProductionOptions options[] = {
     settlement::ProductionOptions::HOUSING,
     settlement::ProductionOptions::FARM,
     settlement::ProductionOptions::LUMBER_MILL,
-    settlement::ProductionOptions::CARPENTER
+    settlement::ProductionOptions::CARPENTER,
+    settlement::ProductionOptions::BAKERY
     };
 
 #define ITEM_CAPACITY std::size(options)
@@ -92,11 +94,14 @@ void ProductionDecisionMenu::HandleConfigure()
     laborCounter->Setup("WorkHammer", &industrialCapacity, "VeryLarge", Scale2(1.25f));
     laborCounter->SetOffset(5.0f);
 
-    optionLayout = ElementFactory::BuildElement <LayoutGroup> 
+    optionLayout = ElementFactory::BuildSimpleList
     (
-        {drawOrder_, {OPTION_LAYOUT_POSITION, ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}}
+        {drawOrder_ + 5, {OPTION_LAYOUT_POSITION, ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}},
+        std::size(options),
+        ListOrientations::VERTICAL,
+        5.0f
     );
-    optionLayout->SetDistancing(1, 5.0f);
+    optionLayout->MakeScrollable(7, std::size(options));
     optionLayout->Enable();
 
     static const auto OPTION_ITEM_SIZE = Size(size_.x - OPTION_LAYOUT_POSITION.x * 2, 35);
@@ -127,6 +132,8 @@ void ProductionDecisionMenu::HandleUpdate()
         item->Disable();
     }
 
+    int validOptionCount = 0;
+
     auto item = optionItems.GetStart();
     for(auto &option : options)
     {
@@ -138,7 +145,11 @@ void ProductionDecisionMenu::HandleUpdate()
         (*item)->Enable();
 
         item++;
+
+        validOptionCount++;
     }
+
+    optionLayout->SetScrollableChildCount(validOptionCount);
 
     const auto currentProduction = currentSettlement->GetCurrentProduction();
 

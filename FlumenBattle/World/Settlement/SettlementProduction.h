@@ -142,6 +142,8 @@ namespace world::settlement
 
         const SettlementProductionType *BuildCarpenterProduction();
 
+        const SettlementProductionType *BuildBakeryProduction();
+
         const SettlementProductionType *BuildWallsProduction();
 
         const SettlementProductionType *BuildNoneProduction();
@@ -171,6 +173,8 @@ namespace world::settlement
         static void FinishLumberMill(Settlement &);
 
         static void FinishCarpenter(Settlement &);
+
+        static void FinishBakery(Settlement &);
 
         static void FinishHousing(Settlement &);  
 

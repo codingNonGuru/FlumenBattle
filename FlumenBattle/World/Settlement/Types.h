@@ -21,7 +21,8 @@ namespace world::settlement
         LIBRARY,
         HOUSING,
         LUMBER_MILL,
-        CARPENTER
+        CARPENTER,
+        BAKERY
     };
 
     enum class BuildingTypes
@@ -34,7 +35,8 @@ namespace world::settlement
         LIBRARY,
         HOUSING,
         LUMBER_MILL,
-        CARPENTER
+        CARPENTER,
+        BAKERY
     };
 
     enum class AbundanceLevels
