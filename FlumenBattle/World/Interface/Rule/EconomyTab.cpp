@@ -101,9 +101,12 @@ void ResourceItem::Setup(const settlement::Resource *resource, const settlement:
 
     icon->SetTexture(resource->Type->TextureName);
 
-    if(needBar == nullptr && 
-        (resource->Type->Type == settlement::ResourceTypes::COOKED_FOOD || resource->Type->Type == settlement::ResourceTypes::FURNITURE || resource->Type->Type == settlement::ResourceTypes::FOOD)
-        )
+    bool relatesToNeed = 
+        resource->Type->Type == settlement::ResourceTypes::COOKED_FOOD || 
+        resource->Type->Type == settlement::ResourceTypes::FURNITURE || 
+        resource->Type->Type == settlement::ResourceTypes::FOOD;
+
+    if(needBar == nullptr && relatesToNeed == true)
     {
         needBar = ElementFactory::BuildProgressBar <ProgressBar>(
             {Size(60, 24), drawOrder_ + 1, {Position2(-10.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}, {"BaseBar", true}},
@@ -116,10 +119,6 @@ void ResourceItem::Setup(const settlement::Resource *resource, const settlement:
             {{"VerySmall"}, Color::WHITE}
         );
         needLabel->Enable();
-    }
-    else
-    {
-        needBar = nullptr;
     }
 }
 
@@ -369,7 +368,25 @@ void EconomyTab::HandleSettlementChanged()
 {
     static const auto ruleMenu = WorldInterface::Get()->GetRuleMenu();
     
-    auto settlement = ruleMenu->GetCurrentSettlement();    
+    auto settlement = ruleMenu->GetCurrentSettlement();
+    if(settlement == nullptr)
+    {
+        nameLabel->Disable();
+
+        for(auto &item : resourceItems)
+        {
+            item->Disable();
+        }
+
+        for(auto &item : buildingItems)
+        {
+            item->Setup(nullptr, this);
+        }
+
+        return;
+    }
+
+    nameLabel->Enable();
 
     for(int i = 0; i < (int)settlement::ResourceTypes::NONE; ++i)
     {

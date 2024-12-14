@@ -500,19 +500,22 @@ void WorldInterface::HandleRuleMenuPressed()
     if(isInInventoryMode == true)
         return;
 
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+    const auto playerSettlement = playerGroup->GetCurrentSettlement();
+
     if(isInRuleMode == true)
     {
         ruleMenu->Disable();
 
         isInRuleMode = false;
     }
-    else
+    else if(playerGroup->DoesRulePolity() == true)
     {
         ruleMenu->Enable();
 
         isInRuleMode = true;
 
-        auto playerSettlement = WorldScene::Get()->GetPlayerGroup()->GetCurrentSettlement();
         ruleMenu->SetCurrentSettlement(playerSettlement);
     }
 }
