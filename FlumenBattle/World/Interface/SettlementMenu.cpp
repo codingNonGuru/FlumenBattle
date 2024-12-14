@@ -1,6 +1,7 @@
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/Text.hpp"
 #include "FlumenEngine/Interface/SimpleList.h"
+#include "FlumenEngine/Interface/ProgressBar.h"
 
 #include "SettlementMenu.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
@@ -68,6 +69,25 @@ void SettlementMenu::HandleConfigure()
     );
     attitudeLabel->Enable();
 
+    happinessBar = ElementFactory::BuildProgressBar <ProgressBar>(
+        {Size(128, 24), drawOrder_ + 1, {Position2(0.0f, 5.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, attitudeLabel}, {"BaseBar", true}},
+        {"BaseFillerRed", {6.0f, 6.0f}}
+    );
+    happinessBar->Enable();
+
+    happinessLabel = ElementFactory::BuildText
+    (
+        {
+            drawOrder_ + 3, 
+            {happinessBar}
+        },
+        {
+            {"VerySmall"}, 
+            Color::WHITE
+        }
+    );
+    happinessLabel->Enable();
+
     auto options = {
         SettlementMenuOptions::ATTACK, 
         SettlementMenuOptions::CONQUER,
@@ -81,12 +101,12 @@ void SettlementMenu::HandleConfigure()
 
     optionLayout = ElementFactory::BuildSimpleList
     (
-        {drawOrder_, {Position2(10.0f, 80.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}},
+        {drawOrder_, {Position2(10.0f, 90.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}},
         20, 
         ListOrientations::VERTICAL, 
         5.0f
     );
-    optionLayout->MakeScrollable(4, options.size());
+    optionLayout->MakeScrollable(5, options.size());
     optionLayout->Enable();
 
     for(auto &option : options)
@@ -123,6 +143,25 @@ void SettlementMenu::HandleUpdate()
     text << " towards you.";
 
     attitudeLabel->Setup(text);
+
+    happinessBar->SetProgress(currentSettlement->GetHappinessRatio());
+
+    if(currentSettlement->IsEcstatic() == true)
+    {
+        happinessLabel->Setup("Ecstatic");
+    }
+    else if(currentSettlement->IsHappy() == true)
+    {
+        happinessLabel->Setup("Happy");
+    }
+    else if(currentSettlement->IsContent() == true)
+    {
+        happinessLabel->Setup("Content");
+    }
+    else
+    {
+        happinessLabel->Setup("Numb");
+    }
 }
 
 void SettlementMenu::Setup(settlement::Settlement *newSettlement)

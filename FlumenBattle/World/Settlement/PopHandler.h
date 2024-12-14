@@ -12,7 +12,11 @@ namespace world::settlement
     {
         ResourceTypes Type;
 
+        bool DoesDetermineHappiness;
+
         int Satisfaction {0};
+
+        int GeneratedHappiness {0};
 
         bool IsMet {false};
 
@@ -24,6 +28,14 @@ namespace world::settlement
         friend class PopAllocator;
 
         container::Array <Need> needs;
+        
+        int happiness;
+
+        bool isContent;
+
+        bool isHappy;
+
+        bool isEcstatic;
 
     public:
         void Initialize();
@@ -33,6 +45,14 @@ namespace world::settlement
         void UpdateNeeds(Settlement &);
 
         int GetNeedSatisfaction(ResourceTypes resource) const {return needs.Find(resource)->Satisfaction;}
+
+        bool IsContent() const {return isContent;}
+
+        bool IsHappy() const {return isHappy;}
+
+        bool IsEcstatic() const {return isEcstatic;}
+
+        float GetHappinessRatio() const;
     };
 
     class PopAllocator

@@ -196,6 +196,14 @@ namespace world::settlement
 
         int GetNeedSatisfaction(ResourceTypes resource) const {return popHandler.GetNeedSatisfaction(resource);}
 
+        bool IsContent() const {return popHandler.IsContent();}
+
+        bool IsHappy() const {return popHandler.IsHappy();}
+
+        bool IsEcstatic() const {return popHandler.IsEcstatic();}
+
+        float GetHappinessRatio() const {return popHandler.GetHappinessRatio();}
+
         Integer GetGrowth() const {return growth;}
 
         float GetGrowthRatio() const {return float(growth) / float(growthThreshold);}

@@ -4,6 +4,7 @@
 
 class Text;
 class SimpleList;
+class ProgressBar;
 
 namespace world::settlement
 {
@@ -23,6 +24,10 @@ namespace world::interface
         Text *attitudeLabel;
 
         SimpleList *optionLayout;
+
+        ProgressBar *happinessBar;
+
+        Text *happinessLabel;
 
         settlement::Settlement *currentSettlement {nullptr};
 

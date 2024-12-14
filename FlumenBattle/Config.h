@@ -29,5 +29,10 @@ namespace game
         static constexpr auto MAXIMUM_WALLS_LEVEL = "MAXIMUM_WALLS_LEVEL";
         static constexpr auto VOLUME_PER_RESOURCE_UNIT = "VOLUME_PER_RESOURCE_UNIT";
         static constexpr auto TICKS_PER_NEED_SATISFACTION = "TICKS_PER_NEED_SATISFACTION";
+        static constexpr auto NEED_SATISFACTION_THRESHOLD = "NEED_SATISFACTION_THRESHOLD";
+        static constexpr auto TICKS_PER_HAPPINESS = "TICKS_PER_HAPPINESS";
+        static constexpr auto CONTENTEDNESS_THRESHOLD = "CONTENTEDNESS_THRESHOLD";
+        static constexpr auto HAPPINESS_THRESHOLD = "HAPPINESS_THRESHOLD";
+        static constexpr auto ECSTASY_THRESHOLD = "ECSTASY_THRESHOLD";
     };
 }
