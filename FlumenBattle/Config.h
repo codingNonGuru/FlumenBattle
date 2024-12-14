@@ -28,5 +28,6 @@ namespace game
         static constexpr auto MAXIMUM_POLITY_SIZE = "MAXIMUM_POLITY_SIZE";
         static constexpr auto MAXIMUM_WALLS_LEVEL = "MAXIMUM_WALLS_LEVEL";
         static constexpr auto VOLUME_PER_RESOURCE_UNIT = "VOLUME_PER_RESOURCE_UNIT";
+        static constexpr auto TICKS_PER_NEED_SATISFACTION = "TICKS_PER_NEED_SATISFACTION";
     };
 }

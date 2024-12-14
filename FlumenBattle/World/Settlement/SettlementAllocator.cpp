@@ -13,6 +13,7 @@
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldGenerator.h"
 #include "FlumenBattle/World/Settlement/Resource.h"
+#include "FlumenBattle/World/Settlement/PopHandler.h"
 #include "FlumenBattle/Config.h"
 
 #define MAXIMUM_TILES_PER_SETTLEMENT 37
@@ -42,6 +43,8 @@
 #define GARRISONS_PER_SETTLEMENT 4
 
 #define RAIDERS_PER_SETTLEMENT 4
+
+#define POPULATION_NEED_COUNT 6
 
 using namespace world::settlement;
 
@@ -96,6 +99,8 @@ void SettlementAllocator::PreallocateMaximumMemory()
     garrisonMemory = container::PoolAllocator <group::GroupEssence>::PreallocateMemory (settlementCount, GARRISONS_PER_SETTLEMENT);
 
     raiderMemory = container::PoolAllocator <group::GroupEssence>::PreallocateMemory (settlementCount, RAIDERS_PER_SETTLEMENT);
+
+    needMemory = container::ArrayAllocator <Need>::PreallocateMemory (settlementCount, POPULATION_NEED_COUNT);
 }
 
 void SettlementAllocator::AllocateWorldMemory(int worldSize)
@@ -145,6 +150,8 @@ void SettlementAllocator::AllocateWorldMemory(int worldSize)
     garrisonAllocator = container::PoolAllocator <group::GroupEssence> (settlementCount, GARRISONS_PER_SETTLEMENT, garrisonMemory);
 
     raiderAllocator = container::PoolAllocator <group::GroupEssence> (settlementCount, RAIDERS_PER_SETTLEMENT, raiderMemory);
+
+    needAllocator = container::ArrayAllocator <Need> (settlementCount, POPULATION_NEED_COUNT, needMemory);
 }
 
 Settlement * SettlementAllocator::Allocate()
@@ -187,6 +194,8 @@ Settlement * SettlementAllocator::Allocate()
     settlement->links.Initialize(linkAllocator);
 
     ResourceAllocator::Allocate(resourceAllocator, settlement->resourceHandler);
+
+    PopAllocator::Allocate(needAllocator, settlement->popHandler);
 
     return settlement;
 }

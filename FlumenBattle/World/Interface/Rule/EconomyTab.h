@@ -6,6 +6,7 @@
 
 class Text;
 class LayoutGroup;
+class ProgressBar;
 
 namespace world::settlement
 {
@@ -39,9 +40,15 @@ namespace world::interface::rule
 
         Element *icon;
 
+        ProgressBar *needBar;
+
+        Text *needLabel;
+
         const settlement::Resource *resource;
 
-        void Setup(const settlement::Resource *);
+        const settlement::Settlement *settlement;
+
+        void Setup(const settlement::Resource *, const settlement::Settlement *);
 
         void HandleConfigure() override;
 

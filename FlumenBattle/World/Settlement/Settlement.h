@@ -8,6 +8,7 @@
 #include "FlumenBattle/World/Settlement/Modifier.h"
 #include "FlumenBattle/World/Settlement/Resource.h"
 #include "FlumenBattle/World/Settlement/Types.h"
+#include "FlumenBattle/World/Settlement/PopHandler.h"
 
 struct Race;
 
@@ -151,6 +152,8 @@ namespace world::settlement
 
         ResourceHandler resourceHandler;
 
+        PopHandler popHandler;
+
         int storage {400};
 
         Shipment shipment;
@@ -188,6 +191,10 @@ namespace world::settlement
         Integer GetScienceProduction() const;
 
         Integer GetPopulation() const {return population;}
+
+        PopHandler &GetPopulationHandler() {return popHandler;}
+
+        int GetNeedSatisfaction(ResourceTypes resource) const {return popHandler.GetNeedSatisfaction(resource);}
 
         Integer GetGrowth() const {return growth;}
 

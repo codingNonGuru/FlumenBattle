@@ -34,6 +34,7 @@ namespace world::settlement
     class BuildingManager;
     struct Modifier;
     struct Resource;
+    struct Need;
 
     class SettlementAllocator : public core::Singleton <SettlementAllocator>
     {
@@ -89,6 +90,8 @@ namespace world::settlement
 
         container::PoolAllocator <group::GroupEssence>::Memory raiderMemory;
 
+        container::ArrayAllocator <Need>::Memory needMemory;
+
 
         container::Pool <Settlement> settlements;
 
@@ -132,6 +135,7 @@ namespace world::settlement
 
         container::PoolAllocator <group::GroupEssence> raiderAllocator;
 
+        container::ArrayAllocator <Need> needAllocator;
 
         void PerformCleanup();
 

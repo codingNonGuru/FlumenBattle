@@ -51,6 +51,8 @@ namespace world::settlement
 
         AbundanceLevels LongTermAbundance;
 
+        bool HasPopulationOrdered {false};
+
         int GetPotentialProduction(const Settlement &) const;
 
         int GetProductionFromTiles(const Settlement &) const;

@@ -1,6 +1,7 @@
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/Text.hpp"
 #include "FlumenEngine/Interface/LayoutGroup.h"
+#include "FlumenEngine/Interface/ProgressBar.h"
 
 #include "EconomyTab.h"
 #include "FlumenBattle/World/Interface/Rule/RuleMenu.h"
@@ -11,6 +12,7 @@
 #include "FlumenBattle/World/Interface/Rule/BuildingHoverInfo.h"
 #include "FlumenBattle/WorldInterface.h"
 #include "FlumenBattle/Race.h"
+#include "FlumenBattle/Config.h"
 
 using namespace world::interface::rule;
 
@@ -41,22 +43,24 @@ void ResourceItem::HandleConfigure()
     nameLabel->Enable();
 
     storedLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {Position2(250.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
+        {drawOrder_ + 1, {Position2(200.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
         {{"Small"}, TEXT_COLOR}
     );
     storedLabel->Enable();
 
     outputLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {Position2(350.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
+        {drawOrder_ + 1, {Position2(280.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
         {{"Small"}, TEXT_COLOR}
     );
     outputLabel->Enable();
 
     inputLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {Position2(450.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
+        {drawOrder_ + 1, {Position2(360.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
         {{"Small"}, TEXT_COLOR}
     );
     inputLabel->Enable();
+
+    needBar = nullptr;
 }
 
 void ResourceItem::HandleUpdate()
@@ -72,15 +76,51 @@ void ResourceItem::HandleUpdate()
     text = Word() << resource->Order;
 
     inputLabel->Setup(text);
+
+    if(needBar != nullptr)
+    {
+        static const auto TICKS_PER_NEED_SATISFACTION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::TICKS_PER_NEED_SATISFACTION).Integer;
+
+        auto satisfaction = settlement->GetNeedSatisfaction(resource->Type->Type);
+
+        auto progress = (float)satisfaction / (float)TICKS_PER_NEED_SATISFACTION;
+
+        needBar->SetProgress(progress);
+
+        needLabel->Setup(ShortWord() << satisfaction);
+    }
 }
 
-void ResourceItem::Setup(const settlement::Resource *resource)
+void ResourceItem::Setup(const settlement::Resource *resource, const settlement::Settlement *settlement)
 {
     this->resource = resource;
+
+    this->settlement = settlement;
 
     nameLabel->Setup(resource->Type->Name);
 
     icon->SetTexture(resource->Type->TextureName);
+
+    if(needBar == nullptr && 
+        (resource->Type->Type == settlement::ResourceTypes::COOKED_FOOD || resource->Type->Type == settlement::ResourceTypes::FURNITURE || resource->Type->Type == settlement::ResourceTypes::FOOD)
+        )
+    {
+        needBar = ElementFactory::BuildProgressBar <ProgressBar>(
+            {Size(60, 24), drawOrder_ + 1, {Position2(-10.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}, {"BaseBar", true}},
+            {"BaseFillerRed", {6.0f, 6.0f}}
+        );
+        needBar->Enable();
+
+        needLabel = ElementFactory::BuildText(
+            {drawOrder_ + 2, {needBar}}, 
+            {{"VerySmall"}, Color::WHITE}
+        );
+        needLabel->Enable();
+    }
+    else
+    {
+        needBar = nullptr;
+    }
 }
 
 void BuildingItem::HandleConfigure()
@@ -343,6 +383,6 @@ void EconomyTab::HandleSettlementChanged()
         }
 
         item->Enable();
-        item->Setup(resource);
+        item->Setup(resource, settlement);
     }
 }

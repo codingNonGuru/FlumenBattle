@@ -43,7 +43,7 @@ struct Furniture : public ResourceType
 
 struct CookedFood : public ResourceType
 {
-    CookedFood() : ResourceType(ResourceTypes::COOKED_FOOD, "Cooked food", "Drumstick", 70) {IsProductionTileBased = false;}
+    CookedFood() : ResourceType(ResourceTypes::COOKED_FOOD, "Cooked food", "Drumstick", 70) {PopulationConsumption = 1; IsProductionTileBased = false;}
 };
 
 int Resource::GetPotentialProduction(const Settlement &settlement) const
@@ -148,8 +148,6 @@ void Resource::PlaceOrders(const Settlement &settlement)
     {
         consumption += building.GetResourceConsumption(Type->Type) * building.GetPersonnelCount();    
     }
-
-    consumption += settlement.GetPopulation() * Type->PopulationConsumption;
 
     Order = consumption;
 }
@@ -287,6 +285,10 @@ void ResourceHandler::Update(Settlement &settlement)
 
     PlaceOrders(settlement);
 
+    auto &popHandler = settlement.GetPopulationHandler();
+
+    popHandler.PlaceOrders(settlement);
+
     ExecuteOrders(settlement);
 
     for(auto &resource : resources)
@@ -298,6 +300,8 @@ void ResourceHandler::Update(Settlement &settlement)
     {
         resource.UpdateStorage(settlement);
     }
+
+    popHandler.UpdateNeeds(settlement);
 }
 
 Resource *ResourceHandler::Get(ResourceTypes type) const

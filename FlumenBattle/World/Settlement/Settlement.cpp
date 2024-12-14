@@ -58,6 +58,8 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location,
 
     this->resourceHandler.Initialize();
 
+    this->popHandler.Initialize();
+
     this->name = name;
 
     this->banner = banner;
