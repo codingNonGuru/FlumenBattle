@@ -92,7 +92,20 @@ namespace world::settlement
 
 void Building::ApplyEffect(Settlement &settlement) const
 {
+    if(amount == 0)
+        return;
+        
     type->HandleApplyEffect(settlement);
+}
+
+void Building::Destroy() 
+{
+    amount--;
+
+    if(amount == 0)
+    {
+        
+    }
 }
 
 Building BuildingFactory::Create(BuildingTypes type)
@@ -231,6 +244,18 @@ Building &BuildingManager::GetRandomStandingBuilding()
     }
 }
 
+Building &BuildingManager::GetRandomBuilding()
+{
+    while(true)
+    {
+        auto building = buildingSet.buildings.GetRandom();
+        if(building->GetAmount() != 0)
+        {
+            return *building;
+        }
+    }
+}
+
 void BuildingManager::AddBuilding(BuildingTypes type)
 {
     auto building = buildingSet.buildings.Find(type);
@@ -252,9 +277,12 @@ void BuildingManager::RemoveBuilding(BuildingTypes type)
 {
     auto buildingPointer = buildingSet.buildings.Find(type);
 
-    buildingPointer->Destroy();
+    buildingSet.buildings.RemoveAt(buildingPointer);
+}
 
-    //buildingSet.buildings.RemoveAt(buildingPointer);
+void BuildingManager::RemoveBuilding(Building &building)
+{
+    buildingSet.buildings.RemoveAt(&building);
 }
 
 void BuildingManager::ApplyModifiers(Settlement &settlement) const
@@ -267,7 +295,13 @@ void BuildingManager::ApplyModifiers(Settlement &settlement) const
 
 void BuildingManager::Update()
 {
-
+    for(auto &building : buildingSet.buildings)
+    {
+        if(building.GetAmount() == 0)
+        {
+            RemoveBuilding(building);
+        }
+    }
 }
 
 void BuildingDamager::DamageImprovements(const disaster::Earthquake &earthquake, Settlement &settlement)

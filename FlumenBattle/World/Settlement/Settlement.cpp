@@ -438,6 +438,11 @@ int Settlement::GetBuildingCount(BuildingTypes type) const
     return buildingManager->GetBuildingCount(type);
 }
 
+int Settlement::GetTotalBuildingCount() const
+{
+    return buildingManager->GetBuildingCount();
+}
+
 const container::Array <Building *> &Settlement::GetBuildingsThatProduce(ResourceTypes resource) const
 {
     return buildingManager->GetBuildingsThatProduce(resource);
@@ -561,7 +566,25 @@ int Settlement::GetStandingBuildingCount() const
 
 bool Settlement::IsLootable() const
 {
+    if(IsDefended() == true)
+        return false;
+
     if(buildingManager->GetStandingBuildingCount() > 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool Settlement::IsPillageable() const
+{
+    if(IsDefended() == true)
+        return false;
+
+    if(buildingManager->GetBuildingCount() > 0)
     {
         return true;
     }
@@ -587,6 +610,20 @@ int Settlement::Loot(bool hasSparedBuilding, int requestedFood)
     GetResource(ResourceTypes::FOOD)->Storage -= requestedFood;
 
     return requestedFood;
+}
+
+void Settlement::Pillage(int buildingCount)
+{
+    for(int i = 0; i < buildingCount; ++i)
+    {
+        auto &building = buildingManager->GetRandomBuilding();
+        building.Destroy();
+
+        if(buildingManager->GetBuildingCount() == 0)
+        {
+            break;
+        }
+    }
 }
 
 void Settlement::SetupSimulation()
@@ -693,6 +730,8 @@ void Settlement::ProcessEarthquake(const disaster::Earthquake &earthquake)
 void Settlement::Update()
 {
     static const auto &worldTime = world::WorldScene::Get()->GetTime();
+
+    buildingManager->Update();
 
     auto updateModifiers = [this]
     {

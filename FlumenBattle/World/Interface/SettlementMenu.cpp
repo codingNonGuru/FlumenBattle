@@ -92,6 +92,7 @@ void SettlementMenu::HandleConfigure()
         SettlementMenuOptions::ATTACK, 
         SettlementMenuOptions::CONQUER,
         SettlementMenuOptions::LOOT,
+        SettlementMenuOptions::PILLAGE,
         SettlementMenuOptions::BUY_FOOD, 
         SettlementMenuOptions::BUY_MULE, 
         SettlementMenuOptions::SIGN_UP_TO_DELIVER_ITEM, 
@@ -189,6 +190,12 @@ void SettlementMenu::ProcessOptionInput(SettlementMenuOptions option)
         if(WorldController::Get()->CanLootSettlement() == true)
         {
             WorldController::Get()->LootSettlement();
+        }
+        break;
+    case SettlementMenuOptions::PILLAGE:
+        if(WorldController::Get()->CanPillageSettlement() == true)
+        {
+            WorldController::Get()->PillageSettlement();
         }
         break;
     case SettlementMenuOptions::BUY_FOOD:

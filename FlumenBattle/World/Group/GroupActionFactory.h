@@ -34,6 +34,8 @@ namespace world::group
 
         const GroupAction * BuildLootSettlement();
 
+        const GroupAction * BuildPillageSettlement();
+
     public:
         const GroupAction * BuildAction(GroupActions);
     };
@@ -69,6 +71,8 @@ namespace world::group
         static GroupActionResult BypassDefences(Group &group);
 
         static GroupActionResult LootSettlement(Group &group);
+
+        static GroupActionResult PillageSettlement(Group &group);
     };
 
     class GroupActionValidator
@@ -96,5 +100,7 @@ namespace world::group
         static bool CanForage(Group &, const GroupActionData &);
 
         static bool CanLootSettlement(Group &, const GroupActionData &);
+
+        static bool CanPillageSettlement(Group &, const GroupActionData &);
     };
 }

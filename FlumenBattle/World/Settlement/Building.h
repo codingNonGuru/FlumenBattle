@@ -74,7 +74,7 @@ namespace world::settlement
 
         void IncreaseAmount() {amount++;}
 
-        void Destroy() {amount--;}
+        void Destroy();
 
         int GetAmount() const {return amount;}
 
@@ -142,6 +142,8 @@ namespace world::settlement
 
         void RemoveBuilding(BuildingTypes);
 
+        void RemoveBuilding(Building &);
+
         void ApplyModifiers(Settlement &) const;
 
         void Update();
@@ -159,6 +161,8 @@ namespace world::settlement
         const container::Array <Building *> &GetBuildingsThatProduce(ResourceTypes) const;
 
         Building &GetRandomStandingBuilding();
+
+        Building &GetRandomBuilding();
     };
 
     class BuildingSetAllocator

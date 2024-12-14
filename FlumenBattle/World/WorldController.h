@@ -143,6 +143,8 @@ namespace world
 
         bool CanLootSettlement();
 
+        bool CanPillageSettlement();
+
         bool CanBuyFood();
 
         bool CanBuyMule();
@@ -150,6 +152,8 @@ namespace world
         void AttackGarrison();
 
         void LootSettlement();
+
+        void PillageSettlement();
 
         void BuyFood();
 

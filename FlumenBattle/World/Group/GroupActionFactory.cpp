@@ -17,6 +17,8 @@ static const auto BASE_FORAGE_DC = 15;
 
 static const auto BASE_LOOTING_DC = 10;
 
+static const auto BASE_PILLAGE_DC = 10;
+
 using namespace world::group;
 
 const GroupAction * GroupActionFactory::BuildAction(GroupActions actionType)
@@ -45,6 +47,8 @@ const GroupAction * GroupActionFactory::BuildAction(GroupActions actionType)
             return BuildForage();
         case GroupActions::LOOT_SETTLEMENT:
             return BuildLootSettlement();
+        case GroupActions::PILLAGE_SETTLEMENT:
+            return BuildPillageSettlement();
     }
 }
 
@@ -177,6 +181,18 @@ const GroupAction * GroupActionFactory::BuildLootSettlement()
         false, 
         &GroupActionValidator::CanLootSettlement, 
         &GroupActionPerformer::LootSettlement
+        };
+    return &action;
+}
+
+const GroupAction * GroupActionFactory::BuildPillageSettlement()
+{
+    static GroupAction action = {
+        GroupActions::PILLAGE_SETTLEMENT, 
+        3 * WorldTime::HOUR_SIZE * GroupAction::BASE_PROGRESS_RATE,
+        false, 
+        &GroupActionValidator::CanPillageSettlement, 
+        &GroupActionPerformer::PillageSettlement
         };
     return &action;
 }
@@ -685,6 +701,62 @@ GroupActionResult GroupActionPerformer::LootSettlement(Group& group)
     return {GroupActions::LOOT_SETTLEMENT, skillCheck, character::SkillTypes::SURVIVAL, GroupActionResult::Food(requestedFood), GroupActionResult::Money(money)};
 }
 
+GroupActionResult GroupActionPerformer::PillageSettlement(Group& group)
+{
+    if(group.actionProgress != group.action->BaseDuration)
+        return {};
+
+    auto survivalBonus = group.GetMostSkilledMember(character::SkillTypes::SURVIVAL).Bonus;
+
+    auto difficultyClass = BASE_PILLAGE_DC;
+
+    if(group.GetTile()->HasRelief(WorldReliefs::MOUNTAINS) == true)
+    {
+        difficultyClass += 2;
+    }
+
+    auto skillCheck = utility::RollD20Dice(difficultyClass, survivalBonus);
+
+    auto money = 0;
+
+    auto buildingCount = 0;
+
+    if(skillCheck.IsCriticalSuccess())
+    {
+        money = 50 + utility::GetRandom(0, 50);
+
+        group.AddMoney(money);
+
+        buildingCount = 2;
+    }
+    else if(skillCheck.IsNormalSuccess())
+    {
+        buildingCount = 1;
+    }
+    else if(skillCheck.IsRegularFailure())
+    {
+
+    }
+    else if(skillCheck.IsCriticalFailure())
+    {
+        for(auto &character : group.GetCharacters())
+        {
+            auto damage = utility::RollDice({utility::RollDies::D6, 1, 2}); 
+
+            character.SufferDamage(damage);
+        }
+    }
+
+    if(buildingCount != 0)
+    {
+        group.GetCurrentSettlement()->Pillage(buildingCount);
+    }
+
+    group.CancelAction();
+
+    return {GroupActions::PILLAGE_SETTLEMENT, skillCheck, character::SkillTypes::SURVIVAL, GroupActionResult::Food(0), GroupActionResult::Money(money)};
+}
+
 bool GroupActionValidator::CanTakeShortRest(Group &group, const GroupActionData &)
 {
     return true;
@@ -776,5 +848,10 @@ bool GroupActionValidator::CanForage(Group &group, const GroupActionData &)
 
 bool GroupActionValidator::CanLootSettlement(Group &group, const GroupActionData &data)
 {
-    return group.GetCurrentSettlement()->IsDefended() == false && group.GetCurrentSettlement()->IsLootable() == true;
+    return group.GetCurrentSettlement()->IsLootable() == true;
+}
+
+bool GroupActionValidator::CanPillageSettlement(Group &group, const GroupActionData &data)
+{
+    return group.GetCurrentSettlement()->IsPillageable() == true;
 }

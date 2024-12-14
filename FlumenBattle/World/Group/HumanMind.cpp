@@ -218,6 +218,17 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
                 OnItemAdded.Invoke();
             }
         }
+        else if(result.ActionType == GroupActions::PILLAGE_SETTLEMENT)
+        {
+            if(result.Content.lootedStuff.Money != 0)
+            {
+                moneyChange = result.Content.lootedStuff.Money;
+
+                OnPlayerWealthChanged.Invoke();
+
+                OnMoneyLooted.Invoke();
+            }
+        }
 
         OnSkillCheckRolled.Invoke();
     }

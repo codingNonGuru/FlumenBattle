@@ -240,6 +240,8 @@ namespace world::settlement
 
         int GetBuildingCount(BuildingTypes) const;
 
+        int GetTotalBuildingCount() const;
+
         const container::Array <Building *> &GetBuildingsThatProduce(ResourceTypes) const;
 
         const Building &GetBuilding(BuildingTypes) const;
@@ -260,7 +262,11 @@ namespace world::settlement
 
         bool IsLootable() const;
 
+        bool IsPillageable() const;
+
         int Loot(bool, int);
+
+        void Pillage(int);
 
         void SetupSimulation();
 

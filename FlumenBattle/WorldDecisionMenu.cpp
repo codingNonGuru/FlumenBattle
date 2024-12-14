@@ -129,6 +129,9 @@ void WorldDecisionMenu::HandleUpdate()
             case GroupActions::LOOT_SETTLEMENT:
                 text << "Looting";
                 break;
+            case GroupActions::PILLAGE_SETTLEMENT:
+                text << "Pillage";
+                break;
         }
 
         auto progressRate = group->GetProgressRate();
