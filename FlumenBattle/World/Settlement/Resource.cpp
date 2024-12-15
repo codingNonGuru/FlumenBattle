@@ -46,6 +46,11 @@ struct CookedFood : public ResourceType
     CookedFood() : ResourceType(ResourceTypes::COOKED_FOOD, "Cooked food", "Drumstick", 70) {PopulationConsumption = 1; IsProductionTileBased = false;}
 };
 
+struct Fabric : public ResourceType
+{
+    Fabric() : ResourceType(ResourceTypes::FABRIC, "Fabric", "Fabric", 70) {IsProductionTileBased = false;}
+};
+
 int Resource::GetPotentialProduction(const Settlement &settlement) const
 {
     return GetProductionFromBuildings(settlement) + GetProductionFromTiles(settlement);
@@ -256,6 +261,9 @@ void ResourceHandler::Initialize()
 
     static const auto cookedFood = CookedFood();
     *resources.Add() = {&cookedFood};
+
+    static const auto fabric = Fabric();
+    *resources.Add() = {&fabric};
 }
 
 void ResourceHandler::ResetOrders()
@@ -340,5 +348,8 @@ const ResourceType *ResourceFactory::CreateType(ResourceTypes type)
     case ResourceTypes::COOKED_FOOD:
         static const auto cookedFood = CookedFood();
         return &cookedFood;
+    case ResourceTypes::FABRIC:
+        static const auto fabric = Fabric();
+        return &fabric;
     }
 }

@@ -77,6 +77,16 @@ namespace world::settlement
         }
     };
 
+    class WeavingMill : public BuildingType
+    {
+        using BuildingType::BuildingType; 
+
+        void HandleApplyEffect(Settlement &settlement) const override
+        {
+            
+        }
+    };
+
     class Walls : public BuildingType
     {
         using BuildingType::BuildingType; 
@@ -151,6 +161,11 @@ Building BuildingFactory::Create(BuildingTypes type)
         return 
         {
             [&] {static const auto buildingType = Bakery(type, 200, true, "Bakery", "LumberMill", {ResourceTypes::COOKED_FOOD, 2}, {{ResourceTypes::FOOD, 3}, {ResourceTypes::TIMBER, 1}}); return &buildingType;} ()
+        };
+    case BuildingTypes::WEAVING_MILL:
+        return 
+        {
+            [&] {static const auto buildingType = WeavingMill(type, 200, true, "Weaving mill", "LumberMill", {ResourceTypes::FABRIC, 2}, {{ResourceTypes::FIBER, 3}}); return &buildingType;} ()
         };
     }
 }

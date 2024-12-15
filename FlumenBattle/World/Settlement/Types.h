@@ -22,7 +22,8 @@ namespace world::settlement
         HOUSING,
         LUMBER_MILL,
         CARPENTER,
-        BAKERY
+        BAKERY,
+        WEAVING_MILL
     };
 
     enum class BuildingTypes
@@ -36,7 +37,8 @@ namespace world::settlement
         HOUSING,
         LUMBER_MILL,
         CARPENTER,
-        BAKERY
+        BAKERY,
+        WEAVING_MILL
     };
 
     enum class AbundanceLevels
@@ -94,6 +96,7 @@ namespace world::settlement
         LUMBER,
         FURNITURE,
         COOKED_FOOD,
+        FABRIC,
         NONE
     };
 

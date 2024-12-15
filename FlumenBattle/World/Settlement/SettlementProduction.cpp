@@ -80,6 +80,8 @@ ProductionInquiry SettlementProduction::CanProduce(Settlement &settlement, Produ
         return {settlement.HasBuilding(BuildingTypes::CARPENTER) == false};
     case ProductionOptions::BAKERY:
         return {settlement.HasBuilding(BuildingTypes::BAKERY) == false};
+    case ProductionOptions::WEAVING_MILL:
+        return {settlement.HasBuilding(BuildingTypes::WEAVING_MILL) == false};
     default:
         return {true};
     }
@@ -117,6 +119,8 @@ const SettlementProductionType * SettlementProductionFactory::BuildProductionTyp
             return BuildHousingProduction();
         case ProductionOptions::LUMBER_MILL:
             return BuildLumberMillProduction();
+        case ProductionOptions::WEAVING_MILL:
+            return BuildWeavingMillProduction();
         case ProductionOptions::CARPENTER:
             return BuildCarpenterProduction();
         case ProductionOptions::BAKERY:
@@ -188,6 +192,12 @@ const SettlementProductionType *SettlementProductionFactory::BuildLumberMillProd
     return &productionType;
 }
 
+const SettlementProductionType *SettlementProductionFactory::BuildWeavingMillProduction()
+{
+    static const SettlementProductionType productionType = {ProductionOptions::WEAVING_MILL, "Weaving mill", 300, &ProductionFinisher::FinishWeavingMill};
+    return &productionType;
+}
+
 const SettlementProductionType *SettlementProductionFactory::BuildCarpenterProduction()
 {
     static const SettlementProductionType productionType = {ProductionOptions::CARPENTER, "Carpenter", 300, &ProductionFinisher::FinishCarpenter};
@@ -229,6 +239,11 @@ void ProductionFinisher::FinishLibrary(Settlement &settlement)
 void ProductionFinisher::FinishLumberMill(Settlement &settlement)
 {
     settlement.AddBuilding(BuildingTypes::LUMBER_MILL);
+}
+
+void ProductionFinisher::FinishWeavingMill(Settlement &settlement)
+{
+    settlement.AddBuilding(BuildingTypes::WEAVING_MILL);
 }
 
 void ProductionFinisher::FinishCarpenter(Settlement &settlement)

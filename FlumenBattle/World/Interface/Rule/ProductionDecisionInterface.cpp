@@ -38,7 +38,8 @@ static const settlement::ProductionOptions options[] = {
     settlement::ProductionOptions::FARM,
     settlement::ProductionOptions::LUMBER_MILL,
     settlement::ProductionOptions::CARPENTER,
-    settlement::ProductionOptions::BAKERY
+    settlement::ProductionOptions::BAKERY,
+    settlement::ProductionOptions::WEAVING_MILL
     };
 
 #define ITEM_CAPACITY std::size(options)
@@ -103,7 +104,7 @@ void ProductionDecisionInterface::HandleConfigure()
         (
             {
                 OPTION_ITEM_SIZE, 
-                drawOrder_ + 1, 
+                drawOrder_ + 2, 
                 {optionLayout}, 
                 {"panel-border-001", true}
             }

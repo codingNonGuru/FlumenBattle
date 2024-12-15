@@ -1,6 +1,6 @@
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/Text.hpp"
-#include "FlumenEngine/Interface/LayoutGroup.h"
+#include "FlumenEngine/Interface/SimpleList.h"
 #include "FlumenEngine/Interface/ProgressBar.h"
 
 #include "EconomyTab.h"
@@ -140,19 +140,22 @@ void EconomyTab::HandleConfigure()
     );
     workerLabel->Enable();
 
-    itemLayout = ElementFactory::BuildElement <LayoutGroup>
+    resourceItems.Initialize((int)settlement::ResourceTypes::NONE);
+
+    itemLayout = ElementFactory::BuildSimpleList
     (
         { 
             drawOrder_, 
-            {Position2{0.0f, -30.0f}, this}, 
+            {Position2{0.0f, 90.0f}, ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}, 
             {false},
             Opacity(0.0f)
-        }
+        },
+        resourceItems.GetCapacity(),
+        ListOrientations::VERTICAL,
+        5.0f
     );
-    itemLayout->SetDistancing(1, 5.0f);
     itemLayout->Enable();
 
-    resourceItems.Initialize((int)settlement::ResourceTypes::NONE);
     for(auto i = 0; i < (int)settlement::ResourceTypes::NONE; ++i)
     {
         auto item = ElementFactory::BuildElement <ResourceItem>

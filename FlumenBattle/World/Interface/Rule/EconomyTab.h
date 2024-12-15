@@ -5,7 +5,7 @@
 #include "FlumenBattle/World/Settlement/Types.h"
 
 class Text;
-class LayoutGroup;
+class SimpleList;
 class ProgressBar;
 
 namespace world::settlement
@@ -65,7 +65,7 @@ namespace world::interface::rule
 
         container::Array <ResourceItem *> resourceItems;
 
-        LayoutGroup *itemLayout;
+        SimpleList *itemLayout;
 
         void HandleConfigure() override;
 
