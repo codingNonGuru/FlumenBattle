@@ -96,6 +96,8 @@ namespace world::settlement
 
         static void OnApplyRepressed(Settlement &);
 
+        static void OnApplyHappiness(Settlement &);
+
         const ConditionType &BuildType(Conditions);
 
         const ConditionType &BuildMalariaImmunity();
@@ -103,6 +105,8 @@ namespace world::settlement
         const ConditionType &BuildSickened();
 
         const ConditionType &BuildRepressed();
+
+        const ConditionType &BuildHappiness();
 
     public:
         Condition Create(ConditionData);

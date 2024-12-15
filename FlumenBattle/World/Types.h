@@ -49,7 +49,8 @@ namespace world
         {
             SICKENED,
             IMMUNITY_AGAINST_MALARIA,
-            REPRESSED
+            REPRESSED,
+            HAPPINESS
         };
     }
 

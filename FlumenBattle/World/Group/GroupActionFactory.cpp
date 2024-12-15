@@ -918,5 +918,6 @@ bool GroupActionValidator::CanBribeGarrison(Group &group, const GroupActionData 
     group.GetCurrentSettlement()->IsDefended() == true &&
     group.GetCurrentSettlement()->GetWallsLevel() > 0 && 
     group.GetEncounter()->HasBattleEnded() == false &&
-    group.hasAttemptedBribingGarrison == false;
+    group.hasAttemptedBribingGarrison == false &&
+    group.GetMoney() >= 300;
 }

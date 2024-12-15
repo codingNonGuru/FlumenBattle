@@ -11,11 +11,13 @@ void ConditionManager::AddCondition(ConditionData conditionData)
     auto result = conditionSet.conditions.Find(conditionData.Type);
     if(result != nullptr)
     {
-        result->Duration += conditionData.Duration;
+        result->Duration = conditionData.Duration;
         if(conditionData.Strength > result->Strength)
         {
             result->Strength = conditionData.Strength;
         }
+
+        result->HoursElapsed = 0;
     }
     else
     {
@@ -65,6 +67,11 @@ void ConditionFactory::OnApplyRepressed(Settlement &settlement)
     settlement.AddModifier({Modifiers::FACTION_JOIN_INTERDICTION, 1});
 }
 
+void ConditionFactory::OnApplyHappiness(Settlement &settlement)
+{
+    settlement.AddModifier({Modifiers::ALL_DICE_ROLLS, 1});
+}
+
 Condition ConditionFactory::Create(ConditionData conditionData)
 {
     auto &type = BuildType(conditionData.Type);
@@ -81,6 +88,8 @@ const ConditionType &ConditionFactory::BuildType(Conditions condition)
         return BuildSickened();
     case Conditions::REPRESSED:
         return BuildRepressed();
+    case Conditions::HAPPINESS:
+        return BuildHappiness();
     }
 }
 
@@ -99,5 +108,11 @@ const ConditionType &ConditionFactory::BuildSickened()
 const ConditionType &ConditionFactory::BuildRepressed()
 {
     static const ConditionType &type = {Conditions::REPRESSED, "Repressed", &ConditionFactory::OnApplyRepressed};
+    return type;
+}
+
+const ConditionType &ConditionFactory::BuildHappiness()
+{
+    static const ConditionType &type = {Conditions::HAPPINESS, "Happiness", &ConditionFactory::OnApplyHappiness};
     return type;
 }

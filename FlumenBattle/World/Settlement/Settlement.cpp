@@ -744,6 +744,11 @@ void Settlement::Update()
 
         modifierManager.ClearModifiers();
 
+        if(IsHappy() == true)
+        {
+            AddCondition({settlement::Conditions::HAPPINESS, 1, 1});
+        }
+
         polity->ApplyTechnologyModifiers(this);
 
         conditionManager->ApplyModifiers(*this);

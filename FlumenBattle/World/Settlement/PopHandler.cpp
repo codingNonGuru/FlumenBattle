@@ -24,6 +24,13 @@ void PopHandler::PlaceOrders(Settlement &settlement)
     auto cookedFood = settlement.GetResource(ResourceTypes::COOKED_FOOD);
     auto rawFood = settlement.GetResource(ResourceTypes::FOOD);
 
+    if(settlement.GetPopulation() == 0)
+    {
+        cookedFood->HasPopulationOrdered = false;
+        rawFood->HasPopulationOrdered = false;
+        return;
+    }
+
     auto consumption = settlement.GetPopulation() * cookedFood->Type->PopulationConsumption;
     if(consumption <= cookedFood->Storage)
     {
