@@ -89,7 +89,7 @@ namespace world::settlement
         FOOD, //MEAT, GRAIN, FRUIT, MUSHROOM, SEAFOOD, HERBS
         TIMBER,
         METAL,
-        WOOL,
+        FIBER,
         STONE,
         LUMBER,
         FURNITURE,

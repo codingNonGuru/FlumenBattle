@@ -26,9 +26,9 @@ struct Lumber : public ResourceType
     Lumber() : ResourceType(ResourceTypes::LUMBER, "Lumber", "Plank", 25) {IsProductionTileBased = false; RelatedModifiers = {Modifiers::WOOD_RELATED_RESOURCE_PRODUCTION};}
 };
 
-struct Wool : public ResourceType
+struct Fiber : public ResourceType
 {
-    Wool() : ResourceType(ResourceTypes::WOOL, "Wool", "Wool", 10) {IsProductionTileBased = true;}
+    Fiber() : ResourceType(ResourceTypes::FIBER, "Fiber", "Wool", 10) {IsProductionTileBased = true;}
 };
 
 struct Stone : public ResourceType
@@ -242,6 +242,9 @@ void ResourceHandler::Initialize()
     static const auto timber = Timber();
     *resources.Add() = {&timber};
 
+    static const auto fiber = Fiber();
+    *resources.Add() = {&fiber};
+
     static const auto metal = Metal();
     *resources.Add() = {&metal};
 
@@ -325,9 +328,9 @@ const ResourceType *ResourceFactory::CreateType(ResourceTypes type)
     case ResourceTypes::LUMBER:
         static const auto lumber = Lumber();
         return &lumber;
-    case ResourceTypes::WOOL:
-        static const auto wool = Wool();
-        return &wool;
+    case ResourceTypes::FIBER:
+        static const auto fiber = Fiber();
+        return &fiber;
     case ResourceTypes::STONE:
         static const auto stone = Stone();
         return &stone;

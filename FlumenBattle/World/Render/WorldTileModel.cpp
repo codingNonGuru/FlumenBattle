@@ -53,6 +53,8 @@ static Sprite *foodSprite = nullptr;
 
 static Sprite *timberSprite = nullptr;
 
+static Sprite *fiberSprite = nullptr;
+
 static Sprite *farmSprite = nullptr;
 
 static Sprite *dotSprite = nullptr;
@@ -83,6 +85,8 @@ WorldTileModel::WorldTileModel()
     foodSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("Radish"));
 
     timberSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("Timber"));
+
+    fiberSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("Wool"));
 
     farmSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("FarmImprovement"));
 
@@ -753,19 +757,38 @@ void WorldTileModel::Render()
 
     static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
 
-    if(WorldController::Get()->ShouldDisplayNearbyFood() == true || WorldController::Get()->ShouldDisplayNearbyTimber() == true)
+    if(WorldController::Get()->ShouldDisplayNearbyFood() == true || WorldController::Get()->ShouldDisplayNearbyTimber() == true || WorldController::Get()->ShouldDisplayNearbyFiber() == true)
     {
         auto playerTile = playerGroup->GetTile();
         auto &nearbyTiles = playerTile->GetNearbyTiles(5);
 
         for(auto &tile : nearbyTiles.Tiles)
         {
-            auto resourceAmount = tile->GetResource(WorldController::Get()->ShouldDisplayNearbyFood() ? settlement::ResourceTypes::FOOD : settlement::ResourceTypes::TIMBER);
+            auto resourceAmount = tile->GetResource(
+                [&] 
+                {
+                    if(WorldController::Get()->ShouldDisplayNearbyFood())
+                        return settlement::ResourceTypes::FOOD; 
+                    if(WorldController::Get()->ShouldDisplayNearbyTimber())
+                        return settlement::ResourceTypes::TIMBER; 
+                    if(WorldController::Get()->ShouldDisplayNearbyFiber())
+                        return settlement::ResourceTypes::FIBER; 
+                } ()
+            );
+
             if(resourceAmount > 0)
             {
                 for(auto i = 0; i < resourceAmount; ++i)
                 {   
-                    auto sprite = WorldController::Get()->ShouldDisplayNearbyFood() == true ? foodSprite : timberSprite;
+                    auto sprite = [&] 
+                    {
+                        if(WorldController::Get()->ShouldDisplayNearbyFood())
+                            return foodSprite; 
+                        if(WorldController::Get()->ShouldDisplayNearbyTimber())
+                            return timberSprite; 
+                        if(WorldController::Get()->ShouldDisplayNearbyFiber())
+                            return fiberSprite; 
+                    } (); 
 
                     auto positionOffset = ((float)i + 0.5f - (float)resourceAmount * 0.5f) * Position2(-10.0f, 0.0f);
                     sprite->Draw(camera, {tile->Position + positionOffset, Scale2(0.75f, 0.75f), Opacity(1.0f), DrawOrder(-2)});

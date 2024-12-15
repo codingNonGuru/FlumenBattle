@@ -43,6 +43,8 @@ static const auto FOOD_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCA
 
 static const auto TIMBER_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_T, {InputHandler::CTRL}};
 
+static const auto FIBER_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_B, {InputHandler::CTRL}};
+
 static const auto IMPROVEMENT_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_I, {InputHandler::CTRL}};
 
 static const auto WORKER_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_W, {InputHandler::CTRL}};
@@ -81,6 +83,7 @@ namespace world
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_M, {this, &WorldController::HandleResourceDisplayPressed});
         InputHandler::RegisterEvent(FOOD_DISPLAY_KEY, {this, &WorldController::HandleFoodDisplayPressed});
         InputHandler::RegisterEvent(TIMBER_DISPLAY_KEY, {this, &WorldController::HandleTimberDisplayPressed});
+        InputHandler::RegisterEvent(FIBER_DISPLAY_KEY, {this, &WorldController::HandleFiberDisplayPressed});
         InputHandler::RegisterEvent(IMPROVEMENT_DISPLAY_KEY, {this, &WorldController::HandleImprovementDisplayPressed});
         InputHandler::RegisterEvent(WORKER_DISPLAY_KEY, {this, &WorldController::HandleWorkerPlacePressed});
         InputHandler::RegisterEvent(RULE_MENU_OPEN_KEY, {this, &WorldController::HandleRuleMenuPressed});
@@ -328,6 +331,8 @@ namespace world
             isFoodDisplayActive = true;
 
             isTimberDisplayActive = false;
+
+            isFiberDisplayActive = false;
         }
     }
 
@@ -342,6 +347,24 @@ namespace world
             isTimberDisplayActive = true;
 
             isFoodDisplayActive = false;
+
+            isFiberDisplayActive = false;
+        }
+    }
+
+    void WorldController::HandleFiberDisplayPressed()
+    {
+        if(isFiberDisplayActive)
+        {
+            isFiberDisplayActive = false;
+        }
+        else
+        {
+            isFiberDisplayActive = true;
+
+            isFoodDisplayActive = false;
+
+            isTimberDisplayActive = false;
         }
     }
 
@@ -452,6 +475,7 @@ namespace world
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_M);
         InputHandler::UnregisterEvent(FOOD_DISPLAY_KEY);
         InputHandler::UnregisterEvent(TIMBER_DISPLAY_KEY);
+        InputHandler::UnregisterEvent(FIBER_DISPLAY_KEY);
         InputHandler::UnregisterEvent(IMPROVEMENT_DISPLAY_KEY);
         InputHandler::UnregisterEvent(WORKER_DISPLAY_KEY);
         InputHandler::UnregisterEvent(RULE_MENU_OPEN_KEY);

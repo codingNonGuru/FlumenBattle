@@ -373,6 +373,30 @@ int WorldGenerator::GenerateWorld(
                 }
             }
         }
+
+        //Set fiber resource abundance
+        for(auto &tile : map->tiles)
+        {
+            if(tile.Type == WorldTiles::SEA)
+            {
+                tile.SetResource(settlement::ResourceTypes::FIBER, 0);
+            }
+            else
+            {
+                if(tile.HasRelief(WorldReliefs::MOUNTAINS) == true)
+                {
+                    tile.SetResource(settlement::ResourceTypes::FIBER, utility::GetRandom(1, 2));
+                }
+                else if(tile.HasRelief(WorldReliefs::HILLS) == true)
+                {
+                    tile.SetResource(settlement::ResourceTypes::FIBER, utility::GetRandom(1, 4));
+                }
+                else if(tile.HasRelief(WorldReliefs::PLAINS) == true)
+                {
+                    tile.SetResource(settlement::ResourceTypes::FIBER, utility::GetRandom(0, 1));
+                }
+            }
+        }
     };
 
     auto initializeTiles = [&]

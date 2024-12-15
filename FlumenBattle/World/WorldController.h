@@ -41,6 +41,8 @@ namespace world
 
         bool isTimberDisplayActive {false};
 
+        bool isFiberDisplayActive {false};
+
         bool isImprovementDisplayActive {false};
 
         bool isWorkerPlaceModeActive {false};
@@ -97,6 +99,8 @@ namespace world
         void HandleFoodDisplayPressed();
 
         void HandleTimberDisplayPressed();
+
+        void HandleFiberDisplayPressed();
 
         void HandleImprovementDisplayPressed();
 
@@ -162,6 +166,8 @@ namespace world
         bool ShouldDisplayNearbyFood() const {return isFoodDisplayActive;}
 
         bool ShouldDisplayNearbyTimber() const {return isTimberDisplayActive;}
+
+        bool ShouldDisplayNearbyFiber() const {return isFiberDisplayActive;}
 
         bool ShouldDisplayImprovements() const {return isImprovementDisplayActive;}
 
