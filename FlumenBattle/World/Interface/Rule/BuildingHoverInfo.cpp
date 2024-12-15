@@ -3,7 +3,7 @@
 #include "FlumenEngine/Interface/Text.hpp"
 
 #include "BuildingHoverInfo.h"
-#include "FlumenBattle/World/Interface/Rule/EconomyTab.h"
+#include "FlumenBattle/World/Interface/Rule/BuildingTab.h"
 #include "FlumenBattle/World/Settlement/Building.h"
 
 static const auto BORDER_COLOR = Color::RED * 0.25f;

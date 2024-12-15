@@ -55,42 +55,6 @@ namespace world::interface::rule
         void HandleUpdate() override;
     };
 
-    struct BuildingItem : public Element
-    {
-        friend class RuleMenu;
-
-        //Text *nameLabel;
-
-        Element *icon;
-
-        Counter *counter;
-
-        Counter *workerCounter;
-
-        int buildingCount;
-
-        int workerCount;
-
-        settlement::Building *building;
-
-        EconomyTab *parentTab;
-
-        void Setup(settlement::Building *, EconomyTab *);
-
-        void HandleConfigure() override;
-
-        void HandleUpdate() override;
-
-        void HandleHover() override;
-
-        void HandleLeftClick() override;
-
-        void HandleRightClick() override;
-
-    public:
-        const settlement::Building *GetBuilding() const {return building;}
-    };
-
     class EconomyTab : public Element
     {
         Text *nameLabel;
@@ -101,13 +65,7 @@ namespace world::interface::rule
 
         container::Array <ResourceItem *> resourceItems;
 
-        container::Array <BuildingItem *> buildingItems;
-
         LayoutGroup *itemLayout;
-
-        LayoutGroup *buildingLayout;
-
-        BuildingHoverInfo *buildingHoverInfo;
 
         void HandleConfigure() override;
 
@@ -116,8 +74,5 @@ namespace world::interface::rule
         void HandleEnable() override;
 
         void HandleSettlementChanged();
-
-    public:
-        BuildingHoverInfo *GetHoverDevice() {return buildingHoverInfo;}
     };
 }
