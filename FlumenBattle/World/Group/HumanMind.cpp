@@ -229,6 +229,17 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
                 OnMoneyLooted.Invoke();
             }
         }
+        else if(result.ActionType == GroupActions::BRIBE_GARRISON)
+        {
+            if(result.Content.bribeMoney != 0)
+            {
+                moneyChange = -result.Content.bribeMoney;
+
+                OnPlayerWealthChanged.Invoke();
+
+                OnBribePaid.Invoke();
+            }
+        }
 
         OnSkillCheckRolled.Invoke();
     }

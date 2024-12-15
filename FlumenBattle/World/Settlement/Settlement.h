@@ -256,6 +256,8 @@ namespace world::settlement
 
         int GetDefenceSneakDC() const;
 
+        int GetBribeGarrisonDC() const;
+
         int GetWallsLevel() const;
 
         int GetStandingBuildingCount() const;

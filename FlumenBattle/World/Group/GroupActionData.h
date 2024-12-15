@@ -64,15 +64,19 @@ namespace world::group
 
             LootData lootedStuff;
 
+            Money bribeMoney;
+
             SpecificContent() {}
 
             SpecificContent(Group *group) : spottedGroup(group) {}
 
-            explicit SpecificContent(Food food) : foragedFood(food) {}
+            SpecificContent(Food food) : foragedFood(food) {}
 
             SpecificContent(bool isEngaged) : isAlreadyEngaged(isEngaged) {}
 
-            explicit SpecificContent(Food food, Money money) : lootedStuff{food, money} {}
+            SpecificContent(Food food, Money money) : lootedStuff{food, money} {}
+
+            SpecificContent(Money money) : bribeMoney{money} {}
         } Content;
 
         GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill) : 
@@ -89,6 +93,9 @@ namespace world::group
 
         GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill, Food food, Money money) : 
         ActionType(actionType), HasRolled(true), Success(success), Skill(skill), Content{food, money} {}
+
+        GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill, Money money) : 
+        ActionType(actionType), HasRolled(true), Success(success), Skill(skill), Content{money} {}
 
         GroupActionResult() : HasRolled(false) {}
 

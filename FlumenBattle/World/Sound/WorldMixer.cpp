@@ -37,4 +37,9 @@ WorldMixer::WorldMixer()
         auto sound = COIN_SOUNDS.GetRandom();
         engine::SoundManager::Get()->PlaySound(*sound);
     };
+
+    group::HumanMind::Get()->OnBribePaid += [] {
+        auto sound = COIN_SOUNDS.GetRandom();
+        engine::SoundManager::Get()->PlaySound(*sound);
+    };
 }

@@ -36,6 +36,8 @@ namespace world::group
 
         const GroupAction * BuildPillageSettlement();
 
+        const GroupAction * BuildBribeGarrison();
+
     public:
         const GroupAction * BuildAction(GroupActions);
     };
@@ -73,6 +75,8 @@ namespace world::group
         static GroupActionResult LootSettlement(Group &group);
 
         static GroupActionResult PillageSettlement(Group &group);
+
+        static GroupActionResult BribeGarrison(Group &group);
     };
 
     class GroupActionValidator
@@ -102,5 +106,7 @@ namespace world::group
         static bool CanLootSettlement(Group &, const GroupActionData &);
 
         static bool CanPillageSettlement(Group &, const GroupActionData &);
+
+        static bool CanBribeGarrison(Group &, const GroupActionData &);
     };
 }

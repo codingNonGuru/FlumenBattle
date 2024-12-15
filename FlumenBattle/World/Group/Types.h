@@ -27,6 +27,7 @@ namespace world::group
         BYPASS_DEFENCES, 
         LOOT_SETTLEMENT, 
         PILLAGE_SETTLEMENT,
+        BRIBE_GARRISON,
         NONE
     };
 

@@ -547,6 +547,11 @@ int Settlement::GetDefenceSneakDC() const
     return 12;
 }
 
+int Settlement::GetBribeGarrisonDC() const
+{
+    return 15;
+}
+
 int Settlement::GetMulePrice() const
 {
     auto foodPrice = GetResourcePrice(ResourceTypes::FOOD);

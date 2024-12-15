@@ -121,6 +121,8 @@ namespace world::group
 
         Delegate OnMoneyLooted;
 
+        Delegate OnBribePaid;
+
         Delegate OnHeroJoinedParty;
 
         Delegate OnCurrentRecruitPoolUpdate;

@@ -347,6 +347,13 @@ namespace world
         this->StartTime(1);
     }
 
+    void WorldScene::InitiateBribeGarrison()
+    {
+        playerGroup->SelectAction(group::GroupActions::BRIBE_GARRISON);
+
+        this->StartTime(1);
+    }
+
     void WorldScene::InitiatePlayerPersuasion()
     {
         playerGroup->SelectAction(group::GroupActions::PERSUADE);

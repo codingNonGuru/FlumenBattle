@@ -49,6 +49,8 @@ const GroupAction * GroupActionFactory::BuildAction(GroupActions actionType)
             return BuildLootSettlement();
         case GroupActions::PILLAGE_SETTLEMENT:
             return BuildPillageSettlement();
+        case GroupActions::BRIBE_GARRISON:
+            return BuildBribeGarrison();
     }
 }
 
@@ -197,6 +199,18 @@ const GroupAction * GroupActionFactory::BuildPillageSettlement()
     return &action;
 }
 
+const GroupAction * GroupActionFactory::BuildBribeGarrison()
+{
+    static GroupAction action = {
+        GroupActions::BRIBE_GARRISON, 
+        0,
+        false, 
+        &GroupActionValidator::CanBribeGarrison, 
+        &GroupActionPerformer::BribeGarrison
+        };
+    return &action;
+}
+
 GroupActionResult GroupActionPerformer::InitiateTravel(Group &group, const GroupActionData &actionData)
 {
     if(group.travelActionData.Destination != actionData.TravelDestination)
@@ -219,6 +233,8 @@ GroupActionResult GroupActionPerformer::InitiateEngage(Group &group, const Group
         group.hasAttemptedPersuasion = false;
 
         group.hasAttemptedBypassingDefences = false;
+
+        group.hasAttemptedBribingGarrison = false;
     }
 }
 
@@ -400,12 +416,6 @@ GroupActionResult GroupActionPerformer::BypassDefences(Group& group)
     //fail: -
     //critical failure: -2 initiative
 
-    //bribe
-    //critical succes: half money paid, cancel siege mode
-    //succes: pay money, cancel siege mode
-    //fail: 
-    //critical failure: lose money
-
     //smash
     //critical succes: +1 initiative, cancel siege mode
     //succes: cancel siege mode
@@ -432,8 +442,6 @@ GroupActionResult GroupActionPerformer::BypassDefences(Group& group)
     }
     else
     {
-        group.GetEncounter()->SetSiege(true);
-
         if(checkResult.IsCriticalFailure() == true)
         {
             for(auto &character : group.GetCharacters())
@@ -757,6 +765,53 @@ GroupActionResult GroupActionPerformer::PillageSettlement(Group& group)
     return {GroupActions::PILLAGE_SETTLEMENT, skillCheck, character::SkillTypes::SURVIVAL, GroupActionResult::Food(0), GroupActionResult::Money(money)};
 }
 
+GroupActionResult GroupActionPerformer::BribeGarrison(Group& group)
+{
+    //bribe
+    //critical succes: half money paid, cancel siege mode
+    //succes: pay money, cancel siege mode
+    //fail: 
+    //critical failure: lose money, go to jail on failed deception check (when implemented)
+
+    auto persuasionBonus = group.GetMostSkilledMember(character::SkillTypes::PERSUASION).Bonus;
+
+    auto difficultyClass = group.GetCurrentSettlement()->GetBribeGarrisonDC();
+
+    auto skillCheck = utility::RollD20Dice(difficultyClass, persuasionBonus);
+
+    auto money = 0;
+
+    if(skillCheck.IsCriticalSuccess())
+    {
+        money = 50 + utility::GetRandom(50, 100);
+
+        group.GetEncounter()->SetSiege(false);
+    }
+    else if(skillCheck.IsNormalSuccess())
+    {
+        money = 100 + utility::GetRandom(100, 200);
+
+        group.GetEncounter()->SetSiege(false);
+    }
+    else if(skillCheck.IsRegularFailure())
+    {
+    }
+    else if(skillCheck.IsCriticalFailure())
+    {
+        money = 100 + utility::GetRandom(100, 200);
+    }
+
+    group.AddMoney(-money);
+
+    group.hasAttemptedBribingGarrison = true;
+
+    group.GetOther()->attitude = Attitudes::HOSTILE;
+
+    group.SelectAction(GroupActions::ENGAGE, {true});
+
+    return {GroupActions::BRIBE_GARRISON, skillCheck, character::SkillTypes::PERSUASION, GroupActionResult::Money(money)};
+}
+
 bool GroupActionValidator::CanTakeShortRest(Group &group, const GroupActionData &)
 {
     return true;
@@ -854,4 +909,14 @@ bool GroupActionValidator::CanLootSettlement(Group &group, const GroupActionData
 bool GroupActionValidator::CanPillageSettlement(Group &group, const GroupActionData &data)
 {
     return group.GetCurrentSettlement()->IsPillageable() == true;
+}
+
+bool GroupActionValidator::CanBribeGarrison(Group &group, const GroupActionData &data)
+{
+    return group.IsDoing(GroupActions::ENGAGE) && 
+    group.GetEncounter()->GetAttacker() == &group &&
+    group.GetCurrentSettlement()->IsDefended() == true &&
+    group.GetCurrentSettlement()->GetWallsLevel() > 0 && 
+    group.GetEncounter()->HasBattleEnded() == false &&
+    group.hasAttemptedBribingGarrison == false;
 }

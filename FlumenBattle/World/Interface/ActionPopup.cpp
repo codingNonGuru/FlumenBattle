@@ -124,6 +124,9 @@ void ActionPopup::Setup(group::GroupActions actionType, bool hasActionStarted)
     case group::GroupActions::PILLAGE_SETTLEMENT:
         label->Setup("Pillage");
         break;
+    case group::GroupActions::BRIBE_GARRISON:
+        label->Setup("Bribe");
+        break;
     }
 
     backdrop->SetWidth(label->GetWidth() + BACKDROP_SIZE_DELTA);

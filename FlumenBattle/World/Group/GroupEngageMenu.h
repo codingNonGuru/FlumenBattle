@@ -39,6 +39,8 @@ namespace world
 
         void HandlePersuadePressed();
 
+        void HandleBribePressed();
+
         void HandleLeavePressed();
 
         void HandleConquerPressed();

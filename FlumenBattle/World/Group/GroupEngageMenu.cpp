@@ -13,7 +13,7 @@
 
 using namespace world;
 
-#define MAXIMUM_OPTION_COUNT 4
+#define MAXIMUM_OPTION_COUNT 5
 
 static auto BORDER_COLOR = Color::RED * 0.25f;
 
@@ -127,11 +127,20 @@ void GroupEngageMenu::HandleFightPressed()
 void GroupEngageMenu::HandleSneakPressed()
 {
     WorldScene::Get()->InitiateDefenceBypass();
+
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_S);
 }
 
 void GroupEngageMenu::HandlePersuadePressed()
 {
     WorldScene::Get()->InitiatePlayerPersuasion();
+}
+
+void GroupEngageMenu::HandleBribePressed()
+{
+    WorldScene::Get()->InitiateBribeGarrison();
+
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_B);
 }
 
 void GroupEngageMenu::HandleLeavePressed()
@@ -195,18 +204,43 @@ void GroupEngageMenu::RefreshOptions()
 
         lootLabel->Disable();
 
-        if(player->HasAttemptedBypassingDefences())
+        static group::GroupActionResult sneakActionResult, bribeActionResult;
+
+        auto &result = group::HumanMind::Get()->GetPerformedActionResult();
+        if(result.ActionType == group::GroupActions::BRIBE_GARRISON)
         {
-            auto &result = group::HumanMind::Get()->GetPerformedActionResult();
+            bribeActionResult = result;
+        }
+        else if(result.ActionType == group::GroupActions::BYPASS_DEFENCES)
+        {
+            sneakActionResult = result;
+        }
 
-            auto text = Phrase("Your attempt to bypass defences was a ") << result.Success.GetString() << " (" << result.Success.Roll + result.Success.Modifier << ")";
-            resultLabel->Setup(text);
+        text.Clear();
 
-            resultLabel->Enable();
+        if(player->HasAttemptedBypassingDefences())
+        {   
+            text << "Your attempt to bypass defences was a " << sneakActionResult.Success.GetString() << " (" << sneakActionResult.Success.Roll + sneakActionResult.Success.Modifier << ")";
+        }
+
+        if(player->HasAttemptedBribingGarrison())
+        {
+            if(player->HasAttemptedBypassingDefences())
+            {
+                text << "\n";
+            }
+
+            text << "Your attempt to bribe the garrison was a " << bribeActionResult.Success.GetString() << " (" << bribeActionResult.Success.Roll + bribeActionResult.Success.Modifier << ")";
+        }
+
+        if(player->HasAttemptedBypassingDefences() == false && player->HasAttemptedBribingGarrison() == false)
+        {
+            resultLabel->Disable();
         }
         else
         {
-            resultLabel->Disable();
+            resultLabel->Setup(text);
+            resultLabel->Enable();
         }
     }
 
@@ -243,6 +277,16 @@ void GroupEngageMenu::RefreshOptions()
 
             InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_S, {this, &GroupEngageMenu::HandleSneakPressed});
         }
+
+        if(player->ValidateAction(group::GroupActions::BRIBE_GARRISON) == true)
+        {
+            (*label)->Enable();
+            auto text = Phrase("[B] Pay to bribe their sentry (DC ") << enemy->GetCurrentSettlement()->GetBribeGarrisonDC() << ")";
+            (*label)->Setup(text);
+            label++;
+
+            InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_B, {this, &GroupEngageMenu::HandleBribePressed});
+        }
     }
 
     if(player->ValidateAction(group::GroupActions::DISENGAGE) == true)
@@ -270,4 +314,5 @@ void GroupEngageMenu::DisableInput()
     InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_P);
     InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_C);
     InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_S);
+    InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_B);
 }

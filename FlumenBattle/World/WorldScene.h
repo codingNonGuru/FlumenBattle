@@ -169,6 +169,8 @@ namespace world
 
         void InitiateDefenceBypass();
 
+        void InitiateBribeGarrison();
+
         void FinishPlayerBattle();
 
         void FinishPlayerEncounter();

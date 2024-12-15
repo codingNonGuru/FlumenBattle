@@ -135,6 +135,8 @@ namespace world::group
 
         bool hasAttemptedBypassingDefences;
 
+        bool hasAttemptedBribingGarrison;
+
         struct GroupLocation
         {
             friend class Group;
@@ -298,5 +300,7 @@ namespace world::group
         bool HasSameAllegiance(const Group &) const;
 
         bool HasAttemptedBypassingDefences() const {return hasAttemptedBypassingDefences;}
+
+        bool HasAttemptedBribingGarrison() const {return hasAttemptedBribingGarrison;}
     };
 }
