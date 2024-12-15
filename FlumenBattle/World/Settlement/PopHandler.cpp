@@ -4,7 +4,7 @@
 
 using namespace world::settlement;
 
-static const auto HAPPINESS_DETERMINANT_COUNT = 2;
+static const auto HAPPINESS_DETERMINANT_COUNT = 3;
 
 void PopHandler::Initialize()
 {
@@ -13,6 +13,7 @@ void PopHandler::Initialize()
     *needs.Add() = {ResourceTypes::FOOD, false};
     *needs.Add() = {ResourceTypes::COOKED_FOOD, true};
     *needs.Add() = {ResourceTypes::FURNITURE, true};
+    *needs.Add() = {ResourceTypes::CLOTHING, true};
 
     happiness = 0;
 
@@ -23,11 +24,15 @@ void PopHandler::PlaceOrders(Settlement &settlement)
 {
     auto cookedFood = settlement.GetResource(ResourceTypes::COOKED_FOOD);
     auto rawFood = settlement.GetResource(ResourceTypes::FOOD);
+    auto clothing = settlement.GetResource(ResourceTypes::CLOTHING);
+
+    for(auto &need : needs)
+    {
+        settlement.GetResource(need.Type)->HasPopulationOrdered = false;
+    }
 
     if(settlement.GetPopulation() == 0)
     {
-        cookedFood->HasPopulationOrdered = false;
-        rawFood->HasPopulationOrdered = false;
         return;
     }
 
@@ -56,6 +61,14 @@ void PopHandler::PlaceOrders(Settlement &settlement)
             rawFood->HasPopulationOrdered = false;
         }
     }
+
+    consumption = settlement.GetPopulation() * clothing->Type->PopulationConsumption;
+    if(consumption <= clothing->Storage)
+    {
+        clothing->Order += consumption;
+
+        clothing->HasPopulationOrdered = true;
+    }
 }
 
 void PopHandler::UpdateNeeds(Settlement &settlement)
@@ -67,6 +80,7 @@ void PopHandler::UpdateNeeds(Settlement &settlement)
 
     auto cookedFood = settlement.GetResource(ResourceTypes::COOKED_FOOD);
     auto rawFood = settlement.GetResource(ResourceTypes::FOOD);
+    auto clothing = settlement.GetResource(ResourceTypes::CLOTHING);
 
     if(cookedFood->HasPopulationOrdered == true)
     {
@@ -79,6 +93,13 @@ void PopHandler::UpdateNeeds(Settlement &settlement)
         needs.Find(ResourceTypes::FOOD)->IsMet = true;
 
         needs.Find(ResourceTypes::FOOD)->Satisfaction += 1;
+    }
+
+    if(clothing->HasPopulationOrdered == true)
+    {
+        needs.Find(ResourceTypes::CLOTHING)->IsMet = true;
+
+        needs.Find(ResourceTypes::CLOTHING)->Satisfaction += 1;
     }
 
     static const auto TICKS_PER_NEED_SATISFACTION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::TICKS_PER_NEED_SATISFACTION).Integer;

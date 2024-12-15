@@ -102,6 +102,7 @@ void ResourceItem::Setup(const settlement::Resource *resource, const settlement:
     bool relatesToNeed = 
         resource->Type->Type == settlement::ResourceTypes::COOKED_FOOD || 
         resource->Type->Type == settlement::ResourceTypes::FURNITURE || 
+        resource->Type->Type == settlement::ResourceTypes::CLOTHING || 
         resource->Type->Type == settlement::ResourceTypes::FOOD;
 
     if(needBar == nullptr && relatesToNeed == true)

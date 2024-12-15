@@ -447,6 +447,9 @@ void HoverExtension::HandleUpdate()
         case BuildingTypes::WEAVING_MILL:
             text << "WM";
             break;
+        case BuildingTypes::TAILORY:
+            text << "T";
+            break;
         case BuildingTypes::CARPENTER:
             text << "CP";
             break;

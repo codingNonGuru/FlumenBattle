@@ -48,7 +48,12 @@ struct CookedFood : public ResourceType
 
 struct Fabric : public ResourceType
 {
-    Fabric() : ResourceType(ResourceTypes::FABRIC, "Fabric", "Fabric", 70) {IsProductionTileBased = false;}
+    Fabric() : ResourceType(ResourceTypes::FABRIC, "Fabric", "Fabric", 40) {IsProductionTileBased = false;}
+};
+
+struct Clothing : public ResourceType
+{
+    Clothing() : ResourceType(ResourceTypes::CLOTHING, "Clothing", "Clothing", 70) {PopulationConsumption = 1; IsProductionTileBased = false;}
 };
 
 int Resource::GetPotentialProduction(const Settlement &settlement) const
@@ -264,6 +269,9 @@ void ResourceHandler::Initialize()
 
     static const auto fabric = Fabric();
     *resources.Add() = {&fabric};
+
+    static const auto clothing = Clothing();
+    *resources.Add() = {&clothing};
 }
 
 void ResourceHandler::ResetOrders()
@@ -351,5 +359,8 @@ const ResourceType *ResourceFactory::CreateType(ResourceTypes type)
     case ResourceTypes::FABRIC:
         static const auto fabric = Fabric();
         return &fabric;
+    case ResourceTypes::CLOTHING:
+        static const auto clothing = Clothing();
+        return &clothing;
     }
 }
