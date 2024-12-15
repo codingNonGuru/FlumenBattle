@@ -86,7 +86,7 @@ namespace world::settlement
 
     enum class ResourceTypes
     {
-        FOOD,
+        FOOD, //MEAT, GRAIN, FRUIT, MUSHROOM, SEAFOOD, HERBS
         TIMBER,
         METAL,
         WOOL,
@@ -95,33 +95,6 @@ namespace world::settlement
         FURNITURE,
         COOKED_FOOD,
         NONE
-        //LEATHER
-        //POTTERY
-        //FURNITURE
-        //TOOLS
-        //CARTS
-        //PAPER
-        //WINE
-        //ROPE
-        //GLASS
-        //SOAP
-        //CLOTHING
-        //SHOES
-        //BOATS
-        //MACHINERY
-        //JEWELRY
-        //SPICE
-        //INCENSE
-        //TEA
-        //MULES
-        //CANDLES
-        //MEDICINE
-        //CUTLERY
-        //FURS
-        //GOLD
-        //DYES
-        //TOBACCO
-        //IVORY
     };
 
     enum class SettlementAttitudes

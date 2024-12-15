@@ -15,18 +15,20 @@ namespace world::settlement
 
 namespace world::interface
 {
-    class ProductionDecisionItem;
     class ResourceCounter;
+}
 
-    class ProductionDecisionMenu : public Element
+namespace world::interface::rule
+{
+    class ProductionDecisionItem;
+
+    class ProductionDecisionInterface : public Element
     {
-        Element *border;
-
-        Text *nameLabel;
-
         Text *productionLabel;
 
         ProgressBar *productionProgress;
+
+        Text *timeLeftLabel;
 
         ResourceCounter *laborCounter;
 

@@ -4,15 +4,17 @@
 #include "FlumenEngine/Interface/LayoutGroup.h"
 #include "FlumenEngine/Interface/ProgressBar.h"
 
-#include "ProductionDecisionMenu.h"
-#include "FlumenBattle/World/Interface/ProductionDecisionItem.h"
+#include "ProductionDecisionInterface.h"
+#include "FlumenBattle/World/Interface/Rule/ProductionDecisionItem.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
 #include "FlumenBattle/World/Interface/ResourceCounter.h"
+#include "FlumenBattle/World/WorldTime.h"
 
 using namespace world;
 using namespace world::interface;
+using namespace world::interface::rule;
 
 static const auto BORDER_COLOR = Color::RED * 0.25f;
 
@@ -22,7 +24,7 @@ static const auto BORDER_INNER_OFFSET = Size(4, 4);
 
 static constexpr auto DEFAULT_FONT_SIZE = "Medium";
 
-static constexpr auto OPTION_LAYOUT_POSITION = Position2(10.0f, 80.0f);
+static constexpr auto OPTION_LAYOUT_POSITION = Position2(0.0f, 70.0f);
 
 static const settlement::ProductionOptions options[] = {
     settlement::ProductionOptions::WALLS,
@@ -41,38 +43,13 @@ static const settlement::ProductionOptions options[] = {
 
 #define ITEM_CAPACITY std::size(options)
 
-void ProductionDecisionMenu::HandleConfigure()
+void ProductionDecisionInterface::HandleConfigure()
 {
-    border = ElementFactory::BuildElement <Element>
-    (
-        {
-            size_ - BORDER_INNER_OFFSET, 
-            drawOrder_ + 1, 
-            {this}, 
-            {"panel-border-031", true} 
-        }
-    );
-    border->SetSpriteColor(BORDER_COLOR);
-    border->Enable();
-
-    nameLabel = ElementFactory::BuildText
-    (
-        {
-            drawOrder_ + 1, 
-            {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}
-        },
-        {
-            {DEFAULT_FONT_SIZE}, 
-            TEXT_COLOR
-        }
-    );
-    nameLabel->Enable();
-
     productionLabel = ElementFactory::BuildText
     (
         {
             drawOrder_ + 1, 
-            {ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, nameLabel}
+            {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}
         },
         {
             {"Small"}, 
@@ -82,12 +59,25 @@ void ProductionDecisionMenu::HandleConfigure()
     productionLabel->Enable();
 
     productionProgress = ElementFactory::BuildProgressBar <ProgressBar>(
-        {Size(160, 16), drawOrder_ + 1, {ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, productionLabel}, {"BaseBar", true}},
-        {"BaseFillerRed", {6.0f, 8.0f}}
+        {Size(160, 32), drawOrder_ + 1, {ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, productionLabel}, {"BaseBar", true}},
+        {"BaseFillerRed", {6.0f, 6.0f}}
     );
 
+    timeLeftLabel = ElementFactory::BuildText
+    (
+        {
+            drawOrder_ + 3, 
+            {productionProgress}
+        },
+        {
+            {"VerySmall"}, 
+            Color::WHITE
+        }
+    );
+    timeLeftLabel->Enable();
+
     laborCounter = ElementFactory::BuildElement <ResourceCounter> (
-        {drawOrder_ + 1, {Position2(30.0f, 30.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}}
+        {drawOrder_ + 1, {Position2(10.0f, 30.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}}
     );
     laborCounter->Enable();
 
@@ -96,15 +86,15 @@ void ProductionDecisionMenu::HandleConfigure()
 
     optionLayout = ElementFactory::BuildSimpleList
     (
-        {drawOrder_ + 5, {OPTION_LAYOUT_POSITION, ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}},
+        {drawOrder_ + 5, {OPTION_LAYOUT_POSITION, ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}},
         std::size(options),
         ListOrientations::VERTICAL,
         5.0f
     );
-    optionLayout->MakeScrollable(7, std::size(options));
+    optionLayout->MakeScrollable(6, std::size(options));
     optionLayout->Enable();
 
-    static const auto OPTION_ITEM_SIZE = Size(size_.x - OPTION_LAYOUT_POSITION.x * 2, 35);
+    static const auto OPTION_ITEM_SIZE = Size(size_.x, 35);
 
     optionItems.Initialize(ITEM_CAPACITY);
     for(auto i = 0; i < optionItems.GetCapacity(); ++i)
@@ -125,7 +115,7 @@ void ProductionDecisionMenu::HandleConfigure()
     }
 }
 
-void ProductionDecisionMenu::HandleUpdate()
+void ProductionDecisionInterface::HandleUpdate()
 {
     for(auto &item : optionItems)
     {
@@ -157,28 +147,31 @@ void ProductionDecisionMenu::HandleUpdate()
 
     productionLabel->Setup(text);
 
+    industrialCapacity = currentSettlement->GetIndustrialProduction();
+
     if(currentProduction->Is(settlement::ProductionOptions::NONE) == false)
     {
         productionProgress->Enable();
 
         productionProgress->SetProgress(currentProduction->GetProgressRatio());
+
+        auto tickCount = currentProduction->GetRemainingProgress() / industrialCapacity;
+        tickCount /= WorldTime::HOUR_SIZE;
+
+        timeLeftLabel->Setup(Word() << tickCount << " hrs");
     }
     else
     {
         productionProgress->Disable();
     }
-
-    industrialCapacity = currentSettlement->GetIndustrialProduction();
 }
 
-void ProductionDecisionMenu::Setup(settlement::Settlement *settlement)
+void ProductionDecisionInterface::Setup(settlement::Settlement *settlement)
 {
     currentSettlement = settlement;
-
-    nameLabel->Setup(currentSettlement->GetName());
 }
 
-void ProductionDecisionMenu::ProcessInput(settlement::ProductionOptions option)
+void ProductionDecisionInterface::ProcessInput(settlement::ProductionOptions option)
 {
     polity::HumanMind::Get()->ProcessProductionInput(option, currentSettlement);
 }

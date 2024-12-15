@@ -37,7 +37,6 @@
 #include "FlumenBattle/World/Interface/RollPopup.h"
 #include "FlumenBattle/World/Interface/MoneyPopup.h"
 #include "FlumenBattle/World/Interface/ItemPopup.h"
-#include "FlumenBattle/World/Interface/ProductionDecisionMenu.h"
 #include "FlumenBattle/World/Interface/ConquestPopup.h"
 #include "FlumenBattle/World/Interface/RecruitmentMenu.h"
 #include "FlumenBattle/World/Interface/WorkerPlaceCursor.h"
@@ -276,17 +275,6 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
 
     itemPopups.Reset();
 
-    productionMenu = ElementFactory::BuildElement <interface::ProductionDecisionMenu>
-    (
-        {
-            Size(320, 400), 
-            DrawOrder(6), 
-            {Position2(5.0f, -5.0f), ElementAnchors::LOWER_LEFT, ElementPivots::LOWER_LEFT, canvas}, 
-            {false}, 
-            Opacity(0.9f)
-        }
-    );
-
     conquestPopup = ElementFactory::BuildElement <interface::ConquestPopup>
     (
         {
@@ -316,7 +304,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     ruleMenu = ElementFactory::BuildElement <interface::rule::RuleMenu>
     (
         {
-            Size(720, 480), 
+            Size(720, 500), 
             DrawOrder(7), 
             {canvas}, 
             {false}, 
@@ -557,29 +545,6 @@ void WorldInterface::HandleMenuCycled()
 
         isInInventoryMode = true;
     }
-    else
-    {
-        static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
-        auto settlement = playerGroup->GetCurrentSettlement();
-
-        if(settlement != nullptr && settlement->IsPlayerControlled() == true)
-        {
-            if(settlementMenu->IsLocallyActive() == true)
-            {
-                settlementMenu->Disable();       
-
-                productionMenu->Setup(settlement);
-
-                productionMenu->Enable();
-            }
-            else if(productionMenu->IsLocallyActive() == true)
-            {
-                productionMenu->Disable();
-
-                settlementMenu->Enable();
-            }
-        }
-    }
 }
 
 void WorldInterface::HandleSpottingHovered()
@@ -714,15 +679,11 @@ void WorldInterface::HandleSettlementEntered()
 
     settlementMenu->Setup(currentSettlement);
     settlementMenu->Enable();
-
-    productionMenu->Disable();
 }
 
 void WorldInterface::HandleSettlementExited()
 {
     settlementMenu->Disable();
-
-    productionMenu->Disable();
 }
 
 void WorldInterface::HandlePlayerConquest()

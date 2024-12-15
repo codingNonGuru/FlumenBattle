@@ -138,8 +138,6 @@ namespace world
 
         container::Queue <PopupData> popupQueue;
 
-        interface::ProductionDecisionMenu *productionMenu;
-
         interface::ConquestPopup *conquestPopup;
 
         interface::RecruitmentMenu *recruitmentMenu;

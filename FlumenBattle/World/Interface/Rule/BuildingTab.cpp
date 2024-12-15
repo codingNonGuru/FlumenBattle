@@ -11,6 +11,7 @@
 #include "FlumenBattle/World/Interface/Counter.h"
 #include "FlumenBattle/World/Interface/Rule/BuildingHoverInfo.h"
 #include "FlumenBattle/WorldInterface.h"
+#include "FlumenBattle/World/Interface/Rule/ProductionDecisionInterface.h"
 #include "FlumenBattle/Race.h"
 #include "FlumenBattle/Config.h"
 
@@ -137,7 +138,19 @@ void BuildingTab::HandleConfigure()
         {{"Large"}, TEXT_COLOR}
     );
     nameLabel->Enable();
-    
+
+    decisionInterface = ElementFactory::BuildElement <interface::rule::ProductionDecisionInterface>
+    (
+        {
+            Size(320, 400), 
+            DrawOrder(6), 
+            {Position2(0.0f, 30.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}, 
+            {false}, 
+            Opacity(0.0f)
+        }
+    );
+    decisionInterface->Enable();
+
     buildingLayout = ElementFactory::BuildElement <LayoutGroup>
     (
         { 
@@ -221,6 +234,8 @@ void BuildingTab::HandleSettlementChanged()
     {
         nameLabel->Disable();
 
+        decisionInterface->Disable();
+
         for(auto &item : buildingItems)
         {
             item->Setup(nullptr, this);
@@ -228,6 +243,10 @@ void BuildingTab::HandleSettlementChanged()
 
         return;
     }
+
+    decisionInterface->Setup(settlement);
+
+    decisionInterface->Enable();
 
     nameLabel->Enable();
 }

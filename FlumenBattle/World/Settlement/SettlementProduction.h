@@ -91,6 +91,10 @@ namespace world::settlement
 
         float GetProgressRatio() const {return float(this->progress) / float(GetCost());}
 
+        int GetProgress() const {return this->progress;}
+
+        int GetRemainingProgress() const {return type->Cost - this->progress;}
+
         Integer GetCost() const {return type->Cost;}
 
         ProductionOptions GetType() const {return type->Type;}

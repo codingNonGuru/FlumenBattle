@@ -2,11 +2,11 @@
 #include "FlumenEngine/Interface/Text.hpp"
 
 #include "ProductionDecisionItem.h"
-#include "FlumenBattle/World/Interface/ProductionDecisionMenu.h"
+#include "FlumenBattle/World/Interface/Rule/ProductionDecisionInterface.h"
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
 #include "FlumenBattle/World/Interface/ResourceCounter.h"
 
-using namespace world::interface;
+using namespace world::interface::rule;
 
 static constexpr auto OPTION_FONT_SIZE = "Small";
 
@@ -54,7 +54,7 @@ void ProductionDecisionItem::HandleUpdate()
     }
 }
 
-void ProductionDecisionItem::Setup(ProductionDecisionMenu *newParent, settlement::ProductionOptions newOption)
+void ProductionDecisionItem::Setup(ProductionDecisionInterface *newParent, settlement::ProductionOptions newOption)
 {
     parent = newParent;
 

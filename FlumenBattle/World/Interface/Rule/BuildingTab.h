@@ -25,6 +25,7 @@ namespace world::interface::rule
     class RuleMenu;
     class BuildingTab;
     class BuildingHoverInfo;
+    class ProductionDecisionInterface;
 
     struct BuildingItem : public Element
     {
@@ -65,6 +66,8 @@ namespace world::interface::rule
     class BuildingTab : public Element
     {
         Text *nameLabel;
+
+        ProductionDecisionInterface *decisionInterface;
 
         container::Array <BuildingItem *> buildingItems;
 
