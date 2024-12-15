@@ -46,7 +46,7 @@ void HumanMind::DisableInput()
 
 void HumanMind::MakeDecision(Polity &polity) const
 {
-    for(auto &command : commands)
+    /*for(auto &command : commands)
     {
         if(command.Settlement->GetCurrentProduction()->Is(command.Type) == true)
             continue;
@@ -54,7 +54,7 @@ void HumanMind::MakeDecision(Polity &polity) const
         command.Settlement->SetProduction(command.Type);
     }
 
-    commands.Reset();
+    commands.Reset();*/
 }
 
 void HumanMind::UpdateWorkforce(Polity &polity) const
@@ -78,13 +78,20 @@ void HumanMind::SetResearchTarget(science::Technologies tech)
 
 void HumanMind::ProcessProductionInput(settlement::ProductionOptions option, settlement::Settlement *settlement)
 {
-    for(auto &command : commands)
+    if(settlement->GetCurrentProduction()->Is(option) == true)
+        return;
+
+    settlement->SetProduction(option);
+
+    OnProductionDecided.Invoke();
+
+    /*for(auto &command : commands)
     {
         if(command.Type == option && command.Settlement == settlement)
             return;
     }
 
-    *commands.Add() = {option, settlement};
+    *commands.Add() = {option, settlement};*/
 }
 
 void HumanMind::HandleWorkerPlacement()

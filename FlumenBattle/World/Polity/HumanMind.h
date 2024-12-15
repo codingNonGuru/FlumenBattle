@@ -1,6 +1,7 @@
 #pragma once
 
 #include "FlumenCore/Singleton.h"
+#include "FlumenCore/Observer.h"
 
 #include "FlumenBattle/World/Polity/Mind.h"
 
@@ -45,6 +46,8 @@ namespace world::polity
         void HandleWorkerPlacement();
 
     public:
+        Delegate OnProductionDecided;
+
         void ProcessProductionInput(settlement::ProductionOptions, settlement::Settlement *);
 
         void SetResearchTarget(science::Technologies);
