@@ -15,10 +15,6 @@ static const auto NOURISHED_DURATION = 8 * 6;
 
 static const auto BASE_FORAGE_DC = 15;
 
-static const auto BASE_LOOTING_DC = 10;
-
-static const auto BASE_PILLAGE_DC = 10;
-
 using namespace world::group;
 
 const GroupAction * GroupActionFactory::BuildAction(GroupActions actionType)
@@ -640,7 +636,7 @@ GroupActionResult GroupActionPerformer::LootSettlement(Group& group)
 
     auto survivalBonus = group.GetMostSkilledMember(character::SkillTypes::SURVIVAL).Bonus;
 
-    auto difficultyClass = BASE_LOOTING_DC;
+    auto difficultyClass = group.GetCurrentSettlement()->GetLootDC();
 
     if(group.GetTile()->HasRelief(WorldReliefs::MOUNTAINS) == true)
     {
@@ -716,7 +712,7 @@ GroupActionResult GroupActionPerformer::PillageSettlement(Group& group)
 
     auto survivalBonus = group.GetMostSkilledMember(character::SkillTypes::SURVIVAL).Bonus;
 
-    auto difficultyClass = BASE_PILLAGE_DC;
+    auto difficultyClass = group.GetCurrentSettlement()->GetPillageDC();
 
     if(group.GetTile()->HasRelief(WorldReliefs::MOUNTAINS) == true)
     {

@@ -102,6 +102,16 @@ namespace world::character
         }
     };
 
+    class Alert : public ConditionType
+    {
+        using ConditionType::ConditionType; 
+
+        void HandleApplyEffect(Character &character, const Condition *condition) const override
+        {
+            ModifierAccessor::AddModifier(character, {Modifiers::INITIATIVE_BONUS, condition->Strength});
+        }
+    };
+
     class WallProtection : public ConditionType
     {
         using ConditionType::ConditionType; 
@@ -202,6 +212,13 @@ Condition ConditionFactory::Create(ConditionData data)
         return 
         {
             [&] {static const auto conditionType = Surprised(data.Type, "Surprised", false); return &conditionType;} (),
+            data.Strength,
+            data.Duration
+        };
+    case Conditions::ALERT:
+        return 
+        {
+            [&] {static const auto conditionType = Alert(data.Type, "Alert", false); return &conditionType;} (),
             data.Strength,
             data.Duration
         };

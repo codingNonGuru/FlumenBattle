@@ -116,11 +116,13 @@ namespace world::group
         for(auto &character : winner->GetCharacters())
         {
             character.RemoveCondition(character::Conditions::SURPRISED);
+            character.RemoveCondition(character::Conditions::ALERT);
         }
 
         for(auto &character : GetOtherThan(winner)->GetCharacters())
         {
             character.RemoveCondition(character::Conditions::SURPRISED);
+            character.RemoveCondition(character::Conditions::ALERT);
         }
     }
 

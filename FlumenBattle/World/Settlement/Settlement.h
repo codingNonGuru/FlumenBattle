@@ -266,6 +266,10 @@ namespace world::settlement
 
         bool IsPillageable() const;
 
+        int GetLootDC() const;
+
+        int GetPillageDC() const;
+
         int Loot(bool, int);
 
         void Pillage(int);

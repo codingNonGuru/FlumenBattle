@@ -463,6 +463,9 @@ void HoverExtension::HandleUpdate()
         case BuildingTypes::WALLS:
             text << "W";
             break;
+        case BuildingTypes::KEEP:
+            text << "K";
+            break;
         }
     }
 

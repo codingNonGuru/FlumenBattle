@@ -98,6 +98,8 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location,
 
     AddBuilding(BuildingTypes::WALLS);
 
+    AddBuilding(BuildingTypes::KEEP);
+
     this->needsToReorganizeWork = true;
 }
 
@@ -597,6 +599,20 @@ bool Settlement::IsPillageable() const
     {
         return false;
     }
+}
+
+int Settlement::GetLootDC() const
+{
+    auto bonus = GetModifier(Modifiers::LOOT_DC_BONUS);
+    
+    return 10 + bonus;
+}
+
+int Settlement::GetPillageDC() const
+{
+    auto bonus = GetModifier(Modifiers::PILLAGE_DC_BONUS);
+    
+    return 10 + bonus;
 }
 
 int Settlement::Loot(bool hasSparedBuilding, int requestedFood)

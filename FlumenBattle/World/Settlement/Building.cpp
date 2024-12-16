@@ -108,6 +108,19 @@ namespace world::settlement
             settlement.AddModifier({Modifiers::DEFENDER_GROUP_BONUS_AC, wallsLevel});
         }
     };
+
+    class Keep : public BuildingType
+    {
+        using BuildingType::BuildingType; 
+
+        void HandleApplyEffect(Settlement &settlement) const override
+        {
+            settlement.AddModifier({Modifiers::LOOT_DC_BONUS, 5});
+            settlement.AddModifier({Modifiers::PILLAGE_DC_BONUS, 5});
+
+            settlement.AddModifier({Modifiers::DEFENDER_GROUP_BONUS_INITIATIVE, 2});
+        }
+    };
 }
 
 void Building::ApplyEffect(Settlement &settlement) const
@@ -181,6 +194,11 @@ Building BuildingFactory::Create(BuildingTypes type)
         return 
         {
             [&] {static const auto buildingType = Tailory(type, 200, true, "Tailory", "LumberMill", {ResourceTypes::CLOTHING, 2}, {{ResourceTypes::FABRIC, 3}}); return &buildingType;} ()
+        };
+    case BuildingTypes::KEEP:
+        return 
+        {
+            [&] {static const auto buildingType = Keep(type, 200, true, "Keep", "Keep"); return &buildingType;} ()
         };
     }
 }

@@ -664,6 +664,12 @@ void Combatant::ApplyPermanentConditions()
             {
                 AddCondition({world::character::Conditions::WALL_PROTECTION, 1, modifier});
             }
+
+            modifier = settlement->GetModifier(world::settlement::Modifiers::DEFENDER_GROUP_BONUS_INITIATIVE);
+            if(modifier != 0)
+            {
+                AddCondition({world::character::Conditions::ALERT, 1, modifier});
+            }
         }
     }
 }

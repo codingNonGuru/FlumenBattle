@@ -6,7 +6,7 @@ namespace world::character
 
     enum class CharacterClasses {FIGHTER, RANGER, CLERIC, WIZARD};
 
-    enum class Conditions {SICKENED, FRIGHTENED, PARALYZED, HOBBLED, EVASION, FATIGUE, NOURISHED, BLESSED, WALL_PROTECTION, SURPRISED};
+    enum class Conditions {SICKENED, FRIGHTENED, PARALYZED, HOBBLED, EVASION, FATIGUE, NOURISHED, BLESSED, WALL_PROTECTION, SURPRISED, ALERT};
 
     enum class Modifiers 
     {

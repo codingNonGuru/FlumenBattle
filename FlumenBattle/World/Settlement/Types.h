@@ -24,7 +24,8 @@ namespace world::settlement
         CARPENTER,
         BAKERY,
         WEAVING_MILL,
-        TAILORY
+        TAILORY,
+        KEEP
     };
 
     enum class BuildingTypes
@@ -40,7 +41,8 @@ namespace world::settlement
         CARPENTER,
         BAKERY,
         WEAVING_MILL,
-        TAILORY
+        TAILORY,
+        KEEP
     };
 
     enum class AbundanceLevels
@@ -72,7 +74,10 @@ namespace world::settlement
         POPULATION_GROWTH_RATE,
         DISTANCE_TO_CAPITAL_INDEPENDENCE_LIMIT,
         WOOD_RELATED_RESOURCE_PRODUCTION,
-        DEFENDER_GROUP_BONUS_AC
+        DEFENDER_GROUP_BONUS_AC,
+        DEFENDER_GROUP_BONUS_INITIATIVE,
+        LOOT_DC_BONUS,
+        PILLAGE_DC_BONUS
     };
 
     enum class RoadTypes

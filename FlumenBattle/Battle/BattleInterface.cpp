@@ -66,14 +66,17 @@ BattleInterface::BattleInterface()
     characterInfos.Initialize(MAXIMUM_INFO_COUNT);
 
     canvas = ElementFactory::BuildCanvas();
+    canvas->SetIdentifier("BattleCanvas");
 
     auto sprite = SpriteDescriptor(false);
 
     for(Index i = 0; i < characterInfos.GetCapacity(); ++i)
     {
         auto characterInfo = ElementFactory::BuildElement<CharacterInfo>(
-            {Size(60, 90), DrawOrder(1), {Position2(), canvas}, sprite, Opacity(0.5f)}
+            {Size(60, 90), DrawOrder(3), {Position2(), canvas}, sprite, Opacity(0.5f)}
         );
+
+        characterInfo->SetIdentifier(Word() << "CharacterInfo" << i);
 
         *characterInfos.Allocate() = characterInfo;
         characterInfo->SetInteractivity(true);

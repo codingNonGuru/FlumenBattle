@@ -154,6 +154,8 @@ namespace world::settlement
 
         const SettlementProductionType *BuildTailoryProduction();
 
+        const SettlementProductionType *BuildKeepProduction();
+
         const SettlementProductionType *BuildNoneProduction();
 
     public:
@@ -191,5 +193,7 @@ namespace world::settlement
         static void FinishWeavingMill(Settlement &);
 
         static void FinishTailory(Settlement &);
+
+        static void FinishKeep(Settlement &);
     };
 }
