@@ -170,7 +170,7 @@ void BuildingTab::HandleConfigure()
         (
             {
                 Size(64, 64), 
-                drawOrder_ + 1, 
+                drawOrder_ + 2, 
                 {buildingLayout}, 
                 {"panel-border-001", true}
             }

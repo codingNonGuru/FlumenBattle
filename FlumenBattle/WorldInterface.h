@@ -37,6 +37,7 @@ namespace world
         class ConquestPopup;
         class RecruitmentMenu;
         class WorkerPlaceCursor;
+        class SideButtonSet;
 
         namespace rule
         {
@@ -141,6 +142,8 @@ namespace world
         interface::ConquestPopup *conquestPopup;
 
         interface::RecruitmentMenu *recruitmentMenu;
+
+        interface::SideButtonSet *sideButtonSet;
 
         void Update();
 

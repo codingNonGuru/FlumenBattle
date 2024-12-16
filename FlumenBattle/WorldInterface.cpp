@@ -40,6 +40,7 @@
 #include "FlumenBattle/World/Interface/ConquestPopup.h"
 #include "FlumenBattle/World/Interface/RecruitmentMenu.h"
 #include "FlumenBattle/World/Interface/WorkerPlaceCursor.h"
+#include "FlumenBattle/World/Interface/SideButtonSet.h"
 #include "FlumenBattle/World/Interface/Rule/RuleMenu.h"
 
 using namespace world;
@@ -316,6 +317,23 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
 
     *majorCentralMenus.Allocate() = ruleMenu;
 
+    sideButtonSet = ElementFactory::BuildElement <interface::SideButtonSet>
+    (
+        {
+            DrawOrder(7),
+            {ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_CENTER, canvas}
+        }
+    );
+    sideButtonSet->Setup(
+        {
+            {MajorMenus::INVENTORY, inventoryMenu}, 
+            {MajorMenus::QUEST, questMenu}, 
+            {MajorMenus::POLITY, ruleMenu}, 
+            {MajorMenus::REPUTATION, reputationMenu}, 
+            {MajorMenus::CAMP, nullptr}
+        });
+    sideButtonSet->Enable();
+
     group::HumanMind::Get()->OnSpottingHovered += {this, &WorldInterface::HandleSpottingHovered};
 
     group::HumanMind::Get()->OnQuestStarted += {this, &WorldInterface::HandleQuestStarted};
@@ -455,6 +473,9 @@ void WorldInterface::HandleSettlementFounded()
 
 void WorldInterface::HandleInventoryPressed()
 {
+    if(isInRuleMode == true)
+        return;
+
     if(isInInventoryMode == true)
     {
         isInInventoryMode = false;
