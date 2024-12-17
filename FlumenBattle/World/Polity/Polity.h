@@ -104,6 +104,8 @@ namespace world::polity
 
         void DecideResearch();
 
+        void ProcessTrade();
+
         container::Array <FactionDecision> &Update();
 
         void Decide();

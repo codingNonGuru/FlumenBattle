@@ -9,6 +9,7 @@ namespace world::settlement
 {
     enum class ProductionOptions;
     class Settlement;
+    class Shipment;
 }
 
 namespace world
@@ -43,13 +44,19 @@ namespace world::polity
 
         virtual void DecideResearch(Polity &) const override;
 
+        virtual void ProcessTrade(Polity &) const override;
+
         void HandleWorkerPlacement();
 
     public:
         Delegate OnProductionDecided;
 
+        Delegate OnTradeShipment;
+
         void ProcessProductionInput(settlement::ProductionOptions, settlement::Settlement *);
 
         void SetResearchTarget(science::Technologies);
+
+        const settlement::Shipment &GetCurrentShipment();
     };
 }

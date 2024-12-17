@@ -156,7 +156,9 @@ namespace world::settlement
 
         int storage {400};
 
-        Shipment shipment;
+        Shipment lastOutgoingShipment;
+
+        Settlement *tradeDestination;
 
         Integer lastShipmentTime;
 
@@ -316,7 +318,7 @@ namespace world::settlement
 
         void SendTransport();
 
-        void ReceiveTransport();
+        void ReceiveTransport(int);
 
         void AddPath(Path *path);
 
@@ -339,5 +341,7 @@ namespace world::settlement
         bool IsPlayerControlled() const;
 
         const Race *GetRace() const {return race;}
+
+        const Shipment &GetLastOutgoingShipment() {return lastOutgoingShipment;}
     };
 }

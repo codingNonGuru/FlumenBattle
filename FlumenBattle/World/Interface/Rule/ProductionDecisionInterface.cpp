@@ -158,10 +158,17 @@ void ProductionDecisionInterface::HandleUpdate()
 
         productionProgress->SetProgress(currentProduction->GetProgressRatio());
 
-        auto tickCount = currentProduction->GetRemainingProgress() / industrialCapacity;
-        tickCount /= WorldTime::HOUR_SIZE;
+        if(industrialCapacity == 0)
+        {
+            timeLeftLabel->Setup(Word() << "-");
+        }
+        else
+        {
+            auto tickCount = currentProduction->GetRemainingProgress() / industrialCapacity;
+            tickCount /= WorldTime::HOUR_SIZE;
 
-        timeLeftLabel->Setup(Word() << tickCount << " hrs");
+            timeLeftLabel->Setup(Word() << tickCount << " hrs");
+        }
     }
     else
     {

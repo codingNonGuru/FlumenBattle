@@ -124,3 +124,25 @@ void HumanMind::HandleWorkerPlacement()
         }
     }
 }
+
+settlement::Shipment currentShipment;
+
+void HumanMind::ProcessTrade(Polity &polity) const
+{
+    for(auto &settlement : polity.GetSettlements())
+    {
+        auto &shipment = settlement->GetLastOutgoingShipment();
+
+        if(shipment.TimeInAbsoluteTicks == WorldScene::Get()->GetTime().TotalMinuteCount)
+        {
+            currentShipment = shipment;
+
+            OnTradeShipment.Invoke();
+        }
+    }
+}
+
+const settlement::Shipment &HumanMind::GetCurrentShipment()
+{
+    return currentShipment;
+}

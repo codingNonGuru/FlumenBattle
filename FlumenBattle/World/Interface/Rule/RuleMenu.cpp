@@ -8,6 +8,7 @@
 #include "TechTab.h"
 #include "RealmTab.h"
 #include "BuildingTab.h"
+#include "TradeTab.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Polity/Polity.h"
@@ -27,6 +28,8 @@ static const auto TECHNOLOGY_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::S
 static const auto REALM_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_R, {InputHandler::SHIFT}};
 
 static const auto BUILDING_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_B, {InputHandler::SHIFT}};
+
+static const auto TRADE_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_T, {InputHandler::SHIFT}};
 
 void TabButton::HandleConfigure()
 {
@@ -53,6 +56,8 @@ void TabButton::Setup(RuleMenuTabs tab)
             return "K";
         case RuleMenuTabs::BUILDING:
             return "B";
+        case RuleMenuTabs::TRADE:
+            return "T";
         }
     } ();
 
@@ -131,6 +136,8 @@ void RuleMenu::HandleEnable()
 
     InputHandler::RegisterEvent(BUILDING_DISPLAY_KEY, {this, &RuleMenu::HandleBuildingPressed});
 
+    InputHandler::RegisterEvent(TRADE_DISPLAY_KEY, {this, &RuleMenu::HandleTradePressed});
+
     const auto playerPolity = WorldScene::Get()->GetPlayerPolity();
 
     rulerLabel->Setup(LongWord() << "Realm of " << playerPolity->GetRuler()->GetName());
@@ -145,6 +152,8 @@ void RuleMenu::HandleDisable()
     InputHandler::UnregisterEvent(REALM_DISPLAY_KEY);
 
     InputHandler::UnregisterEvent(BUILDING_DISPLAY_KEY);
+
+    InputHandler::UnregisterEvent(TRADE_DISPLAY_KEY);
 }
 
 void RuleMenu::HandleEconomyPressed()
@@ -165,6 +174,11 @@ void RuleMenu::HandleRealmPressed()
 void RuleMenu::HandleBuildingPressed()
 {
     SetCurrentTab(RuleMenuTabs::BUILDING);
+}
+
+void RuleMenu::HandleTradePressed()
+{
+    SetCurrentTab(RuleMenuTabs::TRADE);
 }
 
 void RuleMenu::Setup()
@@ -218,6 +232,18 @@ void RuleMenu::Setup()
     );
 
     *tabs.Add(RuleMenuTabs::BUILDING) = buildingTab;
+
+    auto tradeTab = ElementFactory::BuildElement <TradeTab>
+    (
+        {
+            size_, 
+            drawOrder_, 
+            {this}, 
+            Opacity(0.0f)
+        }
+    );
+
+    *tabs.Add(RuleMenuTabs::TRADE) = tradeTab;
 
     currentTab = RuleMenuTabs::ECONOMY;
 

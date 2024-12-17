@@ -240,6 +240,11 @@ void Polity::ApplyTechnologyModifiers(settlement::Settlement *settlement) const
     technologyRoster->ApplyModifiers(*settlement);
 }
 
+void Polity::ProcessTrade()
+{
+    controller->ProcessTrade(*this);
+}
+
 Integer Polity::GetPopulation() const
 {
     auto population = 0;
@@ -347,6 +352,8 @@ void Polity::Decide()
     DecideResearch();
 
     controller->MakeDecision(*this);
+
+    controller->ProcessTrade(*this);
 }
 
 Polity::FusionData Polity::CheckFactionMergers()

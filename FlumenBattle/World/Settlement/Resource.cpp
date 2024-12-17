@@ -121,8 +121,9 @@ int Resource::GetProductionFromTiles(const Settlement &settlement) const
     auto production = 0;
     for(auto &tile : settlement.tiles)
     {
-        if(tile.IsWorked == false)
-            continue;
+        if(Type->Type != ResourceTypes::METAL)
+            if(tile.IsWorked == false)
+                continue;
 
         production += tile.Tile->GetResource(Type->Type);
 

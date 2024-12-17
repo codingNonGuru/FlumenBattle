@@ -33,8 +33,6 @@ using namespace world::settlement;
 
 #define VOLUME_PER_SHIPMENT 10
 
-#define STORAGE_THRESHOLD 200
-
 #define SHIPMENT_VOLUME_LOSS 3
 
 #define BORDER_GROWTH_THRESHOLD 400
@@ -69,6 +67,8 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location,
     this->growth = 0;
 
     this->cultureGrowth = 0;
+
+    this->tradeDestination = nullptr;
 
     *this->currentProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
 
@@ -926,13 +926,13 @@ void Settlement::PrepareTransport()
 
         auto other = link.Path->GetOther(this);
 
-        if(other->GetStock(ResourceTypes::METAL) > other->storage / 4 || other->GetStock(ResourceTypes::METAL) > GetStock(ResourceTypes::METAL))
+        if(other->GetStock(ResourceTypes::METAL) > other->storage / 3 || other->GetStock(ResourceTypes::METAL) > GetStock(ResourceTypes::METAL))
             continue;
 
         const auto timeModifier = GetModifier(Modifiers::DURATION_BETWEEN_TRADE_SHIPMENTS);
 
         lastShipmentTime = TIME_BETWEEN_SHIPMENTS + timeModifier;
-        shipment = {other};
+        tradeDestination = other;
         link.HasShipped = true;
 
         break;
@@ -964,19 +964,23 @@ void Settlement::PrepareTransport()
 
 void Settlement::SendTransport()
 {
-    if(shipment.To == nullptr)
+    if(tradeDestination == nullptr)
         return;
 
-    resourceHandler.Get(ResourceTypes::METAL)->Storage -= VOLUME_PER_SHIPMENT;
+    int volumeSent = VOLUME_PER_SHIPMENT;
+    resourceHandler.Get(ResourceTypes::METAL)->Storage -= volumeSent;
 
-    shipment.To->ReceiveTransport();
+    int volumeReceived = VOLUME_PER_SHIPMENT - SHIPMENT_VOLUME_LOSS;
+    tradeDestination->ReceiveTransport(volumeReceived);
 
-    shipment.To = nullptr;
+    lastOutgoingShipment = {this, tradeDestination, ResourceTypes::METAL, volumeSent, volumeReceived, world::WorldScene::Get()->GetTime().TotalHourCount};
+
+    tradeDestination = nullptr;
 }
 
-void Settlement::ReceiveTransport()
+void Settlement::ReceiveTransport(int amount)
 {
-    resourceHandler.Get(ResourceTypes::METAL)->Storage += VOLUME_PER_SHIPMENT - SHIPMENT_VOLUME_LOSS;
+    resourceHandler.Get(ResourceTypes::METAL)->Storage += amount;
 }
 
 void Settlement::UpdatePolitics()
