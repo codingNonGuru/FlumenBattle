@@ -101,7 +101,7 @@ namespace world::settlement
         TIMBER,
         METAL,
         FIBER,
-        STONE,
+        CLAY,
         LUMBER,
         FURNITURE,
         COOKED_FOOD,

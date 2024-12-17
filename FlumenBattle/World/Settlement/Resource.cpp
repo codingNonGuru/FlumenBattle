@@ -31,11 +31,6 @@ struct Fiber : public ResourceType
     Fiber() : ResourceType(ResourceTypes::FIBER, "Fiber", "Wool", 10) {IsProductionTileBased = true;}
 };
 
-struct Stone : public ResourceType
-{
-    Stone() : ResourceType(ResourceTypes::STONE, "Stone", "Stone", 10) {IsProductionTileBased = true;}
-};
-
 struct Furniture : public ResourceType
 {
     Furniture() : ResourceType(ResourceTypes::FURNITURE, "Furniture", "Furniture_WildStyle32", 70) {IsProductionTileBased = false; RelatedModifiers = {Modifiers::WOOD_RELATED_RESOURCE_PRODUCTION};}
@@ -54,6 +49,11 @@ struct Fabric : public ResourceType
 struct Clothing : public ResourceType
 {
     Clothing() : ResourceType(ResourceTypes::CLOTHING, "Clothing", "Clothing", 70) {PopulationConsumption = 1; IsProductionTileBased = false;}
+};
+
+struct Clay : public ResourceType
+{
+    Clay() : ResourceType(ResourceTypes::CLAY, "Clay", "Clay", 10) {IsProductionTileBased = true;}
 };
 
 int Resource::GetPotentialProduction(const Settlement &settlement) const
@@ -290,6 +290,9 @@ void ResourceHandler::Initialize()
     static const auto fiber = Fiber();
     *resources.Add() = {&fiber};
 
+    static const auto clay = Clay();
+    *resources.Add() = {&clay};
+
     static const auto metal = Metal();
     *resources.Add() = {&metal};
 
@@ -382,9 +385,9 @@ const ResourceType *ResourceFactory::CreateType(ResourceTypes type)
     case ResourceTypes::FIBER:
         static const auto fiber = Fiber();
         return &fiber;
-    case ResourceTypes::STONE:
-        static const auto stone = Stone();
-        return &stone;
+    case ResourceTypes::CLAY:
+        static const auto clay = Clay();
+        return &clay;
     case ResourceTypes::FURNITURE:
         static const auto furniture = Furniture();
         return &furniture;

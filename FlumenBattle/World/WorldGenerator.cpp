@@ -397,6 +397,30 @@ int WorldGenerator::GenerateWorld(
                 }
             }
         }
+
+        //Set clay resource abundance
+        for(auto &tile : map->tiles)
+        {
+            if(tile.Type == WorldTiles::SEA)
+            {
+                tile.SetResource(settlement::ResourceTypes::CLAY, 0);
+            }
+            else
+            {
+                if(tile.HasRelief(WorldReliefs::MOUNTAINS) == true)
+                {
+                    tile.SetResource(settlement::ResourceTypes::CLAY, 0);
+                }
+                else if(tile.HasRelief(WorldReliefs::HILLS) == true)
+                {
+                    tile.SetResource(settlement::ResourceTypes::CLAY, utility::GetRandom(0, 3));
+                }
+                else if(tile.HasRelief(WorldReliefs::PLAINS) == true)
+                {
+                    tile.SetResource(settlement::ResourceTypes::CLAY, utility::GetRandom(0, 2));
+                }
+            }
+        }
     };
 
     auto initializeTiles = [&]
