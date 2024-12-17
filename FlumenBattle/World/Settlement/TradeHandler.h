@@ -35,5 +35,12 @@ namespace world::settlement
         void SendTransport(Settlement &);
 
         void FinishUpdate(Settlement &);
+
+    public:
+        static int GetRelationshipLevel(int);
+
+        static float GetNextLevelProgress(int);
+
+        static int GetMaximumTraffic();
     };
 }

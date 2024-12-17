@@ -10,6 +10,7 @@
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
 #include "FlumenBattle/Config.h"
+#include "FlumenBattle/World/Settlement/TradeHandler.h"
 
 using namespace world::interface::rule;
 
@@ -40,14 +41,23 @@ void LinkItem::HandleConfigure()
         {"BaseFillerRed", {6.0f, 6.0f}}
     );
     relationshipBar->Enable();
+
+    levelLabel = ElementFactory::BuildText(
+        {drawOrder_ + 3, {relationshipBar}}, 
+        {{"VerySmall"}, Color::WHITE}
+    );
+    levelLabel->Enable();
 }
 
 void LinkItem::Setup(const settlement::Link *link)
 {
     settlementLabel->Setup(link->Other->GetName());
 
-    auto progress = (float)link->Traffic / (float)1000;
+    auto progress = settlement::TradeHandler::GetNextLevelProgress(link->Traffic);
     relationshipBar->SetProgress(progress);
+
+    auto level = settlement::TradeHandler::GetRelationshipLevel(link->Traffic);
+    levelLabel->Setup(ShortWord() << level);
 }
 
 void TradeItem::HandleConfigure()

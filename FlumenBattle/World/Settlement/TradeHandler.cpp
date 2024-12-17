@@ -13,6 +13,34 @@ using namespace world::settlement;
 
 auto priorities = container::Array <ShipmentPriority> (256);
 
+const auto RELATIVE_THRESHOLDS = container::Array <int> {0, 1000, 2000, 3000, 5000, 7000};
+
+static const auto &ABSOLUTE_THRESHOLDS = [&RELATIVE_THRESHOLDS]
+{
+    static container::Array <int> thresholds (RELATIVE_THRESHOLDS.GetSize());
+
+    int amount = 0;
+    for(auto &threshold : RELATIVE_THRESHOLDS)
+    {
+        amount += threshold;
+
+        *thresholds.Add() = amount;
+    }
+
+    return thresholds;
+} ();
+
+static const auto MAXIMUM_TRAFFIC = [&RELATIVE_THRESHOLDS] 
+{
+    int amount = 0;
+    for(auto &threshold : RELATIVE_THRESHOLDS)
+    {
+        amount += threshold;
+    }
+
+    return amount;
+} ();
+
 void TradeHandler::PrepareTransport(Settlement &settlement)
 {
     willShipThisTurn = false;
@@ -79,9 +107,7 @@ void TradeHandler::PrepareTransport(Settlement &settlement)
     willShipThisTurn = true;
 }
 
-#define RELATIONSHIP_GAIN_PER_SHIPMENT 100
-
-#define RELATIONSHIP_LIMIT 1000
+#define RELATIONSHIP_GAIN_PER_SHIPMENT 200
 
 #define RELATIONSHIP_DECAY_RATE 1
 
@@ -117,9 +143,50 @@ void TradeHandler::FinishUpdate(Settlement &settlement)
         {
             link.Traffic = 0;
         }
-        else if(link.Traffic > RELATIONSHIP_LIMIT)
+        else if(link.Traffic > MAXIMUM_TRAFFIC)
         {
-            link.Traffic = RELATIONSHIP_LIMIT;
+            link.Traffic = MAXIMUM_TRAFFIC;
         }
     }
+}
+
+int TradeHandler::GetRelationshipLevel(int traffic)
+{
+    if(traffic == MAXIMUM_TRAFFIC)
+        return ABSOLUTE_THRESHOLDS.GetSize() - 1;
+
+    for(int i = 1; i < ABSOLUTE_THRESHOLDS.GetSize(); ++i)
+    {
+        auto previous = *ABSOLUTE_THRESHOLDS.Get(i - 1);
+
+        auto current = *ABSOLUTE_THRESHOLDS.Get(i);
+
+        if(traffic >= previous && traffic < current)
+            return i;
+    }
+}
+
+float TradeHandler::GetNextLevelProgress(int traffic)
+{
+    if(traffic == MAXIMUM_TRAFFIC)
+        return 1.0f;
+
+    for(int i = 1; i < ABSOLUTE_THRESHOLDS.GetSize(); ++i)
+    {
+        auto previous = *ABSOLUTE_THRESHOLDS.Get(i - 1);
+
+        auto current = *ABSOLUTE_THRESHOLDS.Get(i);
+
+        if(traffic >= previous && traffic < current)
+        {
+            auto delta = *RELATIVE_THRESHOLDS.Get(i);
+
+            return float(traffic - previous) / float(delta);
+        }
+    }
+}
+
+int TradeHandler::GetMaximumTraffic()
+{
+    return MAXIMUM_TRAFFIC;
 }

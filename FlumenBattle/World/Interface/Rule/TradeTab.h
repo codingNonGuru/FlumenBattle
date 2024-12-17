@@ -21,6 +21,8 @@ namespace world::interface::rule
 
         ProgressBar *relationshipBar;
 
+        Text *levelLabel;
+
         void HandleConfigure() override;
 
     public:
