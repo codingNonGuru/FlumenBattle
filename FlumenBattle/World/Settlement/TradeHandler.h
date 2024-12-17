@@ -36,11 +36,15 @@ namespace world::settlement
 
         void FinishUpdate(Settlement &);
 
+        int GetTimeBetweenShipments(const Settlement &) const;
+
     public:
         static int GetRelationshipLevel(int);
 
         static float GetNextLevelProgress(int);
 
         static int GetMaximumTraffic();
+
+        float GetProgress(const Settlement &) const;
     };
 }

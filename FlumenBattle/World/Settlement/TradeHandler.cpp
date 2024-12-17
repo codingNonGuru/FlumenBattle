@@ -10,8 +10,6 @@ using namespace world::settlement;
 
 #define VOLUME_PER_SHIPMENT 20
 
-#define SHIPMENT_VOLUME_LOSS 6
-
 auto priorities = container::Array <ShipmentPriority> (256);
 
 const auto RELATIVE_THRESHOLDS = container::Array <int> {0, 1000, 2000, 3000, 5000, 7000};
@@ -99,9 +97,7 @@ void TradeHandler::PrepareTransport(Settlement &settlement)
     if(highestPriority == nullptr)
         return;
 
-    const auto timeModifier = settlement.GetModifier(Modifiers::DURATION_BETWEEN_TRADE_SHIPMENTS);
-
-    lastShipmentTime = TIME_BETWEEN_SHIPMENTS + timeModifier;
+    lastShipmentTime = GetTimeBetweenShipments(settlement);
 
     finalPriority = *highestPriority;
 
@@ -128,7 +124,7 @@ void TradeHandler::SendTransport(Settlement &settlement)
         if(level == 1)
             return 2 + utility::RollD8Dice();
         else if(level < 4)
-            return utility::RollD6Dice();
+            return 1 + utility::RollD6Dice();
         else 
             return utility::RollD4Dice();
     } ();
@@ -162,6 +158,18 @@ void TradeHandler::FinishUpdate(Settlement &settlement)
             link.Traffic = MAXIMUM_TRAFFIC;
         }
     }
+}
+
+int TradeHandler::GetTimeBetweenShipments(const Settlement &settlement) const
+{
+    const auto timeModifier = settlement.GetModifier(Modifiers::DURATION_BETWEEN_TRADE_SHIPMENTS);
+
+    return TIME_BETWEEN_SHIPMENTS + timeModifier;
+}
+
+float TradeHandler::GetProgress(const Settlement &settlement) const
+{
+    return 1.0f - (float)lastShipmentTime / (float)GetTimeBetweenShipments(settlement);
 }
 
 int TradeHandler::GetRelationshipLevel(int traffic)

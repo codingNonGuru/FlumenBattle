@@ -127,11 +127,17 @@ void TradeItem::Setup(const settlement::Shipment &shipment, settlement::Settleme
 
 void TradeTab::HandleConfigure()
 {
+    timeBar = ElementFactory::BuildProgressBar <ProgressBar>(
+        {Size(120, 28), drawOrder_ + 1, {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}, {"BaseBar", true}},
+        {"BaseFillerRed", {6.0f, 6.0f}}
+    );
+    timeBar->Enable();
+
     tradeItemList = ElementFactory::BuildSimpleList
     (
         { 
             drawOrder_ + 1,
-            {Position2{0.0f, 40.0f}, ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}, 
+            {Position2{0.0f, 45.0f}, ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}, 
             {"panel-border-015", true},
             Opacity(0.7f)
         },
@@ -206,6 +212,8 @@ void TradeTab::HandleUpdate()
 {
     if(settlement == nullptr)
         return;
+
+    timeBar->SetProgress(settlement->GetTradeProgress());
 
     for(auto &shipment : recordedShipments)
     {

@@ -51,6 +51,8 @@ namespace world::interface::rule
 
     class TradeTab : public Element
     {
+        ProgressBar *timeBar;
+
         SimpleList *tradeItemList;
 
         container::Array <TradeItem *> tradeItems;

@@ -326,6 +326,8 @@ namespace world::settlement
 
         void FinishTradeUpdate();
 
+        float GetTradeProgress() const {return tradeHandler.GetProgress(*this);}
+
         void AddPath(Path *path);
 
         void UpdateColonialMap();
