@@ -456,6 +456,9 @@ void HoverExtension::HandleUpdate()
         case BuildingTypes::BAKERY:
             text << "BK";
             break;
+        case BuildingTypes::MARKET:
+            text << "MK";
+            break;
         case BuildingTypes::HOUSING:
             text << settlement->GetBuildingCount(BuildingTypes::HOUSING);
             text << "H";

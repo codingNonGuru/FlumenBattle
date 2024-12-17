@@ -39,6 +39,7 @@ static const settlement::ProductionOptions options[] = {
     settlement::ProductionOptions::LUMBER_MILL,
     settlement::ProductionOptions::CARPENTER,
     settlement::ProductionOptions::BAKERY,
+    settlement::ProductionOptions::MARKET,
     settlement::ProductionOptions::WEAVING_MILL,
     settlement::ProductionOptions::TAILORY,
     settlement::ProductionOptions::KEEP

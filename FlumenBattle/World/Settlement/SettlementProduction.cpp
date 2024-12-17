@@ -80,6 +80,8 @@ ProductionInquiry SettlementProduction::CanProduce(Settlement &settlement, Produ
         return {settlement.HasBuilding(BuildingTypes::CARPENTER) == false};
     case ProductionOptions::BAKERY:
         return {settlement.HasBuilding(BuildingTypes::BAKERY) == false};
+    case ProductionOptions::MARKET:
+        return {settlement.GetBuildingCount(BuildingTypes::MARKET) < 3};
     case ProductionOptions::WEAVING_MILL:
         return {settlement.HasBuilding(BuildingTypes::WEAVING_MILL) == false};
     case ProductionOptions::TAILORY:
@@ -131,6 +133,8 @@ const SettlementProductionType * SettlementProductionFactory::BuildProductionTyp
             return BuildCarpenterProduction();
         case ProductionOptions::BAKERY:
             return BuildBakeryProduction();
+        case ProductionOptions::MARKET:
+            return BuildMarketProduction();
         case ProductionOptions::WALLS:
             return BuildWallsProduction();
         case ProductionOptions::KEEP:
@@ -224,6 +228,12 @@ const SettlementProductionType *SettlementProductionFactory::BuildBakeryProducti
     return &productionType;
 }
 
+const SettlementProductionType *SettlementProductionFactory::BuildMarketProduction()
+{
+    static const SettlementProductionType productionType = {ProductionOptions::MARKET, "Market", 300, &ProductionFinisher::FinishMarket};
+    return &productionType;
+}
+
 const SettlementProductionType *SettlementProductionFactory::BuildKeepProduction()
 {
     static const SettlementProductionType productionType = {ProductionOptions::KEEP, "Keep", 300, &ProductionFinisher::FinishKeep};
@@ -279,6 +289,11 @@ void ProductionFinisher::FinishCarpenter(Settlement &settlement)
 void ProductionFinisher::FinishBakery(Settlement &settlement)
 {
     settlement.AddBuilding(BuildingTypes::BAKERY);
+}
+
+void ProductionFinisher::FinishMarket(Settlement &settlement)
+{
+    settlement.AddBuilding(BuildingTypes::MARKET);
 }
 
 void ProductionFinisher::FinishKeep(Settlement &settlement)

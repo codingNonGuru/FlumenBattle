@@ -23,6 +23,7 @@ namespace world::settlement
         LUMBER_MILL,
         CARPENTER,
         BAKERY,
+        MARKET,
         WEAVING_MILL,
         TAILORY,
         KEEP
@@ -40,6 +41,7 @@ namespace world::settlement
         LUMBER_MILL,
         CARPENTER,
         BAKERY,
+        MARKET,
         WEAVING_MILL,
         TAILORY,
         KEEP

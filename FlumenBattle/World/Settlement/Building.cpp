@@ -121,6 +121,18 @@ namespace world::settlement
             settlement.AddModifier({Modifiers::DEFENDER_GROUP_BONUS_INITIATIVE, 2});
         }
     };
+
+    class Market : public BuildingType
+    {
+        using BuildingType::BuildingType; 
+
+        void HandleApplyEffect(Settlement &settlement) const override
+        {
+            auto count = settlement.GetBuildingCount(BuildingTypes::MARKET);
+
+            settlement.AddModifier({Modifiers::DURATION_BETWEEN_TRADE_SHIPMENTS, -count * 2});
+        }
+    };
 }
 
 void Building::ApplyEffect(Settlement &settlement) const
@@ -184,6 +196,11 @@ Building BuildingFactory::Create(BuildingTypes type)
         return 
         {
             [&] {static const auto buildingType = Bakery(type, 200, true, "Bakery", "LumberMill", {ResourceTypes::COOKED_FOOD, 2}, {{ResourceTypes::FOOD, 3}, {ResourceTypes::TIMBER, 1}}); return &buildingType;} ()
+        };
+    case BuildingTypes::MARKET:
+        return 
+        {
+            [&] {static const auto buildingType = Market(type, 200, true, "Market", "Market"); return &buildingType;} ()
         };
     case BuildingTypes::WEAVING_MILL:
         return 
