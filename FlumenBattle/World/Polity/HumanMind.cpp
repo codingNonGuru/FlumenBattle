@@ -133,7 +133,7 @@ void HumanMind::ProcessTrade(Polity &polity) const
     {
         auto &shipment = settlement->GetLastOutgoingShipment();
 
-        if(shipment.TimeInAbsoluteTicks == WorldScene::Get()->GetTime().TotalMinuteCount)
+        if(shipment.TimeInAbsoluteTicks == WorldScene::Get()->GetTime().GetTickCount())
         {
             currentShipment = shipment;
 

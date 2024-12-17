@@ -53,6 +53,10 @@ namespace world::settlement
 
         bool HasPopulationOrdered {false};
 
+        int AbundanceDegree;
+
+        int ScarcityDegree;
+
         int GetPotentialProduction(const Settlement &) const;
 
         int GetProductionFromTiles(const Settlement &) const;

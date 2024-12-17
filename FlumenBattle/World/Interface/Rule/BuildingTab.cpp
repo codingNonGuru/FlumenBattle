@@ -143,7 +143,7 @@ void BuildingTab::HandleConfigure()
     (
         {
             Size(320, 400), 
-            DrawOrder(6), 
+            drawOrder_, 
             {Position2(0.0f, 30.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}, 
             {false}, 
             Opacity(0.0f)

@@ -17,6 +17,10 @@ namespace world
 
         static constexpr auto MINUTES_IN_YEAR = DAYS_IN_YEAR * MINUTES_IN_DAYS;
 
+        static constexpr auto MINUTES_PER_TICK = 10;
+
+        static constexpr auto TICKS_PER_HOUR = 6;
+
         static constexpr int MONTH_LENGTHS[12] = {30, 31, 30, 31, 30, 31, 30, 30, 31, 30, 31, 30};
 
         static constexpr const char *MONTH_LITERALS[12] = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"};
@@ -34,6 +38,8 @@ namespace world
         int TotalDayCount;
 
         int YearCount;
+
+        int TickCount;
 
         bool IsFlowing;
 
@@ -71,6 +77,8 @@ namespace world
             IsFlowing = false;
             FlowSpeed = 1;
             IsStopDelayed = false;
+
+            TickCount = TotalMinuteCount / MINUTES_PER_TICK;
         }
 
         void SpeedUp() 
@@ -103,23 +111,25 @@ namespace world
             IsNewDay = false;
             IsNewYear = false;
 
-            MinuteCount += 10;
-            TotalMinuteCount += 10;
-            if(MinuteCount >= 60)
+            TickCount++;
+
+            MinuteCount += MINUTES_PER_TICK;
+            TotalMinuteCount += MINUTES_PER_TICK;
+            if(MinuteCount >= MINUTES_PER_TICK * HOUR_SIZE)
             {
                 MinuteCount = 0;
                 IsNewHour = true;
 
                 HourCount++;
                 TotalHourCount++;
-                if(HourCount >= 24)
+                if(HourCount >= HOURS_IN_DAY)
                 {
                     HourCount = 0;
                     IsNewDay = true;
 
                     DayCount++;
                     TotalDayCount++;
-                    if(DayCount >= 365)
+                    if(DayCount >= DAYS_IN_YEAR)
                     {
                         DayCount = 0;
                         IsNewYear = true;
@@ -207,6 +217,11 @@ namespace world
 
                 index++;
             }
+        }
+
+        int GetTickCount() const
+        {
+            return TickCount;
         }
 
         operator bool() const

@@ -160,7 +160,7 @@ const SettlementProductionType * SettlementProductionFactory::BuildFarmProductio
 
 const SettlementProductionType * SettlementProductionFactory::BuildSettlersProduction()
 {
-    static const SettlementProductionType productionType = {ProductionOptions::SETTLERS, "Settlers", 500, &ProductionFinisher::FinishSettlers};
+    static const SettlementProductionType productionType = {ProductionOptions::SETTLERS, "Settlers", 100, &ProductionFinisher::FinishSettlers};
     return &productionType;
 }
 

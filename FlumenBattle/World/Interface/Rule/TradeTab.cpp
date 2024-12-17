@@ -15,7 +15,9 @@ static const auto BORDER_COLOR = Color::RED * 0.25f;
 
 static const auto TEXT_COLOR = Color::RED * 0.5f;
 
-#define MAXIMUM_ITEM_COUNT 32
+#define MAXIMUM_ITEM_COUNT 128
+
+#define VISIBLE_ITEM_COUNT 10
 
 #define ITEM_LIFETIME_IN_HOURS 72
 
@@ -54,7 +56,8 @@ void TradeItem::HandleConfigure()
 
 void TradeItem::HandleUpdate()
 {
-    auto hourCount = world::WorldScene::Get()->GetTime().TotalHourCount - shipment->TimeInAbsoluteTicks;
+    auto hourCount = world::WorldScene::Get()->GetTime().GetTickCount() - shipment->TimeInAbsoluteTicks;
+    hourCount /= WorldTime::TICKS_PER_HOUR;
 
     if(hourCount < WorldTime::HOURS_IN_DAY)
     {
@@ -98,6 +101,7 @@ void TradeTab::HandleConfigure()
         MAXIMUM_ITEM_COUNT,
         5.0f
     );
+    itemList->MakeScrollable(VISIBLE_ITEM_COUNT, MAXIMUM_ITEM_COUNT);
     itemList->Enable();
 
     items.Initialize(MAXIMUM_ITEM_COUNT);
@@ -131,6 +135,18 @@ void TradeTab::HandleUpdate()
     if(settlement == nullptr)
         return;
 
+    for(auto &shipment : recordedShipments)
+    {
+        auto tickCount = world::WorldScene::Get()->GetTime().GetTickCount() - shipment.TimeInAbsoluteTicks;
+
+        if(tickCount >= ITEM_LIFETIME_IN_HOURS * world::WorldTime::TICKS_PER_HOUR)
+        {
+            recordedShipments.RemoveAt(&shipment);
+        }
+    }
+
+    itemList->SetScrollableChildCount(recordedShipments.GetSize());
+
     for(auto &item : items)
     {
         item->Disable();
@@ -156,17 +172,10 @@ void TradeTab::HandlePlayerShipment()
     if(shipment.From != settlement && shipment.To != settlement)
         return;
 
+    if(recordedShipments.IsFull() == true)
+        return;
+
     *recordedShipments.Add() = shipment;
-
-    for(auto &shipment : recordedShipments)
-    {
-        auto tickCount = world::WorldScene::Get()->GetTime().TotalHourCount - shipment.TimeInAbsoluteTicks;
-
-        if(tickCount >= ITEM_LIFETIME_IN_HOURS)
-        {
-            recordedShipments.RemoveAt(&shipment);
-        }
-    }
 }
 
 void TradeTab::HandleSettlementChanged()
@@ -178,10 +187,10 @@ void TradeTab::HandleSettlementChanged()
     {
         itemList->Disable();
 
+        recordedShipments.Reset();
+
         return;
     }
-
-    recordedShipments.Reset();
 
     itemList->Enable();
 }

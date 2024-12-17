@@ -9,6 +9,7 @@
 #include "FlumenBattle/World/Settlement/Resource.h"
 #include "FlumenBattle/World/Settlement/Types.h"
 #include "FlumenBattle/World/Settlement/PopHandler.h"
+#include "FlumenBattle/World/Settlement/TradeHandler.h"
 
 struct Race;
 
@@ -154,9 +155,10 @@ namespace world::settlement
 
         PopHandler popHandler;
 
-        int storage {400};
+        int storage {500};
 
-        Shipment lastOutgoingShipment;
+        //Shipment lastOutgoingShipment;
+        TradeHandler tradeHandler;
 
         Settlement *tradeDestination;
 
@@ -320,6 +322,8 @@ namespace world::settlement
 
         void ReceiveTransport(int);
 
+        void ReceiveTransport(ResourceTypes, int);
+
         void AddPath(Path *path);
 
         void UpdateColonialMap();
@@ -342,6 +346,6 @@ namespace world::settlement
 
         const Race *GetRace() const {return race;}
 
-        const Shipment &GetLastOutgoingShipment() {return lastOutgoingShipment;}
+        const Shipment &GetLastOutgoingShipment() {return tradeHandler.lastOutgoingShipment;}
     };
 }

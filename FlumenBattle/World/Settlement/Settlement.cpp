@@ -58,6 +58,8 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location,
 
     this->popHandler.Initialize();
 
+    this->tradeHandler.Initialize();
+
     this->name = name;
 
     this->banner = banner;
@@ -853,7 +855,7 @@ void Settlement::Update()
         }
     }
 
-    if(worldTime.MinuteCount == 0)
+    if(worldTime.MinuteCount == 0 && population > 3)
     {
         auto difficultyBonus = GetModifier(Modifiers::MALARIA_EMERGENCE_DIFFICULTY);
         if(utility::GetRandom(1, 100) > 98 + difficultyBonus)
@@ -906,81 +908,22 @@ void Settlement::Update()
 
 void Settlement::PrepareTransport()
 {
-    lastShipmentTime--;
-
-    if(lastShipmentTime < 0)
-    {
-        lastShipmentTime = 0;
-    }
-
-    if(lastShipmentTime > 0)
-        return;
-
-    if(GetStock(ResourceTypes::METAL) < storage / 2)
-        return;
-
-    for(auto &link : links)
-    {
-        if(link.HasShipped == true)
-            continue;
-
-        auto other = link.Path->GetOther(this);
-
-        if(other->GetStock(ResourceTypes::METAL) > other->storage / 3 || other->GetStock(ResourceTypes::METAL) > GetStock(ResourceTypes::METAL))
-            continue;
-
-        const auto timeModifier = GetModifier(Modifiers::DURATION_BETWEEN_TRADE_SHIPMENTS);
-
-        lastShipmentTime = TIME_BETWEEN_SHIPMENTS + timeModifier;
-        tradeDestination = other;
-        link.HasShipped = true;
-
-        break;
-    }
-
-    bool hasShippedToAll = true;
-    for(auto &link : links)
-    {
-        if(link.HasShipped == true)
-            continue;
-
-        auto other = link.Path->GetOther(this);
-
-        bool cannotSendToOther = other->GetStock(ResourceTypes::METAL) > other->storage / 4 || other->GetStock(ResourceTypes::METAL) > GetStock(ResourceTypes::METAL);
-        if(cannotSendToOther == true)
-            continue;
-        
-        hasShippedToAll = false;
-    }
-
-    if(hasShippedToAll == true)
-    {
-        for(auto &link : links)
-        {
-            link.HasShipped = false;
-        }   
-    }
+    tradeHandler.PrepareTransport(*this);
 }
 
 void Settlement::SendTransport()
 {
-    if(tradeDestination == nullptr)
-        return;
-
-    int volumeSent = VOLUME_PER_SHIPMENT;
-    resourceHandler.Get(ResourceTypes::METAL)->Storage -= volumeSent;
-
-    int volumeReceived = VOLUME_PER_SHIPMENT - SHIPMENT_VOLUME_LOSS;
-    tradeDestination->ReceiveTransport(volumeReceived);
-
-    lastOutgoingShipment = {this, tradeDestination, ResourceTypes::METAL, volumeSent, volumeReceived, world::WorldScene::Get()->GetTime().TotalHourCount};
-
-    tradeDestination = nullptr;
+    tradeHandler.SendTransport(*this);
 }
 
 void Settlement::ReceiveTransport(int amount)
 {
     resourceHandler.Get(ResourceTypes::METAL)->Storage += amount;
+}
+
+void Settlement::ReceiveTransport(ResourceTypes resource, int amount)
+{
+    resourceHandler.Get(resource)->Storage += amount;
 }
 
 void Settlement::UpdatePolitics()

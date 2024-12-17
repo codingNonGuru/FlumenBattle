@@ -227,6 +227,40 @@ void Resource::UpdateAbundance(Settlement &settlement)
     {
         ShortTermAbundance = AbundanceLevels::SORELY_LACKING;
     }
+
+    if(Storage <= 300)
+    {
+        AbundanceDegree = 0;
+    }
+    else if(Storage <= 400)
+    {
+        AbundanceDegree = 1;
+    }
+    else if(Storage <= 460)
+    {
+        AbundanceDegree = 2;
+    }
+    else
+    {
+        AbundanceDegree = 3;
+    }
+
+    if(Storage <= 40)
+    {
+        ScarcityDegree = 3;
+    }
+    else if(Storage <= 100)
+    {
+        ScarcityDegree = 2;
+    }
+    else if(Storage <= 200)
+    {
+        ScarcityDegree = 1;
+    }
+    else
+    {
+        ScarcityDegree = 0;
+    }
 }
 
 void Resource::UpdateStorage(Settlement &settlement)
