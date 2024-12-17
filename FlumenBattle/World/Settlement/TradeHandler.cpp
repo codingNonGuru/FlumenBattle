@@ -2,6 +2,7 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/Path.h"
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/Utility/Utility.h"
 
 using namespace world::settlement;
 
@@ -119,7 +120,20 @@ void TradeHandler::SendTransport(Settlement &settlement)
     int volumeSent = VOLUME_PER_SHIPMENT;
     settlement.GetResource(finalPriority.Resource)->Storage -= volumeSent;
 
-    int volumeReceived = VOLUME_PER_SHIPMENT - SHIPMENT_VOLUME_LOSS;
+    auto volumeLoss = [&] 
+    {
+        auto toLink = settlement.GetLinks().Find(finalPriority.To);
+        auto level = GetRelationshipLevel(toLink->Traffic);
+
+        if(level == 1)
+            return 2 + utility::RollD8Dice();
+        else if(level < 4)
+            return utility::RollD6Dice();
+        else 
+            return utility::RollD4Dice();
+    } ();
+
+    int volumeReceived = VOLUME_PER_SHIPMENT - volumeLoss;
     finalPriority.To->ReceiveTransport(finalPriority.Resource, volumeReceived);
 
     willShipThisTurn = false;

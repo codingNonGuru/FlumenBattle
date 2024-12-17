@@ -12,7 +12,7 @@
 
 using namespace world::settlement;
 
-#define COLONIZATION_DC 5
+#define COLONIZATION_DC 1
 
 SettlementProduction SettlementProductionFactory::Create(ProductionOptions option, ProductionData data)
 {

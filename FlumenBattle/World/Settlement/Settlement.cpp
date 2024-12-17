@@ -29,12 +29,6 @@
 
 using namespace world::settlement;
 
-#define TIME_BETWEEN_SHIPMENTS 12
-
-#define VOLUME_PER_SHIPMENT 10
-
-#define SHIPMENT_VOLUME_LOSS 3
-
 #define BORDER_GROWTH_THRESHOLD 400
 
 bool Link::operator== (const settlement::Path &path) const 
