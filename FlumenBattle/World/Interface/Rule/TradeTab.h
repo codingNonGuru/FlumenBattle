@@ -4,15 +4,29 @@
 
 class Text;
 class SimpleList;
+class ProgressBar;
 
 namespace world::settlement
 {
     class Settlement;
     class Shipment;
+    struct Link;
 }
 
 namespace world::interface::rule
 {
+    class LinkItem : public Element
+    {
+        Text *settlementLabel;
+
+        ProgressBar *relationshipBar;
+
+        void HandleConfigure() override;
+
+    public:
+        void Setup(const settlement::Link *);
+    };
+
     class TradeItem : public Element
     {
         Element *icon;
@@ -35,9 +49,13 @@ namespace world::interface::rule
 
     class TradeTab : public Element
     {
-        SimpleList *itemList;
+        SimpleList *tradeItemList;
 
-        container::Array <TradeItem *> items;
+        container::Array <TradeItem *> tradeItems;
+
+        SimpleList *linkItemList;
+
+        container::Array <LinkItem *> linkItems;
 
         settlement::Settlement *settlement;
 

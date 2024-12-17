@@ -33,5 +33,7 @@ namespace world::settlement
         void PrepareTransport(Settlement &);
 
         void SendTransport(Settlement &);
+
+        void FinishUpdate(Settlement &);
     };
 }

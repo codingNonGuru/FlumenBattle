@@ -68,9 +68,11 @@ namespace world::settlement
 
         Settlement *Other;
 
-        bool HasShipped {false};
+        int Traffic {0};
 
         bool operator== (const settlement::Path &path) const;
+
+        bool operator== (const settlement::Settlement *other) {return Other == other;}
     };
 
     class Settlement
@@ -320,9 +322,9 @@ namespace world::settlement
 
         void SendTransport();
 
-        void ReceiveTransport(int);
-
         void ReceiveTransport(ResourceTypes, int);
+
+        void FinishTradeUpdate();
 
         void AddPath(Path *path);
 

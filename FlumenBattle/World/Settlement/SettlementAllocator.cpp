@@ -26,8 +26,6 @@
 
 #define MAXIMUM_EVENTS_PER_SETTLEMENT 32
 
-#define MAXIMUM_PATHS_PER_SETTLEMENT 8
-
 #define AVERAGE_SEGMENTS_PER_PATH 4
 
 #define MODIFIERS_PER_SETTLEMENT 32
@@ -51,6 +49,8 @@ using namespace world::settlement;
 void SettlementAllocator::PreallocateMaximumMemory()
 {
     static const auto MAXIMUM_WORLD_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_WORLD_SIZE).Integer;
+
+    static const auto MAXIMUM_PATHS_PER_SETTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_PATHS_PER_SETTLEMENT).Integer;
 
     std::cout<<"Memory size of a Settlement is "<<sizeof(Settlement)<<"\n";
 
@@ -105,7 +105,9 @@ void SettlementAllocator::PreallocateMaximumMemory()
 
 void SettlementAllocator::AllocateWorldMemory(int worldSize)
 {
-    auto worldGenerator = WorldGenerator::Get();
+    static const auto MAXIMUM_PATHS_PER_SETTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_PATHS_PER_SETTLEMENT).Integer;
+
+    static const auto worldGenerator = WorldGenerator::Get();
 
     auto settlementCount = worldGenerator->GetMaximumSettlementCount(worldSize);
 

@@ -1,5 +1,6 @@
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/Text.hpp"
+#include "FlumenEngine/Interface/ProgressBar.h"
 
 #include "TradeTab.h"
 #include "FlumenBattle/WorldInterface.h"
@@ -8,6 +9,7 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
+#include "FlumenBattle/Config.h"
 
 using namespace world::interface::rule;
 
@@ -17,11 +19,36 @@ static const auto TEXT_COLOR = Color::RED * 0.5f;
 
 #define MAXIMUM_ITEM_COUNT 128
 
-#define VISIBLE_ITEM_COUNT 10
+#define VISIBLE_ITEM_COUNT 8
 
 #define ITEM_LIFETIME_IN_HOURS 72
 
+#define VISIBLE_LINK_ITEM_COUNT 4
+
 auto recordedShipments = container::Pool <world::settlement::Shipment> (MAXIMUM_ITEM_COUNT);
+
+void LinkItem::HandleConfigure()
+{
+    settlementLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {Position2(5.0f, 0.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
+        {{"Small"}, TEXT_COLOR}
+    );
+    settlementLabel->Enable();
+
+    relationshipBar = ElementFactory::BuildProgressBar <ProgressBar>(
+        {Size(60, 24), drawOrder_ + 1, {Position2(240.0f, 0.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}, {"BaseBar", true}},
+        {"BaseFillerRed", {6.0f, 6.0f}}
+    );
+    relationshipBar->Enable();
+}
+
+void LinkItem::Setup(const settlement::Link *link)
+{
+    settlementLabel->Setup(link->Other->GetName());
+
+    auto progress = (float)link->Traffic / (float)1000;
+    relationshipBar->SetProgress(progress);
+}
 
 void TradeItem::HandleConfigure()
 {
@@ -90,37 +117,72 @@ void TradeItem::Setup(const settlement::Shipment &shipment, settlement::Settleme
 
 void TradeTab::HandleConfigure()
 {
-    itemList = ElementFactory::BuildSimpleList
+    tradeItemList = ElementFactory::BuildSimpleList
     (
         { 
-            drawOrder_,
+            drawOrder_ + 1,
             {Position2{0.0f, 40.0f}, ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}, 
-            {false},
-            Opacity(0.0f)
+            {"panel-border-015", true},
+            Opacity(0.7f)
         },
         MAXIMUM_ITEM_COUNT,
-        5.0f
+        0.0f
     );
-    itemList->MakeScrollable(VISIBLE_ITEM_COUNT, MAXIMUM_ITEM_COUNT);
-    itemList->Enable();
+    tradeItemList->SetSpriteColor(BORDER_COLOR);
+    tradeItemList->MakeScrollable(VISIBLE_ITEM_COUNT, MAXIMUM_ITEM_COUNT);
+    tradeItemList->Enable();
 
-    items.Initialize(MAXIMUM_ITEM_COUNT);
-    for(int i = 0; i < items.GetCapacity(); ++i)
+    tradeItems.Initialize(MAXIMUM_ITEM_COUNT);
+    for(int i = 0; i < tradeItems.GetCapacity(); ++i)
     {
         auto item = ElementFactory::BuildElement <TradeItem>
         (
             {
-                Size(500, 35), 
+                Size(500, 30), 
                 drawOrder_ + 1, 
-                {itemList}, 
-                {"panel-border-015", true},
-                Opacity(0.7f)
+                {tradeItemList}, 
+                {false},
+                Opacity(0.0f)
             }
         );
         item->SetSpriteColor(BORDER_COLOR);
         item->Enable();
 
-        *items.Allocate() = item;
+        *tradeItems.Allocate() = item;
+    }
+
+    static const auto MAXIMUM_PATHS_PER_SETTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_PATHS_PER_SETTLEMENT).Integer;
+
+    linkItemList = ElementFactory::BuildSimpleList
+    (
+        { 
+            drawOrder_,
+            {Position2{0.0f, -10.0f}, ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, this}, 
+            {false},
+            Opacity(0.0f)
+        },
+        MAXIMUM_PATHS_PER_SETTLEMENT,
+        5.0f
+    );
+    linkItemList->MakeScrollable(VISIBLE_LINK_ITEM_COUNT, MAXIMUM_PATHS_PER_SETTLEMENT);
+    linkItemList->Enable();
+
+    linkItems.Initialize(MAXIMUM_PATHS_PER_SETTLEMENT);
+    for(int i = 0; i < linkItems.GetCapacity(); ++i)
+    {
+        auto item = ElementFactory::BuildElement <LinkItem>
+        (
+            {
+                Size(400, 35), 
+                drawOrder_ + 1, 
+                {linkItemList}, 
+                {"panel-border-015", true},
+                Opacity(0.7f)
+            }
+        );
+        item->SetSpriteColor(BORDER_COLOR);
+
+        *linkItems.Allocate() = item;
     }
 
     static const auto ruleMenu = WorldInterface::Get()->GetRuleMenu();
@@ -145,14 +207,14 @@ void TradeTab::HandleUpdate()
         }
     }
 
-    itemList->SetScrollableChildCount(recordedShipments.GetSize());
+    tradeItemList->SetScrollableChildCount(recordedShipments.GetSize());
 
-    for(auto &item : items)
+    for(auto &item : tradeItems)
     {
         item->Disable();
     }
 
-    auto item = items.GetStart();
+    auto item = tradeItems.GetStart();
     for(auto &shipment : recordedShipments)
     {
         (*item)->Setup(shipment, settlement);
@@ -160,7 +222,29 @@ void TradeTab::HandleUpdate()
         (*item)->Enable();
 
         item++;
-    }    
+    }
+
+    linkItemList->SetScrollableChildCount(settlement->GetLinks().GetSize());
+
+    for(auto &linkItem : linkItems)
+    {
+        linkItem->Disable();
+    }
+
+    auto linkItem = linkItems.GetStart();
+    for(auto &link : settlement->GetLinks())
+    {
+        if(link.Traffic == 0)
+        {
+            continue;
+        }
+
+        (*linkItem)->Setup(&link);
+
+        (*linkItem)->Enable();
+
+        linkItem++;
+    }     
 }
 
 void TradeTab::HandlePlayerShipment()
@@ -185,12 +269,16 @@ void TradeTab::HandleSettlementChanged()
     settlement = ruleMenu->GetCurrentSettlement();
     if(settlement == nullptr)
     {
-        itemList->Disable();
+        tradeItemList->Disable();
+
+        linkItemList->Disable();
 
         recordedShipments.Reset();
 
         return;
     }
 
-    itemList->Enable();
+    tradeItemList->Enable();
+
+    linkItemList->Enable();
 }

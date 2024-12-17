@@ -79,6 +79,12 @@ void TradeHandler::PrepareTransport(Settlement &settlement)
     willShipThisTurn = true;
 }
 
+#define RELATIONSHIP_GAIN_PER_SHIPMENT 100
+
+#define RELATIONSHIP_LIMIT 1000
+
+#define RELATIONSHIP_DECAY_RATE 1
+
 void TradeHandler::SendTransport(Settlement &settlement)
 {
     if(willShipThisTurn == false)
@@ -93,4 +99,27 @@ void TradeHandler::SendTransport(Settlement &settlement)
     willShipThisTurn = false;
 
     lastOutgoingShipment = {&settlement, finalPriority.To, finalPriority.Resource, volumeSent, volumeReceived, world::WorldScene::Get()->GetTime().GetTickCount()};
+
+    auto link = settlement.GetLinks().Find(finalPriority.To);
+    link->Traffic += RELATIONSHIP_GAIN_PER_SHIPMENT;
+
+    link = finalPriority.To->GetLinks().Find(&settlement);
+    link->Traffic += RELATIONSHIP_GAIN_PER_SHIPMENT;
+}
+
+void TradeHandler::FinishUpdate(Settlement &settlement)
+{
+    for(auto &link : settlement.GetLinks())
+    {
+        link.Traffic -= RELATIONSHIP_DECAY_RATE;
+
+        if(link.Traffic < 0)
+        {
+            link.Traffic = 0;
+        }
+        else if(link.Traffic > RELATIONSHIP_LIMIT)
+        {
+            link.Traffic = RELATIONSHIP_LIMIT;
+        }
+    }
 }

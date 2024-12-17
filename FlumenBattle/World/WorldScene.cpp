@@ -243,6 +243,11 @@ namespace world
 
             for(auto &settlement : *settlements)
             {
+                settlement.FinishTradeUpdate();
+            }
+
+            for(auto &settlement : *settlements)
+            {
                 settlement.UpdatePolitics();
             }
 

@@ -916,9 +916,9 @@ void Settlement::SendTransport()
     tradeHandler.SendTransport(*this);
 }
 
-void Settlement::ReceiveTransport(int amount)
+void Settlement::FinishTradeUpdate()
 {
-    resourceHandler.Get(ResourceTypes::METAL)->Storage += amount;
+    tradeHandler.FinishUpdate(*this);
 }
 
 void Settlement::ReceiveTransport(ResourceTypes resource, int amount)
