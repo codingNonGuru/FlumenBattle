@@ -14,6 +14,10 @@ namespace world::settlement
 
         bool DoesDetermineHappiness;
 
+        bool IsContinuous;
+
+        int SatisfactionThreshold;
+
         int Satisfaction {0};
 
         int GeneratedHappiness {0};

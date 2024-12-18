@@ -48,7 +48,7 @@ struct Fabric : public ResourceType
 
 struct Clothing : public ResourceType
 {
-    Clothing() : ResourceType(ResourceTypes::CLOTHING, "Clothing", "Clothing", 70) {PopulationConsumption = 1; IsProductionTileBased = false;}
+    Clothing() : ResourceType(ResourceTypes::CLOTHING, "Clothing", "Clothing", 70) {PopulationConsumption = 2; IsProductionTileBased = false;}
 };
 
 struct Clay : public ResourceType
@@ -58,7 +58,7 @@ struct Clay : public ResourceType
 
 struct Pottery : public ResourceType
 {
-    Pottery() : ResourceType(ResourceTypes::POTTERY, "Pottery", "Pottery", 50) {PopulationConsumption = 1; IsProductionTileBased = false;}
+    Pottery() : ResourceType(ResourceTypes::POTTERY, "Pottery", "Pottery", 50) {PopulationConsumption = 2; IsProductionTileBased = false;}
 };
 
 int Resource::GetPotentialProduction(const Settlement &settlement) const
