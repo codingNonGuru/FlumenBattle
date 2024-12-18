@@ -158,6 +158,8 @@ namespace world::settlement
 
         const SettlementProductionType *BuildMarketProduction();
 
+        const SettlementProductionType *BuildPotteryProduction();
+
         const SettlementProductionType *BuildNoneProduction();
 
     public:
@@ -199,5 +201,7 @@ namespace world::settlement
         static void FinishTailory(Settlement &);
 
         static void FinishKeep(Settlement &);
+
+        static void FinishPottery(Settlement &);
     };
 }

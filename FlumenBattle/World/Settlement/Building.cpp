@@ -133,6 +133,15 @@ namespace world::settlement
             settlement.AddModifier({Modifiers::DURATION_BETWEEN_TRADE_SHIPMENTS, -count * 2});
         }
     };
+
+    class Pottery : public BuildingType
+    {
+        using BuildingType::BuildingType; 
+
+        void HandleApplyEffect(Settlement &settlement) const override
+        {
+        }
+    };
 }
 
 void Building::ApplyEffect(Settlement &settlement) const
@@ -216,6 +225,11 @@ Building BuildingFactory::Create(BuildingTypes type)
         return 
         {
             [&] {static const auto buildingType = Keep(type, 200, true, "Keep", "Keep"); return &buildingType;} ()
+        };
+    case BuildingTypes::POTTERY:
+        return 
+        {
+            [&] {static const auto buildingType = Pottery(type, 200, true, "Pottery", "LumberMill", {ResourceTypes::POTTERY, 2}, {{ResourceTypes::CLAY, 3}, {ResourceTypes::TIMBER, 4}}); return &buildingType;} ()
         };
     }
 }

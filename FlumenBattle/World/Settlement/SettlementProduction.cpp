@@ -84,6 +84,8 @@ ProductionInquiry SettlementProduction::CanProduce(Settlement &settlement, Produ
         return {settlement.GetBuildingCount(BuildingTypes::MARKET) < 3};
     case ProductionOptions::WEAVING_MILL:
         return {settlement.HasBuilding(BuildingTypes::WEAVING_MILL) == false};
+    case ProductionOptions::POTTERY:
+        return {settlement.HasBuilding(BuildingTypes::POTTERY) == false};
     case ProductionOptions::TAILORY:
         return {settlement.HasBuilding(BuildingTypes::TAILORY) == false};
     case ProductionOptions::KEEP:
@@ -127,6 +129,8 @@ const SettlementProductionType * SettlementProductionFactory::BuildProductionTyp
             return BuildLumberMillProduction();
         case ProductionOptions::WEAVING_MILL:
             return BuildWeavingMillProduction();
+        case ProductionOptions::POTTERY:
+            return BuildPotteryProduction();
         case ProductionOptions::TAILORY:
             return BuildTailoryProduction();
         case ProductionOptions::CARPENTER:
@@ -210,6 +214,12 @@ const SettlementProductionType *SettlementProductionFactory::BuildWeavingMillPro
     return &productionType;
 }
 
+const SettlementProductionType *SettlementProductionFactory::BuildPotteryProduction()
+{
+    static const SettlementProductionType productionType = {ProductionOptions::POTTERY, "Pottery", 300, &ProductionFinisher::FinishPottery};
+    return &productionType;
+}
+
 const SettlementProductionType *SettlementProductionFactory::BuildTailoryProduction()
 {
     static const SettlementProductionType productionType = {ProductionOptions::TAILORY, "Tailory", 300, &ProductionFinisher::FinishTailory};
@@ -274,6 +284,11 @@ void ProductionFinisher::FinishLumberMill(Settlement &settlement)
 void ProductionFinisher::FinishWeavingMill(Settlement &settlement)
 {
     settlement.AddBuilding(BuildingTypes::WEAVING_MILL);
+}
+
+void ProductionFinisher::FinishPottery(Settlement &settlement)
+{
+    settlement.AddBuilding(BuildingTypes::POTTERY);
 }
 
 void ProductionFinisher::FinishTailory(Settlement &settlement)

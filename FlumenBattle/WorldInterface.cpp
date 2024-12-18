@@ -285,7 +285,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     (
         {
             Size(480, 200), 
-            DrawOrder(6), 
+            DrawOrder(10), 
             {canvas}, 
             {false}, 
             Opacity(0.9f)
@@ -297,7 +297,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     (
         {
             Size(660, 420), 
-            DrawOrder(7), 
+            DrawOrder(10), 
             {canvas}, 
             {false}, 
             Opacity(0.9f)
@@ -311,7 +311,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     (
         {
             Size(720, 500), 
-            DrawOrder(7), 
+            DrawOrder(10), 
             {canvas}, 
             {false}, 
             Opacity(0.9f)
@@ -325,7 +325,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     sideButtonSet = ElementFactory::BuildElement <interface::SideButtonSet>
     (
         {
-            DrawOrder(7),
+            DrawOrder(10),
             {ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_CENTER, canvas}
         }
     );
@@ -339,7 +339,17 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
         });
     sideButtonSet->Enable();
 
-    static const auto MAXIMUM_ACTIVE_TILE_INFOS = 128;
+    static const auto MAXIMUM_ACTIVE_TILE_INFOS = [&] 
+    {
+        auto count = 1;
+
+        for(int i = 0; i <= RESOURCE_DISPLAY_DISTANCE; ++i)
+        {
+            count += i * 6;
+        }
+
+        return count;
+    } ();
 
     tileResourceInfos.Initialize(MAXIMUM_ACTIVE_TILE_INFOS);
 

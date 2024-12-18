@@ -56,6 +56,11 @@ struct Clay : public ResourceType
     Clay() : ResourceType(ResourceTypes::CLAY, "Clay", "Clay", 10) {IsProductionTileBased = true;}
 };
 
+struct Pottery : public ResourceType
+{
+    Pottery() : ResourceType(ResourceTypes::POTTERY, "Pottery", "Pottery", 50) {PopulationConsumption = 1; IsProductionTileBased = false;}
+};
+
 int Resource::GetPotentialProduction(const Settlement &settlement) const
 {
     return GetProductionFromBuildings(settlement) + GetProductionFromTiles(settlement);
@@ -310,6 +315,9 @@ void ResourceHandler::Initialize()
 
     static const auto clothing = Clothing();
     *resources.Add() = {&clothing};
+
+    static const auto pottery = Pottery();
+    *resources.Add() = {&pottery};
 }
 
 void ResourceHandler::ResetOrders()
@@ -400,5 +408,8 @@ const ResourceType *ResourceFactory::CreateType(ResourceTypes type)
     case ResourceTypes::CLOTHING:
         static const auto clothing = Clothing();
         return &clothing;
+    case ResourceTypes::POTTERY:
+        static const auto pottery = Pottery();
+        return &pottery;
     }
 }

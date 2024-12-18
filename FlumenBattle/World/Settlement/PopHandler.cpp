@@ -4,7 +4,7 @@
 
 using namespace world::settlement;
 
-static const auto HAPPINESS_DETERMINANT_COUNT = 3;
+static const auto HAPPINESS_DETERMINANT_COUNT = 4;
 
 void PopHandler::Initialize()
 {
@@ -14,6 +14,7 @@ void PopHandler::Initialize()
     *needs.Add() = {ResourceTypes::COOKED_FOOD, true};
     *needs.Add() = {ResourceTypes::FURNITURE, true};
     *needs.Add() = {ResourceTypes::CLOTHING, true};
+    *needs.Add() = {ResourceTypes::POTTERY, true};
 
     happiness = 0;
 
@@ -25,6 +26,7 @@ void PopHandler::PlaceOrders(Settlement &settlement)
     auto cookedFood = settlement.GetResource(ResourceTypes::COOKED_FOOD);
     auto rawFood = settlement.GetResource(ResourceTypes::FOOD);
     auto clothing = settlement.GetResource(ResourceTypes::CLOTHING);
+    auto pottery = settlement.GetResource(ResourceTypes::POTTERY);
 
     for(auto &need : needs)
     {
@@ -69,6 +71,14 @@ void PopHandler::PlaceOrders(Settlement &settlement)
 
         clothing->HasPopulationOrdered = true;
     }
+
+    consumption = settlement.GetPopulation() * pottery->Type->PopulationConsumption;
+    if(consumption <= pottery->Storage)
+    {
+        pottery->Order += consumption;
+
+        pottery->HasPopulationOrdered = true;
+    }
 }
 
 void PopHandler::UpdateNeeds(Settlement &settlement)
@@ -81,6 +91,7 @@ void PopHandler::UpdateNeeds(Settlement &settlement)
     auto cookedFood = settlement.GetResource(ResourceTypes::COOKED_FOOD);
     auto rawFood = settlement.GetResource(ResourceTypes::FOOD);
     auto clothing = settlement.GetResource(ResourceTypes::CLOTHING);
+    auto pottery = settlement.GetResource(ResourceTypes::POTTERY);
 
     if(cookedFood->HasPopulationOrdered == true)
     {
@@ -100,6 +111,13 @@ void PopHandler::UpdateNeeds(Settlement &settlement)
         needs.Find(ResourceTypes::CLOTHING)->IsMet = true;
 
         needs.Find(ResourceTypes::CLOTHING)->Satisfaction += 1;
+    }
+
+    if(pottery->HasPopulationOrdered == true)
+    {
+        needs.Find(ResourceTypes::POTTERY)->IsMet = true;
+
+        needs.Find(ResourceTypes::POTTERY)->Satisfaction += 1;
     }
 
     static const auto TICKS_PER_NEED_SATISFACTION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::TICKS_PER_NEED_SATISFACTION).Integer;

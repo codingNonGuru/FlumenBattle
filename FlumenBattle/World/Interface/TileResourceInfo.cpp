@@ -14,7 +14,7 @@ void TileResourceInfo::ResourceItem::HandleConfigure()
 {
     counter = ElementFactory::BuildElement <Counter>
     (
-        {drawOrder_ + 1, {Position2(8.0f, 8.0f), this}, {"WhiteDotBackdrop", false}}
+        {drawOrder_ + 1, {this}, {"WhiteDotBackdrop", false}}
     );
 }
 
@@ -30,7 +30,7 @@ void TileResourceInfo::ResourceItem::HandleUpdate()
 
     counter->Setup(Scale2(0.35f / zoomFactor), "Large");
 
-    counter->SetBasePosition(Position2(8.0f) / zoomFactor);
+    counter->SetBasePosition(Position2(6.0f) / zoomFactor);
 }
 
 void TileResourceInfo::ResourceItem::Setup(settlement::ResourceTypes resource)

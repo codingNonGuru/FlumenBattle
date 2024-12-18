@@ -26,7 +26,8 @@ namespace world::settlement
         MARKET,
         WEAVING_MILL,
         TAILORY,
-        KEEP
+        KEEP,
+        POTTERY
     };
 
     enum class BuildingTypes
@@ -44,7 +45,8 @@ namespace world::settlement
         MARKET,
         WEAVING_MILL,
         TAILORY,
-        KEEP
+        KEEP,
+        POTTERY
     };
 
     enum class AbundanceLevels
@@ -107,6 +109,7 @@ namespace world::settlement
         COOKED_FOOD,
         FABRIC,
         CLOTHING,
+        POTTERY,
         NONE
     };
 
