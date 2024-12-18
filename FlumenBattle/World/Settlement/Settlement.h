@@ -60,6 +60,8 @@ namespace world::settlement
         bool IsWorked;
 
         bool IsBuilt;
+
+        bool operator==(const world::WorldTile *otherTile) {return Tile == otherTile;}
     };
 
     struct Link
@@ -301,6 +303,8 @@ namespace world::settlement
         void HireWorker(Building *);
 
         void FireWorker(Building *);
+
+        void FireAllWorkers();
 
         void StrengthenPatrol();
 

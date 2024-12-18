@@ -131,6 +131,8 @@ namespace world
     public:
         Delegate OnResourceDisplayPressed;
 
+        Delegate OnWorkerPlaceModeToggled;
+
         void Initialize();
 
         void Update();

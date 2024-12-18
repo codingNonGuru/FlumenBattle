@@ -133,6 +133,8 @@ namespace world
 
         polity::Polity *GetPlayerPolity() const;
 
+        settlement::Settlement *GetPlayerSettlement() const;
+
         WorldMap * GetWorldMap() const {return worldMap;}
 
         container::Grid <WorldTile> &GetTiles() const;

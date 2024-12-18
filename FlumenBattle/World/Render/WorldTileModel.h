@@ -48,8 +48,6 @@ namespace world::render
 
         void RenderImprovements();
 
-        void RenderWorkers();
-
     public:
         void Initialize() override;
 

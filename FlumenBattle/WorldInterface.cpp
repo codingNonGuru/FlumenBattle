@@ -43,6 +43,7 @@
 #include "FlumenBattle/World/Interface/SideButtonSet.h"
 #include "FlumenBattle/World/Interface/Rule/RuleMenu.h"
 #include "FlumenBattle/World/Interface/TileResourceInfo.h"
+#include "FlumenBattle/World/Interface/InstructionInfo.h"
 
 using namespace world;
 
@@ -366,6 +367,15 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
 
         *tileResourceInfos.Add() = info;
     }
+
+    ElementFactory::BuildElement <interface::InstructionInfoSet> 
+    (
+        {
+            DrawOrder(5), 
+            {canvas}
+        },
+        64
+    );
 
     WorldController::Get()->OnResourceDisplayPressed += {this, &WorldInterface::HandleResourceDisplayPressed};
 

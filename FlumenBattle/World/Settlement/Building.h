@@ -53,6 +53,8 @@ namespace world::settlement
 
     class Building
     {
+        friend class BuildingManager;
+
         const BuildingType *type;
 
         int damagedCount {0};
@@ -145,6 +147,8 @@ namespace world::settlement
         void RemoveBuilding(Building &);
 
         void ApplyModifiers(Settlement &) const;
+
+        void RemovePersonnel();
 
         void Update();
 

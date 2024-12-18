@@ -737,6 +737,19 @@ void Settlement::FireWorker(Building *building)
     building->RemovePersonnel();
 }
 
+void Settlement::FireAllWorkers()
+{
+    buildingManager->RemovePersonnel();
+
+    for(auto &tile : tiles)
+    {
+        if(tile.Tile == GetLocation())
+            continue;
+
+        tile.IsWorked = false;
+    }
+}
+
 void Settlement::ProcessEarthquake(const disaster::Earthquake &earthquake)
 {
     BuildingDamager::DamageBuildings(earthquake, *buildingManager);

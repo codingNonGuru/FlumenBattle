@@ -402,6 +402,12 @@ namespace world
         if(WorldInterface::Get()->IsAnyMajorMenuEnabled() == true)
             return;
 
+        if(WorldScene::Get()->GetPlayerPolity() == nullptr)
+            return;
+
+        if(WorldScene::Get()->GetPlayerSettlement() == nullptr)
+            return;
+
         if(isWorkerPlaceModeActive)
         {
             isWorkerPlaceModeActive = false;
@@ -412,6 +418,8 @@ namespace world
 
             onWorkerPlaceModeEntered.Invoke();
         }
+
+        OnWorkerPlaceModeToggled.Invoke();
     }
 
     void WorldController::HandleCharacterSelected()

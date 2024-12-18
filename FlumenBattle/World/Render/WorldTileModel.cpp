@@ -670,29 +670,6 @@ void WorldTileModel::RenderImprovements()
     }
 }
 
-void WorldTileModel::RenderWorkers()
-{
-    if(WorldController::Get()->IsWorkerPlaceModeActive() == false)
-        return;
-
-    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
-
-    const auto playerSettlement = playerGroup->GetCurrentSettlement();
-    if(playerSettlement == nullptr)
-        return;
-
-    //const auto playerTile = playerGroup->GetTile();
-    //const auto &nearbyTiles = playerTile->GetNearbyTiles(3);
-
-    for(auto &tile : playerSettlement->GetTiles())
-    {
-        if(tile.IsWorked == false)
-            continue;
-
-        hammerSprite->Draw(camera, {tile.Tile->Position, Scale2(1.0f), Opacity(1.0f), DrawOrder(-2)});
-    }
-}
-
 void WorldTileModel::Render() 
 {
     static auto index = 0;
@@ -800,8 +777,6 @@ void WorldTileModel::Render()
     //RenderGroupSightings();
 
     RenderImprovements();
-
-    RenderWorkers();
 
     for(auto &group : *worldScene->groups)
     {

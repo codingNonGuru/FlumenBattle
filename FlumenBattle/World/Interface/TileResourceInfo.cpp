@@ -20,7 +20,8 @@ void TileResourceInfo::ResourceItem::HandleConfigure()
 
 void TileResourceInfo::ResourceItem::HandleUpdate() 
 {
-    auto zoomFactor = RenderManager::GetCamera(Cameras::WORLD)->GetZoomFactor();
+    static const auto camera = RenderManager::GetCamera(Cameras::WORLD);
+    auto zoomFactor = camera->GetZoomFactor();
 
     SetBasePosition(position / zoomFactor);
 

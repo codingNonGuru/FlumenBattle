@@ -10,6 +10,8 @@ namespace world::settlement
     enum class ProductionOptions;
     class Settlement;
     class Shipment;
+    class Building;
+    struct SettlementTile;
 }
 
 namespace world
@@ -24,6 +26,8 @@ namespace world::science
 
 namespace world::polity
 {
+    struct WorkInstruction;
+
     class HumanMind : public Mind, public core::Singleton <HumanMind>
     {
         friend class core::Singleton <HumanMind>;
@@ -48,15 +52,29 @@ namespace world::polity
 
         void HandleWorkerPlacement();
 
+        void UpdateSettlementWorkforce(settlement::Settlement *) const;
+
     public:
         Delegate OnProductionDecided;
 
         Delegate OnTradeShipment;
+
+        Delegate OnTileWorkerChanged;
 
         void ProcessProductionInput(settlement::ProductionOptions, settlement::Settlement *);
 
         void SetResearchTarget(science::Technologies);
 
         const settlement::Shipment &GetCurrentShipment();
+
+        void HireWorker(settlement::Settlement *, settlement::SettlementTile *);
+
+        void HireWorker(settlement::Settlement *, settlement::Building *);
+
+        void FireWorker(settlement::Settlement *, settlement::SettlementTile *);
+
+        void FireWorker(settlement::Settlement *, settlement::Building *);
+
+        const container::Pool <WorkInstruction> *GetSettlementInstructions() const;
     };
 }

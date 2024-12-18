@@ -684,4 +684,9 @@ namespace world
     {
         playerGroup->GetDomain();
     }
+
+    settlement::Settlement *WorldScene::GetPlayerSettlement() const
+    {
+        playerGroup->GetCurrentSettlement();
+    }
 }

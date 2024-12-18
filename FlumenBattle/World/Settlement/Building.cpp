@@ -372,6 +372,14 @@ void BuildingManager::ApplyModifiers(Settlement &settlement) const
     }
 }
 
+void BuildingManager::RemovePersonnel()
+{
+    for(auto &building : buildingSet.Get())
+    {
+        building.activePersonnelCount = 0;
+    }
+}
+
 void BuildingManager::Update()
 {
     for(auto &building : buildingSet.buildings)
