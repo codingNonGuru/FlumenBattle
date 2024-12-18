@@ -39,6 +39,8 @@ static const auto TRAVEL_MODE_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_T;
 
 static const auto SCREEN_GRAB_INPUT_KEY = SDL_Scancode::SDL_SCANCODE_LALT;
 
+static const auto RESOURCE_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_R, {InputHandler::CTRL}};
+
 static const auto FOOD_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_F, {InputHandler::CTRL}};
 
 static const auto TIMBER_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_T, {InputHandler::CTRL}};
@@ -80,7 +82,8 @@ namespace world
         InputHandler::RegisterContinualEvent(SDL_Scancode::SDL_SCANCODE_DOWN, {this, &WorldController::HandlePanDown});
         InputHandler::RegisterContinualEvent(SDL_Scancode::SDL_SCANCODE_RIGHT, {this, &WorldController::HandlePanRight});
         InputHandler::RegisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LEFT, {this, &WorldController::HandlePanLeft});
-        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_M, {this, &WorldController::HandleResourceDisplayPressed});
+        InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_M, {this, &WorldController::HandleMetalDisplayPressed});
+        InputHandler::RegisterEvent(RESOURCE_DISPLAY_KEY, {this, &WorldController::HandleResourceDisplayPressed});
         InputHandler::RegisterEvent(FOOD_DISPLAY_KEY, {this, &WorldController::HandleFoodDisplayPressed});
         InputHandler::RegisterEvent(TIMBER_DISPLAY_KEY, {this, &WorldController::HandleTimberDisplayPressed});
         InputHandler::RegisterEvent(FIBER_DISPLAY_KEY, {this, &WorldController::HandleFiberDisplayPressed});
@@ -318,6 +321,20 @@ namespace world
         {
             isResourceDisplayActive = true;
         }
+
+        OnResourceDisplayPressed.Invoke();
+    }
+
+    void WorldController::HandleMetalDisplayPressed()
+    {
+        if(isMetalDisplayActive)
+        {
+            isMetalDisplayActive = false;
+        }
+        else
+        {
+            isMetalDisplayActive = true;
+        }
     }
 
     void WorldController::HandleFoodDisplayPressed()
@@ -473,6 +490,7 @@ namespace world
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_RIGHT);
         InputHandler::UnregisterContinualEvent(SDL_Scancode::SDL_SCANCODE_LEFT);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_M);
+        InputHandler::UnregisterEvent(RESOURCE_DISPLAY_KEY);
         InputHandler::UnregisterEvent(FOOD_DISPLAY_KEY);
         InputHandler::UnregisterEvent(TIMBER_DISPLAY_KEY);
         InputHandler::UnregisterEvent(FIBER_DISPLAY_KEY);

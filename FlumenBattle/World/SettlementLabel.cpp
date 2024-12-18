@@ -371,7 +371,7 @@ void SettlementLabel::HandleUpdate()
     text << settlement->GetPopulation();
     populationLabel->Setup(text);
 
-    if(camera->GetZoomFactor() < 0.45f && IsSettlementHovered() == false)
+    if(camera->GetZoomFactor() < 0.7f && IsSettlementHovered() == false)
     {
         distanceRelatedBackdrop->Enable();
 

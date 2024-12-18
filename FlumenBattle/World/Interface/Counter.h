@@ -16,9 +16,13 @@ namespace world::interface
 
         Text *label;
 
-        const int *value {nullptr};
+        const int *valueSource {nullptr};
+
+        int value {0};
 
         Scale2 backdropScale;
+
+        float textScale {1.0f};
 
         void HandleConfigure() override;    
 
@@ -26,5 +30,11 @@ namespace world::interface
 
     public:
         void Setup(const int *, Scale2 = BACKDROP_SCALE, Word = DEFAULT_FONT_SIZE);
+
+        void Setup(int, Scale2 = BACKDROP_SCALE, Word = DEFAULT_FONT_SIZE);
+
+        void Setup(Scale2 = BACKDROP_SCALE, Word = DEFAULT_FONT_SIZE);
+
+        void SetTextScale(float scale) {textScale = scale;}
     };
 }

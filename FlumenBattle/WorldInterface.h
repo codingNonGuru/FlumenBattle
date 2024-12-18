@@ -38,6 +38,7 @@ namespace world
         class RecruitmentMenu;
         class WorkerPlaceCursor;
         class SideButtonSet;
+        class TileResourceInfo;
 
         namespace rule
         {
@@ -145,6 +146,8 @@ namespace world
 
         interface::SideButtonSet *sideButtonSet;
 
+        container::Array <interface::TileResourceInfo *> tileResourceInfos;
+
         void Update();
 
         void HandlePlayerEncounter();
@@ -190,6 +193,8 @@ namespace world
         void HandlePlayerConquest();
 
         void HandleRuleMenuPressed();
+
+        void HandleResourceDisplayPressed();
 
         WorldInterface();
 

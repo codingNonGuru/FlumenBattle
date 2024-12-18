@@ -743,7 +743,7 @@ void WorldTileModel::Render()
 
     RenderSettlements();
 
-    if(WorldController::Get()->ShouldDisplayResources() == true)
+    if(WorldController::Get()->ShouldDisplayMetal() == true)
     {
         auto map = worldScene->GetWorldMap();
         for(auto tile = map->GetTiles().GetStart(); tile != map->GetTiles().GetEnd(); ++tile)

@@ -42,6 +42,7 @@
 #include "FlumenBattle/World/Interface/WorkerPlaceCursor.h"
 #include "FlumenBattle/World/Interface/SideButtonSet.h"
 #include "FlumenBattle/World/Interface/Rule/RuleMenu.h"
+#include "FlumenBattle/World/Interface/TileResourceInfo.h"
 
 using namespace world;
 
@@ -59,6 +60,10 @@ auto popupTimestamp = std::chrono::steady_clock::now();
 
 #define TIME_BETWEEN_FADING_POPUPS 300
 
+#define SETTLEMENT_LABEL_ZOOM_LIMIT 1.5f
+
+#define RESOURCE_DISPLAY_DISTANCE 5
+
 static auto majorCentralMenus = container::Array <Element *> (32);
 
 WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
@@ -67,7 +72,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     canvas->SetInteractivity(true);
 
     decisionMenu = ElementFactory::BuildElement <WorldDecisionMenu>(
-        {Size(1080, 220), DrawOrder(6), {Position2(0.0f, -5.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, canvas}, {false}, Opacity(0.75f)}
+        {Size(1080, 220), DrawOrder(10), {Position2(0.0f, -5.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, canvas}, {false}, Opacity(0.75f)}
     );
     decisionMenu->Enable();
 
@@ -81,14 +86,14 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     );
 
     engageMenu = ElementFactory::BuildElement <GroupEngageMenu>(
-        {Size(900, 360), DrawOrder(6), {Position2(0.0f, -5.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, canvas}, {false}, Opacity(0.75f)}
+        {Size(900, 360), DrawOrder(10), {Position2(0.0f, -5.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, canvas}, {false}, Opacity(0.75f)}
     );
 
     inventoryMenu = ElementFactory::BuildElement <interface::InventoryMenu>
     (
         {
             Size(480, 540), 
-            DrawOrder(7), 
+            DrawOrder(12), 
             {canvas}, 
             {false}, 
             Opacity(0.9f)
@@ -100,7 +105,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     (
         {
             Size(480, 540), 
-            DrawOrder(7), 
+            DrawOrder(12), 
             {canvas}, 
             {false}, 
             Opacity(0.9f)
@@ -112,7 +117,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     (
         {
             Size(480, 540), 
-            DrawOrder(7), 
+            DrawOrder(12), 
             {canvas}, 
             {false}, 
             Opacity(0.9f)
@@ -124,7 +129,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     (
         {
             Size(320, 400), 
-            DrawOrder(6), 
+            DrawOrder(10), 
             {Position2(5.0f, -5.0f), ElementAnchors::LOWER_LEFT, ElementPivots::LOWER_LEFT, canvas}, 
             {false}, 
             Opacity(0.9f)
@@ -135,7 +140,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     (
         {
             Size(320, 400), 
-            DrawOrder(6), 
+            DrawOrder(10), 
             {Position2(-5.0f, -5.0f), ElementAnchors::LOWER_RIGHT, ElementPivots::LOWER_RIGHT, canvas}, 
             {false}, 
             Opacity(0.9f)
@@ -214,7 +219,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     groupHoverInfo = ElementFactory::BuildElement <interface::GroupHoverInfo>
     (
         {
-            DrawOrder(5),
+            DrawOrder(10),
             {ElementAnchors::MIDDLE_CENTER, ElementPivots::UPPER_CENTER, canvas},
             {false},
             Opacity(0.7f)
@@ -225,7 +230,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     (
         {
             Size(480, 200), 
-            DrawOrder(6), 
+            DrawOrder(10), 
             {canvas}, 
             {false}, 
             Opacity(0.9f)
@@ -333,6 +338,26 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
             {MajorMenus::CAMP, nullptr}
         });
     sideButtonSet->Enable();
+
+    static const auto MAXIMUM_ACTIVE_TILE_INFOS = 128;
+
+    tileResourceInfos.Initialize(MAXIMUM_ACTIVE_TILE_INFOS);
+
+    for(int i = 0; i < tileResourceInfos.GetCapacity(); ++i)
+    {
+        auto info = ElementFactory::BuildElement <interface::TileResourceInfo>
+        (
+            {
+                DrawOrder(5), 
+                {canvas}
+            }
+        );
+        info->Disable();
+
+        *tileResourceInfos.Add() = info;
+    }
+
+    WorldController::Get()->OnResourceDisplayPressed += {this, &WorldInterface::HandleResourceDisplayPressed};
 
     group::HumanMind::Get()->OnSpottingHovered += {this, &WorldInterface::HandleSpottingHovered};
 
@@ -501,6 +526,34 @@ void WorldInterface::HandleInventoryPressed()
         {
             questMenu->Disable();
         }
+    }
+}
+
+void WorldInterface::HandleResourceDisplayPressed()
+{
+    if(WorldController::Get()->ShouldDisplayResources() == false)
+    {
+        for(auto &info : tileResourceInfos)
+        {
+            info->Disable();
+        }
+
+        return;
+    }
+
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+    auto playerTile = playerGroup->GetTile();
+
+    auto nearbyTiles = playerTile->GetNearbyTiles(RESOURCE_DISPLAY_DISTANCE);
+
+    auto info = tileResourceInfos.GetStart();
+    for(auto &tile : nearbyTiles.Tiles)
+    {
+        (*info)->Setup(tile);
+        (*info)->Enable();
+
+        info++;
     }
 }
 
@@ -720,7 +773,7 @@ void WorldInterface::Update()
 {
     auto camera = RenderManager::GetCamera(Cameras::WORLD);
 
-    if(camera->GetZoomFactor() > 1.0f)
+    if(camera->GetZoomFactor() > SETTLEMENT_LABEL_ZOOM_LIMIT || WorldController::Get()->ShouldDisplayResources() == true)
     {
         for(auto label = settlementLabels.GetStart(); label != settlementLabels.GetEnd(); label++)
         {

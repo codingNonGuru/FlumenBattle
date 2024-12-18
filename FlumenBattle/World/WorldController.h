@@ -37,6 +37,8 @@ namespace world
 
         bool isResourceDisplayActive {false};
 
+        bool isMetalDisplayActive {false};
+
         bool isFoodDisplayActive {false};
 
         bool isTimberDisplayActive {false};
@@ -96,6 +98,8 @@ namespace world
 
         void HandleResourceDisplayPressed();
 
+        void HandleMetalDisplayPressed();
+
         void HandleFoodDisplayPressed();
 
         void HandleTimberDisplayPressed();
@@ -125,6 +129,8 @@ namespace world
         CharacterSelection GetSelectionData() const {return characterSelection;}
 
     public:
+        Delegate OnResourceDisplayPressed;
+
         void Initialize();
 
         void Update();
@@ -162,6 +168,8 @@ namespace world
         void BuyFood();
 
         bool ShouldDisplayResources() const {return isResourceDisplayActive;}
+
+        bool ShouldDisplayMetal() const {return isMetalDisplayActive;}
 
         bool ShouldDisplayNearbyFood() const {return isFoodDisplayActive;}
 
