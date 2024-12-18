@@ -21,6 +21,8 @@ namespace world::interface::rule
 
         Text *nameLabel;
 
+        Text *workerLabel;
+
         BuildingItem *hoveredItem {nullptr};
 
         const settlement::Building *building;

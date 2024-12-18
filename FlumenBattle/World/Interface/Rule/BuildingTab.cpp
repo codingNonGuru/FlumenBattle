@@ -14,6 +14,7 @@
 #include "FlumenBattle/World/Interface/Rule/ProductionDecisionInterface.h"
 #include "FlumenBattle/Race.h"
 #include "FlumenBattle/Config.h"
+#include "FlumenBattle/World/Polity/HumanMind.h"
 
 using namespace world::interface::rule;
 
@@ -99,9 +100,9 @@ void BuildingItem::HandleLeftClick()
     if(building == nullptr)
         return;
 
-    static const auto ruleMenu = WorldInterface::Get()->GetRuleMenu();
+    //ruleMenu->GetCurrentSettlement()->HireWorker(building);
 
-    ruleMenu->GetCurrentSettlement()->HireWorker(building);
+    polity::HumanMind::Get()->ChangeBuildingWorkforce(building, true);
 }
 
 void BuildingItem::HandleRightClick()
@@ -109,9 +110,9 @@ void BuildingItem::HandleRightClick()
     if(building == nullptr)
         return;
 
-    static const auto ruleMenu = WorldInterface::Get()->GetRuleMenu();
+    //ruleMenu->GetCurrentSettlement()->FireWorker(building);
 
-    ruleMenu->GetCurrentSettlement()->FireWorker(building);
+    polity::HumanMind::Get()->ChangeBuildingWorkforce(building, false);
 }
 
 void BuildingItem::Setup(settlement::Building *building, BuildingTab *tab)

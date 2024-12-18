@@ -112,14 +112,18 @@ void HumanMind::UpdateSettlementWorkforce(settlement::Settlement *settlement) co
 
         if(instruction->PlaceType == WorkInstruction::BUILDING)
         {
-            instruction->Place.Building->AddPersonnel();
+            auto hasHired = settlement->HireWorker(instruction->Place.Building);
+            if(hasHired == true)
+            {
+                freeWorkerCount--;
+            }
         }
         else if(instruction->PlaceType == WorkInstruction::TILE)
         {
             instruction->Place.Tile->IsWorked = true;
-        }
 
-        freeWorkerCount--;
+            freeWorkerCount--;
+        }
     }
 }
 
@@ -248,7 +252,7 @@ void HumanMind::HireWorker(settlement::Settlement *settlement, settlement::Build
     int priority = instructionSet->instructions.GetSize();
     auto instruction = instructionSet->instructions.Add();
 
-    *instruction = {priority, WorkInstruction::TILE, {building}};
+    *instruction = {priority, WorkInstruction::BUILDING, {building}};
 }
 
 void HumanMind::FireWorker(settlement::Settlement *settlement, settlement::SettlementTile *tile)
@@ -285,6 +289,41 @@ void HumanMind::FireWorker(settlement::Settlement *settlement, settlement::Build
     }
 
     instructionSet->instructions.RemoveAt(instruction);
+}
+
+void HumanMind::ChangeBuildingWorkforce(settlement::Building *building, bool isHiring)
+{
+    if(building->GetOutputResource().Resource == world::settlement::ResourceTypes::NONE)
+        return;
+
+    auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
+
+    auto instructionSet = workInstructionSets.Find(playerSettlement);
+    if(instructionSet == nullptr)
+    {
+        instructionSet = workInstructionSets.Add();
+        instructionSet->settlement = playerSettlement;
+        instructionSet->instructions.Reset();
+    }
+
+    auto plannedEmployeeCount = instructionSet->instructions.GetCount(building);
+
+    if(isHiring == true)
+    {
+        if(plannedEmployeeCount < building->GetAmount())
+        {
+            HireWorker(playerSettlement, building);
+        }
+    }
+    else
+    {
+        if(plannedEmployeeCount > 0)
+        {
+            FireWorker(playerSettlement, building);
+        }
+    }
+
+    UpdateSettlementWorkforce(playerSettlement);
 }
 
 const container::Pool <WorkInstruction> *HumanMind::GetSettlementInstructions() const

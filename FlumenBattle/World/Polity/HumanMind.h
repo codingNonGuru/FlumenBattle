@@ -54,6 +54,14 @@ namespace world::polity
 
         void UpdateSettlementWorkforce(settlement::Settlement *) const;
 
+        void HireWorker(settlement::Settlement *, settlement::SettlementTile *);
+
+        void HireWorker(settlement::Settlement *, settlement::Building *);
+
+        void FireWorker(settlement::Settlement *, settlement::SettlementTile *);
+
+        void FireWorker(settlement::Settlement *, settlement::Building *);
+
     public:
         Delegate OnProductionDecided;
 
@@ -67,13 +75,7 @@ namespace world::polity
 
         const settlement::Shipment &GetCurrentShipment();
 
-        void HireWorker(settlement::Settlement *, settlement::SettlementTile *);
-
-        void HireWorker(settlement::Settlement *, settlement::Building *);
-
-        void FireWorker(settlement::Settlement *, settlement::SettlementTile *);
-
-        void FireWorker(settlement::Settlement *, settlement::Building *);
+        void ChangeBuildingWorkforce(settlement::Building *, bool);
 
         const container::Pool <WorkInstruction> *GetSettlementInstructions() const;
     };

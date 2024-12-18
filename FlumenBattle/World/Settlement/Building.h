@@ -105,6 +105,10 @@ namespace world::settlement
         void Damage() {damagedCount++;}
 
         void Repair() {damagedCount--;}
+
+        bool DoesFullyEmploy() const {return activePersonnelCount == amount;}
+
+        bool DoesEmployAnyone() const {return activePersonnelCount != 0;}
     };
 
     class BuildingSet

@@ -300,9 +300,7 @@ namespace world::settlement
 
         void AddBuilding(BuildingTypes);
 
-        void HireWorker(Building *);
-
-        void FireWorker(Building *);
+        bool HireWorker(Building *);
 
         void FireAllWorkers();
 

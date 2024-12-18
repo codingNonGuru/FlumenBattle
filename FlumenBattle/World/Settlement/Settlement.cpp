@@ -712,29 +712,20 @@ void Settlement::AddBuilding(BuildingTypes type)
     buildingManager->AddBuilding(type);
 }
 
-void Settlement::HireWorker(Building *building)
+bool Settlement::HireWorker(Building *building)
 {
     if(building->GetOutputResource().Resource == world::settlement::ResourceTypes::NONE)
-        return;
+        return false;
 
     if(building->GetAmount() == building->GetPersonnelCount())
-        return;
+        return false;
 
     if(GetFreeWorkerCount() == 0)
-        return;
+        return false;
 
     building->AddPersonnel();
-}
 
-void Settlement::FireWorker(Building *building)
-{
-    if(building->GetOutputResource().Resource == world::settlement::ResourceTypes::NONE)
-        return;
-
-    if(building->GetPersonnelCount() == 0)
-        return;
-
-    building->RemovePersonnel();
+    return true;
 }
 
 void Settlement::FireAllWorkers()

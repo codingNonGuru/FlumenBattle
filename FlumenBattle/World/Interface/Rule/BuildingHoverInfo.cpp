@@ -5,6 +5,8 @@
 #include "BuildingHoverInfo.h"
 #include "FlumenBattle/World/Interface/Rule/BuildingTab.h"
 #include "FlumenBattle/World/Settlement/Building.h"
+#include "FlumenBattle/World/Polity/HumanMind.h"
+#include "FlumenBattle/World/Polity/WorkInstruction.h"
 
 static const auto BORDER_COLOR = Color::RED * 0.25f;
 
@@ -36,9 +38,14 @@ void BuildingHoverInfo::HandleConfigure()
 
     nameLabel = ElementFactory::BuildText(
         {drawOrder_ + 1, {NAME_LABEL_OFFSET, ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}}, 
-        {{"Small"}, TEXT_COLOR, "Item"}
+        {{"Small"}, TEXT_COLOR}
     );
     nameLabel->Enable();
+
+    workerLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, nameLabel}}, 
+        {{"VerySmall"}, TEXT_COLOR}
+    );
 
     FollowMouse(MOUSE_FOLLOW_OFFSET);
 
@@ -64,10 +71,60 @@ void BuildingHoverInfo::HandleUpdate()
         return;
     }
 
-    Word text = building->GetName();
+    auto text = LongWord() << building->GetName();
     nameLabel->Setup(text);
 
-    auto textWidth = nameLabel->GetSize().x + 10;
+    auto instructions = polity::HumanMind::Get()->GetSettlementInstructions();
+    if(instructions == nullptr)
+    {
+        workerLabel->Disable();
+    }
+    else
+    {
+        text = "Worker priorities:\n";
+
+        auto i = 0;
+        for(auto &instruction : *instructions)
+        {
+            if(i != 0)
+            {
+                text << ", ";
+            }
+
+            if(instruction.PlaceType != polity::WorkInstruction::BUILDING)
+                continue;
+
+            if(instruction.Place.Building != building)
+                continue;
+
+            text << instruction.Priority + 1;
+
+            i++;
+        }
+
+        if(i != 0)
+        {
+            workerLabel->Setup(text);
+            workerLabel->Enable();
+        }
+        else
+        {
+            workerLabel->Disable();
+        }
+    }
+
+    if(workerLabel->IsLocallyActive() == true)
+    {
+        size_.y = nameLabel->GetHeight() + workerLabel->GetHeight() + NAME_LABEL_OFFSET.y * 2.0f;
+    }
+    else
+    {
+        size_.y = nameLabel->GetHeight() + NAME_LABEL_OFFSET.y * 2.0f;
+    }
+
+    auto textWidth = workerLabel->IsLocallyActive() == true ? workerLabel->GetWidth() : nameLabel->GetWidth();
+    textWidth += 10;
+
     if(textWidth > BASE_SIZE.x)
     {
         size_.x = textWidth;
@@ -76,8 +133,6 @@ void BuildingHoverInfo::HandleUpdate()
     {
         size_.x = BASE_SIZE.x;
     }
-
-    size_.y = nameLabel->GetSize().y + NAME_LABEL_OFFSET.y * 2.0f;
 
     border->GetSize() = size_;
 }
