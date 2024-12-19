@@ -351,6 +351,8 @@ void Polity::Decide()
 
     DecideResearch();
 
+    controller->DecideBorders(*this);
+
     controller->MakeDecision(*this);
 
     controller->ProcessTrade(*this);

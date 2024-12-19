@@ -221,81 +221,7 @@ world::WorldTile * Settlement::FindColonySpot()
 
 void Settlement::GrowBorders() 
 {
-    if(tiles.GetSize() == tiles.GetCapacity())
-        return;
 
-    if(areNearbyTilesTaken == true)
-        return;
-
-    static std::mutex mutex;
-
-    mutex.lock();
-
-    auto findNewTileInRing = [this] (int distance) -> WorldTile *
-    {
-        auto tileRing = location->GetTileRing(distance);
-
-        auto findNewTile = [this, &tileRing] (world::WorldBiomes biomeType) -> WorldTile *
-        {
-            for(auto &tile : tileRing)
-            {
-                if(tile->IsOwned())
-                    continue;
-
-                if(tile->Biome->Type != biomeType)
-                    continue;
-
-                return tile;
-            }    
-            return nullptr;
-        };
-
-        auto newTile = findNewTile(world::WorldBiomes::STEPPE);
-        if(newTile == nullptr)
-        {
-            newTile = findNewTile(world::WorldBiomes::WOODS);
-            if(newTile == nullptr)
-            {
-                newTile = findNewTile(world::WorldBiomes::DESERT);
-                if(newTile == nullptr)
-                {
-                    newTile = findNewTile(world::WorldBiomes::MARINE);
-                }
-            }
-        }
-
-        return newTile;
-    };
-
-    auto newTile = findNewTileInRing(2);
-    if(newTile != nullptr)
-    {
-        auto tile = tiles.Add();
-        tile->Tile = newTile;
-        tile->IsWorked = false;
-        tile->IsBuilt = false;
-
-        newTile->AssertOwnership(this);
-    }
-    else
-    {
-        newTile = findNewTileInRing(3);
-        if(newTile != nullptr)
-        {
-            auto tile = tiles.Add();
-            tile->Tile = newTile;
-            tile->IsWorked = false;
-            tile->IsBuilt = false;
-
-            newTile->AssertOwnership(this);
-        }
-        else
-        {
-            areNearbyTilesTaken = true;
-        }
-    }
-
-    mutex.unlock();
 }
 
 struct NecessityMap
@@ -473,6 +399,11 @@ Integer Settlement::GetScienceProduction() const
     production += GetModifier(Modifiers::SCIENCE_PRODUCTION);
 
     return production;
+}
+
+bool Settlement::CanGrowBorders() const
+{
+    return cultureGrowth == BORDER_GROWTH_THRESHOLD;
 }
 
 Integer Settlement::GetWorkedTiles() const
@@ -838,11 +769,9 @@ void Settlement::Update()
     cultureGrowth++;
     if(cultureGrowth >= BORDER_GROWTH_THRESHOLD)
     {
-        cultureGrowth = 0;
+        cultureGrowth = BORDER_GROWTH_THRESHOLD;
 
-        needsToReorganizeWork = true;
-
-        GrowBorders();
+        //needsToReorganizeWork = true;
     }
 
     if(foodSecurity == AbundanceLevels::LACKING || foodSecurity == AbundanceLevels::SORELY_LACKING)

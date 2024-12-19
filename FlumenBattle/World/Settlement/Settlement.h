@@ -198,6 +198,8 @@ namespace world::settlement
 
         Integer GetScienceProduction() const;
 
+        bool CanGrowBorders() const;
+
         Integer GetPopulation() const {return population;}
 
         PopHandler &GetPopulationHandler() {return popHandler;}
