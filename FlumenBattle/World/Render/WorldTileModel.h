@@ -48,6 +48,8 @@ namespace world::render
 
         void RenderImprovements();
 
+        void RenderBorderExpansionMap();
+
     public:
         void Initialize() override;
 

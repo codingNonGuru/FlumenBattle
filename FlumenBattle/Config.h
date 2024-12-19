@@ -35,5 +35,6 @@ namespace game
         static constexpr auto HAPPINESS_THRESHOLD = "HAPPINESS_THRESHOLD";
         static constexpr auto ECSTASY_THRESHOLD = "ECSTASY_THRESHOLD";
         static constexpr auto MAXIMUM_PATHS_PER_SETTLEMENT = "MAXIMUM_PATHS_PER_SETTLEMENT";
+        static constexpr auto BORDER_EXPANSION_MAX_DISTANCE = "BORDER_EXPANSION_MAX_DISTANCE";
     };
 }

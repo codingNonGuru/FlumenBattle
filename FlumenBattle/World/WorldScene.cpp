@@ -5,6 +5,7 @@
 
 #include "FlumenEngine/Core/InputHandler.hpp"
 #include "FlumenEngine/Thread/ThreadManager.h"
+#include "FlumenEngine/Core/Engine.hpp"
 
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/WorldInterface.h"
@@ -54,7 +55,12 @@ namespace world
 
         WorldInterface::Get()->Initialize();
 
-        group::HumanMind::Get()->Enable();        
+        group::HumanMind::Get()->Enable();      
+
+        Engine::OnLoopCycleEnded += [] 
+        {
+            WorldScene::Get()->ownershipChangeQueue.Reset();
+        };
     }
 
     void WorldScene::SpeedUpTime()
@@ -76,7 +82,7 @@ namespace world
 
         OnUpdateStarted.Invoke();
 
-        ownershipChangeQueue.Reset();
+        //ownershipChangeQueue.Reset();
 
         auto refreshCount = time.FlowSpeed == 5 ? 2 : 1;
         for(int i = 0; i < refreshCount; ++i)

@@ -200,6 +200,12 @@ namespace world::settlement
 
         bool CanGrowBorders() const;
 
+        bool CanExpandHere(WorldTile *) const;
+
+        int GetExpansionCost(WorldTile *) const;
+
+        bool CanAffordToExpandHere(WorldTile *) const;
+
         Integer GetPopulation() const {return population;}
 
         PopHandler &GetPopulationHandler() {return popHandler;}

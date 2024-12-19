@@ -52,12 +52,16 @@ void HumanMind::EnableInput()
 {
     static const auto canvas = WorldInterface::Get()->GetCanvas();
     canvas->GetLeftClickEvents() += {this, &HumanMind::HandleWorkerPlacement};
+
+    canvas->GetLeftClickEvents() += {this, &HumanMind::HandleBorderExpansion};
 }
 
 void HumanMind::DisableInput()
 {
     static const auto canvas = WorldInterface::Get()->GetCanvas();
     canvas->GetLeftClickEvents() -= {this, &HumanMind::HandleWorkerPlacement};
+
+    canvas->GetLeftClickEvents() -= {this, &HumanMind::HandleBorderExpansion};
 }
 
 void HumanMind::MakeDecision(Polity &polity) const
@@ -201,6 +205,30 @@ void HumanMind::HandleWorkerPlacement()
     OnTileWorkerChanged.Invoke();
 }
 
+void HumanMind::HandleBorderExpansion()
+{
+    if(WorldController::Get()->IsBorderExpandActive() == false)
+        return;
+
+    const auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
+
+    const auto hoveredTile = WorldController::Get()->GetHoveredTile();
+    if(playerSettlement->CanExpandHere(hoveredTile) == false)
+        return;
+
+    if(playerSettlement->CanAffordToExpandHere(hoveredTile) == false)
+        return;
+
+    hoveredTile->AssertOwnership(playerSettlement);
+
+    auto newTile = playerSettlement->tiles.Add();
+    newTile->Tile = hoveredTile;
+    newTile->IsBuilt = false;
+    newTile->IsWorked = false;
+
+    playerSettlement->cultureGrowth -= playerSettlement->GetExpansionCost(hoveredTile);
+}
+
 settlement::Shipment currentShipment;
 
 void HumanMind::ProcessTrade(Polity &polity) const
@@ -216,6 +244,10 @@ void HumanMind::ProcessTrade(Polity &polity) const
             OnTradeShipment.Invoke();
         }
     }
+}
+
+void HumanMind::DecideBorders(Polity &polity) const
+{
 }
 
 const settlement::Shipment &HumanMind::GetCurrentShipment()

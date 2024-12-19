@@ -29,7 +29,7 @@
 
 using namespace world::settlement;
 
-#define BORDER_GROWTH_THRESHOLD 400
+#define BORDER_GROWTH_THRESHOLD 1000
 
 bool Link::operator== (const settlement::Path &path) const 
 {
@@ -404,6 +404,61 @@ Integer Settlement::GetScienceProduction() const
 bool Settlement::CanGrowBorders() const
 {
     return cultureGrowth == BORDER_GROWTH_THRESHOLD;
+}
+
+bool Settlement::CanExpandHere(WorldTile *tile) const
+{
+    if(tile->IsOwned() == true)
+        return false;
+
+    static const auto BORDER_EXPANSION_MAX_DISTANCE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::BORDER_EXPANSION_MAX_DISTANCE).Integer;
+
+    if(GetLocation()->GetDistanceTo(*tile) > BORDER_EXPANSION_MAX_DISTANCE)
+        return false;
+
+    bool hasAtLeastOneNeighbour = false;
+
+    auto nearbyTiles = tile->GetNearbyTiles();
+    for(auto &neighbour : nearbyTiles)
+    {
+        if(neighbour->GetOwner() == this)
+        {
+            hasAtLeastOneNeighbour = true;
+            break;
+        }
+    }
+
+    if(hasAtLeastOneNeighbour == false)
+        return false;
+
+    return true;
+}
+
+int Settlement::GetExpansionCost(WorldTile *tile) const
+{
+    auto distance = GetLocation()->GetDistanceTo(*tile);
+
+    if(distance == 0)
+    {
+        return 0;
+    }
+    else if(distance == 1)
+    {
+        return 400;
+    }
+    else if(distance == 2)
+    {
+        return 700;
+    }
+    else if(distance >= 3)
+    {
+        return 700 + (distance - 2) * 200;
+    }
+}
+
+bool Settlement::CanAffordToExpandHere(WorldTile *tile) const
+{
+    return cultureGrowth >= GetExpansionCost(tile);
 }
 
 Integer Settlement::GetWorkedTiles() const

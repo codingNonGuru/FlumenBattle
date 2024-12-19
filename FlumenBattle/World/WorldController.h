@@ -51,6 +51,8 @@ namespace world
 
         bool isTravelPlanActive {false};
 
+        bool isBorderExpandActive {false};
+
         bool canColonize {true};
 
         struct CharacterSelection
@@ -121,6 +123,8 @@ namespace world
         void HandleSettlementExited();
 
         void HandleRuleMenuPressed();
+        
+        void HandleBorderExpandPressed();
 
         void EnableHardInput();
 
@@ -186,6 +190,8 @@ namespace world
         bool CanColonize() const {return canColonize;}
 
         bool IsTravelPlanActive() const {return isTravelPlanActive;}
+
+        bool IsBorderExpandActive() const {return isBorderExpandActive;}
 
         utility::PathData <WorldTile> GetPlannedPath() const;
 

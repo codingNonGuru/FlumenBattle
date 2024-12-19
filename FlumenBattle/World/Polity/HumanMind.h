@@ -50,9 +50,11 @@ namespace world::polity
 
         virtual void ProcessTrade(Polity &) const override;
 
-        virtual void DecideBorders(Polity &) const override {}
+        virtual void DecideBorders(Polity &) const override;
 
         void HandleWorkerPlacement();
+
+        void HandleBorderExpansion();
 
         void UpdateSettlementWorkforce(settlement::Settlement *) const;
 

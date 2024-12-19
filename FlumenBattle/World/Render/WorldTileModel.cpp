@@ -670,6 +670,69 @@ void WorldTileModel::RenderImprovements()
     }
 }
 
+void WorldTileModel::RenderBorderExpansionMap()
+{
+    if(WorldController::Get()->IsBorderExpandActive() == false)
+        return;
+
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    const auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
+
+    static const auto BORDER_EXPANSION_MAX_DISTANCE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::BORDER_EXPANSION_MAX_DISTANCE).Integer;
+
+    const auto playerTile = playerGroup->GetTile();
+    const auto &nearbyTiles = playerTile->GetNearbyTiles(BORDER_EXPANSION_MAX_DISTANCE);
+
+    shader->Bind();
+
+    shader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	shader->SetConstant(0.0f, "depth");
+
+    shader->SetConstant(0.7f, "opacity");
+
+    shader->SetConstant(WORLD_TILE_SIZE, "hexSize");
+
+    for(auto &tile : nearbyTiles.Tiles)
+    {
+        if(tile->IsOwned() == true)
+            continue;
+
+        auto color = [&]
+        {
+            bool hasAtLeastOneNeighbour = false;
+
+            auto immediateNeighbours = tile->GetNearbyTiles();
+            for(auto &neighbour : immediateNeighbours)
+            {
+                if(neighbour->GetOwner() == playerSettlement)
+                {
+                    hasAtLeastOneNeighbour = true;
+                    break;
+                }
+            }
+
+            if(hasAtLeastOneNeighbour == true)
+            {
+                if(playerSettlement->CanAffordToExpandHere(tile) == true)
+                    return Color::GREEN;
+                else
+                    return Color::YELLOW;
+            }
+            else
+                return Color::RED;
+        } ();
+
+        shader->SetConstant(tile->Position, "hexPosition");
+
+        shader->SetConstant(color, "color");
+
+        glDrawArrays(GL_TRIANGLES, 0, 18);
+    }
+
+    shader->Unbind();
+}
+
 void WorldTileModel::Render() 
 {
     static auto index = 0;
@@ -777,6 +840,8 @@ void WorldTileModel::Render()
     //RenderGroupSightings();
 
     RenderImprovements();
+
+    RenderBorderExpansionMap();
 
     for(auto &group : *worldScene->groups)
     {
