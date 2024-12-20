@@ -169,6 +169,14 @@ void HoverExtension::HandleConfigure()
     growthLabel->Enable();
     basePosition.y += 20.0f;
 
+    cultureLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
+        {{"Small"}, color, "Culture "}
+    );
+    cultureLabel->SetAlignment(Text::Alignments::LEFT);
+    cultureLabel->Enable();
+    basePosition.y += 20.0f;
+
     simulationLabel = ElementFactory::BuildText(
         {drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
         {{"Small"}, color, "Growth "}
@@ -178,10 +186,16 @@ void HoverExtension::HandleConfigure()
     basePosition.y += 20.0f;
 
     growthProgress = ElementFactory::BuildProgressBar <ProgressBar>(
-        {Size(96, 16), drawOrder_ + 1, {ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, growthLabel}, {"BaseBar", true}},
-        {"BaseFillerRed", {6.0f, 8.0f}}
+        {Size(96, 20), drawOrder_ + 1, {ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, growthLabel}, {"BaseBar", true}},
+        {"BaseFillerRed", {6.0f, 6.0f}}
     );
     growthProgress->Enable();
+
+    cultureProgress = ElementFactory::BuildProgressBar <ProgressBar>(
+        {Size(96, 20), drawOrder_ + 1, {ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, cultureLabel}, {"BaseBar", true}},
+        {"BaseFillerPurple", {6.0f, 6.0f}}
+    );
+    cultureProgress->Enable();
 
     industryLabel = ElementFactory::BuildText(
         {drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
@@ -395,6 +409,8 @@ void HoverExtension::HandleUpdate()
     growthLabel->Setup(text);
 
     growthProgress->SetProgress(settlement->GetGrowthRatio());
+
+    cultureProgress->SetProgress(settlement->GetCultureProgress());
 
     text = "Sim: ";
     text << (int)settlement->GetSimulationLevel() << ", " << (int)settlement->HasAvailableColonySpots();

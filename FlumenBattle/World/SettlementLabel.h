@@ -67,6 +67,10 @@ namespace world::settlement
 
         ProgressBar *growthProgress;
 
+        Text *cultureLabel;
+
+        ProgressBar *cultureProgress;
+
         Text * industryLabel;
 
         Text * tileLabel;

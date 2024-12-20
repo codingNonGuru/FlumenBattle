@@ -206,6 +206,8 @@ namespace world::settlement
 
         bool CanAffordToExpandHere(WorldTile *) const;
 
+        float GetCultureProgress() const;
+
         Integer GetPopulation() const {return population;}
 
         PopHandler &GetPopulationHandler() {return popHandler;}

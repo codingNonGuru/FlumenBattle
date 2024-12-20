@@ -461,6 +461,11 @@ bool Settlement::CanAffordToExpandHere(WorldTile *tile) const
     return cultureGrowth >= GetExpansionCost(tile);
 }
 
+float Settlement::GetCultureProgress() const
+{
+    return (float)cultureGrowth / (float)BORDER_GROWTH_THRESHOLD;
+}
+
 Integer Settlement::GetWorkedTiles() const
 {
     auto tileCount = 0;
