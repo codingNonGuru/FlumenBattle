@@ -149,5 +149,7 @@ namespace world::polity
         void MarkForDeletion();
 
         bool ShouldBeDeleted() const {return isValid == false && turnsUntilDeletion == 0;}
+
+        void RegisterPopIncrease(settlement::Settlement *);
     };
 }

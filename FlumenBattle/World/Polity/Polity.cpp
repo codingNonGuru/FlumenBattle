@@ -427,3 +427,8 @@ void Polity::MarkForDeletion()
 
     turnsUntilDeletion = 3;
 }
+
+void Polity::RegisterPopIncrease(settlement::Settlement *settlement)
+{
+    controller->RegisterPopIncrease(settlement);
+}

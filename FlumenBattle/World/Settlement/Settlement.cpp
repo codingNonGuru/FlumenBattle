@@ -820,6 +820,8 @@ void Settlement::Update()
         population++;
 
         needsToReorganizeWork = true;
+
+        polity->RegisterPopIncrease(this);
     }
     else if(growth < 0)
     {

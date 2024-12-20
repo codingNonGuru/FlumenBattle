@@ -73,6 +73,10 @@ namespace world::polity
 
         Delegate OnTileWorkerChanged;
 
+        Delegate OnPlayerSettlementPopIncrease;
+
+        Delegate OnPlayerSettlementBorderExpanded;
+
         void ProcessProductionInput(settlement::ProductionOptions, settlement::Settlement *);
 
         void SetResearchTarget(science::Technologies);
@@ -82,5 +86,7 @@ namespace world::polity
         void ChangeBuildingWorkforce(settlement::Building *, bool);
 
         const container::Pool <WorkInstruction> *GetSettlementInstructions() const;
+
+        void RegisterPopIncrease(settlement::Settlement *) const override;
     };
 }

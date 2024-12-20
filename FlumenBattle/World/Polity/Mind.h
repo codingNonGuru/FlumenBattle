@@ -1,5 +1,10 @@
 #pragma once
 
+namespace world::settlement
+{
+    class Settlement;
+}
+
 namespace world::polity
 {
     class Polity;
@@ -16,5 +21,7 @@ namespace world::polity
         virtual void ProcessTrade(Polity &) const = 0;
 
         virtual void DecideBorders(Polity &) const = 0;
+
+        virtual void RegisterPopIncrease(settlement::Settlement *) const = 0;
     };
 }

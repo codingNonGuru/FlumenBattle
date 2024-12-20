@@ -23,6 +23,8 @@ namespace world::polity
 
         virtual void DecideBorders(Polity &) const override;
 
+        void RegisterPopIncrease(settlement::Settlement *) const override {}
+
         void GrowBorders(settlement::Settlement *);
     };
 }

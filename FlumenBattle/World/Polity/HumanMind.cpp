@@ -227,6 +227,8 @@ void HumanMind::HandleBorderExpansion()
     newTile->IsWorked = false;
 
     playerSettlement->cultureGrowth -= playerSettlement->GetExpansionCost(hoveredTile);
+
+    OnPlayerSettlementBorderExpanded.Invoke();
 }
 
 settlement::Shipment currentShipment;
@@ -371,4 +373,12 @@ const container::Pool <WorkInstruction> *HumanMind::GetSettlementInstructions() 
     {
         return &set->instructions;
     }
+}
+
+void HumanMind::RegisterPopIncrease(settlement::Settlement *settlement) const
+{
+    if(WorldScene::Get()->GetPlayerSettlement() != settlement)
+        return;
+
+    OnPlayerSettlementPopIncrease.Invoke();
 }

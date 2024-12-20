@@ -57,4 +57,16 @@ WorldMixer::WorldMixer()
         auto sound = BUILDING_SOUNDS.GetRandom();
         engine::SoundManager::Get()->PlaySound(*sound);
     };
+
+    polity::HumanMind::Get()->OnPlayerSettlementPopIncrease += [] 
+    {
+        static const auto sound = Word("CrowdCheer");
+        engine::SoundManager::Get()->PlaySound(sound);
+    };
+
+    polity::HumanMind::Get()->OnPlayerSettlementBorderExpanded += [] 
+    {
+        static const auto sound = Word("TileClaim");
+        engine::SoundManager::Get()->PlaySound(sound);
+    };
 }
