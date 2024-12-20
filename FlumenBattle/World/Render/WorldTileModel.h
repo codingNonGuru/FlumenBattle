@@ -50,6 +50,8 @@ namespace world::render
 
         void RenderBorderExpansionMap();
 
+        void RenderSettleModeMap();
+
     public:
         void Initialize() override;
 

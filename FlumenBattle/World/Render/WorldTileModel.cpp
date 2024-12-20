@@ -33,6 +33,7 @@
 #include "FlumenBattle/Utility/Pathfinder.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Group/GroupSpotting.h"
+#include "FlumenBattle/World/Polity/HumanMind.h"
 #include "FlumenBattle/Config.h"
 
 #define WORLD_TILE_SIZE WorldMap::WORLD_TILE_SIZE
@@ -733,6 +734,75 @@ void WorldTileModel::RenderBorderExpansionMap()
     shader->Unbind();
 }
 
+void WorldTileModel::RenderSettleModeMap()
+{
+    if(WorldController::Get()->IsSettleModeActive() == false)
+        return;
+
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    const auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
+
+    const auto playerTile = playerGroup->GetTile();
+
+    shader->Bind();
+
+    shader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	shader->SetConstant(0.0f, "depth");
+
+    shader->SetConstant(0.7f, "opacity");
+
+    shader->SetConstant(WORLD_TILE_SIZE, "hexSize");
+
+    for(int i = MINIMUM_COLONIZATION_RANGE; i <= MAXIMUM_COLONIZATION_RANGE; ++i)
+    {
+        auto tileRing = playerTile->GetTileRing(i);
+        for(auto &tile : tileRing)
+        {
+            if(tile->IsBorderingOwnedTile())
+                continue;
+
+            if(tile->HasRelief(WorldReliefs::SEA) == true)
+                continue;
+
+            shader->SetConstant(tile->Position, "hexPosition");
+
+            auto color = [&]
+            {
+                if(playerSettlement->HasAnySettlers() == true)
+                {
+                    return Color::GREEN;
+                }   
+                else
+                {
+                    return Color::YELLOW;
+                }
+            } ();
+
+            shader->SetConstant(color, "color");
+
+            glDrawArrays(GL_TRIANGLES, 0, 18);
+        }
+    }
+
+    auto settleTarget = polity::HumanMind::Get()->GetSettleTarget(playerSettlement);
+    if(settleTarget == nullptr)
+        return;
+
+    static const auto alphaSpriteShader = ShaderManager::GetShader("AlphaSprite");
+
+    static const auto bannerFrameCore = new Sprite(alphaSpriteShader, ::render::TextureManager::GetTexture("BannerCore"));
+
+    const auto banner = playerSettlement->GetBanner();
+    bannerFrameCore->SetColor(&banner);
+
+    bannerFrameCore->Draw(camera, {settleTarget->Position + Position2(0.0f, -WORLD_TILE_SIZE * 0.5f), Scale2(1.0f), Opacity(1.0f), DrawOrder(-2)});
+
+    static const auto bannerFrameSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("BannerFrame"));
+
+    bannerFrameSprite->Draw(camera, {settleTarget->Position + Position2(0.0f, -WORLD_TILE_SIZE * 0.5f), Scale2(1.0f), Opacity(1.0f), DrawOrder(-2)});
+}
+
 void WorldTileModel::Render() 
 {
     static auto index = 0;
@@ -842,6 +912,8 @@ void WorldTileModel::Render()
     RenderImprovements();
 
     RenderBorderExpansionMap();
+
+    RenderSettleModeMap();
 
     for(auto &group : *worldScene->groups)
     {

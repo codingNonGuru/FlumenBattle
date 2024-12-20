@@ -202,6 +202,8 @@ namespace world::settlement
 
         bool CanExpandHere(WorldTile *) const;
 
+        bool CanSettleHere(WorldTile *) const;
+
         int GetExpansionCost(WorldTile *) const;
 
         bool CanAffordToExpandHere(WorldTile *) const;
@@ -363,5 +365,13 @@ namespace world::settlement
         const Race *GetRace() const {return race;}
 
         const Shipment &GetLastOutgoingShipment() {return tradeHandler.lastOutgoingShipment;}
+
+        void AddSettlers();
+
+        void RemoveSettlers();
+
+        bool HasMaximumSettlers() const;
+
+        bool HasAnySettlers() const;
     };
 }

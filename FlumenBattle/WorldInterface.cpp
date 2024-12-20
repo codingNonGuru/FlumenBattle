@@ -162,18 +162,18 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
 
     hoverExtension = ElementFactory::BuildElement <settlement::HoverExtension>
     (
-        {Size(210, 320), DrawOrder(3), {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, nullptr}, {false}, Opacity(0.6f)}
+        {Size(210, 320), DrawOrder(10), {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, nullptr}, {false}, Opacity(0.6f)}
     );
 
     travelBackdrop = ElementFactory::BuildElement <Element>
     (
-        {Size(200, 50), DrawOrder(3), {Position2(0.0f, 200.0f), canvas}, {false}, Opacity(0.5f)}
+        {Size(200, 50), DrawOrder(10), {Position2(0.0f, 200.0f), canvas}, {false}, Opacity(0.6f)}
     );
 
     travelLabel = ElementFactory::BuildText
     (
-        {DrawOrder(4), {travelBackdrop}},
-        {{"Medium"}, Color::RED * 0.5f, "Plan your travel"}
+        {DrawOrder(11), {travelBackdrop}},
+        {{"Medium"}, Color::RED * 0.5f}
     );
     travelLabel->Enable();
 
@@ -821,6 +821,12 @@ void WorldInterface::Update()
 
     if(controller->IsTravelPlanActive() == true)
     {
+        travelLabel->Setup("Plan your travel");
+        travelBackdrop->Enable();
+    }
+    else if(controller->IsSettleModeActive() == true)
+    {
+        travelLabel->Setup("Settle mode");
         travelBackdrop->Enable();
     }
     else

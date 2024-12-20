@@ -69,4 +69,10 @@ WorldMixer::WorldMixer()
         static const auto sound = Word("TileClaim");
         engine::SoundManager::Get()->PlaySound(sound);
     };
+
+    polity::HumanMind::Get()->OnPlayerSettlementColonized += [] 
+    {
+        static const auto sound = Word("Settle");
+        engine::SoundManager::Get()->PlaySound(sound);
+    };
 }

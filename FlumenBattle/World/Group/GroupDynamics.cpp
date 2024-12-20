@@ -34,11 +34,15 @@ using namespace world::group;
 
 #define RAIDER_CAP 1
 
+#define MAXIMUM_SETTLER_COUNT 1
+
 GroupDynamics::GroupDynamics() {}
 
 void GroupDynamics::Initialize(settlement::Settlement &settlement)
 {
     lastSpawnTime = -1;
+
+    settlerCount = 0;
 }
 
 void GroupDynamics::Update(settlement::Settlement &settlement)
@@ -183,6 +187,11 @@ void GroupDynamics::UpdateSimulationLevel(settlement::Settlement &settlement)
             raider.Group = nullptr;
         }
     }
+}
+
+void GroupDynamics::AddSettlers(settlement::Settlement &settlement)
+{
+    settlerCount++;
 }
 
 void GroupDynamics::AddPatrol(settlement::Settlement &settlement)
@@ -453,4 +462,17 @@ container::Array <Group *> &GroupDynamics::GetGroups(GroupClasses groupClass) co
     }
 
     return groupBatch;
+}
+
+bool GroupDynamics::HasMaximumSettlers() const
+{
+    if(settlerCount >= MAXIMUM_SETTLER_COUNT)
+        return true;
+    else
+        return false;
+}
+
+bool GroupDynamics::HasAnySettlers() const
+{
+    return settlerCount > 0;
 }

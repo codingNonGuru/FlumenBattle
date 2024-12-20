@@ -37,6 +37,8 @@ namespace world::group
 
         container::Pool <GroupEssence> raiders;
 
+        int settlerCount;
+
         void Update(settlement::Settlement &);
 
         void UpdateEncounters(settlement::Settlement &);
@@ -54,6 +56,10 @@ namespace world::group
         void AddGarrison(settlement::Settlement &);
 
         void AddRaider(settlement::Settlement &);
+
+        void AddSettlers(settlement::Settlement &);
+
+        void RemoveSettlers() {settlerCount--;}
 
         void RemoveGroup(const group::Group &);
 
@@ -87,5 +93,9 @@ namespace world::group
         int GetMaximumAdventurers() const;
 
         container::Array <Group *> &GetGroups(GroupClasses) const;
+
+        bool HasMaximumSettlers() const;
+
+        bool HasAnySettlers() const;
     };
 }

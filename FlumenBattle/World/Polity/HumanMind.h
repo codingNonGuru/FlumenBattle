@@ -17,6 +17,7 @@ namespace world::settlement
 namespace world
 {
     class WorldController;
+    class WorldTile;
 }
 
 namespace world::science
@@ -56,6 +57,8 @@ namespace world::polity
 
         void HandleBorderExpansion();
 
+        void HandleTileSettled();
+
         void UpdateSettlementWorkforce(settlement::Settlement *) const;
 
         void HireWorker(settlement::Settlement *, settlement::SettlementTile *);
@@ -77,6 +80,8 @@ namespace world::polity
 
         Delegate OnPlayerSettlementBorderExpanded;
 
+        Delegate OnPlayerSettlementColonized;
+
         void ProcessProductionInput(settlement::ProductionOptions, settlement::Settlement *);
 
         void SetResearchTarget(science::Technologies);
@@ -88,5 +93,7 @@ namespace world::polity
         const container::Pool <WorkInstruction> *GetSettlementInstructions() const;
 
         void RegisterPopIncrease(settlement::Settlement *) const override;
+
+        const WorldTile *GetSettleTarget(settlement::Settlement *) const;
     };
 }

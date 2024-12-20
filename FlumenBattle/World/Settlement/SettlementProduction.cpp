@@ -329,7 +329,29 @@ void ProductionFinisher::FinishFarm(Settlement &settlement)
 
 void ProductionFinisher::FinishSettlers(Settlement &settlement)
 {
-    auto polity = settlement.polity;
+    auto bonus = settlement.GetModifier(Modifiers::ALL_DICE_ROLLS);
+
+    auto check = utility::RollD20Dice(COLONIZATION_DC, bonus);
+    if(check.IsCriticalSuccess() == true)
+    {
+        settlement.AddSettlers();
+    }
+    else if(check.IsAnySuccess() == true)
+    {
+        settlement.AddSettlers();
+        
+        settlement.KillPopulation();
+    }
+    else if(check.IsRegularFailure() == true) 
+    {
+        
+    }
+    else
+    {
+        settlement.KillPopulation();
+    }
+
+    /*auto polity = settlement.polity;
     auto target = settlement.currentProduction->data.colonizationTarget;
 
     if(target->IsBorderingOwnedTile() == true)
@@ -342,29 +364,10 @@ void ProductionFinisher::FinishSettlers(Settlement &settlement)
 
     if(target != nullptr)
     {
-        auto bonus = settlement.GetModifier(Modifiers::ALL_DICE_ROLLS);
 
-        auto check = utility::RollD20Dice(COLONIZATION_DC, bonus);
-        if(check.IsCriticalSuccess() == true)
-        {
-            WorldScene::Get()->FoundSettlement(target, settlement.GetRace()->Type, &settlement);
-        }
-        else if(check.IsAnySuccess() == true)
-        {
-            WorldScene::Get()->FoundSettlement(target, settlement.GetRace()->Type, &settlement);
-            settlement.KillPopulation();
-        }
-        else if(check.IsRegularFailure() == true) 
-        {
-            
-        }
-        else
-        {
-            settlement.KillPopulation();
-        }
     }
 
-    mutex.unlock();
+    mutex.unlock();*/
 }
 
 void ProductionFinisher::FinishIrrigation(Settlement &settlement)

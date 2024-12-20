@@ -434,6 +434,21 @@ bool Settlement::CanExpandHere(WorldTile *tile) const
     return true;
 }
 
+bool Settlement::CanSettleHere(WorldTile *tile) const
+{
+    if(tile->HasRelief(WorldReliefs::SEA) == true)
+        return false;
+
+    if(tile->IsBorderingOwnedTile() == true)
+        return false;
+
+    auto distance = GetLocation()->GetDistanceTo(*tile);
+    if(distance < MINIMUM_COLONIZATION_RANGE || distance > MAXIMUM_COLONIZATION_RANGE)
+        return false;
+
+    return true;
+}
+
 int Settlement::GetExpansionCost(WorldTile *tile) const
 {
     auto distance = GetLocation()->GetDistanceTo(*tile);
@@ -945,4 +960,24 @@ void Settlement::UpdateDistanceToCapital()
 
     auto pathData = utility::SettlementPathfinder::Get()->FindPathToSettlement(this, polity->GetRuler());
     distanceToCapital = pathData.Complexity;
+}
+
+void Settlement::AddSettlers() 
+{
+    groupDynamics->AddSettlers(*this);
+}
+
+void Settlement::RemoveSettlers() 
+{
+    groupDynamics->RemoveSettlers();
+}
+
+bool Settlement::HasMaximumSettlers() const 
+{
+    return groupDynamics->HasMaximumSettlers();
+}
+
+bool Settlement::HasAnySettlers() const 
+{
+    return groupDynamics->HasAnySettlers();
 }

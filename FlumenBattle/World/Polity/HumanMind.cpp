@@ -15,6 +15,7 @@
 #include "FlumenBattle/World/Science/Technology.h"
 #include "FlumenBattle/World/Polity/WorkInstruction.h"
 #include "FlumenBattle/World/Settlement/Building.h"
+#include "FlumenBattle/Race.h"
 
 using namespace world;
 using namespace world::polity;
@@ -36,6 +37,19 @@ static auto commands = container::Array <Command> (MAXIMUM_COMMAND_COUNT);
 
 static auto workInstructionSets = container::Array <InstructionSet> (INSTRUCTION_SETS_PER_POLITY);
 
+struct SettleTarget
+{
+    settlement::Settlement *Settlement;
+
+    WorldTile *Tile;
+
+    bool operator== (const SettleTarget &other) {return Settlement == other.Settlement && Tile == other.Tile;}
+
+    bool operator== (const settlement::Settlement *settlement) {return Settlement == settlement;}
+};
+
+auto settleTargets = container::Pool <SettleTarget> (64);
+
 HumanMind::HumanMind()
 {
     for(int i = 0; i < workInstructionSets.GetCapacity(); ++i)
@@ -54,6 +68,8 @@ void HumanMind::EnableInput()
     canvas->GetLeftClickEvents() += {this, &HumanMind::HandleWorkerPlacement};
 
     canvas->GetLeftClickEvents() += {this, &HumanMind::HandleBorderExpansion};
+
+    canvas->GetLeftClickEvents() += {this, &HumanMind::HandleTileSettled};
 }
 
 void HumanMind::DisableInput()
@@ -62,6 +78,8 @@ void HumanMind::DisableInput()
     canvas->GetLeftClickEvents() -= {this, &HumanMind::HandleWorkerPlacement};
 
     canvas->GetLeftClickEvents() -= {this, &HumanMind::HandleBorderExpansion};
+
+    canvas->GetLeftClickEvents() -= {this, &HumanMind::HandleTileSettled};
 }
 
 void HumanMind::MakeDecision(Polity &polity) const
@@ -231,6 +249,38 @@ void HumanMind::HandleBorderExpansion()
     OnPlayerSettlementBorderExpanded.Invoke();
 }
 
+void HumanMind::HandleTileSettled()
+{
+    if(WorldController::Get()->IsSettleModeActive() == false)
+        return;
+
+    const auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
+
+    const auto hoveredTile = WorldController::Get()->GetHoveredTile();
+    if(playerSettlement->CanSettleHere(hoveredTile) == false)
+        return;
+
+    if(playerSettlement->HasAnySettlers() == true)
+    {
+        WorldScene::Get()->FoundSettlement(hoveredTile, playerSettlement->GetRace()->Type, playerSettlement);
+
+        OnPlayerSettlementColonized.Invoke();
+
+        playerSettlement->RemoveSettlers();
+        return;
+    }
+        
+    auto data = settleTargets.Find(SettleTarget{playerSettlement, hoveredTile});
+    if(data == nullptr)
+    {
+        *settleTargets.Add() = {playerSettlement, hoveredTile};
+    }
+    else
+    {
+        settleTargets.RemoveAt(data);
+    }
+}
+
 settlement::Shipment currentShipment;
 
 void HumanMind::ProcessTrade(Polity &polity) const
@@ -373,6 +423,15 @@ const container::Pool <WorkInstruction> *HumanMind::GetSettlementInstructions() 
     {
         return &set->instructions;
     }
+}
+
+const WorldTile *HumanMind::GetSettleTarget(settlement::Settlement *settlement) const
+{
+    auto target = settleTargets.Find(settlement);
+    if(target == nullptr)
+        return nullptr;
+    else
+        return target->Tile;
 }
 
 void HumanMind::RegisterPopIncrease(settlement::Settlement *settlement) const

@@ -67,6 +67,9 @@ NecessityFactor ProductionEvaluator::GetSettlersNecessity(const Settlement &sett
     if(settlement.HasAvailableColonySpots() == false)
         return 0;
 
+    if(settlement.HasMaximumSettlers() == true)
+        return 0;
+
     auto population = settlement.GetPopulation();
 
     if(population >= 30)
