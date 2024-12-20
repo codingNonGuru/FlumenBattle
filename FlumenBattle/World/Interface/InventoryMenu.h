@@ -6,6 +6,7 @@
 
 class Text;
 class LayoutGroup;
+class ProgressBar;
 
 namespace world::character
 {
@@ -78,6 +79,8 @@ namespace world::interface
         Text *nameLabel;
 
         Text *classLabel;
+
+        ProgressBar *levelProgress;
 
         Text *healthLabel;
 

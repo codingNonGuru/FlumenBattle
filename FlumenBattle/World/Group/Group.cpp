@@ -537,4 +537,23 @@ namespace world::group
     {
         return GetHome()->GetPolity() == other.GetHome()->GetPolity();
     }
+
+    void Group::GainExperience(int experience)
+    {
+        for(auto &character : characters)
+        {
+            character.GainExperience(experience);
+        }
+    }
+
+    int Group::GetLevel() const
+    {
+        auto level = 0;
+        for(auto &character : characters)
+        {
+            level += character.GetLevel();
+        }
+
+        return level / characters.GetSize();
+    }
 }

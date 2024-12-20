@@ -16,6 +16,10 @@
 
 namespace world::character
 {
+    static const auto MAXIMUM_CHARACTER_LEVEL = 12;
+
+    static const int EXPERIENCE_THRESHOLDS[] = {0, 1000, 2000, 3500, 6000, 10000, 15000, 25000, 37000, 55000, 70000, 100000, 150000};
+
     Character::Character()
     {
         //weapons.Initialize(4);
@@ -35,6 +39,10 @@ namespace world::character
         proficiencies.Initialize();
 
         //isFatigued = false;
+
+        level = 1;
+
+        experience = 0;
     }
 
     void Character::Setup()
@@ -86,6 +94,11 @@ namespace world::character
     const Word &Character::GetClassName() const
     {
         return type->Name;
+    }
+
+    float Character::GetLevelProgress() const
+    {
+        return (float)experience / (float)EXPERIENCE_THRESHOLDS[level];
     }
 
     void Character::BoostAbility(AbilityTypes type, Integer boost)
@@ -396,5 +409,30 @@ namespace world::character
     void Character::SufferDamage(int damage)
     {
         currentHitPoints -= damage;
+    }
+
+    void Character::GainExperience(int amount)
+    {
+        if(level == MAXIMUM_CHARACTER_LEVEL)
+            return;
+
+        experience += amount;
+
+        while(true)
+        {
+            if(experience > EXPERIENCE_THRESHOLDS[level])
+            {
+                experience -= EXPERIENCE_THRESHOLDS[level];
+
+                level++;
+            }
+            else
+            {
+                break;
+            }
+
+            if(level == MAXIMUM_CHARACTER_LEVEL)
+                return;
+        }
     }
 }

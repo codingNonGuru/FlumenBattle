@@ -5,6 +5,7 @@
 #include "FlumenEngine/Interface/Text.hpp"
 #include "FlumenEngine/Interface/Sprite.hpp"
 #include "FlumenEngine/Interface/LayoutGroup.h"
+#include "FlumenEngine/Interface/ProgressBar.h"
 
 #include "InventoryMenu.h"
 #include "FlumenBattle/World/Character/Character.h"
@@ -126,6 +127,12 @@ void InventoryMenu::HandleConfigure()
         {{"Medium"}, TEXT_COLOR, "Cleric"}
     );
     classLabel->Enable();
+
+    levelProgress = ElementFactory::BuildProgressBar <ProgressBar>(
+        {Size(80, 24), drawOrder_ + 1, {Position2(0.0f, 0.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, classLabel}, {"BaseBar", true}},
+        {"BaseFillerRed", {6.0f, 6.0f}}
+    );
+    levelProgress->Enable();
 
     Text **labels[] = {&healthLabel, &armorLabel, &attackLabel, &damageLabel};
     auto height = 90.0f;
@@ -430,10 +437,13 @@ void InventoryMenu::SelectCharacter(character::Character *newCharacter)
 
     nameLabel->Setup(character->GetName());
 
-    Word description = character->GetRace()->Name;
-    description << ", ";
+    LongWord description = LongWord("Level ") << character->GetLevel() << " ";
+    description << character->GetRace()->Name;
+    description << " ";
     description << character->GetClass()->Name;
     classLabel->Setup(description);
+
+    levelProgress->SetProgress(character->GetLevelProgress());
 
     mainHandSlot->SetItem(character->GetItem(character::ItemPositions::MAIN_HAND));
     bodySlot->SetItem(character->GetItem(character::ItemPositions::BODY));

@@ -100,6 +100,8 @@ namespace world::character
 
         Integer level;
 
+        Integer experience;
+
         AbilityHandler abilities;
 
         ProficiencyHandler proficiencies;
@@ -156,6 +158,10 @@ namespace world::character
         const ::render::Texture *GetAvatar() const {return avatar;}
 
         const Word GetName() const {return name;}
+
+        Integer GetLevel() const {return level;}
+
+        float GetLevelProgress() const;
 
         const Ability & GetAbility(AbilityTypes type) const {return *abilities.GetAbility(type);}
 
@@ -246,5 +252,7 @@ namespace world::character
         void RefreshModifiers();
 
         void SufferDamage(int);
+
+        void GainExperience(int);
     };
 }

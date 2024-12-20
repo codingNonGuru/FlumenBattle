@@ -304,5 +304,9 @@ namespace world::group
         bool HasAttemptedBribingGarrison() const {return hasAttemptedBribingGarrison;}
 
         int GetSize() const {return characters.GetSize();}
+
+        void GainExperience(int);
+
+        int GetLevel() const;
     };
 }
