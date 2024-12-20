@@ -13,6 +13,7 @@ namespace world::group
 {
     struct GroupEssence;
     class Group;
+    enum class GroupClasses;
 
     class GroupDynamics
     {
@@ -61,9 +62,9 @@ namespace world::group
 
         void Initialize(settlement::Settlement &);
 
-        int GetAdventurerStrength();
+        int GetAdventurerStrength() const;
 
-        int GetMerchantStrength();
+        int GetMerchantStrength() const;
 
         int GetPatrolStrength() const;
 
@@ -76,5 +77,15 @@ namespace world::group
         bool HasMaximumGarrisons() const;
 
         int GetMaximumGarrisons() const;
+
+        int GetMaximumMerchants() const;
+
+        int GetMaximumRaiders() const;
+
+        int GetMaximumPatrols() const;
+
+        int GetMaximumAdventurers() const;
+
+        container::Array <Group *> &GetGroups(GroupClasses) const;
     };
 }

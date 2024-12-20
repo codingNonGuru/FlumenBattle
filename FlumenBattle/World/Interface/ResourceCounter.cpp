@@ -10,8 +10,9 @@ static const auto TEXT_COLOR = Color::RED * 0.5f;
 
 void ResourceCounter::HandleConfigure()
 {
-    icon = ElementFactory::BuildElement <Element>(
-        {Size(32, 32), drawOrder_ + 1, {this}, SpriteDescriptor{false}}
+    icon = ElementFactory::BuildElement <Element>
+    (
+        {drawOrder_ + 1, {this}, SpriteDescriptor{false}}
     );
     icon->Enable();
 
@@ -68,6 +69,8 @@ void ResourceCounter::Setup(Word name, const int *newValue, Word fontSize, Scale
 
     icon->GetSprite()->SetTextureSize(textureScale);
 
+    icon->AdjustSizeToTexture();
+
     label->SetFont({fontSize});
 
     valueOrigin = ValueOrigins::POINTER;
@@ -80,6 +83,8 @@ void ResourceCounter::Setup(Word name, std::function <int(void)> newFetcher, Wor
     icon->GetSprite()->SetTexture(name);
 
     icon->GetSprite()->SetTextureSize(textureScale);
+
+    icon->AdjustSizeToTexture();
 
     label->SetFont({fontSize});
 
@@ -94,6 +99,8 @@ void ResourceCounter::Setup(Word name, Word string, Word fontSize, Scale2 textur
 
     icon->GetSprite()->SetTextureSize(textureScale);
 
+    icon->AdjustSizeToTexture();
+
     label->SetFont({fontSize});
 
     valueOrigin = ValueOrigins::STRING;
@@ -106,6 +113,8 @@ void ResourceCounter::Setup(Word name, std::function <Word(void)> newFetcher, Wo
     icon->GetSprite()->SetTexture(name);
 
     icon->GetSprite()->SetTextureSize(textureScale);
+
+    icon->AdjustSizeToTexture();
 
     label->SetFont({fontSize});
 
@@ -122,4 +131,6 @@ void ResourceCounter::SetOffset(float newOffset)
 void ResourceCounter::SetIconTexture(Word textureName)
 {
     icon->SetTexture(textureName);
+
+    icon->AdjustSizeToTexture();
 }

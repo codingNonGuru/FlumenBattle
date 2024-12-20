@@ -32,6 +32,8 @@ using namespace world::group;
 
 #define GARRISON_CAP 2
 
+#define RAIDER_CAP 1
+
 GroupDynamics::GroupDynamics() {}
 
 void GroupDynamics::Initialize(settlement::Settlement &settlement)
@@ -297,7 +299,7 @@ void GroupDynamics::AddGarrison(settlement::Settlement &settlement)
 
 void GroupDynamics::AddRaider(settlement::Settlement &settlement)
 {
-    if(raiders.GetSize() == 1)
+    if(raiders.GetSize() == RAIDER_CAP)
         return;
 
     const auto simulationLevel = settlement.GetSimulationLevel();
@@ -340,12 +342,12 @@ void GroupDynamics::RemoveGroup(const group::Group &group)
     }
 }
 
-int GroupDynamics::GetAdventurerStrength()
+int GroupDynamics::GetAdventurerStrength() const
 {
     return adventurers.GetSize();
 }
 
-int GroupDynamics::GetMerchantStrength()
+int GroupDynamics::GetMerchantStrength() const
 {
     return merchants.GetSize();
 }
@@ -393,4 +395,62 @@ bool GroupDynamics::HasMaximumGarrisons() const
 int GroupDynamics::GetMaximumGarrisons() const
 {
     return GARRISON_CAP;
+}
+
+int GroupDynamics::GetMaximumMerchants() const
+{
+    return MERCHANT_CAP;
+}
+
+int GroupDynamics::GetMaximumRaiders() const
+{
+    return RAIDER_CAP;   
+}
+
+int GroupDynamics::GetMaximumPatrols() const
+{
+    return PATROL_CAP;
+}
+
+int GroupDynamics::GetMaximumAdventurers() const
+{
+    return ADVENTURER_CAP;
+}
+
+container::Array <Group *> &GroupDynamics::GetGroups(GroupClasses groupClass) const
+{
+    static auto groupBatch = container::Array <Group *> (32);
+    groupBatch.Reset();
+
+    auto groups = [&] 
+    {
+        switch(groupClass)
+        {
+        case GroupClasses::ADVENTURER:
+            return &adventurers;
+        case GroupClasses::MERCHANT:
+            return &merchants;
+        case GroupClasses::PATROL:
+            return &patrols;
+        case GroupClasses::GARRISON:
+            return &garrisons;
+        case GroupClasses::RAIDER:
+            return &raiders;
+        case GroupClasses::BANDIT:
+            return &bandits;
+        default:
+            std::cout<<"GroupDynamics GetGroups function argument invalid.\n";
+            std::abort();
+        }
+    } ();
+
+    for(auto &group : *groups)
+    {
+        if(group.Group == nullptr)
+            continue;
+
+        *groupBatch.Add() = group.Group;
+    }
+
+    return groupBatch;
 }

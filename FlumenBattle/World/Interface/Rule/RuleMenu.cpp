@@ -9,6 +9,7 @@
 #include "RealmTab.h"
 #include "BuildingTab.h"
 #include "TradeTab.h"
+#include "GroupTab.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Polity/Polity.h"
@@ -30,6 +31,8 @@ static const auto REALM_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SC
 static const auto BUILDING_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_B, {InputHandler::SHIFT}};
 
 static const auto TRADE_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_T, {InputHandler::SHIFT}};
+
+static const auto GROUPS_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_G, {InputHandler::SHIFT}};
 
 void TabButton::HandleConfigure()
 {
@@ -58,6 +61,8 @@ void TabButton::Setup(RuleMenuTabs tab)
             return "B";
         case RuleMenuTabs::TRADE:
             return "T";
+        case RuleMenuTabs::GROUPS:
+            return "G";
         }
     } ();
 
@@ -138,6 +143,8 @@ void RuleMenu::HandleEnable()
 
     InputHandler::RegisterEvent(TRADE_DISPLAY_KEY, {this, &RuleMenu::HandleTradePressed});
 
+    InputHandler::RegisterEvent(GROUPS_DISPLAY_KEY, {this, &RuleMenu::HandleGroupsPressed});
+
     const auto playerPolity = WorldScene::Get()->GetPlayerPolity();
 
     rulerLabel->Setup(LongWord() << "Realm of " << playerPolity->GetRuler()->GetName());
@@ -154,6 +161,8 @@ void RuleMenu::HandleDisable()
     InputHandler::UnregisterEvent(BUILDING_DISPLAY_KEY);
 
     InputHandler::UnregisterEvent(TRADE_DISPLAY_KEY);
+
+    InputHandler::UnregisterEvent(GROUPS_DISPLAY_KEY);
 }
 
 void RuleMenu::HandleEconomyPressed()
@@ -179,6 +188,11 @@ void RuleMenu::HandleBuildingPressed()
 void RuleMenu::HandleTradePressed()
 {
     SetCurrentTab(RuleMenuTabs::TRADE);
+}
+
+void RuleMenu::HandleGroupsPressed()
+{
+    SetCurrentTab(RuleMenuTabs::GROUPS);
 }
 
 void RuleMenu::Setup()
@@ -244,6 +258,17 @@ void RuleMenu::Setup()
     );
 
     *tabs.Add(RuleMenuTabs::TRADE) = tradeTab;
+
+    auto groupsTab = ElementFactory::BuildElement <GroupTab>
+    (
+        {
+            size_, 
+            drawOrder_, 
+            {this}
+        }
+    );
+
+    *tabs.Add(RuleMenuTabs::GROUPS) = groupsTab;
 
     currentTab = RuleMenuTabs::ECONOMY;
 

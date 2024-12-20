@@ -302,5 +302,7 @@ namespace world::group
         bool HasAttemptedBypassingDefences() const {return hasAttemptedBypassingDefences;}
 
         bool HasAttemptedBribingGarrison() const {return hasAttemptedBribingGarrison;}
+
+        int GetSize() const {return characters.GetSize();}
     };
 }
