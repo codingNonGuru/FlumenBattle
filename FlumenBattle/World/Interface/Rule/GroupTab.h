@@ -27,6 +27,10 @@ namespace world::interface::rule
 
         int groupSize;
 
+        ResourceCounter *levelCounter;
+
+        int groupLevel;
+
         void HandleConfigure() override;
 
     public:

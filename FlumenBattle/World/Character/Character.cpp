@@ -420,7 +420,7 @@ namespace world::character
 
         while(true)
         {
-            if(experience > EXPERIENCE_THRESHOLDS[level])
+            if(experience >= EXPERIENCE_THRESHOLDS[level])
             {
                 experience -= EXPERIENCE_THRESHOLDS[level];
 

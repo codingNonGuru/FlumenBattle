@@ -12,7 +12,7 @@
 
 namespace world::group
 {
-    #define ADVENTURER_FIGHT_DC 5
+    #define ADVENTURER_FIGHT_DC 10
 
     static auto nearbyPassableTiles = container::Array <WorldTile *> (6);
 
@@ -122,18 +122,22 @@ namespace world::group
                 {
                     auto bonus = group.home->GetModifier(settlement::Modifiers::PATROL_ATTACK_ROLLS);
 
+                    bonus += group.GetLevel() * 2;
+
                     auto fightAttempt = utility::RollD20Dice(ADVENTURER_FIGHT_DC, bonus);
                     if(fightAttempt.IsCriticalSuccess() == true)
                     {
                         group.hasAchievedObjective = true;
                         group.money += 200;
                         group.isAlive = true;
+                        group.GainExperience(1000);
                     }
                     else if(fightAttempt.IsNormalSuccess() == true)
                     {
                         group.hasAchievedObjective = true;
                         group.money += 100;
                         group.isAlive = true;
+                        group.GainExperience(1000);
                     }
                     else if(fightAttempt.IsRegularFailure() == true)
                     {

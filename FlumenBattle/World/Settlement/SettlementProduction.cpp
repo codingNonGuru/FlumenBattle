@@ -85,7 +85,7 @@ ProductionInquiry SettlementProduction::CanProduce(Settlement &settlement, Produ
     case ProductionOptions::WEAVING_MILL:
         return {settlement.HasBuilding(BuildingTypes::WEAVING_MILL) == false};
     case ProductionOptions::POTTERY:
-        return {settlement.HasBuilding(BuildingTypes::POTTERY) == false};
+        return {settlement.GetBuildingCount(BuildingTypes::POTTERY) < 3};
     case ProductionOptions::TAILORY:
         return {settlement.HasBuilding(BuildingTypes::TAILORY) == false};
     case ProductionOptions::KEEP:

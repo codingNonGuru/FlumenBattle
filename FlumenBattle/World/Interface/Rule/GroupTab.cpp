@@ -20,18 +20,26 @@ static const auto TEXT_COLOR = Color::RED * 0.5f;
 void GroupItem::HandleConfigure()
 {
     leaderNameLabel = ElementFactory::BuildText(
-        {drawOrder_, {Position2(0.0f, 3.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}},
+        {drawOrder_, {Position2(0.0f, 5.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}},
         {{"Tiny"}, TEXT_COLOR}
     );
     leaderNameLabel->Enable();
 
     sizeCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> 
     (
-        {drawOrder_ + 1, {Position2(0.0f, -13.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, this}}
+        {drawOrder_ + 1, {Position2(-22.0f, -13.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, this}}
     );
     sizeCounter->Setup("Group", &groupSize, "VerySmall", Scale2(0.7f));
     sizeCounter->SetOffset(-5.0f);
     sizeCounter->Enable();
+
+    levelCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> 
+    (
+        {drawOrder_ + 1, {Position2(15.0f, -13.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, this}}
+    );
+    levelCounter->Setup("Lightning", &groupLevel, "VerySmall", Scale2(0.7f));
+    levelCounter->SetOffset(-5.0f);
+    levelCounter->Enable();
 }
 
 void GroupItem::Setup(const group::Group *group)
@@ -39,6 +47,8 @@ void GroupItem::Setup(const group::Group *group)
     leaderNameLabel->Setup(group->GetLeader()->GetName());
 
     groupSize = group->GetSize();
+
+    groupLevel = group->GetLevel();
 }
 
 void GroupBatchItem::HandleConfigure()

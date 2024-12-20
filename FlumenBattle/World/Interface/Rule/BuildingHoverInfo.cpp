@@ -86,16 +86,16 @@ void BuildingHoverInfo::HandleUpdate()
         auto i = 0;
         for(auto &instruction : *instructions)
         {
-            if(i != 0)
-            {
-                text << ", ";
-            }
-
             if(instruction.PlaceType != polity::WorkInstruction::BUILDING)
                 continue;
 
             if(instruction.Place.Building != building)
                 continue;
+
+            if(i != 0)
+            {
+                text << ", ";
+            }
 
             text << instruction.Priority + 1;
 

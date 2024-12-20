@@ -110,14 +110,14 @@ void PopHandler::UpdateNeeds(Settlement &settlement)
     {
         needs.Find(ResourceTypes::CLOTHING)->IsMet = true;
 
-        needs.Find(ResourceTypes::CLOTHING)->Satisfaction += 5;
+        needs.Find(ResourceTypes::CLOTHING)->Satisfaction += 7;
     }
 
     if(pottery->HasPopulationOrdered == true)
     {
         needs.Find(ResourceTypes::POTTERY)->IsMet = true;
 
-        needs.Find(ResourceTypes::POTTERY)->Satisfaction += 5;
+        needs.Find(ResourceTypes::POTTERY)->Satisfaction += 10;
     }
 
     static const auto TICKS_PER_NEED_SATISFACTION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::TICKS_PER_NEED_SATISFACTION).Integer;
