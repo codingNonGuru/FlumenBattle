@@ -52,6 +52,8 @@ void SettlementAllocator::PreallocateMaximumMemory()
 
     static const auto MAXIMUM_PATHS_PER_SETTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_PATHS_PER_SETTLEMENT).Integer;
 
+    static const auto EXPLORATIONS_PER_SETTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::EXPLORATIONS_PER_SETTLEMENT).Integer;
+
     std::cout<<"Memory size of a Settlement is "<<sizeof(Settlement)<<"\n";
 
     auto worldGenerator = WorldGenerator::Get();
@@ -101,11 +103,15 @@ void SettlementAllocator::PreallocateMaximumMemory()
     raiderMemory = container::PoolAllocator <group::GroupEssence>::PreallocateMemory (settlementCount, RAIDERS_PER_SETTLEMENT);
 
     needMemory = container::ArrayAllocator <Need>::PreallocateMemory (settlementCount, POPULATION_NEED_COUNT);
+
+    explorationMemory = container::PoolAllocator <Exploration>::PreallocateMemory (settlementCount, EXPLORATIONS_PER_SETTLEMENT);
 }
 
 void SettlementAllocator::AllocateWorldMemory(int worldSize)
 {
     static const auto MAXIMUM_PATHS_PER_SETTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_PATHS_PER_SETTLEMENT).Integer;
+
+    static const auto EXPLORATIONS_PER_SETTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::EXPLORATIONS_PER_SETTLEMENT).Integer;
 
     static const auto worldGenerator = WorldGenerator::Get();
 
@@ -154,6 +160,8 @@ void SettlementAllocator::AllocateWorldMemory(int worldSize)
     raiderAllocator = container::PoolAllocator <group::GroupEssence> (settlementCount, RAIDERS_PER_SETTLEMENT, raiderMemory);
 
     needAllocator = container::ArrayAllocator <Need> (settlementCount, POPULATION_NEED_COUNT, needMemory);
+
+    explorationAllocator = container::PoolAllocator <Exploration> (settlementCount, EXPLORATIONS_PER_SETTLEMENT, explorationMemory);
 }
 
 Settlement * SettlementAllocator::Allocate()
@@ -198,6 +206,8 @@ Settlement * SettlementAllocator::Allocate()
     ResourceAllocator::Allocate(resourceAllocator, settlement->resourceHandler);
 
     PopAllocator::Allocate(needAllocator, settlement->popHandler);
+
+    settlement->explorations.Initialize(explorationAllocator);
 
     return settlement;
 }

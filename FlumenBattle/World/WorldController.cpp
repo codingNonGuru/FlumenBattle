@@ -55,6 +55,8 @@ static const auto BORDER_EXPAND_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SC
 
 static const auto SETTLE_MODE_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_S, {InputHandler::CTRL}};
 
+static const auto EXPLORE_MODE_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_X, {InputHandler::CTRL}};
+
 static const auto RULE_MENU_OPEN_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_P};
 
 namespace world
@@ -96,6 +98,7 @@ namespace world
         InputHandler::RegisterEvent(RULE_MENU_OPEN_KEY, {this, &WorldController::HandleRuleMenuPressed});
         InputHandler::RegisterEvent(BORDER_EXPAND_KEY, {this, &WorldController::HandleBorderExpandPressed});
         InputHandler::RegisterEvent(SETTLE_MODE_KEY, {this, &WorldController::HandleSettleModePressed});
+        InputHandler::RegisterEvent(EXPLORE_MODE_KEY, {this, &WorldController::HandleExploreModePressed});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_1, {this, &WorldController::HandleCharacterSelected});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_2, {this, &WorldController::HandleCharacterSelected});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_3, {this, &WorldController::HandleCharacterSelected});
@@ -502,6 +505,9 @@ namespace world
         if(isSettleModeActive == true)
             return;
 
+        if(isExploreModeActive == true)
+            return;
+
         if(WorldInterface::Get()->IsAnyMajorMenuEnabled() == true)
             return;
 
@@ -529,6 +535,9 @@ namespace world
         if(isBorderExpandActive == true)
             return;
 
+        if(isExploreModeActive == true)
+            return;
+
         if(WorldInterface::Get()->IsAnyMajorMenuEnabled() == true)
             return;
 
@@ -548,6 +557,39 @@ namespace world
         }
     }
 
+    void WorldController::HandleExploreModePressed()
+    {
+        if(isWorkerPlaceModeActive == true)
+            return;
+
+        if(isBorderExpandActive == true)
+            return;
+
+        if(isSettleModeActive == true)
+            return;
+
+        if(WorldInterface::Get()->IsAnyMajorMenuEnabled() == true)
+            return;
+
+        if(WorldScene::Get()->GetPlayerSettlement() == nullptr)
+            return;
+
+        if(WorldScene::Get()->GetPlayerSettlement()->GetPolity() != WorldScene::Get()->GetPlayerPolity())
+            return;
+
+        if(isExploreModeActive == true)
+        {
+            isExploreModeActive = false;
+        }
+        else
+        {
+            isExploreModeActive = true;
+        }
+
+        OnExploreModeToggled.Invoke();
+    }
+
+
     void WorldController::HandleSettlementExited()
     {
         isWorkerPlaceModeActive = false;
@@ -557,6 +599,8 @@ namespace world
         isBorderExpandActive = false;
 
         isSettleModeActive = false;
+
+        isExploreModeActive = false;
     }
 
     void WorldController::Disable()
@@ -577,6 +621,7 @@ namespace world
         InputHandler::UnregisterEvent(RULE_MENU_OPEN_KEY);
         InputHandler::UnregisterEvent(BORDER_EXPAND_KEY);
         InputHandler::UnregisterEvent(SETTLE_MODE_KEY);
+        InputHandler::UnregisterEvent(EXPLORE_MODE_KEY);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_1);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_2);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_3);
@@ -770,5 +815,7 @@ namespace world
         isBorderExpandActive = false;
 
         isSettleModeActive = false;
+
+        isExploreModeActive = false;
     }
 }

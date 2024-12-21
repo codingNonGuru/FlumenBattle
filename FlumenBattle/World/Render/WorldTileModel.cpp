@@ -803,6 +803,85 @@ void WorldTileModel::RenderSettleModeMap()
     bannerFrameSprite->Draw(camera, {settleTarget->Position + Position2(0.0f, -WORLD_TILE_SIZE * 0.5f), Scale2(1.0f), Opacity(1.0f), DrawOrder(-2)});
 }
 
+void WorldTileModel::RenderExploreMap()
+{
+    if(WorldController::Get()->IsExploreModeActive() == false)
+        return;
+
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    const auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
+
+    const auto playerTile = playerGroup->GetTile();
+    const auto &nearbyTiles = playerTile->GetNearbyTiles(MAXIMUM_COLONIZATION_RANGE);
+
+    shader->Bind();
+
+    shader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	shader->SetConstant(0.0f, "depth");
+
+    shader->SetConstant(0.7f, "opacity");
+
+    shader->SetConstant(WORLD_TILE_SIZE, "hexSize");
+
+    for(auto &tile : nearbyTiles.Tiles)
+    {
+        if(playerSettlement->CanExploreHere(tile) == false)
+            continue;
+
+        shader->SetConstant(tile->Position, "hexPosition");
+
+        auto color = [&]
+        {
+            /*if(playerSettlement->HasAnySettlers() == true)
+            {*/
+                return Color::GREEN;
+            /*}   
+            else
+            {
+                return Color::YELLOW;
+            }*/
+        } ();
+
+        shader->SetConstant(color, "color");
+
+        glDrawArrays(GL_TRIANGLES, 0, 18);
+    }
+
+    shader->Unbind();
+
+    auto &explorations = playerSettlement->GetExplorations();
+
+    for(auto &exploration : explorations)
+    {
+        static const auto backpackSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("BackpackStroked"));
+
+        static const auto mapSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("MapStroked"));
+
+        if(exploration.IsDone == true)
+        {
+            mapSprite->Draw(camera, {exploration.Tile->Position, Scale2(1.0f), Opacity(1.0f), DrawOrder(-2)});
+        }
+        else
+        {
+            backpackSprite->Draw(camera, {exploration.Tile->Position, Scale2(1.0f), Opacity(1.0f), DrawOrder(-2)});
+        }
+
+        /*static const auto alphaSpriteShader = ShaderManager::GetShader("AlphaSprite");
+
+        static const auto bannerFrameCore = new Sprite(alphaSpriteShader, ::render::TextureManager::GetTexture("BannerCore"));
+
+        const auto banner = playerSettlement->GetBanner();
+        bannerFrameCore->SetColor(&banner);
+
+        bannerFrameCore->Draw(camera, {exploration.Tile->Position + Position2(0.0f, -WORLD_TILE_SIZE * 0.5f), Scale2(1.0f), Opacity(1.0f), DrawOrder(-2)});
+
+        static const auto bannerFrameSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("BannerFrame"));
+
+        bannerFrameSprite->Draw(camera, {exploration.Tile->Position + Position2(0.0f, -WORLD_TILE_SIZE * 0.5f), Scale2(1.0f), Opacity(1.0f), DrawOrder(-2)});*/
+    }
+}
+
 void WorldTileModel::Render() 
 {
     static auto index = 0;
@@ -914,6 +993,8 @@ void WorldTileModel::Render()
     RenderBorderExpansionMap();
 
     RenderSettleModeMap();
+
+    RenderExploreMap();
 
     for(auto &group : *worldScene->groups)
     {

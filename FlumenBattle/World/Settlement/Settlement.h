@@ -77,6 +77,19 @@ namespace world::settlement
         bool operator== (const settlement::Settlement *other) {return Other == other;}
     };
 
+    struct Exploration
+    {
+        WorldTile *Tile;
+
+        int Progress;
+
+        bool IsDone;
+
+        float GetProgressFactor() const;
+
+        bool operator == (const WorldTile *tile) const {return Tile == tile;}
+    };
+
     class Settlement
     {
         friend class polity::Polity;
@@ -178,6 +191,8 @@ namespace world::settlement
 
             bool IsToBeVisited = false;
         } pathData;
+
+        container::Pool <Exploration> explorations;
 
         void Initialize(Word, Color, world::WorldTile *, const Race *);
 
@@ -373,5 +388,21 @@ namespace world::settlement
         bool HasMaximumSettlers() const;
 
         bool HasAnySettlers() const;
+
+        bool IsExploring(WorldTile *) const;
+
+        bool HasExplored(WorldTile *) const;
+
+        container::Array <WorldTile *> &GetExploredTiles() const;
+
+        const container::Pool <Exploration> &GetExplorations() const {return explorations;}
+
+        bool CanExploreHere(WorldTile *) const;
+
+        void StartExploring(WorldTile *);
+
+        void RemoveExploration(WorldTile *);
+
+        void AddExplorationProgress(WorldTile *, int);
     };
 }

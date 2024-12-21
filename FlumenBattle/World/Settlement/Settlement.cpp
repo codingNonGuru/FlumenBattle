@@ -981,3 +981,80 @@ bool Settlement::HasAnySettlers() const
 {
     return groupDynamics->HasAnySettlers();
 }
+
+bool Settlement::IsExploring(WorldTile *tile) const
+{
+    return explorations.Find(tile) != nullptr;
+}
+
+bool Settlement::HasExplored(WorldTile *tile) const
+{
+    auto exploration = explorations.Find(tile);
+    return exploration != nullptr && exploration->IsDone == true;
+}
+
+container::Array <world::WorldTile *> &Settlement::GetExploredTiles() const
+{
+    static const auto EXPLORATIONS_PER_SETTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::EXPLORATIONS_PER_SETTLEMENT).Integer;
+
+    static auto exploredTiles = container::Array <world::WorldTile *> (EXPLORATIONS_PER_SETTLEMENT);
+
+    exploredTiles.Reset();
+
+    for(auto &exploration : explorations)
+    {
+        if(exploration.IsDone == true)
+        {
+            *exploredTiles.Add() = exploration.Tile;
+        }
+    }
+
+    return exploredTiles;
+}
+
+bool Settlement::CanExploreHere(WorldTile *tile) const
+{
+    if(IsExploring(tile) == true)
+        return false;
+
+    if(tile->IsOwned() == true)
+        return false;
+
+    if(GetLocation()->GetDistanceTo(*tile) > MAXIMUM_COLONIZATION_RANGE)
+        return false;
+
+    if(explorations.IsFull() == true)
+        return false;
+
+    return true;
+}
+
+void Settlement::StartExploring(WorldTile *tile)
+{
+    *explorations.Add() = {tile, 0, false};
+}
+
+void Settlement::RemoveExploration(WorldTile *tile)
+{
+    explorations.Remove(tile);
+}
+
+#define EXPLORATION_SUCCESS_THRESHOLD 100
+
+void Settlement::AddExplorationProgress(WorldTile *tile, int progress)
+{
+    auto exploration = explorations.Find(tile);
+    if(exploration->IsDone == true)
+        return;
+
+    exploration->Progress += progress;
+    if(exploration->Progress > EXPLORATION_SUCCESS_THRESHOLD)
+    {
+        exploration->IsDone = true;
+    }
+}
+
+float Exploration::GetProgressFactor() const
+{
+    return (float)Progress / (float)EXPLORATION_SUCCESS_THRESHOLD;
+}

@@ -52,6 +52,8 @@ namespace world::render
 
         void RenderSettleModeMap();
 
+        void RenderExploreMap();
+
     public:
         void Initialize() override;
 

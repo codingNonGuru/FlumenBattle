@@ -70,6 +70,8 @@ void HumanMind::EnableInput()
     canvas->GetLeftClickEvents() += {this, &HumanMind::HandleBorderExpansion};
 
     canvas->GetLeftClickEvents() += {this, &HumanMind::HandleTileSettled};
+
+    canvas->GetLeftClickEvents() += {this, &HumanMind::HandleExplorationStarted};
 }
 
 void HumanMind::DisableInput()
@@ -80,6 +82,8 @@ void HumanMind::DisableInput()
     canvas->GetLeftClickEvents() -= {this, &HumanMind::HandleBorderExpansion};
 
     canvas->GetLeftClickEvents() -= {this, &HumanMind::HandleTileSettled};
+
+    canvas->GetLeftClickEvents() -= {this, &HumanMind::HandleExplorationStarted};
 }
 
 void HumanMind::MakeDecision(Polity &polity) const
@@ -279,6 +283,22 @@ void HumanMind::HandleTileSettled()
     {
         settleTargets.RemoveAt(data);
     }
+}
+
+void HumanMind::HandleExplorationStarted()
+{
+    if(WorldController::Get()->IsExploreModeActive() == false)
+        return;
+
+    const auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
+
+    const auto hoveredTile = WorldController::Get()->GetHoveredTile();
+    if(playerSettlement->CanExploreHere(hoveredTile) == false)
+        return;
+
+    playerSettlement->StartExploring(hoveredTile);
+
+    OnExplorationStarted.Invoke();
 }
 
 settlement::Shipment currentShipment;

@@ -59,6 +59,8 @@ namespace world::polity
 
         void HandleTileSettled();
 
+        void HandleExplorationStarted();
+
         void UpdateSettlementWorkforce(settlement::Settlement *) const;
 
         void HireWorker(settlement::Settlement *, settlement::SettlementTile *);
@@ -81,6 +83,8 @@ namespace world::polity
         Delegate OnPlayerSettlementBorderExpanded;
 
         Delegate OnPlayerSettlementColonized;
+
+        Delegate OnExplorationStarted;
 
         void ProcessProductionInput(settlement::ProductionOptions, settlement::Settlement *);
 

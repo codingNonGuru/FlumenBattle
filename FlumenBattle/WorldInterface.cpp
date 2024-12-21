@@ -44,6 +44,7 @@
 #include "FlumenBattle/World/Interface/Rule/RuleMenu.h"
 #include "FlumenBattle/World/Interface/TileResourceInfo.h"
 #include "FlumenBattle/World/Interface/InstructionInfo.h"
+#include "FlumenBattle/World/Interface/ExploreInfo.h"
 
 using namespace world;
 
@@ -62,8 +63,6 @@ auto popupTimestamp = std::chrono::steady_clock::now();
 #define TIME_BETWEEN_FADING_POPUPS 300
 
 #define SETTLEMENT_LABEL_ZOOM_LIMIT 1.5f
-
-#define RESOURCE_DISPLAY_DISTANCE 5
 
 static auto majorCentralMenus = container::Array <Element *> (32);
 
@@ -344,7 +343,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     {
         auto count = 1;
 
-        for(int i = 0; i <= RESOURCE_DISPLAY_DISTANCE; ++i)
+        for(int i = 0; i <= MAXIMUM_COLONIZATION_RANGE; ++i)
         {
             count += i * 6;
         }
@@ -369,6 +368,15 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     }
 
     ElementFactory::BuildElement <interface::InstructionInfoSet> 
+    (
+        {
+            DrawOrder(5), 
+            {canvas}
+        },
+        64
+    );
+
+    ElementFactory::BuildElement <interface::ExploreInfoSet> 
     (
         {
             DrawOrder(5), 
@@ -562,14 +570,18 @@ void WorldInterface::HandleResourceDisplayPressed()
     }
 
     static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    const auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
 
     auto playerTile = playerGroup->GetTile();
 
-    auto nearbyTiles = playerTile->GetNearbyTiles(RESOURCE_DISPLAY_DISTANCE);
+    auto nearbyTiles = playerTile->GetNearbyTiles(MAXIMUM_COLONIZATION_RANGE);
 
     auto info = tileResourceInfos.GetStart();
     for(auto &tile : nearbyTiles.Tiles)
     {
+        if(tile->IsOwned() == false && playerSettlement->HasExplored(tile) == false)
+            continue;
+
         (*info)->Setup(tile);
         (*info)->Enable();
 
