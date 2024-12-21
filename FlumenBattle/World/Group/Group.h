@@ -127,6 +127,8 @@ namespace world::group
 
         bool hasAchievedObjective {false};
 
+        bool hasMission;
+
         Encounter *encounter;
 
         Attitudes attitude;

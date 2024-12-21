@@ -95,6 +95,9 @@ void ExploreInfo::HandleUpdate()
     {
         progressBar->Enable();
 
+        auto offset = Position2(0.0f, 20.0f) / zoomFactor;
+        progressBar->SetBasePosition(offset);
+
         if(zoomFactor < 0.5f)
         {
             zoomFactor = 0.5f;

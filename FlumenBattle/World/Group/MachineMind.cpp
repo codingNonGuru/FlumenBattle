@@ -131,6 +131,12 @@ namespace world::group
                         group.money += 200;
                         group.isAlive = true;
                         group.GainExperience(1000);
+
+                        if(group.hasMission == true)
+                        {
+                            group.home->AddExplorationProgress(group.tile, 20);
+                            group.hasMission = false;
+                        }
                     }
                     else if(fightAttempt.IsNormalSuccess() == true)
                     {
@@ -138,6 +144,12 @@ namespace world::group
                         group.money += 100;
                         group.isAlive = true;
                         group.GainExperience(1000);
+
+                        if(group.hasMission == true)
+                        {
+                            group.home->AddExplorationProgress(group.tile, 10);
+                            group.hasMission = false;
+                        }
                     }
                     else if(fightAttempt.IsRegularFailure() == true)
                     {
@@ -170,12 +182,33 @@ namespace world::group
                 {
                     if(group.tile == group.home->GetLocation())
                     {
+                        WorldTile *tile = nullptr;
+
+                        const auto &explorations = group.home->GetExplorations();
+                        for(auto &exploration : explorations)
+                        {
+                            if(exploration.IsDone == true)
+                                continue;
+
+                            tile = exploration.Tile;
+                            break;
+                        }
+
+                        if(tile != nullptr)
+                        {
+                            group.hasMission = true;
+                            return tile;
+                        }
+
                         auto nearbyTiles = group.tile->GetTileRing(3);
                         while(true)
                         {
                             auto randomTile = *nearbyTiles.Tiles.GetRandom();
                             if(randomTile->HasRelief(world::WorldReliefs::SEA) == false)
+                            {
+                                group.hasMission = false;
                                 return randomTile;
+                            }
                         }
                     }
                     else
@@ -184,7 +217,9 @@ namespace world::group
                     }
                 } ();
 
-                auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(destination, group.tile, 4);
+                auto distance = group.tile->GetDistanceTo(*destination);
+
+                auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(destination, group.tile, distance + 1);
 
                 group.travelActionData.PlannedDestinationCount = pathData.Tiles.GetSize() - 1;
                 for(int i = 1; i < pathData.Tiles.GetSize(); ++i)

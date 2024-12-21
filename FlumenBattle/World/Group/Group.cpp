@@ -47,6 +47,8 @@ namespace world::group
         this->isAlive = true;
         this->hasAchievedObjective = false;
 
+        this->hasMission = false;
+
         if(this->type->Class == GroupClasses::ADVENTURER)
         {
             this->money = utility::GetRandom(100, 150);

@@ -715,10 +715,15 @@ void WorldTileModel::RenderBorderExpansionMap()
 
             if(hasAtLeastOneNeighbour == true)
             {
-                if(playerSettlement->CanAffordToExpandHere(tile) == true)
+                bool canAffordToExpand = playerSettlement->CanAffordToExpandHere(tile);
+                bool hasExplored = playerSettlement->HasExplored(tile);
+
+                if(canAffordToExpand == true && hasExplored == true)
                     return Color::GREEN;
-                else
+                else if(canAffordToExpand == true || hasExplored == true)
                     return Color::YELLOW;
+                else
+                    return Color::ORANGE;
             }
             else
                 return Color::RED;
@@ -732,6 +737,24 @@ void WorldTileModel::RenderBorderExpansionMap()
     }
 
     shader->Unbind();
+
+    auto &explorations = playerSettlement->GetExplorations();
+
+    for(auto &exploration : explorations)
+    {
+        static const auto backpackSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("BackpackStroked"));
+
+        static const auto mapSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("MapStroked"));
+
+        if(exploration.IsDone == true)
+        {
+            mapSprite->Draw(camera, {exploration.Tile->Position, Scale2(0.7f), Opacity(1.0f), DrawOrder(-2)});
+        }
+        else
+        {
+            backpackSprite->Draw(camera, {exploration.Tile->Position, Scale2(0.7f), Opacity(1.0f), DrawOrder(-2)});
+        }
+    }
 }
 
 void WorldTileModel::RenderSettleModeMap()
@@ -829,6 +852,9 @@ void WorldTileModel::RenderExploreMap()
         if(playerSettlement->CanExploreHere(tile) == false)
             continue;
 
+        if(playerSettlement->IsExploring(tile) == true)
+            continue;
+
         shader->SetConstant(tile->Position, "hexPosition");
 
         auto color = [&]
@@ -860,11 +886,11 @@ void WorldTileModel::RenderExploreMap()
 
         if(exploration.IsDone == true)
         {
-            mapSprite->Draw(camera, {exploration.Tile->Position, Scale2(1.0f), Opacity(1.0f), DrawOrder(-2)});
+            mapSprite->Draw(camera, {exploration.Tile->Position, Scale2(0.7f), Opacity(1.0f), DrawOrder(-2)});
         }
         else
         {
-            backpackSprite->Draw(camera, {exploration.Tile->Position, Scale2(1.0f), Opacity(1.0f), DrawOrder(-2)});
+            backpackSprite->Draw(camera, {exploration.Tile->Position, Scale2(0.7f), Opacity(1.0f), DrawOrder(-2)});
         }
 
         /*static const auto alphaSpriteShader = ShaderManager::GetShader("AlphaSprite");

@@ -166,7 +166,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
 
     travelBackdrop = ElementFactory::BuildElement <Element>
     (
-        {Size(200, 50), DrawOrder(10), {Position2(0.0f, 200.0f), canvas}, {false}, Opacity(0.6f)}
+        {Size(220, 50), DrawOrder(10), {Position2(0.0f, 200.0f), canvas}, {false}, Opacity(0.6f)}
     );
 
     travelLabel = ElementFactory::BuildText
@@ -839,6 +839,16 @@ void WorldInterface::Update()
     else if(controller->IsSettleModeActive() == true)
     {
         travelLabel->Setup("Settle mode");
+        travelBackdrop->Enable();
+    }
+    else if(controller->IsBorderExpandActive() == true)
+    {
+        travelLabel->Setup("Grow your borders");
+        travelBackdrop->Enable();
+    }
+    else if(controller->IsExploreModeActive() == true)
+    {
+        travelLabel->Setup("Map your environs");
         travelBackdrop->Enable();
     }
     else

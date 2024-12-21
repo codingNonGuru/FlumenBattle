@@ -411,6 +411,9 @@ bool Settlement::CanExpandHere(WorldTile *tile) const
     if(tile->IsOwned() == true)
         return false;
 
+    if(HasExplored(tile) == false)  
+        return false;
+
     static const auto BORDER_EXPANSION_MAX_DISTANCE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::BORDER_EXPANSION_MAX_DISTANCE).Integer;
 
     if(GetLocation()->GetDistanceTo(*tile) > BORDER_EXPANSION_MAX_DISTANCE)
@@ -1014,9 +1017,6 @@ container::Array <world::WorldTile *> &Settlement::GetExploredTiles() const
 
 bool Settlement::CanExploreHere(WorldTile *tile) const
 {
-    if(IsExploring(tile) == true)
-        return false;
-
     if(tile->IsOwned() == true)
         return false;
 

@@ -250,6 +250,8 @@ void HumanMind::HandleBorderExpansion()
 
     playerSettlement->cultureGrowth -= playerSettlement->GetExpansionCost(hoveredTile);
 
+    playerSettlement->RemoveExploration(hoveredTile);
+
     OnPlayerSettlementBorderExpanded.Invoke();
 }
 
@@ -296,7 +298,17 @@ void HumanMind::HandleExplorationStarted()
     if(playerSettlement->CanExploreHere(hoveredTile) == false)
         return;
 
-    playerSettlement->StartExploring(hoveredTile);
+    if(playerSettlement->IsExploring(hoveredTile) == true)
+    {
+        if(playerSettlement->HasExplored(hoveredTile) == false)
+        {
+            playerSettlement->RemoveExploration(hoveredTile);
+        }
+    }
+    else
+    {
+        playerSettlement->StartExploring(hoveredTile);
+    }
 
     OnExplorationStarted.Invoke();
 }
