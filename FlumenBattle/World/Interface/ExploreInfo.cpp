@@ -16,7 +16,7 @@ static const auto BASE_SIZE = Scale2(96.0f, 32.0f);
 
 void ExploreInfoSet::HandleConfigure()
 {
-    infos.Initialize(64);
+    infos.Initialize(16);
 
     for(int i = 0; i < infos.GetCapacity(); ++i)
     {
@@ -42,26 +42,18 @@ void ExploreInfoSet::HandleExploreModeEntered()
         info->Disable();
     }
 
-    if(WorldController::Get()->IsExploreModeActive() == true)
+    const auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
+
+    if(WorldController::Get()->IsExploreModeActive() == true && playerSettlement->IsExploring() == true)
     {
         Enable();
 
         auto info = infos.GetStart();
-
-        const auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
         
-        auto &explorations = playerSettlement->GetExplorations();
+        auto &exploration = playerSettlement->GetCurrentExploration();
 
-        for(auto &exploration : explorations)
-        {
-            if(exploration.IsDone == true)
-                continue;
-
-            (*info)->Setup(&exploration);
-            (*info)->Enable();
-
-            info++;
-        }
+        (*info)->Setup(&exploration);
+        (*info)->Enable();
     }
     else
     {
@@ -80,7 +72,7 @@ void ExploreInfo::HandleConfigure()
 
 void ExploreInfo::HandleUpdate()
 {
-    if(exploration->IsDone == true)
+    if(exploration->Tile == nullptr)
     {
         Disable();
         return;
@@ -110,7 +102,7 @@ void ExploreInfo::HandleUpdate()
     }
 }
 
-void ExploreInfo::Setup(settlement::Exploration *exploration)
+void ExploreInfo::Setup(const settlement::Exploration *exploration)
 {
     this->exploration = exploration;
 

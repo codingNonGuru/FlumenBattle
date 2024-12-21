@@ -738,22 +738,21 @@ void WorldTileModel::RenderBorderExpansionMap()
 
     shader->Unbind();
 
-    auto &explorations = playerSettlement->GetExplorations();
+    auto &finishedExplorations = playerSettlement->GetFinishedExplorations();
 
-    for(auto &exploration : explorations)
+    for(auto &exploration : finishedExplorations)
+    {
+        static const auto mapSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("MapStroked"));
+
+        mapSprite->Draw(camera, {exploration.Tile->Position, Scale2(0.7f), Opacity(1.0f), DrawOrder(-2)});
+    }
+
+    auto currentExploration = playerSettlement->GetCurrentlyExploredTile();
+    if(currentExploration != nullptr)
     {
         static const auto backpackSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("BackpackStroked"));
 
-        static const auto mapSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("MapStroked"));
-
-        if(exploration.IsDone == true)
-        {
-            mapSprite->Draw(camera, {exploration.Tile->Position, Scale2(0.7f), Opacity(1.0f), DrawOrder(-2)});
-        }
-        else
-        {
-            backpackSprite->Draw(camera, {exploration.Tile->Position, Scale2(0.7f), Opacity(1.0f), DrawOrder(-2)});
-        }
+        backpackSprite->Draw(camera, {currentExploration->Position, Scale2(0.7f), Opacity(1.0f), DrawOrder(-2)});
     }
 }
 
@@ -876,35 +875,21 @@ void WorldTileModel::RenderExploreMap()
 
     shader->Unbind();
 
-    auto &explorations = playerSettlement->GetExplorations();
+    auto &finishedExplorations = playerSettlement->GetFinishedExplorations();
 
-    for(auto &exploration : explorations)
+    for(auto &exploration : finishedExplorations)
+    {
+        static const auto mapSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("MapStroked"));
+
+        mapSprite->Draw(camera, {exploration.Tile->Position, Scale2(0.7f), Opacity(1.0f), DrawOrder(-2)});
+    }
+
+    auto currentExploration = playerSettlement->GetCurrentlyExploredTile();
+    if(currentExploration != nullptr)
     {
         static const auto backpackSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("BackpackStroked"));
 
-        static const auto mapSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("MapStroked"));
-
-        if(exploration.IsDone == true)
-        {
-            mapSprite->Draw(camera, {exploration.Tile->Position, Scale2(0.7f), Opacity(1.0f), DrawOrder(-2)});
-        }
-        else
-        {
-            backpackSprite->Draw(camera, {exploration.Tile->Position, Scale2(0.7f), Opacity(1.0f), DrawOrder(-2)});
-        }
-
-        /*static const auto alphaSpriteShader = ShaderManager::GetShader("AlphaSprite");
-
-        static const auto bannerFrameCore = new Sprite(alphaSpriteShader, ::render::TextureManager::GetTexture("BannerCore"));
-
-        const auto banner = playerSettlement->GetBanner();
-        bannerFrameCore->SetColor(&banner);
-
-        bannerFrameCore->Draw(camera, {exploration.Tile->Position + Position2(0.0f, -WORLD_TILE_SIZE * 0.5f), Scale2(1.0f), Opacity(1.0f), DrawOrder(-2)});
-
-        static const auto bannerFrameSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("BannerFrame"));
-
-        bannerFrameSprite->Draw(camera, {exploration.Tile->Position + Position2(0.0f, -WORLD_TILE_SIZE * 0.5f), Scale2(1.0f), Opacity(1.0f), DrawOrder(-2)});*/
+        backpackSprite->Draw(camera, {currentExploration->Position, Scale2(0.7f), Opacity(1.0f), DrawOrder(-2)});
     }
 }
 

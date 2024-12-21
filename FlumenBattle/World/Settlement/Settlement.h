@@ -83,9 +83,14 @@ namespace world::settlement
 
         int Progress;
 
-        bool IsDone;
-
         float GetProgressFactor() const;
+
+        bool operator == (const WorldTile *tile) const {return Tile == tile;}
+    };
+
+    struct ExploreResult
+    {
+        WorldTile *Tile;
 
         bool operator == (const WorldTile *tile) const {return Tile == tile;}
     };
@@ -192,7 +197,9 @@ namespace world::settlement
             bool IsToBeVisited = false;
         } pathData;
 
-        container::Pool <Exploration> explorations;
+        container::Pool <ExploreResult> finishedExplorations;
+
+        Exploration currentExploration;
 
         void Initialize(Word, Color, world::WorldTile *, const Race *);
 
@@ -391,18 +398,26 @@ namespace world::settlement
 
         bool IsExploring(WorldTile *) const;
 
+        bool IsExploring() const;
+
+        const Exploration &GetCurrentExploration() {return currentExploration;}
+
+        WorldTile *GetCurrentlyExploredTile() {return currentExploration.Tile;}
+
         bool HasExplored(WorldTile *) const;
 
         container::Array <WorldTile *> &GetExploredTiles() const;
 
-        const container::Pool <Exploration> &GetExplorations() const {return explorations;}
+        const container::Pool <ExploreResult> &GetFinishedExplorations() const {return finishedExplorations;}
 
         bool CanExploreHere(WorldTile *) const;
 
         void StartExploring(WorldTile *);
 
-        void RemoveExploration(WorldTile *);
+        void StopExploring();
 
-        void AddExplorationProgress(WorldTile *, int);
+        void RemoveFinishedExploration(WorldTile *);
+
+        void AddExplorationProgress(int);
     };
 }

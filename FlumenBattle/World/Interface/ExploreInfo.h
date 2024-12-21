@@ -18,7 +18,7 @@ namespace world::interface
 {
     class ExploreInfo : public Element
     {
-        settlement::Exploration *exploration;
+        const settlement::Exploration *exploration;
 
         ProgressBar *progressBar;
 
@@ -27,7 +27,7 @@ namespace world::interface
         void HandleUpdate() override;
 
     public:
-        void Setup(settlement::Exploration *);
+        void Setup(const settlement::Exploration *);
     };
 
     class ExploreInfoSet : public Element

@@ -134,7 +134,7 @@ namespace world::group
 
                         if(group.hasMission == true)
                         {
-                            group.home->AddExplorationProgress(group.tile, 20);
+                            group.home->AddExplorationProgress(20);
                             group.hasMission = false;
                         }
                     }
@@ -147,7 +147,7 @@ namespace world::group
 
                         if(group.hasMission == true)
                         {
-                            group.home->AddExplorationProgress(group.tile, 10);
+                            group.home->AddExplorationProgress(10);
                             group.hasMission = false;
                         }
                     }
@@ -182,22 +182,11 @@ namespace world::group
                 {
                     if(group.tile == group.home->GetLocation())
                     {
-                        WorldTile *tile = nullptr;
-
-                        const auto &explorations = group.home->GetExplorations();
-                        for(auto &exploration : explorations)
-                        {
-                            if(exploration.IsDone == true)
-                                continue;
-
-                            tile = exploration.Tile;
-                            break;
-                        }
-
-                        if(tile != nullptr)
+                        const auto currentExploration = group.home->GetCurrentlyExploredTile();
+                        if(currentExploration != nullptr)
                         {
                             group.hasMission = true;
-                            return tile;
+                            return currentExploration;
                         }
 
                         auto nearbyTiles = group.tile->GetTileRing(3);

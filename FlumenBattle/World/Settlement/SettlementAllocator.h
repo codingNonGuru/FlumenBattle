@@ -35,7 +35,7 @@ namespace world::settlement
     struct Modifier;
     struct Resource;
     struct Need;
-    struct Exploration;
+    struct ExploreResult;
 
     class SettlementAllocator : public core::Singleton <SettlementAllocator>
     {
@@ -93,7 +93,7 @@ namespace world::settlement
 
         container::ArrayAllocator <Need>::Memory needMemory;
 
-        container::PoolAllocator <Exploration>::Memory explorationMemory;
+        container::PoolAllocator <ExploreResult>::Memory explorationMemory;
 
 
 
@@ -141,7 +141,7 @@ namespace world::settlement
 
         container::ArrayAllocator <Need> needAllocator;
 
-        container::PoolAllocator <Exploration> explorationAllocator;
+        container::PoolAllocator <ExploreResult> explorationAllocator;
 
 
 

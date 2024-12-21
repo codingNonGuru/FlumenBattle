@@ -104,7 +104,7 @@ void SettlementAllocator::PreallocateMaximumMemory()
 
     needMemory = container::ArrayAllocator <Need>::PreallocateMemory (settlementCount, POPULATION_NEED_COUNT);
 
-    explorationMemory = container::PoolAllocator <Exploration>::PreallocateMemory (settlementCount, EXPLORATIONS_PER_SETTLEMENT);
+    explorationMemory = container::PoolAllocator <ExploreResult>::PreallocateMemory (settlementCount, EXPLORATIONS_PER_SETTLEMENT);
 }
 
 void SettlementAllocator::AllocateWorldMemory(int worldSize)
@@ -161,7 +161,7 @@ void SettlementAllocator::AllocateWorldMemory(int worldSize)
 
     needAllocator = container::ArrayAllocator <Need> (settlementCount, POPULATION_NEED_COUNT, needMemory);
 
-    explorationAllocator = container::PoolAllocator <Exploration> (settlementCount, EXPLORATIONS_PER_SETTLEMENT, explorationMemory);
+    explorationAllocator = container::PoolAllocator <ExploreResult> (settlementCount, EXPLORATIONS_PER_SETTLEMENT, explorationMemory);
 }
 
 Settlement * SettlementAllocator::Allocate()
@@ -207,7 +207,7 @@ Settlement * SettlementAllocator::Allocate()
 
     PopAllocator::Allocate(needAllocator, settlement->popHandler);
 
-    settlement->explorations.Initialize(explorationAllocator);
+    settlement->finishedExplorations.Initialize(explorationAllocator);
 
     return settlement;
 }

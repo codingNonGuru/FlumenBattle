@@ -66,6 +66,8 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location,
 
     this->tradeDestination = nullptr;
 
+    this->currentExploration = {nullptr, 0};
+
     *this->currentProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
 
     auto tile = tiles.Add();
@@ -987,13 +989,18 @@ bool Settlement::HasAnySettlers() const
 
 bool Settlement::IsExploring(WorldTile *tile) const
 {
-    return explorations.Find(tile) != nullptr;
+    return currentExploration.Tile == tile;
+}
+
+bool Settlement::IsExploring() const
+{
+    return currentExploration.Tile != nullptr;
 }
 
 bool Settlement::HasExplored(WorldTile *tile) const
 {
-    auto exploration = explorations.Find(tile);
-    return exploration != nullptr && exploration->IsDone == true;
+    auto exploration = finishedExplorations.Find(tile);
+    return exploration != nullptr;
 }
 
 container::Array <world::WorldTile *> &Settlement::GetExploredTiles() const
@@ -1004,12 +1011,9 @@ container::Array <world::WorldTile *> &Settlement::GetExploredTiles() const
 
     exploredTiles.Reset();
 
-    for(auto &exploration : explorations)
+    for(auto &exploration : finishedExplorations)
     {
-        if(exploration.IsDone == true)
-        {
-            *exploredTiles.Add() = exploration.Tile;
-        }
+        *exploredTiles.Add() = exploration.Tile;
     }
 
     return exploredTiles;
@@ -1023,7 +1027,7 @@ bool Settlement::CanExploreHere(WorldTile *tile) const
     if(GetLocation()->GetDistanceTo(*tile) > MAXIMUM_COLONIZATION_RANGE)
         return false;
 
-    if(explorations.IsFull() == true)
+    if(finishedExplorations.IsFull() == true)
         return false;
 
     return true;
@@ -1031,26 +1035,29 @@ bool Settlement::CanExploreHere(WorldTile *tile) const
 
 void Settlement::StartExploring(WorldTile *tile)
 {
-    *explorations.Add() = {tile, 0, false};
+    currentExploration = {tile, 0};
 }
 
-void Settlement::RemoveExploration(WorldTile *tile)
+void Settlement::StopExploring()
 {
-    explorations.Remove(tile);
+    currentExploration.Tile = nullptr;
+}
+
+void Settlement::RemoveFinishedExploration(WorldTile *tile)
+{
+    finishedExplorations.Remove(tile);
 }
 
 #define EXPLORATION_SUCCESS_THRESHOLD 100
 
-void Settlement::AddExplorationProgress(WorldTile *tile, int progress)
+void Settlement::AddExplorationProgress(int progress)
 {
-    auto exploration = explorations.Find(tile);
-    if(exploration->IsDone == true)
-        return;
-
-    exploration->Progress += progress;
-    if(exploration->Progress > EXPLORATION_SUCCESS_THRESHOLD)
+    currentExploration.Progress += progress;
+    if(currentExploration.Progress > EXPLORATION_SUCCESS_THRESHOLD)
     {
-        exploration->IsDone = true;
+        *finishedExplorations.Add() = {currentExploration.Tile};
+
+        currentExploration = {nullptr, 0};
     }
 }
 

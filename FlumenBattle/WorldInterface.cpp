@@ -382,7 +382,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
             DrawOrder(5), 
             {canvas}
         },
-        64
+        16
     );
 
     WorldController::Get()->OnResourceDisplayPressed += {this, &WorldInterface::HandleResourceDisplayPressed};
