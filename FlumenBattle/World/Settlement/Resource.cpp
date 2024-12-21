@@ -1,6 +1,7 @@
 #include "Resource.h"
 #include "FlumenBattle/World/Settlement/Types.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Settlement/Building.h"
 
@@ -8,7 +9,7 @@ using namespace world::settlement;
 
 struct Food : public ResourceType
 {
-    Food() : ResourceType(ResourceTypes::FOOD, "Food", "Radish", 10, true) {PopulationConsumption = 1; IsProductionTileBased = true;}
+    Food() : ResourceType(ResourceTypes::FOOD, "Food", "Radish", 10) {PopulationConsumption = 1; IsProductionTileBased = true;}
 };
 
 struct Timber : public ResourceType
@@ -132,7 +133,9 @@ int Resource::GetProductionFromTiles(const Settlement &settlement) const
 
         production += tile.Tile->GetResource(Type->Type);
 
-        if(Type->DoesImprovementWorkAnywhere == true)
+        production += tile.GetImprovementBonus(Type->Type);
+
+        /*if(Type->DoesImprovementWorkAnywhere == true)
         {
             if(tile.IsBuilt)
             {
@@ -145,7 +148,7 @@ int Resource::GetProductionFromTiles(const Settlement &settlement) const
             {
                 production++;
             }
-        }
+        }*/
 
         /*if(tile.Tile->Biome->Type == world::WorldBiomes::DESERT)
         {

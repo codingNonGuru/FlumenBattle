@@ -6,7 +6,9 @@
 #include "HumanMind.h"
 #include "FlumenBattle/World/Polity/Polity.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
+#include "FlumenBattle/World/Settlement/TileImprovement.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Group/Group.h"
 #include "FlumenBattle/WorldInterface.h"
@@ -32,6 +34,10 @@ struct Command
 #define INSTRUCTIONS_PER_SETTLEMENT 64
 
 #define INSTRUCTION_SETS_PER_POLITY 128
+
+static const auto IMPROVEMENT_SWIPE_LEFT_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_SEMICOLON};
+
+static const auto IMPROVEMENT_SWIPE_RIGHT_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_APOSTROPHE};
 
 static auto commands = container::Array <Command> (MAXIMUM_COMMAND_COUNT);
 
@@ -72,6 +78,11 @@ void HumanMind::EnableInput()
     canvas->GetLeftClickEvents() += {this, &HumanMind::HandleTileSettled};
 
     canvas->GetLeftClickEvents() += {this, &HumanMind::HandleExplorationStarted};
+
+    canvas->GetLeftClickEvents() += {this, &HumanMind::HandleTileImproved};
+
+    InputHandler::RegisterEvent(IMPROVEMENT_SWIPE_LEFT_KEY, {this, &HumanMind::HandleImproveSwipeLeft});
+    InputHandler::RegisterEvent(IMPROVEMENT_SWIPE_RIGHT_KEY, {this, &HumanMind::HandleImproveSwipeRight});
 }
 
 void HumanMind::DisableInput()
@@ -84,6 +95,11 @@ void HumanMind::DisableInput()
     canvas->GetLeftClickEvents() -= {this, &HumanMind::HandleTileSettled};
 
     canvas->GetLeftClickEvents() -= {this, &HumanMind::HandleExplorationStarted};
+
+    canvas->GetLeftClickEvents() -= {this, &HumanMind::HandleTileImproved};
+
+    InputHandler::UnregisterEvent(IMPROVEMENT_SWIPE_LEFT_KEY);
+    InputHandler::UnregisterEvent(IMPROVEMENT_SWIPE_RIGHT_KEY);
 }
 
 void HumanMind::MakeDecision(Polity &polity) const
@@ -245,7 +261,7 @@ void HumanMind::HandleBorderExpansion()
 
     auto newTile = playerSettlement->tiles.Add();
     newTile->Tile = hoveredTile;
-    newTile->IsBuilt = false;
+    newTile->ResetImprovement();
     newTile->IsWorked = false;
 
     playerSettlement->cultureGrowth -= playerSettlement->GetExpansionCost(hoveredTile);
@@ -308,6 +324,51 @@ void HumanMind::HandleExplorationStarted()
     }
 
     OnExplorationStarted.Invoke();
+}
+
+auto improvementTypeIndex = 0; 
+
+void HumanMind::HandleImproveSwipeLeft()
+{
+    improvementTypeIndex--;
+
+    if(improvementTypeIndex < 0)
+    {
+        improvementTypeIndex = (int)settlement::TileImprovements::NONE - 1;
+    }
+}
+
+void HumanMind::HandleImproveSwipeRight()
+{
+    improvementTypeIndex++;
+
+    if(improvementTypeIndex == (int)settlement::TileImprovements::NONE)
+    {
+        improvementTypeIndex = 0;
+    }
+}
+
+void HumanMind::HandleTileImproved()
+{
+    if(WorldController::Get()->IsTileDevelopModeActive() == false)
+        return;
+
+    const auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
+
+    const auto improvementType = settlement::TileImprovementFactory::Get()->BuildImprovementType(settlement::TileImprovements(improvementTypeIndex));
+
+    const auto hoveredTile = WorldController::Get()->GetHoveredTile();
+    if(playerSettlement->CanImproveHere(hoveredTile, improvementType->Type) == false)
+        return;
+
+    playerSettlement->StartImprovingTile(hoveredTile, improvementType->Type);
+
+    //OnExplorationStarted.Invoke();
+}
+
+settlement::TileImprovements HumanMind::GetProposedImprovement() 
+{
+    return settlement::TileImprovements(improvementTypeIndex);
 }
 
 settlement::Shipment currentShipment;

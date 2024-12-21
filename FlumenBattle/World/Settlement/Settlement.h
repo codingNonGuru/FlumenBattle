@@ -52,17 +52,7 @@ namespace world::settlement
     class Path;
     struct Condition;
     class Building;
-
-    struct SettlementTile
-    {
-        world::WorldTile * Tile;
-
-        bool IsWorked;
-
-        bool IsBuilt;
-
-        bool operator==(const world::WorldTile *otherTile) {return Tile == otherTile;}
-    };
+    struct SettlementTile;
 
     struct Link
     {
@@ -93,6 +83,13 @@ namespace world::settlement
         WorldTile *Tile;
 
         bool operator == (const WorldTile *tile) const {return Tile == tile;}
+    };
+
+    struct ImprovementTarget
+    {
+        SettlementTile *Tile;
+
+        TileImprovements ImprovementType;
     };
 
     class Settlement
@@ -200,6 +197,8 @@ namespace world::settlement
         container::Pool <ExploreResult> finishedExplorations;
 
         Exploration currentExploration;
+
+        ImprovementTarget currentImprovement;
 
         void Initialize(Word, Color, world::WorldTile *, const Race *);
 
@@ -419,5 +418,9 @@ namespace world::settlement
         void RemoveFinishedExploration(WorldTile *);
 
         void AddExplorationProgress(int);
+
+        bool CanImproveHere(WorldTile *, TileImprovements) const;
+
+        void StartImprovingTile(WorldTile *, TileImprovements);
     };
 }

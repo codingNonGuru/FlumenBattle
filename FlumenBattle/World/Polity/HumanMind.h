@@ -12,6 +12,7 @@ namespace world::settlement
     class Shipment;
     class Building;
     struct SettlementTile;
+    enum class TileImprovements;
 }
 
 namespace world
@@ -61,6 +62,12 @@ namespace world::polity
 
         void HandleExplorationStarted();
 
+        void HandleTileImproved();
+
+        void HandleImproveSwipeLeft();
+
+        void HandleImproveSwipeRight();
+
         void UpdateSettlementWorkforce(settlement::Settlement *) const;
 
         void HireWorker(settlement::Settlement *, settlement::SettlementTile *);
@@ -99,5 +106,7 @@ namespace world::polity
         void RegisterPopIncrease(settlement::Settlement *) const override;
 
         const WorldTile *GetSettleTarget(settlement::Settlement *) const;
+
+        settlement::TileImprovements GetProposedImprovement();
     };
 }

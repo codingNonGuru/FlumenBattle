@@ -123,4 +123,14 @@ namespace world::settlement
         WELCOMING,
         FRIENDLY
     };
+
+    enum class TileImprovements
+    {   
+        FARM,
+        PASTURE,
+        CLAY_PIT,
+        MINE,
+        SAW_MILL,
+        NONE
+    };
 }

@@ -1,6 +1,7 @@
 #include "MachineMind.h"
 #include "FlumenBattle/World/Polity/Polity.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/WorldBiome.h"
@@ -196,7 +197,7 @@ void MachineMind::GrowBorders(settlement::Settlement *settlement)
         auto tile = settlement->tiles.Add();
         tile->Tile = newTile;
         tile->IsWorked = false;
-        tile->IsBuilt = false;
+        tile->ResetImprovement();
 
         newTile->AssertOwnership(settlement);
     }
@@ -208,7 +209,7 @@ void MachineMind::GrowBorders(settlement::Settlement *settlement)
             auto tile = settlement->tiles.Add();
             tile->Tile = newTile;
             tile->IsWorked = false;
-            tile->IsBuilt = false;
+            tile->ResetImprovement();
 
             newTile->AssertOwnership(settlement);
         }

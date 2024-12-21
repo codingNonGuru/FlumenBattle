@@ -8,6 +8,7 @@
 #include "FarmModel.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/WorldMap.h"
 #include "FlumenBattle/World/Render/WorldTileModel.h"
@@ -63,7 +64,7 @@ void FarmModel::TransferData()
          
         for(auto tile : settlement.GetTiles())
         {
-            if(tile.IsBuilt == false)
+            if(tile.IsImproved() == false)
                 continue;
 
             *positions.Add() = tile.Tile->Position;

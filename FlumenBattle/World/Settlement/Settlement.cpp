@@ -4,6 +4,8 @@
 #include "FlumenCore/Container/Map.hpp"
 
 #include "Settlement.h"
+#include "FlumenBattle/World/Settlement/SettlementTile.h"
+#include "FlumenBattle/World/Settlement/TileImprovement.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/WorldBiome.h"
 #include "FlumenBattle/World/WorldScene.h"
@@ -68,12 +70,14 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location,
 
     this->currentExploration = {nullptr, 0};
 
+    this->currentImprovement = {nullptr};
+
     *this->currentProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
 
     auto tile = tiles.Add();
     tile->Tile = location;
     tile->IsWorked = true;
-    tile->IsBuilt = false;
+    tile->ResetImprovement();
 
     auto nearbyTiles = location->GetNearbyTiles(1);
     for(auto &nearbyTile : nearbyTiles)
@@ -84,7 +88,7 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location,
         tile = tiles.Add();
         tile->Tile = nearbyTile;
         tile->IsWorked = false;
-        tile->IsBuilt = false;
+        tile->ResetImprovement();
     }
 
     for(auto &tile : tiles)
@@ -326,7 +330,7 @@ void Settlement::SetProduction(ProductionOptions option)
     if(inquiry.CanProduce == false)
         return;
 
-    *currentProduction = SettlementProductionFactory::Get()->Create(option, inquiry.Data);
+    *currentProduction = SettlementProductionFactory::Get()->Create(option);
 }
 
 Color Settlement::GetRulerBanner() const
@@ -514,7 +518,7 @@ bool Settlement::IsTileImproved(WorldTile* tile) const
 {
     for(auto &settlementTile : tiles)
     {
-        if(settlementTile.Tile == tile && settlementTile.IsBuilt == true)
+        if(settlementTile.Tile == tile && settlementTile.IsImproved() == true)
             return true;
     }
     
@@ -1031,6 +1035,32 @@ bool Settlement::CanExploreHere(WorldTile *tile) const
         return false;
 
     return true;
+}
+
+bool Settlement::CanImproveHere(WorldTile *tile, TileImprovements type) const
+{
+    if(tile->IsOwned() == false)
+        return false;
+
+    if(tile == GetLocation())
+        return false;
+
+    if(tile->GetOwner() != this)
+        return false;
+
+    auto improvementType = TileImprovementFactory::Get()->BuildImprovementType(type);
+    auto resource = improvementType->Resource;
+    if(tile->GetResource(resource) == 0)
+        return false;
+
+    return true;
+}
+
+void Settlement::StartImprovingTile(WorldTile *tile, TileImprovements improvement)
+{
+    currentImprovement = {tiles.Find(tile), improvement};
+
+    SetProduction(ProductionOptions::FARM);
 }
 
 void Settlement::StartExploring(WorldTile *tile)

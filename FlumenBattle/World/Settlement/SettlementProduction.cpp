@@ -2,6 +2,7 @@
 
 #include "SettlementProduction.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/Group/GroupDynamics.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/WorldScene.h"
@@ -46,10 +47,11 @@ ProductionInquiry SettlementProduction::CanProduce(Settlement &settlement, Produ
     }
     case ProductionOptions::FARM:
     {
-        SettlementTile *improvementTarget = nullptr;
+        return {true};
+        /*SettlementTile *improvementTarget = nullptr;
         for(auto &tile : settlement.GetTiles())
         {
-            if(tile.Tile->HasBiome(world::WorldBiomes::STEPPE) && tile.IsBuilt == false && tile.Tile != settlement.GetLocation())
+            if(tile.Tile->HasBiome(world::WorldBiomes::STEPPE) && tile.IsImproved() == false && tile.Tile != settlement.GetLocation())
             {
                 improvementTarget = &tile;
             }
@@ -62,7 +64,7 @@ ProductionInquiry SettlementProduction::CanProduce(Settlement &settlement, Produ
         else
         {
             return {true, {improvementTarget}};
-        }
+        }*/
     }
     case ProductionOptions::SEWAGE:
         return {settlement.HasBuilding(BuildingTypes::SEWAGE) == false};
@@ -323,8 +325,11 @@ void ProductionFinisher::FinishWalls(Settlement &settlement)
 
 void ProductionFinisher::FinishFarm(Settlement &settlement)
 {
-    auto target = settlement.currentProduction->data.improvementTarget;
-    target->IsBuilt = true;
+    settlement.currentImprovement.Tile->AddImprovement(settlement.currentImprovement.ImprovementType);
+
+    settlement.currentImprovement = {nullptr};
+    //auto target = settlement.currentProduction->data.improvementTarget;
+    //target->IsBuilt = true;
 }      
 
 void ProductionFinisher::FinishSettlers(Settlement &settlement)

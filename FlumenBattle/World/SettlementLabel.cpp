@@ -9,6 +9,7 @@
 #include "SettlementLabel.h"
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/Settlement/Path.h"
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
 #include "FlumenBattle/World/WorldTile.h"
@@ -494,7 +495,7 @@ void HoverExtension::HandleUpdate()
     auto improvementCount = 0;
     for(auto &tile : settlement->GetTiles())
     {
-        if(tile.IsBuilt)
+        if(tile.IsImproved() == true)
             improvementCount++;
     }
 

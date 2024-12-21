@@ -1,5 +1,6 @@
 #include "Building.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/Disaster/Earthquake.h"
 #include "FlumenBattle/Utility/Utility.h"
 
@@ -402,7 +403,7 @@ void BuildingDamager::DamageImprovements(const disaster::Earthquake &earthquake,
     auto &tiles = settlement.tiles;
     for(auto &tile : tiles)
     {
-        if(tile.IsBuilt == false)
+        if(tile.IsImproved() == false)
         {
             continue;
         }
@@ -413,7 +414,7 @@ void BuildingDamager::DamageImprovements(const disaster::Earthquake &earthquake,
             continue;
         }
 
-        tile.IsBuilt = false;
+        tile.ResetImprovement();
     }
 }
 

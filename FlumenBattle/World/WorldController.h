@@ -57,6 +57,8 @@ namespace world
 
         bool isExploreModeActive {false};
 
+        bool isTileDevelopModeActive {false};
+
         bool canColonize {true};
 
         struct CharacterSelection
@@ -134,6 +136,8 @@ namespace world
 
         void HandleExploreModePressed();
 
+        void HandleTileDevelopModePressed();
+
         void EnableHardInput();
 
         void DisableHardInput();
@@ -146,6 +150,8 @@ namespace world
         Delegate OnWorkerPlaceModeToggled;
 
         Delegate OnExploreModeToggled;
+
+        Delegate OnTileDevelopModeEnabled;
 
         void Initialize();
 
@@ -206,6 +212,8 @@ namespace world
         bool IsSettleModeActive() const {return isSettleModeActive;}
 
         bool IsExploreModeActive() const {return isExploreModeActive;}
+
+        bool IsTileDevelopModeActive() const {return isTileDevelopModeActive;}
 
         utility::PathData <WorldTile> GetPlannedPath() const;
 

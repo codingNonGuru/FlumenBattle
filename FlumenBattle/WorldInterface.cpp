@@ -45,6 +45,7 @@
 #include "FlumenBattle/World/Interface/TileResourceInfo.h"
 #include "FlumenBattle/World/Interface/InstructionInfo.h"
 #include "FlumenBattle/World/Interface/ExploreInfo.h"
+#include "FlumenBattle/World/Interface/ImprovementCursor.h"
 
 using namespace world;
 
@@ -205,6 +206,16 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
         }
     );
     workerPlaceCursor->FollowMouse();
+
+    auto improvementCursor = ElementFactory::BuildElement <interface::ImprovementCursor>
+    (
+        {
+            DrawOrder(10), 
+            {canvas}, 
+            {"Improve", false}
+        }
+    );
+    improvementCursor->FollowMouse();
 
     itemHoverInfo = ElementFactory::BuildElement <interface::ItemHoverInfo>
     (
@@ -805,7 +816,7 @@ void WorldInterface::Update()
 {
     auto camera = RenderManager::GetCamera(Cameras::WORLD);
 
-    if(camera->GetZoomFactor() > SETTLEMENT_LABEL_ZOOM_LIMIT || WorldController::Get()->ShouldDisplayResources() == true)
+    if(camera->GetZoomFactor() > SETTLEMENT_LABEL_ZOOM_LIMIT || WorldController::Get()->ShouldDisplayResources() == true || WorldController::Get()->IsTileDevelopModeActive() == true)
     {
         for(auto label = settlementLabels.GetStart(); label != settlementLabels.GetEnd(); label++)
         {

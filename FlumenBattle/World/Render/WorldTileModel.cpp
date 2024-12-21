@@ -28,6 +28,8 @@
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Settlement/SettlementTile.h"
+#include "FlumenBattle/World/Settlement/TileImprovement.h"
 #include "FlumenBattle/World/Settlement/Path.h"
 #include "FlumenBattle/World/Polity/Polity.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
@@ -893,6 +895,68 @@ void WorldTileModel::RenderExploreMap()
     }
 }
 
+void WorldTileModel::RenderTileDevelopMap()
+{
+    if(WorldController::Get()->IsTileDevelopModeActive() == false)
+        return;
+
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    const auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
+
+    const auto playerTile = playerGroup->GetTile();
+
+    shader->Bind();
+
+    shader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	shader->SetConstant(0.0f, "depth");
+
+    shader->SetConstant(0.7f, "opacity");
+
+    shader->SetConstant(WORLD_TILE_SIZE, "hexSize");
+
+    auto improvement = polity::HumanMind::Get()->GetProposedImprovement();
+
+    for(auto &tile : playerSettlement->GetTiles())
+    {
+        if(playerSettlement->CanImproveHere(tile.Tile, improvement) == false)
+            continue;
+
+        shader->SetConstant(tile.Tile->Position, "hexPosition");
+
+        auto color = [&]
+        {
+            /*if(playerSettlement->HasAnySettlers() == true)
+            {*/
+                return Color::GREEN;
+            /*}   
+            else
+            {
+                return Color::YELLOW;
+            }*/
+        } ();
+
+        shader->SetConstant(color, "color");
+
+        glDrawArrays(GL_TRIANGLES, 0, 18);
+    }
+
+    shader->Unbind();
+
+    static const auto improvementSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("FarmImprovement"));
+
+    for(auto &tile : playerSettlement->GetTiles())
+    {
+        auto improvement = tile.GetImprovementType();
+        if(improvement == nullptr)
+            continue;
+
+        improvementSprite->SetTexture(improvement->TextureName);
+
+        improvementSprite->Draw(camera, {tile.Tile->Position, Scale2(1.0f), Opacity(1.0f), DrawOrder(-2)});
+    }
+}
+
 void WorldTileModel::Render() 
 {
     static auto index = 0;
@@ -1006,6 +1070,8 @@ void WorldTileModel::Render()
     RenderSettleModeMap();
 
     RenderExploreMap();
+
+    RenderTileDevelopMap();
 
     for(auto &group : *worldScene->groups)
     {

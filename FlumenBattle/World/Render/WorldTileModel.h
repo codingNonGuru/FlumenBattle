@@ -54,6 +54,8 @@ namespace world::render
 
         void RenderExploreMap();
 
+        void RenderTileDevelopMap();
+
     public:
         void Initialize() override;
 
