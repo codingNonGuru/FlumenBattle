@@ -31,6 +31,8 @@ static const Float TRANSITION_TO_BATTLE_DELAY = 0.5f;
 
 static const Float CAMERA_GRAB_SENSITIVITY = 1.7f;
 
+static const Float CENTER_PLAYER_DURATION = 0.1f;
+
 static Camera *camera = nullptr;
 
 const int PLANNED_PATH_MAXIMUM_SIZE = 12;
@@ -114,12 +116,14 @@ namespace world
         InputHandler::RegisterContinualEvent(TRAVEL_MODE_INPUT_KEY, {this, &WorldController::HandleTravelPressed}, {this, &WorldController::HandleTravelReleased});
         InputHandler::RegisterContinualEvent(SCREEN_GRAB_INPUT_KEY, {this, &WorldController::HandleGrabPressed}, {this, &WorldController::HandleGrabReleased});
 
+        InputHandler::RegisterDoubleClickEvent({this, &WorldController::HandleCenterPlayerPressed});
         
-
         //InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_C, {this, &WorldController::HandleColonizationSwitch});
 
         camera = RenderManager::GetCamera(Cameras::WORLD);
         camera->EnableDynamicZooming();
+
+        camera->SetTarget(WorldScene::Get()->GetPlayerGroup()->GetVisualPosition());
     }
 
     void WorldController::HandleColonizationSwitch()
@@ -281,6 +285,11 @@ namespace world
     {
         auto panSpeed = (CAMERA_PAN_SPEED * camera->GetZoomFactor()) * Time::GetDelta();        
         camera->Translate(Direction3(panSpeed, 0.0f, 0.0f));
+    }
+
+    void WorldController::HandleCenterPlayerPressed()
+    {
+        camera->SetTarget(WorldScene::Get()->GetPlayerGroup()->GetVisualPosition(), CENTER_PLAYER_DURATION);
     }
 
     void WorldController::HandleGrabPressed()
@@ -692,6 +701,8 @@ namespace world
 
         InputHandler::UnregisterContinualEvent(SCREEN_GRAB_INPUT_KEY);
         InputHandler::UnregisterContinualEvent(TRAVEL_MODE_INPUT_KEY);
+
+        InputHandler::UnregisterDoubleClickEvent({this, &WorldController::HandleCenterPlayerPressed});
     }
 
     bool WorldController::CanAttackGarrison()

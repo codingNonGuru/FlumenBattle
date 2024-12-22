@@ -102,6 +102,8 @@ namespace world
 
         void HandleGrabReleased();
 
+        void HandleCenterPlayerPressed();
+
         void HandleTravelPressed();
 
         void HandleTravelReleased();

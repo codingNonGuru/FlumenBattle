@@ -5,7 +5,7 @@ using namespace world::settlement;
 
 ExplorationReward ExplorationHandler::GetReward(WorldTile *tile)
 {
-    auto diceRoll = 10;//utility::RollD100Dice();
+    auto diceRoll = utility::RollD100Dice();
     if(diceRoll >= 1 && diceRoll <= 5)
     {
         return {ExplorationRewards::POPULATION};

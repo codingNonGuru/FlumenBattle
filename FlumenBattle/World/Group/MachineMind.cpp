@@ -134,7 +134,7 @@ namespace world::group
 
                         if(group.hasMission == true)
                         {
-                            group.home->AddExplorationProgress(120);
+                            group.home->AddExplorationProgress(20);
                             group.hasMission = false;
                         }
                     }
@@ -147,7 +147,7 @@ namespace world::group
 
                         if(group.hasMission == true)
                         {
-                            group.home->AddExplorationProgress(120);
+                            group.home->AddExplorationProgress(10);
                             group.hasMission = false;
                         }
                     }
