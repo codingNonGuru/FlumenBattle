@@ -922,6 +922,9 @@ void WorldTileModel::RenderTileDevelopMap()
         if(playerSettlement->CanImproveHere(tile.Tile, improvement) == false)
             continue;
 
+        if(playerSettlement->IsImprovingTile(tile.Tile, improvement) == true)
+            continue;
+
         shader->SetConstant(tile.Tile->Position, "hexPosition");
 
         auto color = [&]

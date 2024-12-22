@@ -164,7 +164,7 @@ const SettlementProductionType * SettlementProductionFactory::BuildGarrisonProdu
 
 const SettlementProductionType * SettlementProductionFactory::BuildFarmProduction()
 {
-    static const SettlementProductionType productionType = {ProductionOptions::FARM, "Farm", 300, &ProductionFinisher::FinishFarm};
+    static const SettlementProductionType productionType = {ProductionOptions::FARM, "Tile improvement", 300, &ProductionFinisher::FinishFarm};
     return &productionType;
 }
 

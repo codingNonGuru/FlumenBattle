@@ -23,9 +23,16 @@ void ImprovementCursor::HandleConfigure()
     );
     backdrop->Enable();
 
+    iconBackdrop = ElementFactory::BuildElement <Element>
+    (
+        {drawOrder_ + 1, {ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_CENTER, backdrop}, {"WhiteDot", false}, Opacity(0.7f)}
+    );
+    iconBackdrop->SetTextureScale(0.8f);
+    iconBackdrop->Enable();
+
     icon = ElementFactory::BuildElement <Element>
     (
-        {drawOrder_ + 1, {ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_CENTER, backdrop}, {true}, Opacity(1.0f)}
+        {drawOrder_ + 2, {iconBackdrop}, {true}, Opacity(1.0f)}
     );
     icon->Enable();
 
@@ -72,7 +79,8 @@ void ImprovementCursor::HandleUpdate()
     }
 
     auto hoveredTile = WorldController::Get()->GetHoveredTile();
-    if(playerSettlement->CanImproveHere(hoveredTile, polity::HumanMind::Get()->GetProposedImprovement()) == false)
+    if(playerSettlement->CanImproveHere(hoveredTile, polity::HumanMind::Get()->GetProposedImprovement()) == false || 
+    playerSettlement->IsImprovingTile(hoveredTile, polity::HumanMind::Get()->GetProposedImprovement()) == true)
     {
         SetTexture("X");
     }

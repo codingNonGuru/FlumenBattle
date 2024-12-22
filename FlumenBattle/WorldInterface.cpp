@@ -45,6 +45,7 @@
 #include "FlumenBattle/World/Interface/TileResourceInfo.h"
 #include "FlumenBattle/World/Interface/InstructionInfo.h"
 #include "FlumenBattle/World/Interface/ExploreInfo.h"
+#include "FlumenBattle/World/Interface/ImprovementInfo.h"
 #include "FlumenBattle/World/Interface/ImprovementCursor.h"
 
 using namespace world;
@@ -388,6 +389,15 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     );
 
     ElementFactory::BuildElement <interface::ExploreInfoSet> 
+    (
+        {
+            DrawOrder(5), 
+            {canvas}
+        },
+        16
+    );
+
+    ElementFactory::BuildElement <interface::ImprovementInfoSet> 
     (
         {
             DrawOrder(5), 

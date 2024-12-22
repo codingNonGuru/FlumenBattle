@@ -33,7 +33,7 @@ namespace world::interface
         public:
             void Setup(settlement::ResourceTypes);
 
-            void Setup(int);
+            void Setup(int, bool);
         };
 
         WorldTile *tile {nullptr};

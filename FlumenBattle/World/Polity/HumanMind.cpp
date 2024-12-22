@@ -361,9 +361,19 @@ void HumanMind::HandleTileImproved()
     if(playerSettlement->CanImproveHere(hoveredTile, improvementType->Type) == false)
         return;
 
-    playerSettlement->StartImprovingTile(hoveredTile, improvementType->Type);
+    if(playerSettlement->IsImprovingTile(hoveredTile, improvementType->Type) == true)
+        return;
 
-    //OnExplorationStarted.Invoke();
+    if(playerSettlement->IsImprovingAnyTile() == true)
+    {
+        playerSettlement->CancelImproving();
+    }
+    else
+    {
+        playerSettlement->StartImprovingTile(hoveredTile, improvementType->Type);
+    }
+
+    OnImprovementStarted.Invoke();
 }
 
 settlement::TileImprovements HumanMind::GetProposedImprovement() 

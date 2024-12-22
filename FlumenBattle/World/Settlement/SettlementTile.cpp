@@ -15,3 +15,11 @@ void SettlementTile::AddImprovement(TileImprovements type)
 {
     ImprovementType = TileImprovementFactory::Get()->BuildImprovementType(type);
 }
+
+bool SettlementTile::HasImprovement(TileImprovements type) const 
+{
+    if(ImprovementType == nullptr)
+        return false;
+
+    return ImprovementType->Type == type;
+}

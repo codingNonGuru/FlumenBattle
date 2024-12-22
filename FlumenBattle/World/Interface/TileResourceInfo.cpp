@@ -7,6 +7,10 @@
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Interface/Counter.h"
+#include "FlumenBattle/World/WorldController.h"
+#include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Settlement/SettlementTile.h"
 
 using namespace world::interface;
 
@@ -42,7 +46,7 @@ void TileResourceInfo::ResourceItem::Setup(settlement::ResourceTypes resource)
     SetTexture(texture);
 }
 
-void TileResourceInfo::ResourceItem::Setup(int resourceAmount)
+void TileResourceInfo::ResourceItem::Setup(int resourceAmount, bool hasBonus)
 {
     if(resourceAmount == 1)
     {
@@ -52,6 +56,11 @@ void TileResourceInfo::ResourceItem::Setup(int resourceAmount)
     {
         counter->Setup(resourceAmount);
         counter->Enable();
+
+        if(hasBonus)
+            counter->SetTextColor(Color::GREEN * 0.7f + Color::BLACK * 0.3f);
+        else
+            counter->SetTextColor(Color::BLACK);
     }
 }
 
@@ -102,6 +111,15 @@ void TileResourceInfo::Setup(WorldTile *tile)
     for(auto &item : items)
     {
         auto amount = tile->GetResource(item->resource);
+        auto modifiedAmount = amount;
+        if(WorldController::Get()->ShouldResourceDisplayIncludeBonus() == true)
+        {
+            const auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
+            if(playerSettlement != nullptr && tile->GetOwner() == playerSettlement)
+            {
+                modifiedAmount += playerSettlement->GetTiles().Find(tile)->GetImprovementBonus(item->resource);
+            }
+        }
 
         if(amount == 0)
         {
@@ -109,7 +127,7 @@ void TileResourceInfo::Setup(WorldTile *tile)
         }
         else
         {
-            item->Setup(amount);
+            item->Setup(modifiedAmount, modifiedAmount != amount);
             item->Enable();
         }
     }

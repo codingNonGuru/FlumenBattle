@@ -1053,6 +1053,9 @@ bool Settlement::CanImproveHere(WorldTile *tile, TileImprovements type) const
     if(tile->GetResource(resource) == 0)
         return false;
 
+    if(tile->GetOwner() == this && HasImprovement(tile, type) == true)
+        return false;
+
     return true;
 }
 
@@ -1061,6 +1064,41 @@ void Settlement::StartImprovingTile(WorldTile *tile, TileImprovements improvemen
     currentImprovement = {tiles.Find(tile), improvement};
 
     SetProduction(ProductionOptions::FARM);
+}
+
+bool Settlement::IsImprovingTile(SettlementTile *tile, TileImprovements improvement) const
+{
+    return currentImprovement.Tile == tile && currentImprovement.ImprovementType == improvement;
+}
+
+bool Settlement::IsImprovingTile(WorldTile *tile, TileImprovements improvement) const
+{
+    if(currentImprovement.Tile == nullptr)
+        return false;
+
+    return currentImprovement.Tile->Tile == tile && currentImprovement.ImprovementType == improvement;
+}
+
+void Settlement::CancelImproving() 
+{
+    currentImprovement = {nullptr};
+
+    SetProduction(ProductionOptions::NONE);
+}
+
+bool Settlement::HasImprovement(WorldTile *tile, TileImprovements improvement) const
+{
+    auto settlementTile = tiles.Find(tile);
+
+    if(settlementTile->GetImprovementType() == nullptr)
+        return false;
+
+    return settlementTile->GetImprovementType()->Type == improvement;
+}
+
+bool Settlement::HasImprovement(SettlementTile *tile, TileImprovements improvement) const
+{
+    return tile->GetImprovementType()->Type == improvement;
 }
 
 void Settlement::StartExploring(WorldTile *tile)

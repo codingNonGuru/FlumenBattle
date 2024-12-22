@@ -422,5 +422,19 @@ namespace world::settlement
         bool CanImproveHere(WorldTile *, TileImprovements) const;
 
         void StartImprovingTile(WorldTile *, TileImprovements);
+
+        bool IsImprovingAnyTile() const {return currentImprovement.Tile != nullptr;}
+
+        bool IsImprovingTile(SettlementTile *, TileImprovements) const;
+
+        bool IsImprovingTile(WorldTile *, TileImprovements) const;
+
+        const ImprovementTarget &GetCurrentImprovement() const {return currentImprovement;}
+
+        void CancelImproving();
+
+        bool HasImprovement(SettlementTile *, TileImprovements) const;
+
+        bool HasImprovement(WorldTile *, TileImprovements) const;
     };
 }

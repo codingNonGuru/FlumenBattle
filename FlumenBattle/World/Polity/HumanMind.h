@@ -93,6 +93,8 @@ namespace world::polity
 
         Delegate OnExplorationStarted;
 
+        Delegate OnImprovementStarted;
+
         void ProcessProductionInput(settlement::ProductionOptions, settlement::Settlement *);
 
         void SetResearchTarget(science::Technologies);

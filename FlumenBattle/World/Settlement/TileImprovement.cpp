@@ -11,7 +11,7 @@ int TileImprovementType::GetBonus(ResourceTypes resource, WorldTile *tile) const
     auto baseYield = tile->GetResource(resource);
     if(baseYield >= 3)
         return 2;
-    else if(baseYield == 1)
+    else if(baseYield >= 1)
         return 1;
     else
         return 0;

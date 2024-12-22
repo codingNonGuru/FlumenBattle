@@ -36,5 +36,7 @@ namespace world::interface
         void Setup(Scale2 = BACKDROP_SCALE, Word = DEFAULT_FONT_SIZE);
 
         void SetTextScale(float scale) {textScale = scale;}
+
+        void SetTextColor(Color);
     };
 }

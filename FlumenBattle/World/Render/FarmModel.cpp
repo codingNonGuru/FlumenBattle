@@ -67,6 +67,9 @@ void FarmModel::TransferData()
             if(tile.IsImproved() == false)
                 continue;
 
+            if(tile.HasImprovement(settlement::TileImprovements::FARM) == false)
+                continue;
+
             *positions.Add() = tile.Tile->Position;
 
             auto data = farmData.Get(tile.Tile->SquareCoordinates.x, tile.Tile->SquareCoordinates.y);

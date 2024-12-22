@@ -69,3 +69,8 @@ void Counter::Setup(Scale2 newScale, Word fontSize)
 
     backdropScale = newScale;
 }
+
+void Counter::SetTextColor(Color color)
+{
+    label->SetColor(color);
+}

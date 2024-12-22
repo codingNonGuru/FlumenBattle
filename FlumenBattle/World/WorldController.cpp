@@ -328,13 +328,19 @@ namespace world
 
     void WorldController::HandleResourceDisplayPressed()
     {
-        if(isResourceDisplayActive)
+        if(isResourceDisplayActive == true && shouldResourceDisplayIncludeBonus == true)
         {
             isResourceDisplayActive = false;
         }
-        else
+        else if(isResourceDisplayActive == true && shouldResourceDisplayIncludeBonus == false)
+        {
+            shouldResourceDisplayIncludeBonus = true;
+        }
+        else if(isResourceDisplayActive == false)
         {
             isResourceDisplayActive = true;
+
+            shouldResourceDisplayIncludeBonus = false;
         }
 
         OnResourceDisplayPressed.Invoke();
@@ -638,7 +644,7 @@ namespace world
             OnTileDevelopModeEnabled.Invoke();
         }
 
-        //OnExploreModeToggled.Invoke();
+        OnTileDevelopModeToggled.Invoke();
     }
 
     void WorldController::HandleSettlementExited()

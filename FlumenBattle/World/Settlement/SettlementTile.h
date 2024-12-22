@@ -31,6 +31,8 @@ namespace world::settlement
         
         void AddImprovement(TileImprovements);
 
+        bool HasImprovement(TileImprovements) const;
+
         bool operator==(const world::WorldTile *otherTile) {return Tile == otherTile;}
     };
 }

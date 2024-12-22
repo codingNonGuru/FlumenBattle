@@ -14,6 +14,8 @@ namespace world::interface
 
         Element *icon;
 
+        Element *iconBackdrop;
+
         void HandleConfigure() override;
 
         void HandleEnable() override;

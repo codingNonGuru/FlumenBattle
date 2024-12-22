@@ -37,6 +37,8 @@ namespace world
 
         bool isResourceDisplayActive {false};
 
+        bool shouldResourceDisplayIncludeBonus {false};
+
         bool isMetalDisplayActive {false};
 
         bool isFoodDisplayActive {false};
@@ -153,6 +155,8 @@ namespace world
 
         Delegate OnTileDevelopModeEnabled;
 
+        Delegate OnTileDevelopModeToggled;
+
         void Initialize();
 
         void Update();
@@ -190,6 +194,8 @@ namespace world
         void BuyFood();
 
         bool ShouldDisplayResources() const {return isResourceDisplayActive;}
+
+        bool ShouldResourceDisplayIncludeBonus() const {return shouldResourceDisplayIncludeBonus;}
 
         bool ShouldDisplayMetal() const {return isMetalDisplayActive;}
 
