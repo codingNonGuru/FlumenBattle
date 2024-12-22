@@ -4,6 +4,7 @@
 #include "FlumenCore/Container/Queue.h"
 
 #include "FlumenBattle/Utility/Utility.h"
+#include "FlumenBattle/World/Types.h"
 #include "FlumenBattle/World/Group/Types.h"
 #include "FlumenBattle/World/Group/ItemChange.h"
 
@@ -111,8 +112,6 @@ namespace world
         container::Pool <interface::MoneyPopup *> moneyPopups;
 
         container::Pool <interface::ItemPopup *> itemPopups;
-
-        enum class PopupTypes {ACTION, ROLL, MONEY, ITEM};
 
         struct PopupData
         {

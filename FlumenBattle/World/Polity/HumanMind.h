@@ -107,8 +107,12 @@ namespace world::polity
 
         void RegisterPopIncrease(settlement::Settlement *) const override;
 
+        void RegisterTileExplored(settlement::Settlement *, WorldTile *) const override;
+
         const WorldTile *GetSettleTarget(settlement::Settlement *) const;
 
         settlement::TileImprovements GetProposedImprovement();
+
+        WorldTile *GetLastExploredTile();
     };
 }

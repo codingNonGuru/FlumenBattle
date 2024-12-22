@@ -7,6 +7,8 @@
 
 namespace world
 {
+    class WorldTile;
+
     namespace settlement
     {
         class Settlement;
@@ -151,5 +153,7 @@ namespace world::polity
         bool ShouldBeDeleted() const {return isValid == false && turnsUntilDeletion == 0;}
 
         void RegisterPopIncrease(settlement::Settlement *);
+
+        void RegisterTileExplored(settlement::Settlement *, WorldTile *);
     };
 }

@@ -18,6 +18,7 @@
 #include "FlumenBattle/World/Polity/WorkInstruction.h"
 #include "FlumenBattle/World/Settlement/Building.h"
 #include "FlumenBattle/Race.h"
+#include "FlumenBattle/World/Interface/Popup/PopupManager.h"
 
 using namespace world;
 using namespace world::polity;
@@ -540,4 +541,22 @@ void HumanMind::RegisterPopIncrease(settlement::Settlement *settlement) const
         return;
 
     OnPlayerSettlementPopIncrease.Invoke();
+}
+
+WorldTile *lastExploredTile = nullptr;
+
+void HumanMind::RegisterTileExplored(settlement::Settlement *settlement, WorldTile *tile) const
+{
+    if(WorldScene::Get()->GetPlayerSettlement() != settlement)
+        return;
+
+    lastExploredTile = tile;
+
+    interface::popup::PopupManager::Get()->AddPopup(PopupTypes::EXPLORATION_REWARD);
+    //OnPlayerSettlementTileExplored.Invoke();
+}
+
+WorldTile *HumanMind::GetLastExploredTile()
+{
+    return lastExploredTile;
 }

@@ -4,6 +4,11 @@
 
 #include "FlumenBattle/World/Polity/Mind.h"
 
+namespace world
+{
+    class WorldTile;
+}
+
 namespace world::settlement
 {
     class Settlement;
@@ -24,6 +29,8 @@ namespace world::polity
         virtual void DecideBorders(Polity &) const override;
 
         void RegisterPopIncrease(settlement::Settlement *) const override {}
+
+        void RegisterTileExplored(settlement::Settlement *, WorldTile *) const override {}
 
         void GrowBorders(settlement::Settlement *);
     };

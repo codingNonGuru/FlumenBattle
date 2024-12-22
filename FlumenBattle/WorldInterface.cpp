@@ -47,6 +47,7 @@
 #include "FlumenBattle/World/Interface/ExploreInfo.h"
 #include "FlumenBattle/World/Interface/ImprovementInfo.h"
 #include "FlumenBattle/World/Interface/ImprovementCursor.h"
+#include "FlumenBattle/World/Interface/Popup/PopupManager.h"
 
 using namespace world;
 
@@ -405,6 +406,8 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
         },
         16
     );
+
+    interface::popup::PopupManager::Get()->Configure();
 
     WorldController::Get()->OnResourceDisplayPressed += {this, &WorldInterface::HandleResourceDisplayPressed};
 

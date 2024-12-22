@@ -133,4 +133,21 @@ namespace world::settlement
         SAW_MILL,
         NONE
     };
+
+    enum class ExplorationRewards
+    {
+        RESOURCE_CACHE,
+        RESOURCE_SOURCE,
+        TECH_BOOST,
+        SPELL,
+        POPULATION,
+        RELIC,
+        CORNERSTONE,
+        BOON,
+        ITEM,
+        CURSE,
+        DISEASE,
+        INVADER,
+        EPIC_QUEST
+    };
 }

@@ -1120,10 +1120,15 @@ void Settlement::RemoveFinishedExploration(WorldTile *tile)
 
 void Settlement::AddExplorationProgress(int progress)
 {
+    if(currentExploration.Tile == nullptr)
+        return;
+
     currentExploration.Progress += progress;
     if(currentExploration.Progress > EXPLORATION_SUCCESS_THRESHOLD)
     {
         *finishedExplorations.Add() = {currentExploration.Tile};
+
+        polity->RegisterTileExplored(this, currentExploration.Tile);
 
         currentExploration = {nullptr, 0};
     }
