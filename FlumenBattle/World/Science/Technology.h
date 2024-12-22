@@ -71,6 +71,8 @@ namespace world::science
             return discoveries[(int)technology];
         }
 
+        void AddTechnology(Technologies);
+
         bool IsResearchingAnything() const {return researchTarget != nullptr;}
 
         void StartResearching(Technologies);

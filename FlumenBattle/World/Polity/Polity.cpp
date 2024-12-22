@@ -283,6 +283,14 @@ bool Polity::HasDiscoveredTechnology(science::Technologies technology) const
     return technologyRoster->HasDiscovered(technology);
 }
 
+void Polity::AddTechnology(science::Technologies technology)
+{
+    if(technologyRoster->HasDiscovered(technology) == false)
+    {
+        technologyRoster->AddTechnology(technology);
+    }
+}
+
 const world::science::TechnologyType *Polity::GetResearchTarget() const
 {
     return technologyRoster->GetTarget();

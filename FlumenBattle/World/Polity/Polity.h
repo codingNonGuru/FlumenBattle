@@ -140,6 +140,8 @@ namespace world::polity
 
         bool HasDiscoveredTechnology(science::Technologies) const;
 
+        void AddTechnology(science::Technologies);
+
         const container::Array <world::settlement::Settlement *> &GetSecederNeighbours() const;
 
         bool IsPlayerControlled() const;

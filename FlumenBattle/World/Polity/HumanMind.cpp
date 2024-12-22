@@ -545,12 +545,13 @@ void HumanMind::RegisterPopIncrease(settlement::Settlement *settlement) const
 
 WorldTile *lastExploredTile = nullptr;
 
+settlement::Settlement *lastExplorerSettlement = nullptr;
+
 void HumanMind::RegisterTileExplored(settlement::Settlement *settlement, WorldTile *tile) const
 {
-    if(WorldScene::Get()->GetPlayerSettlement() != settlement)
-        return;
-
     lastExploredTile = tile;
+
+    lastExplorerSettlement = settlement;
 
     interface::popup::PopupManager::Get()->AddPopup(PopupTypes::EXPLORATION_REWARD);
     //OnPlayerSettlementTileExplored.Invoke();
@@ -559,4 +560,9 @@ void HumanMind::RegisterTileExplored(settlement::Settlement *settlement, WorldTi
 WorldTile *HumanMind::GetLastExploredTile()
 {
     return lastExploredTile;
+}
+
+settlement::Settlement *HumanMind::GetLastExplorerSettlement()
+{
+    return lastExplorerSettlement;
 }

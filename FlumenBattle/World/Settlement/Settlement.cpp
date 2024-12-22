@@ -28,6 +28,7 @@
 #include "FlumenBattle/Config.h"
 #include "FlumenBattle/ThreadedResourceHandler.h"
 #include "FlumenBattle/Race.h"
+#include "FlumenBattle/World/Settlement/ExplorationHandler.h"
 
 using namespace world::settlement;
 
@@ -1118,6 +1119,8 @@ void Settlement::RemoveFinishedExploration(WorldTile *tile)
 
 #define EXPLORATION_SUCCESS_THRESHOLD 100
 
+ExplorationReward lastExplorationReward;
+
 void Settlement::AddExplorationProgress(int progress)
 {
     if(currentExploration.Tile == nullptr)
@@ -1128,10 +1131,32 @@ void Settlement::AddExplorationProgress(int progress)
     {
         *finishedExplorations.Add() = {currentExploration.Tile};
 
+        lastExplorationReward = ExplorationHandler::Get()->GetReward(currentExploration.Tile);
+
+        if(lastExplorationReward.Type == ExplorationRewards::POPULATION)
+        {
+            population++;
+
+            polity->RegisterPopIncrease(this);
+        }
+        else if(lastExplorationReward.Type == ExplorationRewards::RESOURCE_CACHE)
+        {
+            GetResource(lastExplorationReward.Content.ResourceBatch.Type)->Storage += lastExplorationReward.Content.ResourceBatch.Amount;
+        }
+        else if(lastExplorationReward.Type == ExplorationRewards::TECH_BOOST)
+        {
+            polity->AddTechnology(lastExplorationReward.Content.Technology);
+        }
+
         polity->RegisterTileExplored(this, currentExploration.Tile);
 
         currentExploration = {nullptr, 0};
     }
+}
+
+const ExplorationReward &Settlement::GetLastExplorationReward() const
+{
+    return lastExplorationReward;
 }
 
 float Exploration::GetProgressFactor() const

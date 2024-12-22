@@ -32,6 +32,18 @@ void TechnologyRoster::StartResearching(Technologies technology)
     researchTarget = &TechnologyFactory::Get()->Create(technology);
 }
 
+void TechnologyRoster::AddTechnology(Technologies technology)
+{
+    if(researchTarget != nullptr && researchTarget->Type == technology)
+    {
+        researchTarget = nullptr;
+
+        researchProgress = 0;
+    }
+
+    discoveries[(int)technology] = true;
+}
+
 void TechnologyRoster::Update(const polity::Polity &polity)
 {
     if(researchTarget == nullptr)

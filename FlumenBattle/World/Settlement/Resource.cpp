@@ -87,7 +87,7 @@ int Resource::GetProductionFromBuildings(const Settlement &settlement) const
         }
     }
 
-    if(Storage == settlement.storage)
+    if(Storage >= settlement.storage)
         canProduce = false;
 
     auto production = 0;
@@ -277,11 +277,7 @@ void Resource::UpdateStorage(Settlement &settlement)
 
     Storage -= Order;
 
-    if(Storage > settlement.storage)
-    {
-        Storage = settlement.storage;
-    }
-    else if(Storage < 0)
+    if(Storage < 0)
     {
         Storage = 0;
     }

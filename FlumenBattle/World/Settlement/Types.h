@@ -143,11 +143,14 @@ namespace world::settlement
         POPULATION,
         RELIC,
         CORNERSTONE,
-        BOON,
+        BLESSING,
         ITEM,
         CURSE,
         DISEASE,
         INVADER,
-        EPIC_QUEST
+        EPIC_QUEST,
+        EPIC_ALLY_GROUP,
+        DERELICT_IMPROVEMENT,
+        NATURAL_DISASTER
     };
 }

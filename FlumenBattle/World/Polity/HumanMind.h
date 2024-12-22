@@ -114,5 +114,7 @@ namespace world::polity
         settlement::TileImprovements GetProposedImprovement();
 
         WorldTile *GetLastExploredTile();
+
+        settlement::Settlement *GetLastExplorerSettlement();
     };
 }

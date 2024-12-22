@@ -53,6 +53,7 @@ namespace world::settlement
     struct Condition;
     class Building;
     struct SettlementTile;
+    struct ExplorationReward;
 
     struct Link
     {
@@ -418,6 +419,8 @@ namespace world::settlement
         void RemoveFinishedExploration(WorldTile *);
 
         void AddExplorationProgress(int);
+
+        const ExplorationReward &GetLastExplorationReward() const;
 
         bool CanImproveHere(WorldTile *, TileImprovements) const;
 
