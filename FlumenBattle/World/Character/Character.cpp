@@ -47,7 +47,7 @@ namespace world::character
 
     void Character::Setup()
     {
-        currentHitPoints = maximumHitPoints / 2;
+        currentHitPoints = maximumHitPoints;
 
         spellUseCount = 3;
     }

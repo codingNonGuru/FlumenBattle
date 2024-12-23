@@ -196,5 +196,7 @@ namespace world
         bool IsNightTime() const {return time.HourCount < 6 || time.HourCount >= 22;}
 
         settlement::Settlement *GetConqueredSettlement() const;
+
+        const group::Encounter *GetMostRecentEncounter();
     };
 }

@@ -768,6 +768,8 @@ void Settlement::Update()
 {
     static const auto &worldTime = world::WorldScene::Get()->GetTime();
 
+    StrengthenPatrol();
+
     buildingManager->Update();
 
     auto updateModifiers = [this]

@@ -63,5 +63,5 @@ namespace world
 
     enum class MajorMenus {CAMP, QUEST, INVENTORY, POLITY, REPUTATION, MEMBER_COUNT};
 
-    enum class PopupTypes {ACTION, ROLL, MONEY, ITEM, EXPLORATION_REWARD};
+    enum class PopupTypes {ACTION, ROLL, MONEY, ITEM, EXPLORATION_REWARD, BATTLE_START};
 }

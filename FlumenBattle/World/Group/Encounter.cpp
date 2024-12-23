@@ -7,7 +7,7 @@
 
 namespace world::group
 {
-    #define BASE_ATTACK_DC 17
+    #define BASE_ATTACK_DC 18
 
     void Encounter::Initialize(Group * attacker_, Group * defender_)
     {
@@ -56,6 +56,9 @@ namespace world::group
 
         auto firstStrength = attacker->GetLivingCount();
         auto secondStrength = defender->GetLivingCount();
+
+        firstStrength += attacker->GetLevel();
+        secondStrength += defender->GetLevel();
 
         if(location->HasRelief(WorldReliefs::MOUNTAINS) == true)
         {
@@ -124,6 +127,8 @@ namespace world::group
             character.RemoveCondition(character::Conditions::SURPRISED);
             character.RemoveCondition(character::Conditions::ALERT);
         }
+
+        winner->GainExperience(1000);
     }
 
     void Encounter::Terminate()

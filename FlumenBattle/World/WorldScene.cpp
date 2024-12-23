@@ -34,6 +34,7 @@
 #include "FlumenBattle/Utility/Pathfinder.h"
 #include "FlumenBattle/World/SimulationMap.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
+#include "FlumenBattle/World/Interface/Popup/PopupManager.h"
 
 #define AWAIT(length) \
     static float timer = 0.0f;\
@@ -339,10 +340,21 @@ namespace world
         }
     }
 
+    static group::Encounter *mostRecentBattle = nullptr;
+
+    const group::Encounter *WorldScene::GetMostRecentEncounter()
+    {
+        return mostRecentBattle;
+    }
+
     void WorldScene::InitiateEncounter(group::Group *attacker, group::Group *defender)
     {
         auto battle = battles->Add();
         battle->Initialize(attacker, defender);
+
+        mostRecentBattle = battle;
+
+        interface::popup::PopupManager::Get()->AddPopup(PopupTypes::BATTLE_START);
 
         if(playerGroup == attacker || playerGroup == defender)
         {

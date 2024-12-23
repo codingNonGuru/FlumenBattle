@@ -10,14 +10,12 @@
 
 #include "GenericPopup.h"
 #include "FlumenBattle/World/Interface/Popup/PopupManager.h"
-#include "FlumenBattle/World/Group/Types.h"
-#include "FlumenBattle/World/WorldScene.h"
 
 using namespace world::interface::popup;
 
 static const auto ANIMATION_NAME = "Lift";
 
-static const auto ANIMATION_LENGTH = 1.0f;
+static const auto ANIMATION_LENGTH = 1.5f;
 
 static const auto COUNTER_END_HEIGHT = -100.0f;
 

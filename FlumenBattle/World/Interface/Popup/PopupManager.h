@@ -12,10 +12,13 @@ namespace world::interface::popup
 {
     class GenericPopup;
     class ExplorationReward;
+    class BattleStartPopup;
 
     class PopupManager : public core::Singleton <PopupManager>
     {
         container::Pool <ExplorationReward *> exploreChestPopups;
+
+        container::Pool <BattleStartPopup *> battleStartPopups;
 
     public:
         void Configure();

@@ -207,7 +207,7 @@ Character *CharacterFactory::Create(const Race *race, const CharacterClass *type
         character->avatar = render::TextureManager::GetTexture(*textureName);
     }
 
-    character->maximumHitPoints = type->HitDice;
+    character->maximumHitPoints = 40 + type->HitDice;
     character->maximumHitPoints += character->abilities.GetModifier(AbilityTypes::CONSTITUTION) * character->level;
     character->maximumHitPoints += race->HitPointBonus;
 

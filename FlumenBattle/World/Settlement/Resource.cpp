@@ -124,6 +124,9 @@ int Resource::GetProductionFromTiles(const Settlement &settlement) const
     if(Type->IsProductionTileBased == false)
         return 0;
 
+    if(Storage >= settlement.storage)
+        return 0;
+
     auto production = 0;
     for(auto &tile : settlement.tiles)
     {
