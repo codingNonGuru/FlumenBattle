@@ -118,6 +118,11 @@ namespace world::group
         {
             if(group.tile != group.home->GetLocation())
             {
+                if(group.home->GetCurrentExploration().Tile != group.GetTile())
+                {
+                    group.hasAchievedObjective = true;
+                }
+
                 if(group.hasAchievedObjective == false)
                 {
                     auto bonus = group.home->GetModifier(settlement::Modifiers::PATROL_ATTACK_ROLLS);

@@ -35,6 +35,8 @@
 #include "FlumenBattle/World/SimulationMap.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Interface/Popup/PopupManager.h"
+#include "FlumenBattle/World/WorldUpdateHandler.h"
+#include "FlumenBattle/World/Polity/HumanMind.h"
 
 #define AWAIT(length) \
     static float timer = 0.0f;\
@@ -117,6 +119,8 @@ namespace world
         auto startClock = high_resolution_clock::now();
 
         time++;
+
+        WorldUpdateHandler::Get()->ResetAllData();
 
         auto refreshBattles = [this] 
         {
@@ -258,13 +262,15 @@ namespace world
             {
                 settlement.UpdatePolitics();
             }
-
-
         };
 
         //refreshSettlementsThreaded();
 
         refreshSettlements();
+
+        WorldUpdateHandler::Get()->ProcessExplorationRewardData();
+
+        polity::HumanMind::Get()->ProcessWorldUpdateData();
 
         if(time.IsNewDay == true)
         {

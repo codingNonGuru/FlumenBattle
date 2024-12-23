@@ -19,6 +19,8 @@
 #include "FlumenBattle/World/Settlement/Building.h"
 #include "FlumenBattle/Race.h"
 #include "FlumenBattle/World/Interface/Popup/PopupManager.h"
+#include "FlumenBattle/World/WorldUpdateHandler.h"
+#include "FlumenBattle/World/Settlement/ExplorationHandler.h"
 
 using namespace world;
 using namespace world::polity;
@@ -315,6 +317,9 @@ void HumanMind::HandleExplorationStarted()
     if(playerSettlement->CanExploreHere(hoveredTile) == false)
         return;
 
+    if(playerSettlement->HasExplored(hoveredTile) == true)
+        return;
+
     if(playerSettlement->IsExploring() == true)
     {
         playerSettlement->StopExploring();
@@ -565,4 +570,22 @@ WorldTile *HumanMind::GetLastExploredTile()
 settlement::Settlement *HumanMind::GetLastExplorerSettlement()
 {
     return lastExplorerSettlement;
+}
+
+void HumanMind::ProcessWorldUpdateData()
+{
+    const auto &explorationRewardDatas = WorldUpdateHandler::Get()->GetExploreRewardDatas();
+
+    for(auto &data : explorationRewardDatas)
+    {
+        if(data.Settlement->GetPolity()->IsPlayerControlled() == false)
+            continue;
+
+        if(data.Reward.Type == settlement::ExplorationRewards::POPULATION)
+        {
+            RegisterPopIncrease(data.Settlement);
+        }
+
+        RegisterTileExplored(data.Settlement, data.Tile);
+    }
 }

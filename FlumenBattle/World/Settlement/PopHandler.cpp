@@ -12,9 +12,9 @@ void PopHandler::Initialize()
 
     *needs.Add() = {ResourceTypes::FOOD, false, true, 0};
     *needs.Add() = {ResourceTypes::COOKED_FOOD, true, true, 0};
-    *needs.Add() = {ResourceTypes::FURNITURE, true, false, 90};
-    *needs.Add() = {ResourceTypes::CLOTHING, true, false, 90};
-    *needs.Add() = {ResourceTypes::POTTERY, true, false, 90};
+    *needs.Add() = {ResourceTypes::FURNITURE, true, false, 80};
+    *needs.Add() = {ResourceTypes::CLOTHING, true, false, 80};
+    *needs.Add() = {ResourceTypes::POTTERY, true, false, 80};
 
     happiness = 0;
 
@@ -110,7 +110,7 @@ void PopHandler::UpdateNeeds(Settlement &settlement)
     {
         needs.Find(ResourceTypes::CLOTHING)->IsMet = true;
 
-        needs.Find(ResourceTypes::CLOTHING)->Satisfaction += 7;
+        needs.Find(ResourceTypes::CLOTHING)->Satisfaction += 15;
     }
 
     if(pottery->HasPopulationOrdered == true)

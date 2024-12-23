@@ -234,6 +234,8 @@ namespace world::settlement
 
         Integer GetPopulation() const {return population;}
 
+        void IncreasePopulation();
+
         PopHandler &GetPopulationHandler() {return popHandler;}
 
         int GetNeedSatisfaction(ResourceTypes resource) const {return popHandler.GetNeedSatisfaction(resource);}

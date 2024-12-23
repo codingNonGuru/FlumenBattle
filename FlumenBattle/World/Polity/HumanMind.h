@@ -116,5 +116,7 @@ namespace world::polity
         WorldTile *GetLastExploredTile();
 
         settlement::Settlement *GetLastExplorerSettlement();
+
+        void ProcessWorldUpdateData();
     };
 }

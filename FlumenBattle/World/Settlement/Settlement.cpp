@@ -29,6 +29,7 @@
 #include "FlumenBattle/ThreadedResourceHandler.h"
 #include "FlumenBattle/Race.h"
 #include "FlumenBattle/World/Settlement/ExplorationHandler.h"
+#include "FlumenBattle/World/WorldUpdateHandler.h"
 
 using namespace world::settlement;
 
@@ -627,6 +628,11 @@ int Settlement::GetPillageDC() const
     return 10 + bonus;
 }
 
+void Settlement::IncreasePopulation()
+{
+    population++;
+}
+
 int Settlement::Loot(bool hasSparedBuilding, int requestedFood)
 {
     if(hasSparedBuilding == false)
@@ -1133,24 +1139,9 @@ void Settlement::AddExplorationProgress(int progress)
     {
         *finishedExplorations.Add() = {currentExploration.Tile};
 
-        lastExplorationReward = ExplorationHandler::Get()->GetReward(currentExploration.Tile);
+        auto reward = ExplorationHandler::Get()->GetReward(currentExploration.Tile);
 
-        if(lastExplorationReward.Type == ExplorationRewards::POPULATION)
-        {
-            population++;
-
-            polity->RegisterPopIncrease(this);
-        }
-        else if(lastExplorationReward.Type == ExplorationRewards::RESOURCE_CACHE)
-        {
-            GetResource(lastExplorationReward.Content.ResourceBatch.Type)->Storage += lastExplorationReward.Content.ResourceBatch.Amount;
-        }
-        else if(lastExplorationReward.Type == ExplorationRewards::TECH_BOOST)
-        {
-            polity->AddTechnology(lastExplorationReward.Content.Technology);
-        }
-
-        polity->RegisterTileExplored(this, currentExploration.Tile);
+        WorldUpdateHandler::Get()->LoadExplorationRewardData({reward, this, currentExploration.Tile});
 
         currentExploration = {nullptr, 0};
     }

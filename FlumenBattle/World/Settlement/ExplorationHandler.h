@@ -41,6 +41,15 @@ namespace world::settlement
         ContentData Content;
     };
 
+    struct ExplorationRewardUpdateData
+    {
+        ExplorationReward Reward;
+
+        Settlement *Settlement;
+
+        WorldTile *Tile;
+    };
+
     class ExplorationHandler : public core::Singleton <ExplorationHandler>
     {
     public:

@@ -856,6 +856,9 @@ void WorldTileModel::RenderExploreMap()
         if(playerSettlement->IsExploring(tile) == true)
             continue;
 
+        if(playerSettlement->HasExplored(tile) == true)
+            continue;
+
         shader->SetConstant(tile->Position, "hexPosition");
 
         auto color = [&]
