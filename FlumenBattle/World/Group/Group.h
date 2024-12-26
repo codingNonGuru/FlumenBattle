@@ -203,13 +203,11 @@ namespace world::group
 
         bool IsInEncounter() const;
 
-        utility::Success GetActionSuccess() const {return actionSuccess;}
-
         Pool <character::Character> & GetCharacters() {return characters;}
 
         int GetLivingCount() const;
 
-        character::Character *GetCharacter(int index);
+        character::Character *GetCharacter(int);
 
         character::Character *GetLeader() const {return leader;}
 

@@ -257,7 +257,7 @@ Item *ItemManager::GetItem(int index)
     return items.Get(index);
 }
 
-int ItemManager::GetTotalWeight()
+int ItemManager::GetTotalWeight() const
 {
     auto weight = 0;
     for(auto &item : items)

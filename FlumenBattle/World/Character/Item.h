@@ -93,7 +93,7 @@ namespace world::character
 
         Item *GetUnusedItem(ItemTypes);
 
-        int GetTotalWeight();
+        int GetTotalWeight() const;
 
         const container::Pool <Item> &GetItems() const {return items;}
     };
