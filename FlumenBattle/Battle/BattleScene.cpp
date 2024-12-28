@@ -9,7 +9,7 @@
 #include "FlumenBattle/Battle/BattleScene.h"
 #include "FlumenBattle/Battle/BattleInterface.h"
 #include "FlumenBattle/World/Group/GroupFactory.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/Battle/CharacterInfo.h"
 #include "FlumenBattle/Battle/Combatant.h"
 #include "FlumenBattle/Battle/Render/BattleTileModel.h"

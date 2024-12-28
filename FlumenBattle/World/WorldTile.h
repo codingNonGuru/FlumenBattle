@@ -16,7 +16,7 @@ namespace world
 
     namespace group
     {
-        class Group;
+        class GroupCore;
     }
 
     namespace settlement
@@ -36,7 +36,7 @@ namespace world
     {
         friend class world::WorldMap;
 
-        friend class world::group::Group;
+        friend class world::group::GroupCore;
 
         friend class WorldGenerator;
 
@@ -46,7 +46,7 @@ namespace world
     private:
         WorldMap *map;
 
-        group::Group *group;
+        group::GroupCore *group;
 
         settlement::Settlement *settlement;
 
@@ -127,7 +127,7 @@ namespace world
 
         WorldTile * GetNeighbor(Integer3);
 
-        group::Group * GetGroup() {return group;}
+        group::GroupCore * GetGroup() {return group;}
 
         settlement::Settlement * GetSettlement() {return settlement;}
 

@@ -43,11 +43,11 @@ namespace world::group
     {
         friend class GroupCore;
 
+        friend class GroupAllocator;
+
         GroupCore *groupCore;
 
         const GroupMind *controller;
-
-        bool isAlive;
 
         Attitudes attitude;
 
@@ -61,11 +61,11 @@ namespace world::group
 
         polity::Polity *domain;
 
-        void Initialize(const GroupType *, Integer, RaceTypes);
-
-        void *operator new(size_t);
+        void Initialize();
 
     public:
+        void Initialize(GroupCore *);
+
         bool IsAlive();
 
         int GetLivingCount() const;
@@ -90,6 +90,8 @@ namespace world::group
 
         void CheckFatigue();
 
+        void FinishLongRest();
+
         void DetermineAction();
 
         void AddItem(character::ItemTypes, int = 1);
@@ -106,6 +108,8 @@ namespace world::group
 
         int GetMuleCount() const {return muleCount;}
 
+        void SetMuleCount(int);
+
         int GetFoodConsumption() const;
 
         bool DoesRulePolity() const;
@@ -121,5 +125,13 @@ namespace world::group
         void GainExperience(int);
 
         int GetLevel() const;
+
+        Attitudes GroupExtraData::GetAttitude() const;
+
+        void SetAttitude(Attitudes newAttitude) {attitude = newAttitude;}
+
+        void HandleActionSelection(const GroupActionResult &);
+
+        void HandleActionPerformance(const GroupActionResult &);
     };
 }

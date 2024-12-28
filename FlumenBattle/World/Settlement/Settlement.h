@@ -31,7 +31,7 @@ namespace world
     namespace group
     {
         class GroupDynamics;
-        class Group;
+        class GroupCore;
     }
 
     namespace disaster
@@ -322,7 +322,7 @@ namespace world::settlement
 
         world::WorldTile *FindColonySpot();
 
-        void RemoveGroup(const group::Group &);
+        void RemoveGroup(const group::GroupCore &);
 
         void SetPolity(polity::Polity *);
 

@@ -3,7 +3,7 @@
 
 using namespace world::group;
 
-bool GroupAction::CanPerform(Group &group, const GroupActionData &data) const
+bool GroupAction::CanPerform(GroupCore &group, const GroupActionData &data) const
 {
     return onCheck(group, data);
 }

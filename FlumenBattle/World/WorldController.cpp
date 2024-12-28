@@ -14,7 +14,7 @@
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Group/Encounter.h"
 #include "FlumenBattle/Battle/BattleState.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
@@ -824,7 +824,7 @@ namespace world
 
         auto localGroups = WorldScene::Get()->GetGroupsInTile(playerSettlement->GetLocation());
         
-        group::Group *garrison = nullptr;
+        group::GroupCore *garrison = nullptr;
         for(auto &group : localGroups.Groups)
         {
             if(group->GetClass() != group::GroupClasses::GARRISON)

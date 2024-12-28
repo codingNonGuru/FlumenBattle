@@ -12,6 +12,8 @@ static container::Array <Word> startParticles = {
     "asa", "oro", "isa", "ula", "ara", "ama", "ela", "eno", "oni", "iba", "zara", "noli", "zefi", "kena", "awa", "aya", "halda", "ere", "alra", "efra"
     };
 
+static auto pregeneratedNames = container::Array <Word> (8192);
+
 Word NameGenerator::GenerateName()
 {
     auto firstParticle = [&] {
@@ -43,4 +45,23 @@ Word NameGenerator::GenerateName()
     name.Capitalize();
 
     return name;
+}
+
+Word NameGenerator::FetchName(int seed)
+{
+    auto index = seed % pregeneratedNames.GetCapacity();
+    return *pregeneratedNames.Get(index);
+}
+
+void NameGenerator::GenerateNamePool()
+{
+    if(hasGeneratedPool == true)
+        return;
+
+    hasGeneratedPool = true;
+
+    for(auto i = 0; i < pregeneratedNames.GetCapacity(); ++i)
+    {
+        *pregeneratedNames.Add() = GenerateName();
+    }   
 }

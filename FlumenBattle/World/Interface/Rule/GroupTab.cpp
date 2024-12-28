@@ -7,7 +7,7 @@
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Group/GroupDynamics.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/World/Interface/ResourceCounter.h"
 
@@ -42,9 +42,9 @@ void GroupItem::HandleConfigure()
     levelCounter->Enable();
 }
 
-void GroupItem::Setup(const group::Group *group)
+void GroupItem::Setup(const group::GroupCore *group)
 {
-    leaderNameLabel->Setup(group->GetLeader()->GetName());
+    leaderNameLabel->Setup(group->GetLeaderName());
 
     groupSize = group->GetSize();
 

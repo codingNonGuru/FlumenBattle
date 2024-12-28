@@ -7,7 +7,7 @@
 
 namespace world::group
 {
-    class Group;
+    class GroupCore;
     class GroupAction;
 
     class GroupActionFactory : public core::Singleton<GroupActionFactory>
@@ -46,67 +46,67 @@ namespace world::group
     {
         friend class GroupActionFactory;
 
-        static GroupActionResult InitiateTravel(Group &, const GroupActionData &);
+        static GroupActionResult InitiateTravel(GroupCore &, const GroupActionData &);
 
-        static GroupActionResult InitiateEngage(Group &, const GroupActionData &);
+        static GroupActionResult InitiateEngage(GroupCore &, const GroupActionData &);
 
-        static int GetTravelDuration(const Group &);
+        static int GetTravelDuration(const GroupCore &);
 
-        static GroupActionResult TakeShortRest(Group &group);
+        static GroupActionResult TakeShortRest(GroupCore &group);
 
-        static GroupActionResult TakeLongRest(Group &group);
+        static GroupActionResult TakeLongRest(GroupCore &group);
 
-        static GroupActionResult Search(Group &group);
+        static GroupActionResult Search(GroupCore &group);
 
-        static GroupActionResult Engage(Group &group);
+        static GroupActionResult Engage(GroupCore &group);
 
-        static GroupActionResult Fight(Group &group);
+        static GroupActionResult Fight(GroupCore &group);
 
-        static GroupActionResult Disengage(Group &group);
+        static GroupActionResult Disengage(GroupCore &group);
 
-        static GroupActionResult Travel(Group &group);
+        static GroupActionResult Travel(GroupCore &group);
 
-        static GroupActionResult Persuade(Group &group);
+        static GroupActionResult Persuade(GroupCore &group);
 
-        static GroupActionResult Forage(Group &group);
+        static GroupActionResult Forage(GroupCore &group);
 
-        static GroupActionResult BypassDefences(Group &group);
+        static GroupActionResult BypassDefences(GroupCore &group);
 
-        static GroupActionResult LootSettlement(Group &group);
+        static GroupActionResult LootSettlement(GroupCore &group);
 
-        static GroupActionResult PillageSettlement(Group &group);
+        static GroupActionResult PillageSettlement(GroupCore &group);
 
-        static GroupActionResult BribeGarrison(Group &group);
+        static GroupActionResult BribeGarrison(GroupCore &group);
     };
 
     class GroupActionValidator
     {
         friend class GroupActionFactory;
 
-        static bool CanTakeShortRest(Group &, const GroupActionData &);
+        static bool CanTakeShortRest(GroupCore &, const GroupActionData &);
 
-        static bool CanTakeLongRest(Group &, const GroupActionData &);
+        static bool CanTakeLongRest(GroupCore &, const GroupActionData &);
 
-        static bool CanSearch(Group &, const GroupActionData &);
+        static bool CanSearch(GroupCore &, const GroupActionData &);
 
-        static bool CanEngage(Group &, const GroupActionData &);
+        static bool CanEngage(GroupCore &, const GroupActionData &);
 
-        static bool CanFight(Group &, const GroupActionData &);
+        static bool CanFight(GroupCore &, const GroupActionData &);
 
-        static bool CanBypassDefences(Group &, const GroupActionData &);
+        static bool CanBypassDefences(GroupCore &, const GroupActionData &);
 
-        static bool CanDisengage(Group &, const GroupActionData &);
+        static bool CanDisengage(GroupCore &, const GroupActionData &);
 
-        static bool CanTravel(Group &, const GroupActionData &);
+        static bool CanTravel(GroupCore &, const GroupActionData &);
 
-        static bool CanPersuade(Group &, const GroupActionData &);
+        static bool CanPersuade(GroupCore &, const GroupActionData &);
 
-        static bool CanForage(Group &, const GroupActionData &);
+        static bool CanForage(GroupCore &, const GroupActionData &);
 
-        static bool CanLootSettlement(Group &, const GroupActionData &);
+        static bool CanLootSettlement(GroupCore &, const GroupActionData &);
 
-        static bool CanPillageSettlement(Group &, const GroupActionData &);
+        static bool CanPillageSettlement(GroupCore &, const GroupActionData &);
 
-        static bool CanBribeGarrison(Group &, const GroupActionData &);
+        static bool CanBribeGarrison(GroupCore &, const GroupActionData &);
     };
 }

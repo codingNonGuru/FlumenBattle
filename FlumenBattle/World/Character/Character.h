@@ -31,7 +31,7 @@ namespace battle
 
 namespace world::group
 {
-    class Group;
+    class GroupCore;
 }
 
 namespace utility
@@ -88,7 +88,7 @@ namespace world::character
 
         friend class CharacterAllocator;
 
-        world::group::Group *group;
+        world::group::GroupCore *group;
 
         const CharacterClass *type;
 
@@ -136,7 +136,11 @@ namespace world::character
 
         void AddModifier(Modifier modifier) {modifiers.AddModifier(modifier);}
 
+        void RefreshMaximumHitpoints();
+
     public:
+        static const int *GetExperienceThresholds();
+
         Character();
 
         bool IsAlive() const;
@@ -153,7 +157,7 @@ namespace world::character
 
         const CharacterClass * GetClass() const {return type;}
 
-        world::group::Group * GetGroup() const {return group;}
+        world::group::GroupCore * GetGroup() const {return group;}
 
         const ::render::Texture *GetAvatar() const {return avatar;}
 

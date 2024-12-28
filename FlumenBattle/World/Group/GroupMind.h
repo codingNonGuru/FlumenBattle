@@ -6,17 +6,19 @@
 
 namespace world::group
 {
-    class Group;
+    class GroupCore;
     struct GroupActionResult;
 
     class GroupMind
     {
-        friend class Group;
+        friend class GroupCore;
 
-        virtual void DetermineAction(Group &) const {}
+        friend class GroupExtraData;
 
-        virtual void RegisterActionPerformance(Group &, GroupActionResult) const {}
+        virtual void DetermineAction(GroupCore &) const {}
 
-        virtual void RegisterActionInitiation(Group &, GroupActionResult) const {}
+        virtual void RegisterActionPerformance(GroupCore &, GroupActionResult) const {}
+
+        virtual void RegisterActionInitiation(GroupCore &, GroupActionResult) const {}
     };  
 };

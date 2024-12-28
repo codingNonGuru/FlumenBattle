@@ -12,7 +12,7 @@
 #include "FlumenBattle/World/Character/CharacterClass.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/WorldInterface.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Interface/Counter.h"
 #include "FlumenBattle/World/Interface/ResourceCounter.h"
@@ -28,7 +28,7 @@ static auto color = Color::RED * 0.25f;
 
 static auto TEXT_COLOR = Color::RED * 0.5f;
 
-world::group::Group *playerGroup = nullptr;
+world::group::GroupCore *playerGroup = nullptr;
 
 void InventorySlot::HandleConfigure()
 {

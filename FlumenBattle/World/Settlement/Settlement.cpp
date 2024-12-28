@@ -674,7 +674,7 @@ void Settlement::SetupSimulation()
     timeSinceSimulationChange = 0;
 }
 
-void Settlement::RemoveGroup(const group::Group &group)
+void Settlement::RemoveGroup(const group::GroupCore &group)
 {
     groupDynamics->RemoveGroup(group);
 }

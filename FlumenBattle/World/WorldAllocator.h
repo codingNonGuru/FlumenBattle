@@ -25,7 +25,7 @@ namespace world
     {
         class GroupDynamics;
         class GroupBatch;
-        class Group;
+        class GroupCore;
     }
 
     class WorldAllocator : public core::Singleton <WorldAllocator>
@@ -46,12 +46,12 @@ namespace world
 
         container::Grid <group::GroupBatch>::Memory batchMemory;
 
-        container::PoolAllocator <group::Group *>::Memory groupBatchMemory;
+        container::PoolAllocator <group::GroupCore *>::Memory groupBatchMemory;
 
         container::Array <WorldTile *>::Memory ownershipChangeMemory;
 
 
-        container::PoolAllocator <group::Group *> groupBatchAllocator;
+        container::PoolAllocator <group::GroupCore *> groupBatchAllocator;
 
         void AllocateMap(WorldMap &/*, container::SmartBlock< container::Array <WorldTilePointer>, 4> &*/, int);
 

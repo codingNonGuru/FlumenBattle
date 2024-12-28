@@ -4,24 +4,12 @@
 
 using namespace world::group;
 
-void GroupBatch::Add(Group *group)
+void GroupBatch::Add(GroupCore *group)
 {
-    static std::mutex mutex;
-
-    mutex.lock();
-
     *groups.Add() = group;
-
-    mutex.unlock();
 }
 
-void GroupBatch::Remove(Group *group)
+void GroupBatch::Remove(GroupCore *group)
 {
-    static std::mutex mutex;
-
-    mutex.lock();
-    
     groups.Remove(group);
-
-    mutex.unlock();
 }

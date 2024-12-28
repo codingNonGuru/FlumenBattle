@@ -6,7 +6,7 @@ namespace world
 {
     namespace group
     {
-        class Group;
+        class GroupCore;
     }
 
     class WorldTile;
@@ -26,18 +26,18 @@ namespace world::group
 
         bool isPlayerInvolved;
 
-        Group *attacker;
+        GroupCore *attacker;
 
-        Group *defender;
+        GroupCore *defender;
 
-        Group *winner;
+        GroupCore *winner;
 
         WorldTile *location;
 
     public:
         Encounter() {}
 
-        void Initialize(Group *, Group *);
+        void Initialize(GroupCore *, GroupCore *);
 
         void SetSiege(bool);
 
@@ -47,11 +47,11 @@ namespace world::group
 
         void EndFighting() {isBattle = false; hasBattleEnded = true;}
 
-        group::Group *GetAttacker() const {return attacker;}
+        group::GroupCore *GetAttacker() const {return attacker;}
 
-        group::Group *GetDefender() const {return defender;}
+        group::GroupCore *GetDefender() const {return defender;}
 
-        group::Group *GetOtherThan(group::Group *group) const {return group == attacker ? defender : attacker;}
+        group::GroupCore *GetOtherThan(group::GroupCore *group) const {return group == attacker ? defender : attacker;}
 
         bool IsOngoing() const {return isOngoing;}
 
@@ -61,9 +61,9 @@ namespace world::group
 
         bool HasBattleEnded() const {return hasBattleEnded;}
 
-        bool IsWinner(Group *group) const {return group == winner;}
+        bool IsWinner(GroupCore *group) const {return group == winner;}
 
-        void Finish(Group *);
+        void Finish(GroupCore *);
 
         void Terminate();
     };

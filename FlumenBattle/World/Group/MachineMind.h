@@ -8,22 +8,24 @@ namespace world::group
 {
     class MachineMind : public GroupMind, public core::Singleton <MachineMind>
     {
-        void DetermineAction(Group &) const override;
+        friend class GroupCore;
 
-        void DetermineActionAsMerchant(Group &) const;
+        void DetermineAction(GroupCore &) const override;
 
-        void DetermineActionAsAdventurer(Group &) const;
+        void DetermineActionAsMerchant(GroupCore &) const;
 
-        void DetermineActionAsBandit(Group &) const;
+        void DetermineActionAsAdventurer(GroupCore &) const;
 
-        void DetermineActionAsPatrol(Group &) const;
+        void DetermineActionAsBandit(GroupCore &) const;
 
-        void DetermineActionAsGarrison(Group &) const;
+        void DetermineActionAsPatrol(GroupCore &) const;
 
-        void DetermineActionAsRaider(Group &) const;
+        void DetermineActionAsGarrison(GroupCore &) const;
 
-        void RegisterActionPerformance(Group &, GroupActionResult) const override;
+        void DetermineActionAsRaider(GroupCore &) const;
 
-        bool NeedsRest(const Group &) const;
+        void RegisterActionPerformance(GroupCore &, GroupActionResult) const override;
+
+        bool NeedsRest(const GroupCore &) const;
     };
 }

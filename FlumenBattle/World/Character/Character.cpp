@@ -8,17 +8,21 @@
 #include "FlumenBattle/Battle/SpellCaster.h"
 #include "FlumenBattle/Battle/BattleTile.h"
 #include "FlumenBattle/Battle/BattleController.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/Battle/Combatant.h"
 #include "FlumenBattle/World/Character/CharacterClass.h"
 #include "FlumenBattle/World/Character/CharacterAction.h"
 #include "FlumenBattle/World/Character/ProficiencyFactory.h"
+#include "FlumenBattle/Config.h"
 
 namespace world::character
 {
-    static const auto MAXIMUM_CHARACTER_LEVEL = 12;
-
     static const int EXPERIENCE_THRESHOLDS[] = {0, 1000, 2000, 3500, 6000, 10000, 15000, 25000, 37000, 55000, 70000, 100000, 150000};
+
+    const int *Character::GetExperienceThresholds()
+    {
+        return EXPERIENCE_THRESHOLDS;
+    }
 
     Character::Character()
     {
@@ -413,6 +417,8 @@ namespace world::character
 
     void Character::GainExperience(int amount)
     {
+        static const auto MAXIMUM_CHARACTER_LEVEL = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_CHARACTER_LEVEL).Integer;
+
         if(level == MAXIMUM_CHARACTER_LEVEL)
             return;
 
@@ -434,5 +440,12 @@ namespace world::character
             if(level == MAXIMUM_CHARACTER_LEVEL)
                 return;
         }
+    }
+
+    void Character::RefreshMaximumHitpoints()
+    {
+        maximumHitPoints = 40 + type->HitDice;
+        maximumHitPoints += abilities.GetModifier(AbilityTypes::CONSTITUTION) * level;
+        maximumHitPoints += race->HitPointBonus;
     }
 }

@@ -21,7 +21,7 @@
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/World/WorldMap.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/Battle/Combatant.h"
@@ -1163,9 +1163,9 @@ void WorldTileModel::Render()
         /*if(&group == playerGroup)
             continue;
 
-        for(int i = 0; i < group.travelActionData.PlannedDestinationCount; ++i)
+        for(int i = 0; i < group.travelActionData->PlannedDestinationCount; ++i)
         {
-            auto tile = group.travelActionData.Route[i];
+            auto tile = group.travelActionData->Route[i];
             dotSprite->Draw(camera, {tile->Position, Scale2(0.75f, 0.75f), Opacity(0.6f), DrawOrder(-2)});
         }*/
     }

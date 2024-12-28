@@ -2,7 +2,7 @@
 #include "FlumenBattle/World/Group/GroupBatch.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/Config.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 
 using namespace world::group;
 

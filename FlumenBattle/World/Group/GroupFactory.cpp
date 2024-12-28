@@ -3,8 +3,10 @@
 #include "FlumenEngine/Utility/Color.hpp"
 
 #include "FlumenBattle/World/Group/GroupFactory.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
+#include "FlumenBattle/World/Group/GroupExtraData.h"
 #include "FlumenBattle/World/Group/GroupType.h"
+#include "FlumenBattle/World/Group/CharacterEssence.h"
 #include "FlumenBattle/World/Group/GroupAllocator.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/WorldTile.h"
@@ -36,9 +38,9 @@ namespace world::group
         return color;
     }
 
-    Group* GroupFactory::CreatePlayerGroup(GroupBuildData buildData)
+    GroupCore* GroupFactory::CreatePlayerGroup(GroupBuildData buildData)
     {
-        auto group = new Group(); 
+        auto group = GroupAllocator::Get()->Allocate(true);
 
         auto type = GroupTypeFactory::BuildGroupType(buildData.Type);
 
@@ -46,7 +48,7 @@ namespace world::group
 
         auto color = GetColor();
 
-        group->muleCount = 0;
+        group->SetMuleCount(0);
 
         for(auto &memberData : *buildData.MemberDatas)
         {
@@ -57,7 +59,7 @@ namespace world::group
             character::CharacterFactory::Create(race, characterClass, *group);
         }
 
-        group->Initialize(type, size, color, buildData.Race);
+        group->Initialize(type, size, buildData.Race);
 
         group->SetHome(buildData.Home);
 
@@ -66,9 +68,9 @@ namespace world::group
         return group;
     }
 
-    Group* GroupFactory::CreateMachineGroup(GroupBuildData buildData)
+    GroupCore* GroupFactory::CreateMachineGroup(GroupBuildData buildData)
     {
-        auto group = new Group(); 
+        auto group = GroupAllocator::Get()->Allocate(false);
 
         auto type = GroupTypeFactory::BuildGroupType(buildData.Type);
 
@@ -78,11 +80,18 @@ namespace world::group
 
         if(buildData.Type == GroupClasses::MERCHANT)
         {
-            group->muleCount = 2;
+            group->SetMuleCount(2);
         }
         else
         {
-            group->muleCount = 0;
+            group->SetMuleCount(0);
+        }
+
+        group->characterHandler.characterCount = 0;
+
+        for(auto &essence : *group->characterHandler.characters)
+        {
+            essence.isFunctioning = false;
         }
 
         for(int i = 0; i < size; ++i)
@@ -113,14 +122,16 @@ namespace world::group
             }
 
             auto dice = utility::GetRandom(0, classMakeup.GetSize() - 1);
-            character::CharacterClasses characterClass = *classMakeup.Get(dice);
+            auto characterClass = *classMakeup.Get(dice);
 
             auto race = RaceFactory::BuildRace(buildData.Race);
 
-            character::CharacterFactory::Create(race, &character::ClassFactory::BuildClass(characterClass), *group);
+            auto characterEssence = group->characterHandler.AddCharacter();
+            
+            characterEssence->Initialize(characterClass);
         }
 
-        group->Initialize(type, size, color, buildData.Race);
+        group->Initialize(type, size, buildData.Race);
 
         group->SetHome(buildData.Home);
 
@@ -152,5 +163,26 @@ namespace world::group
         }
 
         return group;
+    }
+
+    void GroupFactory::TransformIntoDeepGroup(GroupCore *group)
+    {
+        if(group->extraData != nullptr)
+            return;
+
+        GroupAllocator::Get()->GenerateExtraGroupData(group);
+
+        for(auto &characterEssence : *group->characterHandler.characters)
+        {
+            auto race = RaceFactory::BuildRace(group->raceType);
+
+            auto character = character::CharacterFactory::Create(race, characterEssence, *group);
+        }
+
+        group->extraData->Initialize(group);
+    }
+
+    void GroupFactory::RevertToShallowGroup(GroupCore *group)
+    {
     }
 }

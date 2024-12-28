@@ -8,8 +8,9 @@
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/GroupActionFactory.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/World/Group/GroupActionData.h"
+#include "FlumenBattle/World/Group/CharacterEssence.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 #include "FlumenBattle/WorldInterface.h"
 #include "FlumenBattle/World/Character/Types.h"
@@ -113,18 +114,18 @@ void HumanMind::Enable()
     previousSettlement = playerGroup->GetCurrentSettlement();
 }
 
-void HumanMind::DetermineAction(Group &group) const 
+void HumanMind::DetermineAction(GroupCore &group) const 
 {
-    if(group.travelActionData.IsOnRoute)
+    if(group.travelActionData->IsOnRoute)
     {    
         if(group.GetDestination() == nullptr)
         {
-            group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+            group.SelectAction(GroupActions::TRAVEL, {group.travelActionData->Route[0]});
 
             if(extendedPath.Tiles.GetSize() != 0)
             {
-                group.travelActionData.Route[TILES_PER_GROUP_ROUTE - 1] = *extendedPath.Tiles[extendedPathIndex];
-                group.travelActionData.PlannedDestinationCount++;
+                group.travelActionData->Route[TILES_PER_GROUP_ROUTE - 1] = *extendedPath.Tiles[extendedPathIndex];
+                group.travelActionData->PlannedDestinationCount++;
                 extendedPathIndex++;
                 if(extendedPathIndex == extendedPath.Tiles.GetSize())
                 {
@@ -138,7 +139,7 @@ void HumanMind::DetermineAction(Group &group) const
     }
 }
 
-void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result) const
+void HumanMind::RegisterActionPerformance(GroupCore &group, GroupActionResult result) const
 {
     performedActionResult = result;
 
@@ -176,7 +177,7 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
                 spottedGroup, 
                 spottedGroup->GetUniqueId(),
                 spottedGroup->GetClass(),
-                spottedGroup->GetLeader()->GetName(),
+                spottedGroup->GetLeaderName(),
                 spottedGroup->GetHome()->GetName(),
                 worldTime.TotalHourCount, 
                 result.Success.IsCriticalSuccess(), 
@@ -187,9 +188,20 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
             };
 
             latestGroupSpotting->Characters;
-            for(auto &character : spottedGroup->characters)
+
+            if(spottedGroup->IsDeepGroup() == true)
             {
-                *latestGroupSpotting->Characters.Add() = character.GetClass()->Class;
+                for(auto &character : spottedGroup->GetCharacters())
+                {
+                    *latestGroupSpotting->Characters.Add() = character.GetClass()->Class;
+                }
+            }
+            else
+            {
+                for(auto &character : spottedGroup->GetCharacterEssences())
+                {
+                    *latestGroupSpotting->Characters.Add() = character.characterClass;
+                }
             }
 
             OnGroupSpotted.Invoke();
@@ -247,7 +259,7 @@ void HumanMind::RegisterActionPerformance(Group &group, GroupActionResult result
     OnActionPerformed.Invoke();
 }
 
-void HumanMind::RegisterActionInitiation(Group &, GroupActionResult result) const 
+void HumanMind::RegisterActionInitiation(GroupCore &, GroupActionResult result) const 
 {
     selectedActionResult = result;
 
@@ -447,30 +459,30 @@ void HumanMind::HandleTravel()
     extendedPathIndex = 0;
 
     bool isHalfwayThrough = playerGroup->GetTravelProgress() >= 0.5f;
-    if(playerGroup->travelActionData.IsOnRoute && isHalfwayThrough == false)
+    if(playerGroup->travelActionData->IsOnRoute && isHalfwayThrough == false)
     {
         playerGroup->CancelAction();
     }
 
     auto routeIndexDisplace = 0;
-    if(playerGroup->travelActionData.IsOnRoute && isHalfwayThrough == true)
+    if(playerGroup->travelActionData->IsOnRoute && isHalfwayThrough == true)
     {
         routeIndexDisplace = 1;
     }
 
-    playerGroup->travelActionData.IsOnRoute = true;
+    playerGroup->travelActionData->IsOnRoute = true;
 
     auto pathSize = routeIndexDisplace + plannedPath.Tiles.GetSize() - 1;
-    playerGroup->travelActionData.PlannedDestinationCount = pathSize <= TILES_PER_GROUP_ROUTE ? pathSize : TILES_PER_GROUP_ROUTE;
+    playerGroup->travelActionData->PlannedDestinationCount = pathSize <= TILES_PER_GROUP_ROUTE ? pathSize : TILES_PER_GROUP_ROUTE;
     for(int i = 1; i < (plannedPath.Tiles.GetSize() <= TILES_PER_GROUP_ROUTE + 1 ? plannedPath.Tiles.GetSize() : TILES_PER_GROUP_ROUTE + 1); ++i)
     {
         auto index = routeIndexDisplace + i - 1;
         if(index >= TILES_PER_GROUP_ROUTE)
             continue;
 
-        playerGroup->travelActionData.Route[index] = *plannedPath.Tiles[i];
+        playerGroup->travelActionData->Route[index] = *plannedPath.Tiles[i];
     }
-    playerGroup->travelActionData.IsOnRoute = true;
+    playerGroup->travelActionData->IsOnRoute = true;
 
     if(pathSize > TILES_PER_GROUP_ROUTE)
     {
@@ -481,7 +493,7 @@ void HumanMind::HandleTravel()
         extendedPathIndex = 0;
     }
 
-    playerGroup->SelectAction(GroupActions::TRAVEL, {playerGroup->travelActionData.Route[0]});
+    playerGroup->SelectAction(GroupActions::TRAVEL, {playerGroup->travelActionData->Route[0]});
 
     UpdateLocationStatus();
 }
@@ -490,10 +502,10 @@ void HumanMind::HandleResumeTravel()
 {
     static auto playerGroup = WorldScene::Get()->GetPlayerGroup();
 
-    if(playerGroup->travelActionData.IsOnRoute == false)
+    if(playerGroup->travelActionData->IsOnRoute == false)
         return;
 
-    playerGroup->SelectAction(GroupActions::TRAVEL, {playerGroup->travelActionData.Route[0]});
+    playerGroup->SelectAction(GroupActions::TRAVEL, {playerGroup->travelActionData->Route[0]});
 
     UpdateLocationStatus();
 }
@@ -503,7 +515,7 @@ void HumanMind::HandleCancelTravel()
     static auto playerGroup = WorldScene::Get()->GetPlayerGroup();
 
     auto isHalfwayThrough = playerGroup->GetTravelProgress() >= 0.5f;
-    if(playerGroup->travelActionData.IsOnRoute && isHalfwayThrough == true)
+    if(playerGroup->travelActionData->IsOnRoute && isHalfwayThrough == true)
         return;
 
     if(playerGroup->IsDoing(GroupActions::TRAVEL) == true)
@@ -511,9 +523,9 @@ void HumanMind::HandleCancelTravel()
         playerGroup->CancelAction();
     }
 
-    playerGroup->travelActionData.IsOnRoute = false;
-    playerGroup->travelActionData.Progress = 0;
-    playerGroup->travelActionData.PlannedDestinationCount = 0;
+    playerGroup->travelActionData->IsOnRoute = false;
+    playerGroup->travelActionData->Progress = 0;
+    playerGroup->travelActionData->PlannedDestinationCount = 0;
 
     extendedPath.Tiles.Clear();
     extendedPathIndex = 0;
@@ -609,7 +621,7 @@ void HumanMind::BuyMule()
 
     playerGroup->money -= price;
 
-    playerGroup->muleCount++;
+    playerGroup->SetMuleCount(playerGroup->GetMuleCount() + 1);
 
     moneyChange = -price;
 
@@ -655,9 +667,9 @@ const utility::PathData <world::WorldTile> HumanMind::GetFullPathData()
 
     auto playerGroup = WorldScene::Get()->GetPlayerGroup();
 
-    for(int i = 0; i < playerGroup->travelActionData.PlannedDestinationCount; ++i)
+    for(int i = 0; i < playerGroup->travelActionData->PlannedDestinationCount; ++i)
     {
-        *pathData.Tiles.Add() = playerGroup->travelActionData.Route[i];
+        *pathData.Tiles.Add() = playerGroup->travelActionData->Route[i];
     }
 
     if(extendedPath.Tiles.GetSize() == 0)

@@ -3,6 +3,8 @@
 #include "GroupCore.h"
 #include "GroupExtraData.h"
 #include "FlumenBattle/World/Character/Character.h"
+#include "FlumenBattle/World/Character/ClassFactory.h"
+#include "FlumenBattle/World/Character/CharacterClass.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/GroupBatch.h"
@@ -11,9 +13,12 @@
 #include "FlumenBattle/World/Group/GroupMind.h"
 #include "FlumenBattle/World/Group/GroupActionFactory.h"
 #include "FlumenBattle/World/Group/MachineMind.h"
+#include "FlumenBattle/World/Group/GroupAllocator.h"
+#include "FlumenBattle/World/Group/CharacterEssence.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Polity/Polity.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Character/NameGenerator.h"
 #include "FlumenBattle/Config.h"
 
 using namespace world::group;
@@ -23,6 +28,68 @@ using namespace world::group;
 #define MULE_CARRY_CAPACITY 25
 
 #define MULE_FOOD_CONSUMPTION 3
+
+CharacterEssence *CharacterHandler::AddCharacter()
+{
+    auto characterEssence = characters->Add();
+
+    characterCount++;
+
+    return characterEssence;
+}
+
+void CharacterHandler::DamageCharacter(CharacterEssence &character, int damage)
+{
+    bool hasDied = character.SufferDamage(damage);
+    if(hasDied == true)
+    {
+        characterCount--;
+    }
+}
+
+void GroupCore::Initialize(const GroupType *groupType, Integer size, RaceTypes raceType)
+{
+    this->type = groupType;
+
+    this->isAlive = true;
+    this->hasAchievedObjective = false;
+
+    this->hasMission = false;
+    if(this->type->Class == GroupClasses::ADVENTURER)
+    {
+        this->money = utility::GetRandom(100, 150);
+    }
+    else if(this->type->Class == GroupClasses::MERCHANT)
+    {
+        this->money = utility::GetRandom(200, 300);
+    }
+    else if(this->type->Class == GroupClasses::PLAYER)
+    {
+        this->money = utility::GetRandom(100, 150);
+    }
+    else if(this->type->Class == GroupClasses::GARRISON || this->type->Class == GroupClasses::PATROL)
+    {
+        this->money = utility::GetRandom(50, 100);
+    }
+    else if(this->type->Class == GroupClasses::BANDIT)
+    {
+        this->money = utility::GetRandom(100, 150);
+    }
+
+    actionProgress = 0;
+
+    timeSinceLongRest = 0;
+
+    action = nullptr;
+    encounter = nullptr;
+    tile = nullptr;
+    home = nullptr;
+
+    if(extraData != nullptr)
+    {
+        extraData->Initialize(this);
+    }
+}
 
 bool GroupCore::IsAlive()
 {
@@ -78,7 +145,11 @@ bool GroupCore::IsInEncounter() const
 
 Pool <world::character::Character> &GroupCore::GetCharacters() 
 {
-    return extraData->GetCharacters();
+    if(extraData != nullptr)
+        return extraData->GetCharacters();
+
+    std::cout << "Calling GroupCore GetCharacters when ExtraData is missing." << std::endl;
+    std::abort();
 }
 
 int GroupCore::GetLivingCount() const
@@ -130,13 +201,12 @@ GroupCore *GroupCore::GetOther()
         return nullptr;
     }
 
-    //To rework Encounter class
-    /*if(encounter->GetAttacker() == this)
+    if(encounter->GetAttacker() == this)
     {
         return encounter->GetDefender();
     }
 
-    return encounter->GetAttacker();*/
+    return encounter->GetAttacker();
 }
 
 int GroupCore::GetCarryCapacity() const
@@ -243,6 +313,19 @@ void GroupCore::CheckFatigue()
     }
 }
 
+void GroupCore::FinishLongRest()
+{
+    if(extraData != nullptr)
+    {
+        extraData->FinishLongRest();
+        return;
+    }
+
+    timeSinceLongRest = 0;
+
+    isFatigued = false;
+}
+
 void GroupCore::DetermineAction()
 {
     if(extraData != nullptr)
@@ -251,14 +334,14 @@ void GroupCore::DetermineAction()
         return;
     }
 
-    //MachineMind::Get()->DetermineAction(*this);
+    MachineMind::Get()->DetermineAction(*this);
 }
 
 bool GroupCore::ValidateAction(GroupActions actionType, const GroupActionData &actionData)
 {
     auto possibleAction = GroupActionFactory::Get()->BuildAction(actionType);
 
-    //return possibleAction->CanPerform(*this, actionData);
+    return possibleAction->CanPerform(*this, actionData);
 }   
 
 GroupActionResult GroupCore::SelectAction(GroupActions actionType, const GroupActionData &actionData)
@@ -272,12 +355,32 @@ GroupActionResult GroupCore::SelectAction(GroupActions actionType, const GroupAc
 
     travelActionData->Intensity = ActionIntensities::NORMAL;
 
-    //auto result = action->Initiate(*this, actionData);
-    //result.Content.isAlreadyEngaged = actionData.IsEngaged;
+    auto result = action->Initiate(*this, actionData);
+    result.Content.isAlreadyEngaged = actionData.IsEngaged;
 
-    //controller->RegisterActionInitiation(*this, result);
+    if(extraData != nullptr)
+    {
+        extraData->HandleActionSelection(result);
+    }
 
-    //return result;
+    return result;
+}
+
+void GroupCore::PerformAction()
+{
+    CheckFatigue();
+
+    if(action)
+    {
+        actionProgress += GetProgressRate();
+
+        auto result = action->Perform(*this);
+
+        if(extraData != nullptr)
+        {
+            extraData->HandleActionPerformance(result);
+        }
+    }
 }
 
 void GroupCore::CancelAction()
@@ -346,6 +449,8 @@ void GroupCore::AddItem(character::ItemTypes type, int amount)
         extraData->AddItem(type, amount);
         return;
     }
+
+    itemValue += character::ItemFactory::Get()->CreateType(type)->Value * amount;
 }
 
 void GroupCore::RemoveItem(character::Item *item)
@@ -355,6 +460,8 @@ void GroupCore::RemoveItem(character::Item *item)
         extraData->RemoveItem(item);
         return;
     }
+
+    itemValue -= item->Type->Value;
 }
 
 void GroupCore::RemoveItemAmount(character::ItemTypes type, int amount)
@@ -364,6 +471,8 @@ void GroupCore::RemoveItemAmount(character::ItemTypes type, int amount)
         extraData->RemoveItemAmount(type, amount);
         return;
     }
+
+    itemValue -= character::ItemFactory::Get()->CreateType(type)->Value * amount;
 }
 
 void GroupCore::SetTile(WorldTile *newTile)
@@ -374,37 +483,37 @@ void GroupCore::SetTile(WorldTile *newTile)
     auto oldBatch = GroupBatchMap::Get()->GetBatch(this->tile);
     if(oldBatch != nullptr)
     {
-        //oldBatch->Remove(this);
+        oldBatch->Remove(this);
     }
 
     auto newBatch = GroupBatchMap::Get()->GetBatch(newTile);
-    //newBatch->Add(this);
+    newBatch->Add(this);
 
     this->tile = newTile;
 }
 
 float GroupCore::GetActionProgress() const
 {
-    /*if(action->HasVaryingIntensity == false)
+    if(action->HasVaryingIntensity == false)
     {
         return (float)actionProgress / (float)action->GetDuration(*this);   
     }
     else
     {
         return (float)travelActionData->Progress / (float)travelActionData->Duration;   
-    }*/
+    }
 }
 
 int GroupCore::GetRemainingActionDuration() const
 {
-    /*if(action->HasVaryingIntensity == false)
+    if(action->HasVaryingIntensity == false)
     {
         return action->GetDuration(*this) - actionProgress;
     }
     else
     {
         return action->GetDuration(*this) - travelActionData->Progress;
-    }*/
+    }
 }
 
 int GroupCore::GetProgressRate() const
@@ -441,6 +550,9 @@ int GroupCore::GetItemAmount(character::ItemTypes type)
     {
         return extraData->GetItemAmount(type);
     }
+
+    auto amount = itemValue / character::ItemFactory::Get()->CreateType(type)->Value;
+    return amount;
 }
 
 const container::Pool <world::character::Item> &GroupCore::GetItems() const
@@ -472,6 +584,14 @@ int GroupCore::GetMuleCount() const
     }
 
     return 5;
+}
+
+void GroupCore::SetMuleCount(int amount)
+{
+    if(extraData != nullptr)
+    {
+        return extraData->SetMuleCount(amount);
+    }
 }
 
 int GroupCore::GetFoodConsumption() const
@@ -545,11 +665,9 @@ void GroupCore::GainExperience(int experience)
         return;
     }
 
-    auto &asd = *characterHandler.characters;
-
-    for(CharacterEssence &character : asd)
+    for(CharacterEssence &character : *characterHandler.characters)
     {
-        character.experience += experience;
+        character.GainExperience(experience);
     }
 }
 
@@ -567,4 +685,47 @@ int GroupCore::GetLevel() const
     }
 
     return level / characterHandler.characterCount;
+}
+
+Attitudes GroupCore::GetAttitude() const
+{
+    if(extraData != nullptr)
+    {
+        return extraData->GetAttitude();
+    }
+
+    return Attitudes::INDIFFERENT;
+}
+
+void GroupCore::SetAttitude(Attitudes attitude)
+{
+    if(extraData != nullptr)
+    {
+        extraData->SetAttitude(attitude);
+        return;
+    }
+}
+
+void GroupCore::AddPositiveCondition(int strength)
+{
+    conditionFactor += strength;
+
+    conditionTimestamp = WorldScene::Get()->GetTime().TotalHourCount;
+}
+
+void GroupCore::AddNegativeCondition(int strength)
+{
+    conditionFactor -= strength;
+
+    conditionTimestamp = WorldScene::Get()->GetTime().TotalHourCount;
+}
+
+Word GroupCore::GetLeaderName() const
+{
+    if(extraData != nullptr)
+    {
+        return extraData->GetLeader()->GetName();
+    }
+
+    return world::character::NameGenerator::Get()->FetchName(uniqueId);
 }

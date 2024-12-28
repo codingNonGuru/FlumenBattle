@@ -14,7 +14,7 @@
 #include "FlumenBattle/Battle/BattleAnimator.h"
 #include "FlumenBattle/Battle/Combatant.h"
 #include "FlumenBattle/World/Character/Character.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/Battle/BattleTile.h"
 #include "FlumenBattle/Battle/CombatGroup.h"
 #include "FlumenBattle/World/WorldState.h"

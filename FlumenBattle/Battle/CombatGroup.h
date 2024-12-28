@@ -4,7 +4,7 @@
 
 namespace world::group
 {
-    class Group;
+    class GroupCore;
 }
 
 namespace battle
@@ -16,7 +16,7 @@ namespace battle
     {
         friend class BattleScene;
 
-        world::group::Group *group;
+        world::group::GroupCore *group;
 
         Array <Combatant> combatants;
 
@@ -25,9 +25,9 @@ namespace battle
     public:
         CombatGroup();
 
-        void Initialize(class world::group::Group *, BattleTile *);
+        void Initialize(class world::group::GroupCore *, BattleTile *);
 
-        world::group::Group *GetGroup() const {return group;}
+        world::group::GroupCore *GetGroup() const {return group;}
 
         const Array <Combatant> &GetCombatants() const {return combatants;}
 

@@ -13,11 +13,11 @@ namespace world
 namespace world::group
 {
     class GroupBatch;
-    class Group;
+    class GroupCore;
 
     struct GroupBuffer
     {
-        container::Array <Group *> Groups;
+        container::Array <GroupCore *> Groups;
 
         GroupBuffer();
 
@@ -29,7 +29,7 @@ namespace world::group
 
         GroupBuffer& operator=(GroupBuffer &&buffer) {Groups = buffer.Groups;}
 
-        bool operator== (Group **groupStart) {return Groups.GetStart() == groupStart;}
+        bool operator== (GroupCore **groupStart) {return Groups.GetStart() == groupStart;}
     };
 
     class GroupBatchMap : public core::Singleton <GroupBatchMap>

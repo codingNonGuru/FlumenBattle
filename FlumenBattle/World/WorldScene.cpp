@@ -16,7 +16,7 @@
 #include "FlumenBattle/World/Render/WorldTileModel.h"
 #include "FlumenBattle/World/Disaster/Earthquake.h"
 #include "FlumenBattle/World/Group/GroupAllocator.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/World/Group/GroupBatchMap.h"
 #include "FlumenBattle/World/Group/GroupFactory.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
@@ -37,6 +37,7 @@
 #include "FlumenBattle/World/Interface/Popup/PopupManager.h"
 #include "FlumenBattle/World/WorldUpdateHandler.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
+#include "FlumenBattle/World/Character/NameGenerator.h"
 
 #define AWAIT(length) \
     static float timer = 0.0f;\
@@ -59,7 +60,9 @@ namespace world
 
         WorldInterface::Get()->Initialize();
 
-        group::HumanMind::Get()->Enable();      
+        group::HumanMind::Get()->Enable();    
+
+        character::NameGenerator::Get()->GenerateNamePool();
 
         Engine::OnLoopCycleEnded += [] 
         {
@@ -353,8 +356,20 @@ namespace world
         return mostRecentBattle;
     }
 
-    void WorldScene::InitiateEncounter(group::Group *attacker, group::Group *defender)
+    void WorldScene::InitiateEncounter(group::GroupCore *attacker, group::GroupCore *defender)
     {
+        if(playerGroup == attacker || playerGroup == defender)
+        {
+            if(playerGroup == attacker)
+            {
+                group::GroupFactory::TransformIntoDeepGroup(defender);
+            }
+            else
+            {
+                group::GroupFactory::TransformIntoDeepGroup(attacker);
+            }
+        }
+
         auto battle = battles->Add();
         battle->Initialize(attacker, defender);
 
@@ -674,7 +689,7 @@ namespace world
         return worldMap->tiles;
     }
 
-    group::Group *WorldScene::GetGroup(int uniqueId)
+    group::GroupCore *WorldScene::GetGroup(int uniqueId)
     {
         for(auto &group : *groups)
         {

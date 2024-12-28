@@ -9,20 +9,20 @@ namespace world
 
 namespace world::group
 {
-    class Group;
+    class GroupCore;
 
     class GroupBatch
     {
         friend class GroupBatchAllocator;
 
-        container::Pool <Group *> groups; 
+        container::Pool <GroupCore *> groups; 
 
     public:
-        void Add(Group *);
+        void Add(GroupCore *);
 
-        void Remove(Group *);
+        void Remove(GroupCore *);
 
-        const container::Pool <Group *> &GetGroups() {return groups;}
+        const container::Pool <GroupCore *> &GetGroups() {return groups;}
 
         int GetGroupCount() const {return groups.GetSize();}
     };
@@ -31,7 +31,7 @@ namespace world::group
     {
         friend class world::WorldAllocator;
 
-        static void AllocateBatch(GroupBatch &batch, container::PoolAllocator <group::Group *> &allocator)
+        static void AllocateBatch(GroupBatch &batch, container::PoolAllocator <group::GroupCore *> &allocator)
         {
             batch.groups.Initialize(allocator);
         }

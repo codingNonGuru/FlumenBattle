@@ -9,7 +9,7 @@
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/Battle/BattleController.h"
 #include "FlumenBattle/Battle/HumanController.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/Battle/Interface/ActionInfoPanel.h"
 #include "FlumenBattle/World/Character/Weapon.h"
 #include "FlumenBattle/World/Character/Spell.h"

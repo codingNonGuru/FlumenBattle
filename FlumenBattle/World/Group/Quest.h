@@ -9,7 +9,7 @@ namespace world::settlement
 
 namespace world::group
 {
-    class Group;
+    class GroupCore;
 
     enum class QuestTypes
     {
@@ -28,7 +28,7 @@ namespace world::group
         {
             settlement::Settlement *TargetSettlement;
 
-            Group *TargetGroup;
+            GroupCore *TargetGroup;
         } Data;
 
         int TimeStamp = [] {return WorldScene::Get()->GetTime().TotalHourCount;} ();

@@ -36,27 +36,19 @@ namespace world::group
     class GroupMind;
     union GroupActionData;
     struct GroupActionResult;
+    struct CharacterEssence;
 
-    struct CharacterEssence
-    {
-        bool isFunctioning;
-
-        bool isAlive;
-
-        character::CharacterClasses characterClass;
-
-        int experience;
-
-        int level;
-
-        int health;
-    };
+    typedef container::SmartBlock <CharacterEssence, 16> CharacterEssenceBatch;
 
     struct CharacterHandler
     {
         int characterCount;
 
-        container::SmartBlock <CharacterEssence, 16> *characters;        
+        CharacterEssenceBatch *characters;
+
+        CharacterEssence *AddCharacter();
+
+        void DamageCharacter(CharacterEssence &, int);        
     };
 
     struct SkillData
@@ -92,6 +84,18 @@ namespace world::group
     class GroupCore
     {
         friend class GroupExtraData;
+
+        friend class GroupAllocator;
+
+        friend class GroupActionPerformer;
+
+        friend class GroupActionValidator;
+
+        friend class GroupFactory;
+
+        friend class MachineMind;
+
+        friend class HumanMind;
 
         struct GroupLocation
         {
@@ -157,6 +161,10 @@ namespace world::group
         GroupExtraData *extraData;
 
     public:
+        void Initialize(const GroupType *, Integer, RaceTypes);
+
+        bool IsDeepGroup() const {return extraData != nullptr;}
+
         int GetUniqueId() const {return uniqueId;}
 
         bool HasUniqueId(int id) const {return uniqueId == id;}
@@ -180,6 +188,8 @@ namespace world::group
         bool IsInEncounter() const;
 
         Pool <character::Character> &GetCharacters();
+
+        CharacterEssenceBatch &GetCharacterEssences() {return *characterHandler.characters;}
 
         int GetLivingCount() const;
 
@@ -212,6 +222,8 @@ namespace world::group
         void Update();
 
         void CheckFatigue();
+
+        void FinishLongRest();
 
         void DetermineAction();
 
@@ -261,6 +273,8 @@ namespace world::group
 
         int GetMuleCount() const;
 
+        void SetMuleCount(int);
+
         void AddMoney(int sum) {money += sum;}
 
         int GetFoodConsumption() const;
@@ -284,5 +298,19 @@ namespace world::group
         void GainExperience(int);
 
         int GetLevel() const;
+
+        Attitudes GetAttitude() const;
+
+        void SetAttitude(Attitudes);
+
+        void AddPositiveCondition(int);
+
+        void AddNegativeCondition(int);
+
+        TravelActionData *GetTravelData() {return travelActionData;}
+
+        CharacterHandler &GetCharacterHandler() {return characterHandler;}
+
+        Word GetLeaderName() const;
     };
 }

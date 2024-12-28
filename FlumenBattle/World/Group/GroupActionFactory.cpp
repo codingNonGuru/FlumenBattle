@@ -1,8 +1,9 @@
 #include "FlumenBattle/World/Group/GroupActionFactory.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/World/Group/GroupBatchMap.h"
 #include "FlumenBattle/World/Group/Encounter.h"
+#include "FlumenBattle/World/Group/CharacterEssence.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/WorldBiome.h"
@@ -207,24 +208,25 @@ const GroupAction * GroupActionFactory::BuildBribeGarrison()
     return &action;
 }
 
-GroupActionResult GroupActionPerformer::InitiateTravel(Group &group, const GroupActionData &actionData)
+GroupActionResult GroupActionPerformer::InitiateTravel(GroupCore &group, const GroupActionData &actionData)
 {
-    if(group.travelActionData.Destination != actionData.TravelDestination)
+    if(group.travelActionData->Destination != actionData.TravelDestination)
     {
-        group.travelActionData.Progress = 0;
+        group.travelActionData->Progress = 0;
 
-        group.travelActionData.Destination = actionData.TravelDestination;
-        group.travelActionData.Source = group.GetTile();
+        group.travelActionData->Destination = actionData.TravelDestination;
+        group.travelActionData->Source = group.GetTile();
 
-        group.travelActionData.Duration = group.action->GetDuration(group);
+        group.travelActionData->Duration = group.action->GetDuration(group);
     }
 }
 
-GroupActionResult GroupActionPerformer::InitiateEngage(Group &group, const GroupActionData &data)
+GroupActionResult GroupActionPerformer::InitiateEngage(GroupCore &group, const GroupActionData &data)
 {
     if(data.IsEngaged == false)
     {
-        group.attitude = utility::GetRandom(1, 20) > 15 ? Attitudes::HOSTILE : Attitudes::INDIFFERENT;
+        auto attitude = utility::GetRandom(1, 20) > 15 ? Attitudes::HOSTILE : Attitudes::INDIFFERENT;
+        group.SetAttitude(attitude);
 
         group.hasAttemptedPersuasion = false;
 
@@ -234,17 +236,17 @@ GroupActionResult GroupActionPerformer::InitiateEngage(Group &group, const Group
     }
 }
 
-int GroupActionPerformer::GetTravelDuration(const Group &group)
+int GroupActionPerformer::GetTravelDuration(const GroupCore &group)
 {
     auto durationModifier = 0;
 
-    durationModifier += group.travelActionData.Source->GetTravelPenalty().Value;
-    durationModifier += group.travelActionData.Destination->GetTravelPenalty().Value;
+    durationModifier += group.travelActionData->Source->GetTravelPenalty().Value;
+    durationModifier += group.travelActionData->Destination->GetTravelPenalty().Value;
 
     return group.action->BaseDuration + durationModifier * WorldTime::HOUR_SIZE * GroupAction::BASE_PROGRESS_RATE;
 }
 
-GroupActionResult GroupActionPerformer::TakeShortRest(Group& group)
+GroupActionResult GroupActionPerformer::TakeShortRest(GroupCore& group)
 {
     if(group.actionProgress != group.action->BaseDuration)
         return {};
@@ -260,18 +262,12 @@ GroupActionResult GroupActionPerformer::TakeShortRest(Group& group)
     return {GroupActions::TAKE_SHORT_REST};
 }
 
-GroupActionResult GroupActionPerformer::TakeLongRest(Group& group)
+GroupActionResult GroupActionPerformer::TakeLongRest(GroupCore& group)
 {
     if(group.actionProgress != group.action->BaseDuration)
         return {};
 
-    auto &characters = group.GetCharacters();
-    for(auto &character : group.characters)
-    {
-        character.TakeLongRest();
-    }
-
-    group.timeSinceLongRest = 0;
+    group.FinishLongRest();
 
     auto foodNeeded = group.GetFoodConsumption();
     auto foodAvailable = group.GetItemAmount(character::ItemTypes::FOOD);
@@ -279,9 +275,17 @@ GroupActionResult GroupActionPerformer::TakeLongRest(Group& group)
     if(foodAvailable >= foodNeeded)
     {
         group.RemoveItemAmount(character::ItemTypes::FOOD, foodNeeded);
-        for(auto &character : group.characters)
+
+        if(group.IsDeepGroup() == true)
         {
-            character.AddCondition({character::Conditions::NOURISHED, NOURISHED_DURATION});
+            for(auto &character : group.GetCharacters())
+            {
+                character.AddCondition({character::Conditions::NOURISHED, NOURISHED_DURATION});
+            }
+        }
+        else
+        {
+            group.AddPositiveCondition(1);
         }
     }
 
@@ -294,27 +298,62 @@ GroupActionResult GroupActionPerformer::TakeLongRest(Group& group)
         auto survivalCheck = utility::RollD20Dice(WINTER_SURVIVAL_DC, survivalBonus);
         if(survivalCheck.IsAnyFailure() == true)
         {
-            for(auto &character : group.characters)
-            {
-                auto fortitudeBonus = character.GetFortitudeSaveBonus();
+            static const auto WINTER_FROSTBITE_DC = engine::ConfigManager::Get()->GetValue(game::ConfigValues::WINTER_FROSTBITE_DC).Integer;
 
-                static const auto WINTER_FROSTBITE_DC = engine::ConfigManager::Get()->GetValue(game::ConfigValues::WINTER_FROSTBITE_DC).Integer;
-                auto frostBiteCheck = utility::RollD20Dice(WINTER_FROSTBITE_DC, fortitudeBonus);
-                if(frostBiteCheck.IsCriticalSuccess() == false)
+            if(group.IsDeepGroup() == true)
+            {
+                for(auto &character : group.GetCharacters())
                 {
+                    auto fortitudeBonus = character.GetFortitudeSaveBonus();
+
+                    auto frostBiteCheck = utility::RollD20Dice(WINTER_FROSTBITE_DC, fortitudeBonus);
+                    if(frostBiteCheck.IsCriticalSuccess() == true)
+                        continue;
+
                     auto damage = utility::RollDice({utility::RollDies::D4, 1, 0});
                     if(frostBiteCheck.IsNormalSuccess() == true)
                     {
-                        character.SufferDamage(damage / 2);
+                        damage /= 2;
                     }
                     else if(frostBiteCheck.IsRegularFailure() == true)
                     {
-                        character.SufferDamage(damage);
+                        damage = damage;
                     }
                     else
                     {
-                        character.SufferDamage(damage * 2);
+                        damage *= 2;
                     }
+
+                    character.SufferDamage(damage);
+                }
+            }
+            else
+            {
+                auto fortitudeBonus = group.GetLevel();
+                for(auto &character : group.GetCharacterEssences())
+                {
+                    if(character.isAlive == false || character.isFunctioning == false)
+                        continue;
+
+                    auto frostBiteCheck = utility::RollD20Dice(WINTER_FROSTBITE_DC, fortitudeBonus);
+                    if(frostBiteCheck.IsCriticalSuccess() == true)
+                        continue;
+
+                    auto damage = utility::RollDice({utility::RollDies::D4, 1, 0});
+                    if(frostBiteCheck.IsNormalSuccess() == true)
+                    {
+                        damage /= 2;
+                    }
+                    else if(frostBiteCheck.IsRegularFailure() == true)
+                    {
+                        damage = damage;
+                    }
+                    else
+                    {
+                        damage *= 2;
+                    }
+                    
+                    character.SufferDamage(damage);
                 }
             }
         }
@@ -331,7 +370,7 @@ GroupActionResult GroupActionPerformer::TakeLongRest(Group& group)
     }
 }
 
-GroupActionResult GroupActionPerformer::Search(Group& group)
+GroupActionResult GroupActionPerformer::Search(GroupCore& group)
 {
     if(group.actionProgress == group.action->BaseDuration)
     {
@@ -399,12 +438,12 @@ GroupActionResult GroupActionPerformer::Search(Group& group)
     return {};
 }
 
-GroupActionResult GroupActionPerformer::Fight(Group& group)
+GroupActionResult GroupActionPerformer::Fight(GroupCore& group)
 {
     
 }
 
-GroupActionResult GroupActionPerformer::BypassDefences(Group& group)
+GroupActionResult GroupActionPerformer::BypassDefences(GroupCore& group)
 {
     //sneak
     //critical succes: +1 initiative, cancel siege mode
@@ -449,19 +488,19 @@ GroupActionResult GroupActionPerformer::BypassDefences(Group& group)
 
     group.hasAttemptedBypassingDefences = true;
 
-    group.GetOther()->attitude = Attitudes::HOSTILE;
+    group.GetOther()->SetAttitude(Attitudes::HOSTILE);
 
     group.SelectAction(GroupActions::ENGAGE, {true});
 
     return {GroupActions::BYPASS_DEFENCES, checkResult, character::SkillTypes::STEALTH};
 }
 
-GroupActionResult GroupActionPerformer::Engage(Group& group)
+GroupActionResult GroupActionPerformer::Engage(GroupCore& group)
 {
     
 }
 
-GroupActionResult GroupActionPerformer::Disengage(Group& group)
+GroupActionResult GroupActionPerformer::Disengage(GroupCore& group)
 {
     if(group.encounter->IsWinner(&group) == true)
     {
@@ -487,63 +526,63 @@ GroupActionResult GroupActionPerformer::Disengage(Group& group)
 
 #define SURVIVAL_DC_WHEN_LOST 10
 
-GroupActionResult GroupActionPerformer::Travel(Group& group)
+GroupActionResult GroupActionPerformer::Travel(GroupCore& group)
 {
-    if(group.travelActionData.IsLost == false)
+    if(group.travelActionData->IsLost == false)
     {
-        group.travelActionData.Progress += group.GetProgressRate();
+        group.travelActionData->Progress += group.GetProgressRate();
     }
 
-    group.travelActionData.ProgressSinceCheck += group.GetProgressRate();
+    group.travelActionData->ProgressSinceCheck += group.GetProgressRate();
 
     static const int CHECK_INTERVAL = 6 * GroupAction::BASE_PROGRESS_RATE;
-    if(group.travelActionData.ProgressSinceCheck > CHECK_INTERVAL)
+    if(group.travelActionData->ProgressSinceCheck > CHECK_INTERVAL)
     {
-        group.travelActionData.ProgressSinceCheck -= CHECK_INTERVAL;
+        group.travelActionData->ProgressSinceCheck -= CHECK_INTERVAL;
 
-        auto difficultyClass = group.travelActionData.IsLost ? SURVIVAL_DC_WHEN_LOST : SURVIVAL_DC_WHEN_NOT_LOST;
+        auto difficultyClass = group.travelActionData->IsLost ? SURVIVAL_DC_WHEN_LOST : SURVIVAL_DC_WHEN_NOT_LOST;
 
-        difficultyClass += group.travelActionData.Source->GetTravelPenalty().Value;
-        difficultyClass += group.travelActionData.Destination->GetTravelPenalty().Value;
+        difficultyClass += group.travelActionData->Source->GetTravelPenalty().Value;
+        difficultyClass += group.travelActionData->Destination->GetTravelPenalty().Value;
 
         auto survivalBonus = group.GetMostSkilledMember(character::SkillTypes::SURVIVAL).Bonus;
 
-        auto roadBonus = group.travelActionData.Source->IsLinkedTo(group.travelActionData.Destination) ? 4 : 0;
+        auto roadBonus = group.travelActionData->Source->IsLinkedTo(group.travelActionData->Destination) ? 4 : 0;
 
         auto success = utility::RollD20Dice(difficultyClass, survivalBonus + roadBonus);
         if(success.IsAnyFailure() == true)
         {
-            group.travelActionData.IsLost = true;
+            group.travelActionData->IsLost = true;
         }
         else
         {
-            group.travelActionData.IsLost = false;
+            group.travelActionData->IsLost = false;
         }
 
         return {GroupActions::TRAVEL, success, character::SkillTypes::SURVIVAL};
     }
 
-    if(group.travelActionData.Progress < group.action->GetDuration(group) / 2)
+    if(group.travelActionData->Progress < group.action->GetDuration(group) / 2)
         return {};
 
-    group.SetTile(group.travelActionData.Destination);
+    group.SetTile(group.travelActionData->Destination);
 
-    if(group.travelActionData.Progress < group.action->GetDuration(group))
+    if(group.travelActionData->Progress < group.action->GetDuration(group))
         return {};
 
-    //group.SetTile(group.travelActionData.Destination);
-    group.travelActionData.Destination = nullptr;
-    group.travelActionData.Source = nullptr;
-    group.travelActionData.PlannedDestinationCount--;
-    if(group.travelActionData.PlannedDestinationCount == 0)
+    //group.SetTile(group.travelActionData->Destination);
+    group.travelActionData->Destination = nullptr;
+    group.travelActionData->Source = nullptr;
+    group.travelActionData->PlannedDestinationCount--;
+    if(group.travelActionData->PlannedDestinationCount == 0)
     {
-        group.travelActionData.IsOnRoute = false;
+        group.travelActionData->IsOnRoute = false;
     }
     else
     {
-        for(int i = 0; i < group.travelActionData.PlannedDestinationCount; ++i)
+        for(int i = 0; i < group.travelActionData->PlannedDestinationCount; ++i)
         {
-            group.travelActionData.Route[i] = group.travelActionData.Route[i + 1];
+            group.travelActionData->Route[i] = group.travelActionData->Route[i + 1];
         }
     }
 
@@ -552,17 +591,35 @@ GroupActionResult GroupActionPerformer::Travel(Group& group)
     return {};
 }
 
-GroupActionResult GroupActionPerformer::Persuade(Group& group)
+GroupActionResult GroupActionPerformer::Persuade(GroupCore& group)
 {
-    auto difficultyClass = 10 + group.GetOther()->GetLeader()->GetWillSaveBonus();
+    auto difficultyClass = 10;
+    if(group.GetOther()->IsDeepGroup() == true)
+    {
+        difficultyClass += group.GetOther()->GetLeader()->GetWillSaveBonus();
+    }
+    else
+    {
+        difficultyClass += group.GetOther()->GetLevel();
+    }
 
-    auto modifier = group.GetLeader()->GetSkillProficiency(character::SkillTypes::PERSUASION);
+    auto modifier = [&] 
+    {
+        if(group.IsDeepGroup() == true)
+        {
+            return group.GetLeader()->GetSkillProficiency(character::SkillTypes::PERSUASION);
+        }
+        else
+        {
+            return group.GetLevel();
+        }
+    } ();
 
     auto success = utility::RollD20Dice(difficultyClass, modifier);
 
     if(success.IsAnySuccess() == true)
     {
-        group.GetOther()->attitude = Attitudes::INDIFFERENT;
+        group.GetOther()->SetAttitude(Attitudes::INDIFFERENT);
     }
 
     group.hasAttemptedPersuasion = true;
@@ -572,7 +629,7 @@ GroupActionResult GroupActionPerformer::Persuade(Group& group)
     return {GroupActions::PERSUADE, success, character::SkillTypes::PERSUASION};
 }
 
-GroupActionResult GroupActionPerformer::Forage(Group& group)
+GroupActionResult GroupActionPerformer::Forage(GroupCore& group)
 {
     if(group.actionProgress != group.action->BaseDuration)
         return {};
@@ -629,7 +686,7 @@ GroupActionResult GroupActionPerformer::Forage(Group& group)
     return {GroupActions::FORAGE, skillCheck, character::SkillTypes::SURVIVAL, GroupActionResult::Food(foragedFood)};
 }
 
-GroupActionResult GroupActionPerformer::LootSettlement(Group& group)
+GroupActionResult GroupActionPerformer::LootSettlement(GroupCore& group)
 {
     if(group.actionProgress != group.action->BaseDuration)
         return {};
@@ -705,7 +762,7 @@ GroupActionResult GroupActionPerformer::LootSettlement(Group& group)
     return {GroupActions::LOOT_SETTLEMENT, skillCheck, character::SkillTypes::SURVIVAL, GroupActionResult::Food(requestedFood), GroupActionResult::Money(money)};
 }
 
-GroupActionResult GroupActionPerformer::PillageSettlement(Group& group)
+GroupActionResult GroupActionPerformer::PillageSettlement(GroupCore& group)
 {
     if(group.actionProgress != group.action->BaseDuration)
         return {};
@@ -761,7 +818,7 @@ GroupActionResult GroupActionPerformer::PillageSettlement(Group& group)
     return {GroupActions::PILLAGE_SETTLEMENT, skillCheck, character::SkillTypes::SURVIVAL, GroupActionResult::Food(0), GroupActionResult::Money(money)};
 }
 
-GroupActionResult GroupActionPerformer::BribeGarrison(Group& group)
+GroupActionResult GroupActionPerformer::BribeGarrison(GroupCore& group)
 {
     //bribe
     //critical succes: half money paid, cancel siege mode
@@ -801,29 +858,29 @@ GroupActionResult GroupActionPerformer::BribeGarrison(Group& group)
 
     group.hasAttemptedBribingGarrison = true;
 
-    group.GetOther()->attitude = Attitudes::HOSTILE;
+    group.GetOther()->SetAttitude(Attitudes::HOSTILE);
 
     group.SelectAction(GroupActions::ENGAGE, {true});
 
     return {GroupActions::BRIBE_GARRISON, skillCheck, character::SkillTypes::PERSUASION, GroupActionResult::Money(money)};
 }
 
-bool GroupActionValidator::CanTakeShortRest(Group &group, const GroupActionData &)
+bool GroupActionValidator::CanTakeShortRest(GroupCore &group, const GroupActionData &)
 {
     return true;
 }
 
-bool GroupActionValidator::CanTakeLongRest(Group &group, const GroupActionData &)
+bool GroupActionValidator::CanTakeLongRest(GroupCore &group, const GroupActionData &)
 {
     return true;
 }
 
-bool GroupActionValidator::CanSearch(Group &group, const GroupActionData &)
+bool GroupActionValidator::CanSearch(GroupCore &group, const GroupActionData &)
 {
     return true;
 }
 
-bool GroupActionValidator::CanFight(Group &group, const GroupActionData &)
+bool GroupActionValidator::CanFight(GroupCore &group, const GroupActionData &)
 {
     if(group.IsDoing(GroupActions::ENGAGE) == false)
         return false;
@@ -839,12 +896,12 @@ bool GroupActionValidator::CanFight(Group &group, const GroupActionData &)
     return true;
 }
 
-bool GroupActionValidator::CanEngage(Group &group, const GroupActionData &)
+bool GroupActionValidator::CanEngage(GroupCore &group, const GroupActionData &)
 {
     return true;
 }
 
-bool GroupActionValidator::CanDisengage(Group &group, const GroupActionData &)
+bool GroupActionValidator::CanDisengage(GroupCore &group, const GroupActionData &)
 {
     if(group.GetEncounter()->HasBattleEnded() == true)
     {
@@ -852,17 +909,17 @@ bool GroupActionValidator::CanDisengage(Group &group, const GroupActionData &)
     }
     else
     {
-        return group.IsDoing(GroupActions::ENGAGE) && group.GetOther()->attitude != Attitudes::HOSTILE;
+        return group.IsDoing(GroupActions::ENGAGE) && group.GetOther()->GetAttitude() != Attitudes::HOSTILE;
     }
 }
 
-bool GroupActionValidator::CanTravel(Group &group, const GroupActionData &data)
+bool GroupActionValidator::CanTravel(GroupCore &group, const GroupActionData &data)
 {
-    //if(group.travelActionData.Destination != nullptr && group.GetTravelProgress() > 0.5f)
+    //if(group.travelActionData->Destination != nullptr && group.GetTravelProgress() > 0.5f)
         //return false;
 
-    /*if((group.travelActionData.Destination == nullptr && data.TravelDestination == nullptr) ||
-    (group.travelActionData.Destination != nullptr && data.TravelDestination != group.travelActionData.Destination))
+    /*if((group.travelActionData->Destination == nullptr && data.TravelDestination == nullptr) ||
+    (group.travelActionData->Destination != nullptr && data.TravelDestination != group.travelActionData->Destination))
         return false;*/
 
     if(data.TravelDestination->Type == WorldTiles::SEA)
@@ -874,15 +931,15 @@ bool GroupActionValidator::CanTravel(Group &group, const GroupActionData &data)
     return true;
 }
 
-bool GroupActionValidator::CanPersuade(Group &group, const GroupActionData &data)
+bool GroupActionValidator::CanPersuade(GroupCore &group, const GroupActionData &data)
 {
     return group.IsDoing(GroupActions::ENGAGE) && 
-    group.GetOther()->attitude == Attitudes::HOSTILE && 
+    group.GetOther()->GetAttitude() == Attitudes::HOSTILE && 
     group.GetEncounter()->HasBattleEnded() == false &&
     group.hasAttemptedPersuasion == false;
 }
 
-bool GroupActionValidator::CanBypassDefences(Group &group, const GroupActionData &data)
+bool GroupActionValidator::CanBypassDefences(GroupCore &group, const GroupActionData &data)
 {
     return group.IsDoing(GroupActions::ENGAGE) && 
     group.GetEncounter()->GetAttacker() == &group &&
@@ -892,22 +949,22 @@ bool GroupActionValidator::CanBypassDefences(Group &group, const GroupActionData
     group.hasAttemptedBypassingDefences == false;
 }
 
-bool GroupActionValidator::CanForage(Group &group, const GroupActionData &)
+bool GroupActionValidator::CanForage(GroupCore &group, const GroupActionData &)
 {
     return true;
 }
 
-bool GroupActionValidator::CanLootSettlement(Group &group, const GroupActionData &data)
+bool GroupActionValidator::CanLootSettlement(GroupCore &group, const GroupActionData &data)
 {
     return group.GetCurrentSettlement()->IsLootable() == true;
 }
 
-bool GroupActionValidator::CanPillageSettlement(Group &group, const GroupActionData &data)
+bool GroupActionValidator::CanPillageSettlement(GroupCore &group, const GroupActionData &data)
 {
     return group.GetCurrentSettlement()->IsPillageable() == true;
 }
 
-bool GroupActionValidator::CanBribeGarrison(Group &group, const GroupActionData &data)
+bool GroupActionValidator::CanBribeGarrison(GroupCore &group, const GroupActionData &data)
 {
     return group.IsDoing(GroupActions::ENGAGE) && 
     group.GetEncounter()->GetAttacker() == &group &&

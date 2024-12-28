@@ -3,7 +3,9 @@
 #include "FlumenCore/Container/Array.hpp"
 
 #include "FlumenBattle/World/Group/GroupAllocator.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
+#include "FlumenBattle/World/Group/GroupExtraData.h"
+#include "FlumenBattle/World/Group/CharacterEssence.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldGenerator.h"
 #include "FlumenBattle/World/Character/Character.h"
@@ -27,17 +29,24 @@ namespace world::group
         static const auto MAXIMUM_CHARACTERS_PER_GROUP = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_CHARACTERS_PER_GROUP).Integer;
 
         std::cout<<"Memory size of a Character is "<<sizeof(character::Character)<<"\n";
-        std::cout<<"Memory size of a Group is "<<sizeof(Group)<<"\n";
-        std::cout<<"Memory size of a Group + dependencies is "<<sizeof(Group) + sizeof(character::Character) * MAXIMUM_CHARACTERS_PER_GROUP + sizeof(character::Item) * ITEMS_PER_GROUP<<"\n";
+        std::cout<<"Memory size of a Group is "<<sizeof(GroupCore)<<"\n";
+        std::cout<<"Memory size of a Group + dependencies is "<<sizeof(GroupCore) + sizeof(character::Character) * MAXIMUM_CHARACTERS_PER_GROUP + sizeof(character::Item) * ITEMS_PER_GROUP<<"\n";
 
         auto groupCount = WorldGenerator::Get()->GetMaximumGroupCount(MAXIMUM_WORLD_SIZE);
-        groupMemory = container::Pool <Group>::PreallocateMemory(groupCount);
+        groupMemory = container::Pool <GroupCore>::PreallocateMemory(groupCount);
 
-        characterMemory = container::PoolAllocator <character::Character>::PreallocateMemory(groupCount, MAXIMUM_CHARACTERS_PER_GROUP);
+        auto extraDataCount = WorldGenerator::Get()->GetMaximumGroupCount(MAXIMUM_WORLD_SIZE / 4);
+        extraGroupDataMemory = container::Pool <GroupExtraData>::PreallocateMemory(extraDataCount);
+
+        characterMemory = container::PoolAllocator <character::Character>::PreallocateMemory(extraDataCount, MAXIMUM_CHARACTERS_PER_GROUP);
+
+        characterEssenceMemory = container::Pool <CharacterEssenceBatch>::PreallocateMemory(groupCount);
 
         battleMemory = container::Pool <Encounter>::PreallocateMemory(groupCount);
 
-        itemMemory = container::PoolAllocator <character::Item>::PreallocateMemory(groupCount, ITEMS_PER_GROUP);
+        itemMemory = container::PoolAllocator <character::Item>::PreallocateMemory(extraDataCount, ITEMS_PER_GROUP);
+
+        travelDataMemory = container::Pool <TravelActionData>::PreallocateMemory(groupCount);
     }
 
     void GroupAllocator::AllocateWorldMemory(int worldSize)
@@ -47,67 +56,100 @@ namespace world::group
         auto groupCount = WorldGenerator::Get()->GetMaximumGroupCount(worldSize);
         groups.Initialize(groupCount, groupMemory);
 
-        characterAllocator = container::PoolAllocator <character::Character> (groupCount, MAXIMUM_CHARACTERS_PER_GROUP, characterMemory);
+        auto extraDataCount = WorldGenerator::Get()->GetMaximumGroupCount(worldSize / 4);
+        extraGroupDatas.Initialize(extraDataCount, extraGroupDataMemory);
+
+        characterAllocator = container::PoolAllocator <character::Character> (extraDataCount, MAXIMUM_CHARACTERS_PER_GROUP, characterMemory);
+
+        characterEssenceAllocator = container::Pool <CharacterEssenceBatch> (groupCount, characterEssenceMemory);
 
         battles = container::Pool <Encounter> (groupCount, battleMemory);
 
-        itemAllocator = container::PoolAllocator <character::Item> (groupCount, ITEMS_PER_GROUP, itemMemory);
+        itemAllocator = container::PoolAllocator <character::Item> (extraDataCount, ITEMS_PER_GROUP, itemMemory);
+
+        travelDataAllocator = container::Pool <TravelActionData> (groupCount, travelDataMemory);
     }
 
-    Group * GroupAllocator::Allocate()
+    GroupCore * GroupAllocator::Allocate(bool hasExtraData)
     {
-        static std::mutex mutex;
-
-        mutex.lock();
-
         auto group = groups.Add();
 
         group->uniqueId = lastUniqueId;
         lastUniqueId++;
 
-        group->characters.Initialize(characterAllocator);
+        group->travelActionData = travelDataAllocator.Add();
 
-        character::ItemAllocator::Allocate(itemAllocator, group->items);
+        if(hasExtraData == true)
+        {
+            group->extraData = AllocateExtraData();
+        }
+        else
+        {
+            group->extraData = nullptr;
 
-        mutex.unlock();
+            auto characterEssences = characterEssenceAllocator.Add();
+            group->characterHandler.characters = characterEssences;
+        }
 
         return group;
     }
 
-    void GroupAllocator::Free(Group *group, bool willRemoveFromHome)
+    GroupExtraData *GroupAllocator::AllocateExtraData()
     {
-        static std::mutex mutex;
+        auto extraData = extraGroupDatas.Add();
 
-        mutex.lock();
+        extraData->characters.Initialize(characterAllocator);
 
+        character::ItemAllocator::Allocate(itemAllocator, extraData->items);
+
+        return extraData;
+    }
+
+    void GroupAllocator::GenerateExtraGroupData(GroupCore *group)
+    {
+        group->extraData = AllocateExtraData();
+    }
+
+    void GroupAllocator::Free(GroupCore *group, bool willRemoveFromHome)
+    {
         auto batch = GroupBatchMap::Get()->GetBatch(group->GetTile());
         if(batch != nullptr)
         {
             batch->Remove(group);
         }
 
-        if(group->home != nullptr && willRemoveFromHome == true)
+        if(group->GetHome() != nullptr && willRemoveFromHome == true)
         {
-            group->home->RemoveGroup(*group);
+            group->GetHome()->RemoveGroup(*group);
         }
 
-        for(auto &character : group->characters)
+        travelDataAllocator.RemoveAt(group->travelActionData);
+
+        characterEssenceAllocator.RemoveAt(group->characterHandler.characters);
+
+        if(group->extraData != nullptr)
+        {
+            FreeExtraData(group->extraData);
+        }
+
+        groups.RemoveAt(group);
+    }
+
+    void GroupAllocator::FreeExtraData(GroupExtraData *extraData)
+    {
+        for(auto &character : extraData->characters)
         {
             character::CharacterAllocator::Get()->Free(&character);
         }
 
-        group->characters.Terminate(characterAllocator);
+        extraData->characters.Terminate(characterAllocator);
 
-        character::ItemAllocator::Free(itemAllocator, group->items);
-
-        groups.RemoveAt(group);
-
-        mutex.unlock();
+        character::ItemAllocator::Free(itemAllocator, extraData->items);
     }
 
     void GroupAllocator::PerformCleanup()
     {
-        static auto finishedGroups = Array <Group *> (groups.GetCapacity());
+        static auto finishedGroups = Array <GroupCore *> (groups.GetCapacity());
 
         for(auto &group : groups)
         {

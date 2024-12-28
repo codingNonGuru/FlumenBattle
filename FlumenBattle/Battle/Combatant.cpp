@@ -16,7 +16,7 @@
 #include "FlumenBattle/World/Character/Types.h"
 #include "FlumenBattle/Utility/Utility.h"
 #include "FlumenBattle/Config.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/Battle/BattleScene.h"
 #include "FlumenBattle/World/Group/Encounter.h"

@@ -1,5 +1,5 @@
 #include "FlumenBattle/World/Character/CharacterAllocator.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/World/Character/Spell.h"
 #include "FlumenBattle/World/Character/Weapon.h"
@@ -42,7 +42,7 @@ namespace world::character
         modifierAllocator = container::ArrayAllocator <Modifier> (MAXIMUM_CHARACTERS_PER_GROUP * groupCount, MODIFIERS_PER_CHARACTER);
     }
 
-    Character * CharacterAllocator::Allocate(group::Group &group)
+    Character * CharacterAllocator::Allocate(group::GroupCore &group)
     {
         auto &characters = group.GetCharacters();
         auto character = characters.Add(); 

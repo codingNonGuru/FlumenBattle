@@ -3,6 +3,7 @@
 #include "GroupExtraData.h"
 #include "GroupCore.h"
 #include "FlumenBattle/World/Character/Character.h"
+#include "FlumenBattle/World/Character/CharacterClass.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/GroupBatch.h"
@@ -24,13 +25,56 @@ using namespace world::group;
 
 #define MULE_FOOD_CONSUMPTION 3
 
-//GROUP EXTRA DATA METHODS
+void GroupExtraData::Initialize(GroupCore *newGroupCore)
+{
+    this->groupCore = newGroupCore;
+
+    this->controller = groupCore->type->Controller;
+
+    domain = nullptr;
+
+    leader = nullptr;
+    auto charismaModifier = -100;
+    for(auto &character : characters)
+    {
+        auto modifier = character.GetAbility(world::character::AbilityTypes::CHARISMA).Modifier;
+        if(modifier > charismaModifier)
+        {
+            charismaModifier = modifier;
+            leader = &character;
+        }
+    }
+
+    items.Add(character::ItemTypes::SWORD);
+    items.Add(character::ItemTypes::ARMOR);
+    items.Add(character::ItemTypes::ARMOR);
+    items.Add(character::ItemTypes::HELMET);
+    items.Add(character::ItemTypes::HELMET);
+    items.Add(character::ItemTypes::AXE);
+    items.Add(character::ItemTypes::SHIELD);
+    items.Add(character::ItemTypes::ARMOR);
+    items.Add(character::ItemTypes::SPEAR);
+    auto firstBow = items.Add(character::ItemTypes::BOW);
+    auto secondBow = items.Add(character::ItemTypes::BOW);
+
+    auto index = 0;
+    for(auto &character : characters)
+    {
+        if(character.GetClass()->Class == character::CharacterClasses::RANGER)
+        {
+            character.EquipItem(firstBow, character::ItemPositions::MAIN_HAND);
+            index++;
+
+            if(index == 1)
+            {
+                break;
+            }
+        }
+    }
+}
 
 bool GroupExtraData::IsAlive()
 {
-    if(isAlive == false)
-        return false;
-
     for(auto &character : characters)
     {
         if(character.IsAlive() == true)
@@ -61,7 +105,7 @@ world::character::Character *GroupExtraData::GetCharacter(int index)
 
 int GroupExtraData::GetCarriedWeight() const
 {
-    //return items.GetTotalWeight();
+    return items.GetTotalWeight();
 }
 
 int GroupExtraData::GetCarryCapacity() const
@@ -152,39 +196,49 @@ void GroupExtraData::CheckFatigue()
     }
 }
 
+void GroupExtraData::FinishLongRest()
+{
+    for(auto &character : characters)
+    {
+        character.TakeLongRest();
+    }
+
+    groupCore->timeSinceLongRest = 0;
+}
+
 void GroupExtraData::DetermineAction()
 {
-    //controller->DetermineAction(*this);
+    controller->DetermineAction(*groupCore);
 }
 
 void GroupExtraData::AddItem(character::ItemTypes type, int amount)
 {
-    //items.Add(type, amount);
+    items.Add(type, amount);
 }
 
 void GroupExtraData::RemoveItem(character::Item *item)
 {
-    //items.Remove(item);
+    items.Remove(item);
 }
 
 void GroupExtraData::RemoveItemAmount(character::ItemTypes type, int amount)
 {
-    //items.RemoveAmount(type, amount);
+    items.RemoveAmount(type, amount);
 }
 
 world::character::Item *GroupExtraData::GetItem(int index)
 {
-    //return items.GetItem(index);
+    return items.GetItem(index);
 }
 
 int GroupExtraData::GetItemAmount(character::ItemTypes type)
 {
-    //return items.GetAmount(type);
+    return items.GetAmount(type);
 }
 
 const container::Pool <world::character::Item> &GroupExtraData::GetItems() const
 {
-    //return items.GetItems();
+    return items.GetItems();
 }
 
 int GroupExtraData::GetFoodConsumption() const
@@ -229,4 +283,24 @@ int GroupExtraData::GetLevel() const
 bool GroupExtraData::DoesRulePolity() const
 {
     return domain != nullptr;
+}
+
+Attitudes GroupExtraData::GetAttitude() const
+{
+    return attitude;
+}
+
+void GroupExtraData::SetMuleCount(int amount)
+{
+    muleCount = amount;
+}
+
+void GroupExtraData::HandleActionSelection(const GroupActionResult &result)
+{
+    controller->RegisterActionInitiation(*groupCore, result);
+}
+
+void GroupExtraData::HandleActionPerformance(const GroupActionResult &result)
+{
+    controller->RegisterActionPerformance(*groupCore, result);
 }

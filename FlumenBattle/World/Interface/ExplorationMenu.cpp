@@ -7,7 +7,7 @@
 #include "ExplorationMenu.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/WorldScene.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/Config.h"

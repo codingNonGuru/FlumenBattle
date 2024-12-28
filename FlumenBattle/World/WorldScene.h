@@ -29,7 +29,7 @@ namespace world
     
     namespace group
     {
-        class Group;
+        class GroupCore;
         class Encounter;
         struct GroupBuffer;
     }
@@ -59,9 +59,9 @@ namespace world
 
         Pool <group::Encounter> *battles;
 
-        group::Group *playerGroup;
+        group::GroupCore *playerGroup;
 
-        Pool <group::Group> *groups;
+        Pool <group::GroupCore> *groups;
 
         Pool <settlement::Settlement> *settlements;
 
@@ -129,7 +129,7 @@ namespace world
             return &scene;
         }
 
-        group::Group * GetPlayerGroup() const {return playerGroup;}
+        group::GroupCore * GetPlayerGroup() const {return playerGroup;}
 
         polity::Polity *GetPlayerPolity() const;
 
@@ -145,7 +145,7 @@ namespace world
 
         Pool <group::Encounter> & GetBattles() {return *battles;}
 
-        Pool <group::Group> & GetGroups() {return *groups;}
+        Pool <group::GroupCore> & GetGroups() {return *groups;}
 
         Pool <polity::Polity> & GetPolities() {return *polities;}
 
@@ -157,13 +157,13 @@ namespace world
 
         int GetTimeSpeed() const {return time;}
 
-        group::Group *GetGroup(int);
+        group::GroupCore *GetGroup(int);
 
         const group::GroupBuffer GetNearbyGroups(WorldTile *, int = 1);
 
         const group::GroupBuffer GetGroupsInTile(WorldTile *);
 
-        void InitiateEncounter(group::Group *, group::Group *);
+        void InitiateEncounter(group::GroupCore *, group::GroupCore *);
 
         void InitiatePlayerPersuasion();
 

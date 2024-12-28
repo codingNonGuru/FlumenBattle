@@ -12,7 +12,7 @@ namespace world::settlement
 namespace world::group
 {
     struct GroupEssence;
-    class Group;
+    class GroupCore;
     enum class GroupClasses;
 
     class GroupDynamics
@@ -61,7 +61,7 @@ namespace world::group
 
         void RemoveSettlers() {settlerCount--;}
 
-        void RemoveGroup(const group::Group &);
+        void RemoveGroup(const group::GroupCore &);
 
     public:
         GroupDynamics();
@@ -92,7 +92,7 @@ namespace world::group
 
         int GetMaximumAdventurers() const;
 
-        container::Array <Group *> &GetGroups(GroupClasses) const;
+        container::Array <GroupCore *> &GetGroups(GroupClasses) const;
 
         bool HasMaximumSettlers() const;
 

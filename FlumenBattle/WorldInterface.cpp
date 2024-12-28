@@ -25,7 +25,7 @@
 #include "FlumenBattle/World/Interface/InventoryMenu.h"
 #include "FlumenBattle/World/Interface/ReputationMenu.h"
 #include "FlumenBattle/World/Interface/SettlementMenu.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Interface/VendorCursor.h"
 #include "FlumenBattle/World/Interface/ItemHoverInfo.h"

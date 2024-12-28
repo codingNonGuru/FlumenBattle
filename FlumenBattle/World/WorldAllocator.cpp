@@ -37,7 +37,7 @@ WorldAllocator::WorldAllocator()
 
     static const auto GROUPS_PER_BATCH = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUPS_PER_BATCH).Integer;
 
-    groupBatchMemory = container::PoolAllocator <group::Group *>::PreallocateMemory(size * size, GROUPS_PER_BATCH);
+    groupBatchMemory = container::PoolAllocator <group::GroupCore *>::PreallocateMemory(size * size, GROUPS_PER_BATCH);
 
     ownershipChangeMemory = container::Array <WorldTile *>::PreallocateMemory(size * size / OWNERSHIP_QUEUE_SIZE_FACTOR);
 
@@ -69,7 +69,7 @@ void WorldAllocator::AllocateMap(WorldMap &map, int size)
 
     static const auto GROUPS_PER_BATCH = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUPS_PER_BATCH).Integer;
 
-    groupBatchAllocator = container::PoolAllocator <group::Group *> (batchCount * batchCount, GROUPS_PER_BATCH, groupBatchMemory);
+    groupBatchAllocator = container::PoolAllocator <group::GroupCore *> (batchCount * batchCount, GROUPS_PER_BATCH, groupBatchMemory);
 
     for(auto batch = batches.GetStart(); batch != batches.GetEnd(); ++batch)
     {

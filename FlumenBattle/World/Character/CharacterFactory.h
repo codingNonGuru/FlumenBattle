@@ -5,7 +5,8 @@
 struct Race;
 namespace world::group
 {
-    class Group;
+    class GroupCore;
+    struct CharacterEssence;
 }
 
 namespace world::character
@@ -19,9 +20,11 @@ namespace world::character
         static Integer GetRandomAbilityScore();
 
     public:
-        static Character* Create(const RecruitData &, world::group::Group &);
+        static Character* Create(const RecruitData &, world::group::GroupCore &);
 
-        static Character* Create(const Race *, const CharacterClass *, world::group::Group &, int = -1);
+        static Character* Create(const Race *, const CharacterClass *, world::group::GroupCore &, int = -1);
+
+        static Character* Create(const Race *, const group::CharacterEssence &, world::group::GroupCore &, int = -1);
 
         static int GetIconCount(); 
 

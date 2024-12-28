@@ -46,11 +46,11 @@ namespace world::group
 
         HumanMind();
 
-        void DetermineAction(Group &) const override;
+        void DetermineAction(GroupCore &) const override;
 
-        void RegisterActionPerformance(Group &, GroupActionResult) const override;
+        void RegisterActionPerformance(GroupCore &, GroupActionResult) const override;
 
-        void RegisterActionInitiation(Group &, GroupActionResult) const override;
+        void RegisterActionInitiation(GroupCore &, GroupActionResult) const override;
 
         void UpdateLocationStatus();
 

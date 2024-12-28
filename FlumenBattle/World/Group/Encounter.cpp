@@ -1,7 +1,8 @@
 #include "FlumenBattle/World/Group/Encounter.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Character/Character.h"
+#include "FlumenBattle/World/Group/CharacterEssence.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/WorldTile.h"
 
@@ -9,7 +10,7 @@ namespace world::group
 {
     #define BASE_ATTACK_DC 18
 
-    void Encounter::Initialize(Group * attacker_, Group * defender_)
+    void Encounter::Initialize(GroupCore * attacker_, GroupCore * defender_)
     {
         attacker = attacker_; 
         defender = defender_;
@@ -74,26 +75,62 @@ namespace world::group
         auto firstAttack = utility::RollD20Dice(BASE_ATTACK_DC, firstStrength);
         if(firstAttack.IsAnySuccess() == true)
         {
-            for(auto &character : defender->GetCharacters())
+            if(defender->IsDeepGroup() == true)
             {
-                if(character.IsAlive() == false)
-                    continue;
+                for(auto &character : defender->GetCharacters())
+                {
+                    if(character.IsAlive() == false)
+                        continue;
 
-                auto damage = utility::RollD4Dice();
-                character.SufferDamage(damage);
+                    auto damage = utility::RollD4Dice();
+                    character.SufferDamage(damage);
+
+                    break;
+                }
+            }
+            else
+            {
+                for(auto &character : defender->GetCharacterEssences())
+                {
+                    if(character.isAlive == false)
+                        continue;
+
+                    auto damage = utility::RollD4Dice();
+                    defender->GetCharacterHandler().DamageCharacter(character, damage);
+
+                    break;
+                }
             }
         }
 
         auto secondAttack = utility::RollD20Dice(BASE_ATTACK_DC, secondStrength);
         if(secondAttack.IsAnySuccess() == true)
         {
-            for(auto &character : attacker->GetCharacters())
+            if(attacker->IsDeepGroup() == true)
             {
-                if(character.IsAlive() == false)
-                    continue;
+                for(auto &character : attacker->GetCharacters())
+                {
+                    if(character.IsAlive() == false)
+                        continue;
 
-                auto damage = utility::RollD4Dice();
-                character.SufferDamage(damage);
+                    auto damage = utility::RollD4Dice();
+                    character.SufferDamage(damage);
+
+                    break;
+                }
+            }
+            else
+            {
+                for(auto &character : attacker->GetCharacterEssences())
+                {
+                    if(character.isAlive == false)
+                        continue;
+
+                    auto damage = utility::RollD4Dice();
+                    attacker->GetCharacterHandler().DamageCharacter(character, damage);
+
+                    break;
+                }
             }
         }
 
@@ -110,22 +147,28 @@ namespace world::group
         }
     }
 
-    void Encounter::Finish(Group *winner) 
+    void Encounter::Finish(GroupCore *winner) 
     {
         isOngoing = false;
 
         this->winner = winner;
 
-        for(auto &character : winner->GetCharacters())
+        if(winner->IsDeepGroup() == true)
         {
-            character.RemoveCondition(character::Conditions::SURPRISED);
-            character.RemoveCondition(character::Conditions::ALERT);
+            for(auto &character : winner->GetCharacters())
+            {
+                character.RemoveCondition(character::Conditions::SURPRISED);
+                character.RemoveCondition(character::Conditions::ALERT);
+            }
         }
 
-        for(auto &character : GetOtherThan(winner)->GetCharacters())
+        if(GetOtherThan(winner)->IsDeepGroup() == true)
         {
-            character.RemoveCondition(character::Conditions::SURPRISED);
-            character.RemoveCondition(character::Conditions::ALERT);
+            for(auto &character : GetOtherThan(winner)->GetCharacters())
+            {
+                character.RemoveCondition(character::Conditions::SURPRISED);
+                character.RemoveCondition(character::Conditions::ALERT);
+            }
         }
 
         winner->GainExperience(1000);

@@ -3,7 +3,7 @@
 
 #include "SpottingItem.h"
 #include "FlumenBattle/World/Group/GroupSpotting.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/World/Group/GroupType.h"
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/World/WorldScene.h"

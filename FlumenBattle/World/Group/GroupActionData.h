@@ -17,7 +17,7 @@ namespace world
 
 namespace world::group
 {
-    class Group;
+    class GroupCore;
 
     union GroupActionData
     {
@@ -56,7 +56,7 @@ namespace world::group
 
         union SpecificContent
         {
-            Group *spottedGroup;
+            GroupCore *spottedGroup;
 
             Food foragedFood;
 
@@ -68,7 +68,7 @@ namespace world::group
 
             SpecificContent() {}
 
-            SpecificContent(Group *group) : spottedGroup(group) {}
+            SpecificContent(GroupCore *group) : spottedGroup(group) {}
 
             SpecificContent(Food food) : foragedFood(food) {}
 
@@ -82,7 +82,7 @@ namespace world::group
         GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill) : 
         ActionType(actionType), HasRolled(true), Success(success), Skill(skill) {}
 
-        GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill, Group *spottedGroup) : 
+        GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill, GroupCore *spottedGroup) : 
         ActionType(actionType), HasRolled(true), Success(success), Skill(skill), Content{spottedGroup} {}
 
         GroupActionResult(GroupActions actionType, utility::Success success, character::SkillTypes skill, Food foragedFood) : 

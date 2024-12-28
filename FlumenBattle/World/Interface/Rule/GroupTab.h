@@ -14,7 +14,7 @@ namespace world::interface
 
 namespace world::group
 {
-    class Group;
+    class GroupCore;
 }
 
 namespace world::interface::rule
@@ -34,7 +34,7 @@ namespace world::interface::rule
         void HandleConfigure() override;
 
     public:
-        void Setup(const group::Group *);
+        void Setup(const group::GroupCore *);
     };
 
     class GroupBatchItem : public Element

@@ -12,11 +12,11 @@ namespace world::character
 
 namespace world::group
 {
-    class Group;
+    class GroupCore;
 
     struct GroupSpotting
     {
-        Group *Group;
+        GroupCore *Group;
 
         int GroupUniqueId;
 

@@ -27,7 +27,7 @@ namespace world::settlement
 
 namespace world::group
 {
-    class Group;
+    class GroupCore;
     enum class GroupClasses;
 
     struct GroupBuildData
@@ -44,8 +44,12 @@ namespace world::group
     class GroupFactory
     {
     public:
-        static Group* CreatePlayerGroup(GroupBuildData); 
+        static GroupCore* CreatePlayerGroup(GroupBuildData); 
 
-        static Group* CreateMachineGroup(GroupBuildData); 
+        static GroupCore* CreateMachineGroup(GroupBuildData); 
+
+        static void TransformIntoDeepGroup(GroupCore *);
+
+        static void RevertToShallowGroup(GroupCore *);
     };
 }

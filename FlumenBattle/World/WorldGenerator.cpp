@@ -11,7 +11,7 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Group/GroupAllocator.h"
 #include "FlumenBattle/World/Group/GroupFactory.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/World/Group/Types.h"
 #include "FlumenBattle/PreGame/Types.h"
 #include "FlumenBattle/World/Settlement/Types.h"

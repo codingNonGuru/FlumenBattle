@@ -9,7 +9,7 @@
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/WorldBiome.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/Utility/Utility.h"
@@ -90,7 +90,7 @@ void WorldDecisionMenu::HandleUpdate()
             case GroupActions::TRAVEL:
                 text << "Travelling " << 
                     [&] {
-                    switch(group->travelActionData.Intensity)
+                    switch(group->GetTravelData()->Intensity)
                     {
                         case ActionIntensities::LEISURELY:
                             return "leisurely";

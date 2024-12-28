@@ -3,7 +3,7 @@
 #include "ExplorationReward.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
 #include "FlumenBattle/World/WorldTile.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/ExplorationHandler.h"
 

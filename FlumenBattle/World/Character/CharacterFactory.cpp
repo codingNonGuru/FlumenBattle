@@ -3,7 +3,7 @@
 #include "FlumenEngine/Render/TextureManager.hpp"
 
 #include "FlumenBattle/World/Character/CharacterFactory.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/World/Character/CharacterAllocator.h"
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/Battle/BattleScene.h"
@@ -16,6 +16,7 @@
 #include "FlumenBattle/World/Character/CharacterAction.h"
 #include "FlumenBattle/World/Character/NameGenerator.h"
 #include "FlumenBattle/World/Character/RecruitData.h"
+#include "FlumenBattle/World/Group/CharacterEssence.h"
 
 using namespace world::character;
 
@@ -25,19 +26,29 @@ int textureIndex = 0;
 
 const Array <Word> avatarTextures = {"Icons_01", "Icons_02", "Icons_03", "Icons_13", "Icons_14", "Icons_15", "Icons_16", "Icons_17"};
 
-Character *CharacterFactory::Create(const RecruitData &recruitData, world::group::Group &group)
+Character *CharacterFactory::Create(const RecruitData &recruitData, world::group::GroupCore &group)
 {
     return Create(recruitData.Race, &ClassFactory::BuildClass(recruitData.Class), group, recruitData.IconTextureId);
 }
 
-Character *CharacterFactory::Create(const Race *race, const CharacterClass *type, world::group::Group& group, int iconId)
+Character *CharacterFactory::Create(const Race *race, const group::CharacterEssence &essence, world::group::GroupCore& group, int iconId)
+{
+    auto character = Create(race, &ClassFactory::BuildClass(essence.characterClass), group, iconId);
+
+    character->currentHitPoints = essence.health;
+    character->experience = essence.experience;
+    character->level = essence.level;
+
+    character->RefreshMaximumHitpoints();
+}
+
+Character *CharacterFactory::Create(const Race *race, const CharacterClass *type, world::group::GroupCore& group, int iconId)
 {
     auto character = world::character::CharacterAllocator::Get()->Allocate(group);
 
     character->group = &group;
 
     character->type = type;
-    character->level = 1;
 
     for(auto& score : abilityScores)
     {
@@ -207,9 +218,7 @@ Character *CharacterFactory::Create(const Race *race, const CharacterClass *type
         character->avatar = render::TextureManager::GetTexture(*textureName);
     }
 
-    character->maximumHitPoints = 40 + type->HitDice;
-    character->maximumHitPoints += character->abilities.GetModifier(AbilityTypes::CONSTITUTION) * character->level;
-    character->maximumHitPoints += race->HitPointBonus;
+    character->RefreshMaximumHitpoints();
 
     character->defaultSpeed = 5;//utility::GetRandom(4, 6);
 

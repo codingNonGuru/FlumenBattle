@@ -13,7 +13,7 @@ namespace world
 {
     namespace group
     {
-        class Group;
+        class GroupCore;
     }
 
     namespace character
@@ -39,7 +39,7 @@ namespace world
 
             void PreallocateMaximumMemory();
 
-            Character *Allocate(group::Group &);
+            Character *Allocate(group::GroupCore &);
 
             void Free(Character *);
         };

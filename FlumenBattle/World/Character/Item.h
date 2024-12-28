@@ -9,7 +9,8 @@
 namespace world::group
 {
     class GroupAllocator;
-    class Group;
+    class GroupCore;
+    class GroupExtraData;
 }
 
 namespace world::character
@@ -77,7 +78,7 @@ namespace world::character
     {
         friend class ItemAllocator;
 
-        friend class group::Group;
+        friend class group::GroupExtraData;
 
         Item *Add(ItemTypes, int = 1);
 
@@ -104,7 +105,10 @@ namespace world::character
 
         friend class ItemManager;
 
+    public:
         Item Create(ItemTypes);
+
+        const ItemType *CreateType(ItemTypes);
     };
 
     class ItemAllocator

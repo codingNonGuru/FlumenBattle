@@ -1,5 +1,5 @@
 #include "FlumenBattle/World/Group/MachineMind.h"
-#include "FlumenBattle/World/Group/Group.h"
+#include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/World/Group/GroupType.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/WorldTile.h"
@@ -16,7 +16,7 @@ namespace world::group
 
     static auto nearbyPassableTiles = container::Array <WorldTile *> (6);
 
-    void MachineMind::DetermineAction(Group &group) const 
+    void MachineMind::DetermineAction(GroupCore &group) const 
     {
         if(group.isAlive == false)
             return;
@@ -50,13 +50,13 @@ namespace world::group
         }
     }
 
-    void MachineMind::DetermineActionAsMerchant(Group &group) const 
+    void MachineMind::DetermineActionAsMerchant(GroupCore &group) const 
     {
-        if(group.travelActionData.IsOnRoute)
+        if(group.travelActionData->IsOnRoute)
         {
             if(group.GetDestination() == nullptr)
             {
-                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData->Route[0]});
             }
         }
         else
@@ -92,26 +92,26 @@ namespace world::group
                     auto destination = group.tile == group.home->GetLocation() ? path->GetOther(group.home) : group.home;
                     auto route = path->GetTilesTo(destination);
 
-                    group.travelActionData.PlannedDestinationCount = route.GetSize() - 1;
+                    group.travelActionData->PlannedDestinationCount = route.GetSize() - 1;
                     for(int i = 1; i < route.GetSize(); ++i)
                     {
-                        group.travelActionData.Route[i - 1] = *route[i];
+                        group.travelActionData->Route[i - 1] = *route[i];
                     }
-                    group.travelActionData.IsOnRoute = true;
+                    group.travelActionData->IsOnRoute = true;
 
-                    group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+                    group.SelectAction(GroupActions::TRAVEL, {group.travelActionData->Route[0]});
                 }
             }
         }
     }
 
-    void MachineMind::DetermineActionAsAdventurer(Group &group) const 
+    void MachineMind::DetermineActionAsAdventurer(GroupCore &group) const 
     {
-        if(group.travelActionData.IsOnRoute)
+        if(group.travelActionData->IsOnRoute)
         {
             if(group.GetDestination() == nullptr)
             {
-                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData->Route[0]});
             }
         }
         else
@@ -215,34 +215,34 @@ namespace world::group
 
                 auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(destination, group.tile, distance + 1);
 
-                group.travelActionData.PlannedDestinationCount = pathData.Tiles.GetSize() - 1;
+                group.travelActionData->PlannedDestinationCount = pathData.Tiles.GetSize() - 1;
                 for(int i = 1; i < pathData.Tiles.GetSize(); ++i)
                 {
-                    group.travelActionData.Route[i - 1] = pathData.Tiles.Get(i)->Tile;
+                    group.travelActionData->Route[i - 1] = pathData.Tiles.Get(i)->Tile;
                 }
-                group.travelActionData.IsOnRoute = true;
+                group.travelActionData->IsOnRoute = true;
 
-                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData->Route[0]});
             }
         }
     }
 
-    void MachineMind::DetermineActionAsBandit(Group &group) const 
+    void MachineMind::DetermineActionAsBandit(GroupCore &group) const 
     {
         if(group.GetAction() == nullptr)
         {
-            if(group.travelActionData.IsOnRoute)
+            if(group.travelActionData->IsOnRoute)
             {
-                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData->Route[0]});
                 return;
             }    
         }
 
-        if(group.travelActionData.IsOnRoute)
+        if(group.travelActionData->IsOnRoute)
         {
             if(group.GetDestination() == nullptr)
             {
-                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData->Route[0]});
             }
         }
         else
@@ -269,23 +269,23 @@ namespace world::group
                     }
                 }
 
-                group.travelActionData.PlannedDestinationCount = 1;
-                group.travelActionData.Route[0] = randomTile;
-                group.travelActionData.IsOnRoute = true;
+                group.travelActionData->PlannedDestinationCount = 1;
+                group.travelActionData->Route[0] = randomTile;
+                group.travelActionData->IsOnRoute = true;
 
-                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData->Route[0]});
             }
         }
     }
 
-    void MachineMind::DetermineActionAsPatrol(Group &group) const
+    void MachineMind::DetermineActionAsPatrol(GroupCore &group) const
     {
         bool mustResumeAction = group.GetAction() == nullptr;
         if(mustResumeAction == true)
         {
-            if(group.travelActionData.IsOnRoute)
+            if(group.travelActionData->IsOnRoute)
             {
-                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData->Route[0]});
                 return;
             }    
         }
@@ -311,11 +311,11 @@ namespace world::group
             }
         }
 
-        if(group.travelActionData.IsOnRoute)
+        if(group.travelActionData->IsOnRoute)
         {
             if(group.GetDestination() == nullptr)
             {
-                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData->Route[0]});
             }
         }
         else
@@ -342,16 +342,16 @@ namespace world::group
                     }
                 }
 
-                group.travelActionData.PlannedDestinationCount = 1;
-                group.travelActionData.Route[0] = randomTile;
-                group.travelActionData.IsOnRoute = true;
+                group.travelActionData->PlannedDestinationCount = 1;
+                group.travelActionData->Route[0] = randomTile;
+                group.travelActionData->IsOnRoute = true;
 
-                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData->Route[0]});
             }
         }
     }
 
-    void MachineMind::DetermineActionAsGarrison(Group &group) const
+    void MachineMind::DetermineActionAsGarrison(GroupCore &group) const
     {
         if(NeedsRest(group) == false)
             return;
@@ -359,13 +359,13 @@ namespace world::group
         group.SelectAction(GroupActions::TAKE_LONG_REST);
     }
 
-    void MachineMind::DetermineActionAsRaider(Group &group) const
+    void MachineMind::DetermineActionAsRaider(GroupCore &group) const
     {
-        if(group.travelActionData.IsOnRoute)
+        if(group.travelActionData->IsOnRoute)
         {
             if(group.GetDestination() == nullptr)
             {
-                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+                group.SelectAction(GroupActions::TRAVEL, {group.travelActionData->Route[0]});
             }
         }
         else
@@ -404,25 +404,25 @@ namespace world::group
                     auto destination = group.tile == group.home->GetLocation() ? path->GetOther(group.home) : group.home;
                     auto route = path->GetTilesTo(destination);
 
-                    group.travelActionData.PlannedDestinationCount = route.GetSize() - 1;
+                    group.travelActionData->PlannedDestinationCount = route.GetSize() - 1;
                     for(int i = 1; i < route.GetSize(); ++i)
                     {
-                        group.travelActionData.Route[i - 1] = *route[i];
+                        group.travelActionData->Route[i - 1] = *route[i];
                     }
-                    group.travelActionData.IsOnRoute = true;
+                    group.travelActionData->IsOnRoute = true;
 
-                    group.SelectAction(GroupActions::TRAVEL, {group.travelActionData.Route[0]});
+                    group.SelectAction(GroupActions::TRAVEL, {group.travelActionData->Route[0]});
                 }
             }
         }
     }
 
-    void MachineMind::RegisterActionPerformance(Group &, GroupActionResult) const
+    void MachineMind::RegisterActionPerformance(GroupCore &, GroupActionResult) const
     {
 
     }
 
-    bool MachineMind::NeedsRest(const Group &group) const
+    bool MachineMind::NeedsRest(const GroupCore &group) const
     {
         static const auto FATIGUE_ONSET_SINCE_REST = engine::ConfigManager::Get()->GetValue(game::ConfigValues::FATIGUE_ONSET_SINCE_REST).Integer;
 
