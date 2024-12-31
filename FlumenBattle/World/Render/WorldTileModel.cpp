@@ -963,6 +963,60 @@ void WorldTileModel::RenderTileDevelopMap()
     }
 }
 
+void WorldTileModel::RenderFogOfWar()
+{
+    static const auto map = worldScene->GetWorldMap();
+
+    static DataBuffer *tileIndexBuffer = nullptr;
+
+    static auto tileIndices = container::Array <unsigned int> (map->GetTileCount());
+
+    if(tileIndexBuffer == nullptr)
+    {
+        tileIndexBuffer = new DataBuffer(tileIndices.GetMemoryCapacity(), tileIndices.GetStart());
+    }
+
+    tileIndices.Reset();
+
+    const auto frustum = WorldTileModel::Get()->GetFrustum();
+
+    for(auto x = frustum.Position.x; x <= frustum.Position.x + frustum.Size.x; ++x)
+    {
+        for(auto y = frustum.Position.y - 5; y <= frustum.Position.y + frustum.Size.y + 6; ++y)
+        {
+            auto tile = map->GetTile(Integer2{x, y});
+            if(tile == nullptr)
+                continue;
+
+            if(tile->IsRevealed() == true)
+                continue;
+
+            auto index = tile - map->GetTiles().GetStart();
+            *tileIndices.Add() = index;
+        }   
+    }
+
+    tileIndexBuffer->UploadData(tileIndices.GetStart(), tileIndices.GetMemorySize());
+
+    static const auto fogOfWarShader = ShaderManager::GetShader("FogOfWar");
+
+    fogOfWarShader->Bind();
+
+    fogOfWarShader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	fogOfWarShader->SetConstant(0.0f, "depth");
+
+    fogOfWarShader->SetConstant(WORLD_TILE_SIZE, "hexSize");
+
+    positionBuffer->Bind(0);
+
+    tileIndexBuffer->Bind(1);
+
+    glDrawArrays(GL_TRIANGLES, 0, 18 * tileIndices.GetSize());
+
+    fogOfWarShader->Unbind();
+}
+
 void WorldTileModel::Render() 
 {
     static auto index = 0;
@@ -980,14 +1034,15 @@ void WorldTileModel::Render()
 
         static auto temperatures = container::Array <Float> (map->GetTileCount());
 
-        for(auto tile = map->GetTiles().GetStart(); tile != map->GetTiles().GetEnd(); ++tile)
+        for(auto &tile : map->GetTiles())
+        //for(auto tile = map->GetTiles().GetStart(); tile != map->GetTiles().GetEnd(); ++tile)
         {
-            *positions.Add() = tile->Position;
+            *positions.Add() = tile.Position;
 
             //*colors.Add() = Color((float)tile->Elevation / 100.0f);
-            *colors.Add() = tile->GetShade();
+            *colors.Add() = tile.GetShade();
 
-            *temperatures.Add() = tile->Type == WorldTiles::LAND ? (float)tile->Heat / (float)WorldTile::MAXIMUM_TILE_HEAT : 1.0f;
+            *temperatures.Add() = tile.Type == WorldTiles::LAND ? (float)tile.Heat / (float)WorldTile::MAXIMUM_TILE_HEAT : 1.0f;
         }
 
         positionBuffer = new DataBuffer(positions.GetMemorySize(), positions.GetStart());
@@ -1012,6 +1067,8 @@ void WorldTileModel::Render()
     //RenderInterestMap();
 
     RenderSettlements();
+
+    RenderFogOfWar();
 
     if(WorldController::Get()->ShouldDisplayMetal() == true)
     {
@@ -1081,6 +1138,9 @@ void WorldTileModel::Render()
 
     for(auto &group : *worldScene->groups)
     {
+        if(group.GetTile()->IsRevealed() == false)
+            continue;
+
         auto position = group.GetVisualPosition();
         position += Position2(0, -15);
 

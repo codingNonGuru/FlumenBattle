@@ -15,16 +15,16 @@ layout (std430, binding = 0) buffer POSITIONS
 	vec2 positions[];	
 };
 
-layout (std430, binding = 1) buffer COLORS
+layout (std430, binding = 1) buffer TILE_INDICES
 {
-	vec4 colors[];	
+	uint tileIndices[];	
 };
 
 // TEXTURES
 
 // OUTPUT
 
-out vec4 color;
+out vec2 pos;
 
 void main()
 {	
@@ -48,11 +48,11 @@ void main()
 	);
 	
 	uint vertexIndex = indices[gl_VertexID % 18];
-	uint objectIndex = uint(gl_VertexID / 18);
+	uint objectIndex = tileIndices[gl_VertexID / 18];
 
 	vec2 position = vertices[vertexIndex] * hexSize + positions[objectIndex];
 
-	gl_Position = viewMatrix * vec4(position.x, position.y, depth, 1.0f);
+	pos = position;
 
-	color = colors[objectIndex];
+	gl_Position = viewMatrix * vec4(position.x, position.y, depth, 1.0f);
 }

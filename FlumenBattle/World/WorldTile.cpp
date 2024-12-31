@@ -18,11 +18,13 @@ const auto DIURNAL_TEMPERATURE_SWING = 1.5f;
 const auto WINTER_THRESHOLD = 50;
 
 WorldTile::WorldTile(Position2 position, Integer2 squareCoordinates) : Position(position), SquareCoordinates(squareCoordinates), 
-group(nullptr), settlement(nullptr), owner(nullptr), isBorderingOwnedTile(false)
+settlement(nullptr), owner(nullptr), isBorderingOwnedTile(false)
 {
     HexCoordinates.x = squareCoordinates.x - squareCoordinates.y / 2;
     HexCoordinates.z = squareCoordinates.y;
     HexCoordinates.y = -HexCoordinates.x - HexCoordinates.z;
+
+    isRevealed = false;
 }
 
 void WorldTile::Initialize()

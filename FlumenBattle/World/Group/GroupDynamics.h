@@ -94,6 +94,8 @@ namespace world::group
 
         container::Array <GroupCore *> &GetGroups(GroupClasses) const;
 
+        container::Array <GroupCore *> &GetGroups() const;
+
         bool HasMaximumSettlers() const;
 
         bool HasAnySettlers() const;

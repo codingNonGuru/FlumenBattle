@@ -56,6 +56,8 @@ namespace world::render
 
         void RenderTileDevelopMap();
 
+        void RenderFogOfWar();
+
     public:
         void Initialize() override;
 

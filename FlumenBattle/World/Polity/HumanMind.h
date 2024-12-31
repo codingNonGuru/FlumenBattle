@@ -68,6 +68,8 @@ namespace world::polity
 
         void HandleImproveSwipeRight();
 
+        void HandleSceneUpdateEnded();
+
         void UpdateSettlementWorkforce(settlement::Settlement *) const;
 
         void HireWorker(settlement::Settlement *, settlement::SettlementTile *);

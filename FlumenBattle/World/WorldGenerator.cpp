@@ -532,6 +532,12 @@ void WorldGenerator::GeneratePlayerGroup(const container::Array <pregame::Member
 
     //homeSettlement->GetPolity()->SetController(true);
     //scene.playerGroup->SetDomain(homeSettlement->GetPolity());
+
+    scene.playerGroup->GetTile()->RevealTile();
+    for(auto &tile : scene.playerGroup->GetTile()->GetNearbyTiles(2).Tiles)
+    {
+        tile->RevealTile();
+    }
 }
 
 int WorldGenerator::GetMaximumPolityCount(int worldSize) const

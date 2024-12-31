@@ -21,6 +21,7 @@
 #include "FlumenBattle/World/Interface/Popup/PopupManager.h"
 #include "FlumenBattle/World/WorldUpdateHandler.h"
 #include "FlumenBattle/World/Settlement/ExplorationHandler.h"
+#include "FlumenBattle/World/Group/GroupDynamics.h"
 
 using namespace world;
 using namespace world::polity;
@@ -69,6 +70,8 @@ HumanMind::HumanMind()
     }
 
     workInstructionSets.Reset();
+
+    WorldScene::Get()->OnRefreshCycleFinished += {this, &HumanMind::HandleSceneUpdateEnded};
 }
 
 void HumanMind::EnableInput()
@@ -380,6 +383,39 @@ void HumanMind::HandleTileImproved()
     }
 
     OnImprovementStarted.Invoke();
+}
+
+void HumanMind::HandleSceneUpdateEnded()
+{
+    const auto playerPolity = WorldScene::Get()->GetPlayerPolity();
+
+    if(playerPolity != nullptr)
+    {
+        for(auto &settlement : playerPolity->GetSettlements())
+        {
+            for(auto &tile : settlement->GetTiles())
+            {
+                tile.Tile->RevealTile();
+            }
+
+            for(auto &group : settlement->GetGroupDynamics().GetGroups())
+            {
+                if(group->GetTile() == nullptr)
+                    continue;
+
+                if(group->GetClass() == group::GroupClasses::BANDIT)
+                    continue;
+
+                group->GetTile()->RevealTile();
+            }
+        }
+    }
+
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    if(playerGroup->GetTile() != nullptr)
+    {
+        playerGroup->GetTile()->RevealTile();
+    }
 }
 
 settlement::TileImprovements HumanMind::GetProposedImprovement() 

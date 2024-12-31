@@ -46,8 +46,6 @@ namespace world
     private:
         WorldMap *map;
 
-        group::GroupCore *group;
-
         settlement::Settlement *settlement;
 
         settlement::Settlement *owner;
@@ -57,6 +55,8 @@ namespace world
         container::Block <ResourceAmount, BASIC_RESOURCES_COUNT> resources {0};
 
         bool isBorderingOwnedTile;
+
+        bool isRevealed;
 
         container::SmartBlock <settlement::PathSegment *, 6> links;
 
@@ -127,8 +127,6 @@ namespace world
 
         WorldTile * GetNeighbor(Integer3);
 
-        group::GroupCore * GetGroup() {return group;}
-
         settlement::Settlement * GetSettlement() {return settlement;}
 
         settlement::Settlement * GetOwner() {return owner;}
@@ -176,6 +174,10 @@ namespace world
         int GetActualTemperature() const;
 
         bool IsWinter() const;
+
+        void RevealTile() {isRevealed = true;}
+
+        bool IsRevealed() const {return isRevealed;}
 
         static float GetSeasonalTemperatureSwing();
 

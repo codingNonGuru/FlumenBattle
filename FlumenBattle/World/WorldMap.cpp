@@ -163,7 +163,7 @@ WorldTile* WorldMap::GetEmptyRandomTile(bool isLand)
     while(true)
     {
         auto tile = GetRandomTile();
-        if(tile->group == nullptr && tile->Type == WorldTiles::LAND)
+        if(tile->Type == WorldTiles::LAND)
         {
             return tile;
         }

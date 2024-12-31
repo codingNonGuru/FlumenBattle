@@ -122,6 +122,8 @@ namespace world
 
         Delegate OnPlayerDomainGrew;
 
+        Delegate OnRefreshCycleFinished;
+
         static WorldScene * Get() 
         {
             static WorldScene scene;

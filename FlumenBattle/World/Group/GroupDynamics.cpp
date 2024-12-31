@@ -464,6 +464,27 @@ container::Array <GroupCore *> &GroupDynamics::GetGroups(GroupClasses groupClass
     return groupBatch;
 }
 
+container::Array <GroupCore *> &GroupDynamics::GetGroups() const
+{
+    static auto groupBatch = container::Array <GroupCore *> (256);
+    groupBatch.Reset();
+
+    const auto groupFamilies = {&adventurers, &merchants, &patrols, &garrisons, &raiders, &bandits};
+
+    for(auto &family : groupFamilies)
+    {
+        for(auto &group : *family)
+        {
+            if(group.Group == nullptr)
+                continue;
+
+            *groupBatch.Add() = group.Group;
+        }
+    }
+
+    return groupBatch;
+}
+
 bool GroupDynamics::HasMaximumSettlers() const
 {
     if(settlerCount >= MAXIMUM_SETTLER_COUNT)
