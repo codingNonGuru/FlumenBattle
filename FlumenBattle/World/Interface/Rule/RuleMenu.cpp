@@ -197,6 +197,8 @@ void RuleMenu::HandleGroupsPressed()
 
 void RuleMenu::Setup()
 {
+    SetInteractivity(true);
+
     tabs.Initialize((int)RuleMenuTabs::COUNT);
 
     auto economyTab = ElementFactory::BuildElement <EconomyTab>

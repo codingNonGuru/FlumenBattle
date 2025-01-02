@@ -73,10 +73,12 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
 {
     canvas = ElementFactory::BuildCanvas();
     canvas->SetInteractivity(true);
+    canvas->GetHoverEvents() += {this, &WorldInterface::HandleCanvasHovered};
 
     decisionMenu = ElementFactory::BuildElement <WorldDecisionMenu>(
-        {Size(1080, 220), DrawOrder(10), {Position2(0.0f, -5.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, canvas}, {false}, Opacity(0.75f)}
+        {Size(1080, 220), DrawOrder(14), {Position2(0.0f, -5.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, canvas}, {false}, Opacity(0.75f)}
     );
+    decisionMenu->SetInteractivity(true);
     decisionMenu->Enable();
 
     infoPanel = ElementFactory::BuildElement <WorldInfoPanel>(
@@ -89,66 +91,72 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     );
 
     engageMenu = ElementFactory::BuildElement <GroupEngageMenu>(
-        {Size(900, 360), DrawOrder(10), {Position2(0.0f, -5.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, canvas}, {false}, Opacity(0.75f)}
+        {Size(900, 360), DrawOrder(14), {Position2(0.0f, -5.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, canvas}, {false}, Opacity(0.75f)}
     );
+    engageMenu->SetInteractivity(true);
 
     inventoryMenu = ElementFactory::BuildElement <interface::InventoryMenu>
     (
         {
             Size(480, 540), 
-            DrawOrder(12), 
+            DrawOrder(14), 
             {canvas}, 
             {false}, 
             Opacity(0.9f)
         }
     );
+    inventoryMenu->SetInteractivity(true);
     *majorCentralMenus.Allocate() = inventoryMenu;
 
     reputationMenu = ElementFactory::BuildElement <interface::ReputationMenu>
     (
         {
             Size(480, 540), 
-            DrawOrder(12), 
+            DrawOrder(14), 
             {canvas}, 
             {false}, 
             Opacity(0.9f)
         }
     );
+    reputationMenu->SetInteractivity(true);
     *majorCentralMenus.Allocate() = reputationMenu;
 
     questMenu = ElementFactory::BuildElement <interface::QuestMenu>
     (
         {
             Size(480, 540), 
-            DrawOrder(12), 
+            DrawOrder(14), 
             {canvas}, 
             {false}, 
             Opacity(0.9f)
         }
     );
+    questMenu->SetInteractivity(true);
     *majorCentralMenus.Allocate() = questMenu;
 
     settlementMenu = ElementFactory::BuildElement <interface::SettlementMenu>
     (
         {
             Size(320, 400), 
-            DrawOrder(10), 
+            DrawOrder(14), 
             {Position2(5.0f, -5.0f), ElementAnchors::LOWER_LEFT, ElementPivots::LOWER_LEFT, canvas}, 
             {false}, 
             Opacity(0.9f)
         }
     );
+    settlementMenu->SetInteractivity(true);
 
     explorationMenu = ElementFactory::BuildElement <interface::ExplorationMenu>
     (
         {
             Size(320, 400), 
-            DrawOrder(10), 
+            DrawOrder(14), 
             {Position2(-5.0f, -5.0f), ElementAnchors::LOWER_RIGHT, ElementPivots::LOWER_RIGHT, canvas}, 
             {false}, 
             Opacity(0.9f)
         }
     );
+    explorationMenu->SetInteractivity(true);
     explorationMenu->Enable();
 
     settlementLabels.Initialize(128);
@@ -243,12 +251,13 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     (
         {
             Size(480, 200), 
-            DrawOrder(10), 
+            DrawOrder(14), 
             {canvas}, 
             {false}, 
             Opacity(0.9f)
         }
     );
+    questPopup->SetInteractivity(true);
 
     actionPopups.Initialize(ACTION_POPUP_CAPACITY);
     for(int i = 0; i < ACTION_POPUP_CAPACITY; ++i)
@@ -298,24 +307,26 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     (
         {
             Size(480, 200), 
-            DrawOrder(10), 
+            DrawOrder(14), 
             {canvas}, 
             {false}, 
             Opacity(0.9f)
         }
     );
+    conquestPopup->SetInteractivity(true);
     conquestPopup->SetupBasicAnimations();
 
     recruitmentMenu = ElementFactory::BuildElement <interface::RecruitmentMenu>
     (
         {
             Size(660, 420), 
-            DrawOrder(10), 
+            DrawOrder(14), 
             {canvas}, 
             {false}, 
             Opacity(0.9f)
         }
     );
+    recruitmentMenu->SetInteractivity(true);
     recruitmentMenu->SetupBasicAnimations();
 
     *majorCentralMenus.Allocate() = recruitmentMenu;
@@ -324,7 +335,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     (
         {
             Size(720, 500), 
-            DrawOrder(10), 
+            DrawOrder(14), 
             {canvas}, 
             {false}, 
             Opacity(0.9f)
@@ -487,6 +498,11 @@ void WorldInterface::Disable()
     InputHandler::UnregisterEvent(MENU_CYCLE_INPUT_KEY);
 
     canvas->Disable();
+}
+
+void WorldInterface::HandleCanvasHovered()
+{
+    OnCanvasHovered.Invoke();
 }
 
 void WorldInterface::HandleConsoleToggled()

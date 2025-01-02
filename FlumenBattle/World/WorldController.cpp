@@ -76,6 +76,8 @@ namespace world
         WorldScene::Get()->OnPlayerBattleStarted += {this, &WorldController::HandleBattleStarted};
 
         group::HumanMind::Get()->OnSettlementExited += {this, &WorldController::HandleSettlementExited};
+
+        WorldInterface::Get()->OnCanvasHovered += {this, &WorldController::HandleWorldCanvasHovered};
     }
 
     void WorldController::Enable()
@@ -202,6 +204,13 @@ namespace world
         }
     }
 
+    bool willCheckTileSelection = false;
+
+    void WorldController::HandleWorldCanvasHovered()
+    {
+        willCheckTileSelection = true;
+    }
+
     static utility::PathData <WorldTile> plannedPath;
 
     void WorldController::Update()
@@ -211,7 +220,16 @@ namespace world
             CancelActiveModes();
         }
 
-        CheckTileSelection();
+        if(willCheckTileSelection == true)
+        {
+            CheckTileSelection();
+
+            willCheckTileSelection = false;
+        }
+        else
+        {
+            hoveredTile = nullptr;
+        }
 
         auto zoomSpeed = CAMERA_ZOOM_SPEED * Time::GetDelta();
 

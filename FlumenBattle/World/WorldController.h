@@ -82,6 +82,8 @@ namespace world
 
         void CheckTileSelection();
 
+        void HandleWorldCanvasHovered();
+
         void HandleBattleStarted();
 
         void HandleSpacePressed();

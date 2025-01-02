@@ -2,6 +2,7 @@
 
 #include "FlumenCore/Singleton.h"
 #include "FlumenCore/Container/Queue.h"
+#include "FlumenCore/Observer.h"
 
 #include "FlumenBattle/Utility/Utility.h"
 #include "FlumenBattle/World/Types.h"
@@ -149,6 +150,8 @@ namespace world
 
         void Update();
 
+        void HandleCanvasHovered();
+
         void HandlePlayerEncounter();
 
         void HandlePlayerDisengage();
@@ -198,6 +201,8 @@ namespace world
         WorldInterface();
 
     public:
+        Delegate OnCanvasHovered;
+
         void Initialize();
 
         void Enable();
