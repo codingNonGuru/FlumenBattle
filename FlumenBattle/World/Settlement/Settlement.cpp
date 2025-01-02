@@ -62,10 +62,6 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location,
 
     this->banner = banner;
 
-    this->population = 1;
-
-    this->growth = 0;
-
     this->cultureGrowth = 0;
 
     this->tradeDestination = nullptr;
@@ -384,11 +380,11 @@ AbundanceLevels Settlement::GetHousingAdequacy() const
 {
     auto housingAmount = GetBuildingCount(BuildingTypes::HOUSING);
 
-    if(housingAmount > population)
+    if(housingAmount > GetPopulation())
         return AbundanceLevels::ENOUGH;
-    else if(housingAmount == population)
+    else if(housingAmount == GetPopulation())
         return AbundanceLevels::BARELY_AVAILABLE;
-    else if(housingAmount * 2 > population)
+    else if(housingAmount * 2 > GetPopulation())
         return AbundanceLevels::LACKING;
     else
         return AbundanceLevels::SORELY_LACKING;
@@ -403,7 +399,7 @@ Integer Settlement::GetIndustrialProduction() const
 
 Integer Settlement::GetScienceProduction() const
 {
-    auto production = population >= 10 ? 2 : 1;
+    auto production = GetPopulation() >= 10 ? 2 : 1;
     production += GetModifier(Modifiers::SCIENCE_PRODUCTION);
 
     return production;
@@ -492,6 +488,11 @@ float Settlement::GetCultureProgress() const
     return (float)cultureGrowth / (float)BORDER_GROWTH_THRESHOLD;
 }
 
+Integer Settlement::GetPopulation() const 
+{
+    return popHandler.GetPopulation();
+}
+
 Integer Settlement::GetWorkedTiles() const
 {
     auto tileCount = 0;
@@ -511,7 +512,7 @@ Integer Settlement::GetFreeWorkerCount() const
         buildingPersonnelCount += building.GetPersonnelCount();
     }
 
-    auto populationWithoutTileWorkers = 1 + population - GetWorkedTiles();
+    auto populationWithoutTileWorkers = 1 + GetPopulation() - GetWorkedTiles();
 
     return populationWithoutTileWorkers - buildingPersonnelCount;
 }
@@ -630,7 +631,7 @@ int Settlement::GetPillageDC() const
 
 void Settlement::IncreasePopulation()
 {
-    population++;
+    popHandler.IncreasePopulation(this);
 }
 
 int Settlement::Loot(bool hasSparedBuilding, int requestedFood)
@@ -688,11 +689,7 @@ void Settlement::KillPopulation()
 {
     auto freeWorkerCount = GetFreeWorkerCount();
 
-    population--;
-    if(population < 0)
-    {
-        population = 0;
-    }
+    popHandler.KillPopulation();
 
     if(freeWorkerCount > 0)
         return;
@@ -770,11 +767,28 @@ void Settlement::ProcessEarthquake(const disaster::Earthquake &earthquake)
     BuildingDamager::DamageImprovements(earthquake, *this);
 }
 
+bool Settlement::IsAbandoned() const
+{
+    return popHandler.IsSettlementAbandoned();
+}
+
+int Settlement::GetAbandonmentSeverity() const
+{
+    return popHandler.GetAbandonmentSeverity();
+}
+
+bool Settlement::IsRuins() const
+{
+    return popHandler.IsSettlementRuins();
+}
+
 void Settlement::Update()
 {
     static const auto &worldTime = world::WorldScene::Get()->GetTime();
 
-    StrengthenPatrol();
+    popHandler.CheckAbandonment(this);
+
+    //StrengthenPatrol();
 
     buildingManager->Update();
 
@@ -800,75 +814,22 @@ void Settlement::Update()
 
     updateModifiers();
 
+    if(popHandler.IsSettlementAbandoned() == true)
+    {
+        return;
+    }
+
     resourceHandler.Update(*this);
 
-    auto foodSecurity = resourceHandler.Get(ResourceTypes::FOOD)->ShortTermAbundance;
-    auto housingAdequacy = GetHousingAdequacy();
-
-    auto addedGrowth = [&]
-    {
-        auto growthFromFood = [&]
-        {
-            switch(foodSecurity)
-            {
-            case AbundanceLevels::CORNUCOPIA:
-                return 5;
-            case AbundanceLevels::ABUNDANT:
-                return 4;
-            case AbundanceLevels::ENOUGH:
-                return 3;
-            case AbundanceLevels::BARELY_AVAILABLE:
-                return 0;
-            case AbundanceLevels::LACKING:
-                return -5;
-            case AbundanceLevels::SORELY_LACKING:
-                return -7;
-            }
-        } ();
-
-        auto growthFromHousing = [&]
-        {
-            switch(housingAdequacy)
-            {
-            case AbundanceLevels::ENOUGH:
-                return 1;
-            case AbundanceLevels::BARELY_AVAILABLE:
-                return 0;
-            case AbundanceLevels::LACKING:
-                return -1;
-            case AbundanceLevels::SORELY_LACKING:
-                return -3;
-            }
-        } ();
-
-        auto modifier = GetModifier(Modifiers::POPULATION_GROWTH_RATE);
-
-        return growthFromFood + growthFromHousing + modifier;
-    } ();
-
-    growth += addedGrowth;
-    if(growth >= growthThreshold)
-    {
-        growth = 0;
-        population++;
-
-        needsToReorganizeWork = true;
-
-        polity->RegisterPopIncrease(this);
-    }
-    else if(growth < 0)
-    {
-        growth = 0;
-    }
+    popHandler.UpdateGrowth(this);
 
     cultureGrowth++;
     if(cultureGrowth >= BORDER_GROWTH_THRESHOLD)
     {
         cultureGrowth = BORDER_GROWTH_THRESHOLD;
-
-        //needsToReorganizeWork = true;
     }
 
+    auto foodSecurity = GetResource(ResourceTypes::FOOD)->ShortTermAbundance;
     if(foodSecurity == AbundanceLevels::LACKING || foodSecurity == AbundanceLevels::SORELY_LACKING)
     {
         if(afflictions.Find(AfflictionTypes::HUNGER) == nullptr)
@@ -877,7 +838,7 @@ void Settlement::Update()
         }
     }
 
-    if(worldTime.MinuteCount == 0 && population > 3)
+    if(worldTime.MinuteCount == 0 && GetPopulation() > 3)
     {
         auto difficultyBonus = GetModifier(Modifiers::MALARIA_EMERGENCE_DIFFICULTY);
         if(utility::GetRandom(1, 100) > 98 + difficultyBonus)
@@ -930,11 +891,17 @@ void Settlement::Update()
 
 void Settlement::PrepareTransport()
 {
+    if(IsAbandoned() == true)
+        return;
+
     tradeHandler.PrepareTransport(*this);
 }
 
 void Settlement::SendTransport()
 {
+    if(IsAbandoned() == true)
+        return;
+
     tradeHandler.SendTransport(*this);
 }
 
@@ -950,6 +917,9 @@ void Settlement::ReceiveTransport(ResourceTypes resource, int amount)
 
 void Settlement::UpdatePolitics()
 {
+    if(IsAbandoned() == true)
+        return;
+
     if(polity->GetRuler() == this)
         return;
 

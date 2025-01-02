@@ -1,13 +1,27 @@
 #include "PopHandler.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Polity/Polity.h"
 #include "FlumenBattle/Config.h"
+#include "FlumenBattle/Utility/Utility.h"
 
 using namespace world::settlement;
 
 static const auto HAPPINESS_DETERMINANT_COUNT = 4;
 
+static const auto RECOVERY_FROM_ABANDONMENT_THRESHOLD = -5;
+
+static const auto FALL_INTO_RUINS_THRESHOLD = 5;
+
 void PopHandler::Initialize()
 {
+    population = 1;
+
+    timeSinceAbandonment = 0;
+
+    abandonmentSeverity = 0;
+
+    growth = 0;
+
     needs.Reset();
 
     *needs.Add() = {ResourceTypes::FOOD, false, true, 0};
@@ -33,12 +47,12 @@ void PopHandler::PlaceOrders(Settlement &settlement)
         settlement.GetResource(need.Type)->HasPopulationOrdered = false;
     }
 
-    if(settlement.GetPopulation() == 0)
+    if(GetPopulation() == 0)
     {
         return;
     }
 
-    auto consumption = settlement.GetPopulation() * cookedFood->Type->PopulationConsumption;
+    auto consumption = GetPopulation() * cookedFood->Type->PopulationConsumption;
     if(consumption <= cookedFood->Storage)
     {
         cookedFood->Order += consumption;
@@ -48,7 +62,7 @@ void PopHandler::PlaceOrders(Settlement &settlement)
     }
     else
     {
-        consumption = settlement.GetPopulation() * rawFood->Type->PopulationConsumption;
+        consumption = GetPopulation() * rawFood->Type->PopulationConsumption;
 
         if(consumption <= rawFood->Storage)
         {
@@ -64,7 +78,7 @@ void PopHandler::PlaceOrders(Settlement &settlement)
         }
     }
 
-    consumption = settlement.GetPopulation() * clothing->Type->PopulationConsumption;
+    consumption = GetPopulation() * clothing->Type->PopulationConsumption;
     if(consumption <= clothing->Storage && needs.Find(ResourceTypes::CLOTHING)->Satisfaction < needs.Find(ResourceTypes::CLOTHING)->SatisfactionThreshold)
     {
         clothing->Order += consumption;
@@ -72,7 +86,7 @@ void PopHandler::PlaceOrders(Settlement &settlement)
         clothing->HasPopulationOrdered = true;
     }
 
-    consumption = settlement.GetPopulation() * pottery->Type->PopulationConsumption;
+    consumption = GetPopulation() * pottery->Type->PopulationConsumption;
     if(consumption <= pottery->Storage && needs.Find(ResourceTypes::POTTERY)->Satisfaction < needs.Find(ResourceTypes::POTTERY)->SatisfactionThreshold)
     {
         pottery->Order += consumption;
@@ -187,4 +201,154 @@ float PopHandler::GetHappinessRatio() const
     auto maximum = TICKS_PER_HAPPINESS * HAPPINESS_DETERMINANT_COUNT;
 
     return (float)happiness / (float)maximum;
+}
+
+int PopHandler::GetPopulation() const
+{
+    return population;
+}
+
+bool PopHandler::IsSettlementAbandoned() const
+{
+    return GetPopulation() == 0;
+}
+
+int PopHandler::GetAbandonmentSeverity() const
+{
+    return abandonmentSeverity;
+}
+
+bool PopHandler::IsSettlementRuins() const
+{
+    return GetPopulation() == 0 && abandonmentSeverity == FALL_INTO_RUINS_THRESHOLD;
+}
+
+void PopHandler::IncreasePopulation(Settlement *settlement)
+{
+    population++;
+
+    settlement->GetPolity()->RegisterPopIncrease(settlement);
+}
+
+void PopHandler::KillPopulation()
+{
+    population--;
+    if(population < 0)
+    {
+        population = 0;
+    }
+}
+
+void PopHandler::CheckAbandonment(Settlement *settlement)
+{
+    if(IsSettlementAbandoned() == true)
+    {
+        timeSinceAbandonment++;
+
+        if(IsSettlementRuins() == false)
+        {
+            if(timeSinceAbandonment != 0 && timeSinceAbandonment % 144 == 0)
+            {
+                auto savingThrow = utility::RollD20Dice(12);
+
+                if(savingThrow.IsCriticalSuccess() == true)
+                {
+                    abandonmentSeverity -= 2;
+                    if(abandonmentSeverity <= RECOVERY_FROM_ABANDONMENT_THRESHOLD)
+                    {
+                        abandonmentSeverity = RECOVERY_FROM_ABANDONMENT_THRESHOLD;
+
+                        IncreasePopulation(settlement);
+                    }
+                }
+                else if(savingThrow.IsNormalSuccess() == true)
+                {
+                    abandonmentSeverity--;
+                    if(abandonmentSeverity == RECOVERY_FROM_ABANDONMENT_THRESHOLD)
+                    {
+                        IncreasePopulation(settlement);
+                    }
+                }
+                else if(savingThrow.IsRegularFailure() == true)
+                {
+                    abandonmentSeverity++;
+                }
+                else
+                {
+                    abandonmentSeverity += 2;
+                    if(abandonmentSeverity > FALL_INTO_RUINS_THRESHOLD)
+                    {
+                        abandonmentSeverity = FALL_INTO_RUINS_THRESHOLD;
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        timeSinceAbandonment = 0;
+
+        abandonmentSeverity = 0;
+    }
+}
+
+void PopHandler::UpdateGrowth(Settlement *settlement)
+{
+    auto foodSecurity = settlement->GetResource(ResourceTypes::FOOD)->ShortTermAbundance;
+    auto housingAdequacy = settlement->GetHousingAdequacy();
+
+    auto addedGrowth = [&]
+    {
+        auto growthFromFood = [&]
+        {
+            switch(foodSecurity)
+            {
+            case AbundanceLevels::CORNUCOPIA:
+                return 5;
+            case AbundanceLevels::ABUNDANT:
+                return 4;
+            case AbundanceLevels::ENOUGH:
+                return 3;
+            case AbundanceLevels::BARELY_AVAILABLE:
+                return 0;
+            case AbundanceLevels::LACKING:
+                return -5;
+            case AbundanceLevels::SORELY_LACKING:
+                return -7;
+            }
+        } ();
+
+        auto growthFromHousing = [&]
+        {
+            switch(housingAdequacy)
+            {
+            case AbundanceLevels::ENOUGH:
+                return 1;
+            case AbundanceLevels::BARELY_AVAILABLE:
+                return 0;
+            case AbundanceLevels::LACKING:
+                return -1;
+            case AbundanceLevels::SORELY_LACKING:
+                return -3;
+            }
+        } ();
+
+        auto modifier = settlement->GetModifier(Modifiers::POPULATION_GROWTH_RATE);
+
+        return growthFromFood + growthFromHousing + modifier;
+    } ();
+
+    growth += addedGrowth;
+    if(growth >= growthThreshold)
+    {
+        growth = 0;
+        
+        IncreasePopulation(settlement);
+
+        settlement->PromptWorkReorganizing();
+    }
+    else if(growth < 0)
+    {
+        growth = 0;
+    }
 }

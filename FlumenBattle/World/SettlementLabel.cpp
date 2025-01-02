@@ -26,7 +26,7 @@
 
 using namespace world::settlement;
 
-auto color = Color::RED * 0.5f;
+static const Color TEXT_COLOR = Color::RED * 0.5f;
 
 auto borderColor = Color::RED * 0.25f;
 
@@ -34,7 +34,7 @@ void HoverExtension::ResourceWidget::HandleConfigure()
 {
     Label = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {Position2(), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, this}},
-        {{"Small"}, color, "20"}
+        {{"Small"}, TEXT_COLOR, "20"}
     );
     Label->SetAlignment(Text::Alignments::LEFT);
     Label->Enable();
@@ -97,7 +97,7 @@ void SettlementLabel::HandleConfigure()
     auto height = -float(size_.y) / 2.0f + 20.0f;
     nameLabel = ElementFactory::BuildText(
         {Size(100, 100), drawOrder_ + 1, {Position2(10.0f, 3.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}},
-        {{"Medium"}, color, "PathData"}
+        {{"Medium"}, TEXT_COLOR, "PathData"}
     );
     nameLabel->SetAlignment(Text::Alignments::LEFT);
     nameLabel->Enable();
@@ -120,13 +120,13 @@ void SettlementLabel::HandleConfigure()
 
     populationLabel = ElementFactory::BuildText(
         {drawOrder_ + 2, {populationBackdrop}},
-        {{"Large"}, color, "5"}
+        {{"Large"}, TEXT_COLOR, "5"}
     );
     populationLabel->SetAlignment(Text::Alignments::CENTER);
     populationLabel->Enable();
 
     distanceRelatedBackdrop = ElementFactory::BuildElement <Element>(
-        {Size(size_.x - 30, size_.y), drawOrder_, {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, this}, {false}, Opacity(0.6f)}
+        {Size(size_.x - 30, size_.y + 20), drawOrder_, {Position2(0.0f, 10.0f), ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, this}, {false}, Opacity(0.6f)}
     );
 
     extensionBorder = ElementFactory::BuildElement <Element>(
@@ -136,16 +136,22 @@ void SettlementLabel::HandleConfigure()
     extensionBorder->Enable();
 
     garrisonCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
-        {drawOrder_, {Position2(30.0f, 0.0f), distanceRelatedBackdrop}}
+        {drawOrder_, {Position2(30.0f, -10.0f), distanceRelatedBackdrop}}
     );
     garrisonCounter->Setup("Group", &garrisonCount, "Small");
     garrisonCounter->Enable();
 
     wallCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
-        {drawOrder_, {Position2(-30.0f, 0.0f), distanceRelatedBackdrop}}
+        {drawOrder_, {Position2(-30.0f, -10.0f), distanceRelatedBackdrop}}
     );
     wallCounter->Setup("Walls", &wallsLevel, "Small", Scale2(0.5f));
+    wallCounter->SetOffset(-10.0f);
     wallCounter->Enable();
+
+    abandonmentLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {Position2(0.0f, -5.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, distanceRelatedBackdrop}},
+        {{"VerySmall"}, TEXT_COLOR}
+    );
 }
 
 static Text *separator;
@@ -164,7 +170,7 @@ void HoverExtension::HandleConfigure()
 
     growthLabel = ElementFactory::BuildText(
         {drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
-        {{"Small"}, color, "Growth "}
+        {{"Small"}, TEXT_COLOR, "Growth "}
     );
     growthLabel->SetAlignment(Text::Alignments::LEFT);
     growthLabel->Enable();
@@ -172,7 +178,7 @@ void HoverExtension::HandleConfigure()
 
     cultureLabel = ElementFactory::BuildText(
         {drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
-        {{"Small"}, color, "Culture "}
+        {{"Small"}, TEXT_COLOR, "Culture "}
     );
     cultureLabel->SetAlignment(Text::Alignments::LEFT);
     cultureLabel->Enable();
@@ -180,7 +186,7 @@ void HoverExtension::HandleConfigure()
 
     simulationLabel = ElementFactory::BuildText(
         {drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
-        {{"Small"}, color, "Growth "}
+        {{"Small"}, TEXT_COLOR, "Growth "}
     );
     simulationLabel->SetAlignment(Text::Alignments::LEFT);
     simulationLabel->Enable();
@@ -200,7 +206,7 @@ void HoverExtension::HandleConfigure()
 
     industryLabel = ElementFactory::BuildText(
         {drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
-        {{"Small"}, color, "Industry: 20"}
+        {{"Small"}, TEXT_COLOR, "Industry: 20"}
     );
     industryLabel->SetAlignment(Text::Alignments::LEFT);
     industryLabel->Enable();
@@ -208,7 +214,7 @@ void HoverExtension::HandleConfigure()
 
     tileLabel = ElementFactory::BuildText(
         {drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
-        {{"Small"}, color, "Tiles: 20"}
+        {{"Small"}, TEXT_COLOR, "Tiles: 20"}
     );
     tileLabel->SetAlignment(Text::Alignments::LEFT);
     tileLabel->Enable();
@@ -216,7 +222,7 @@ void HoverExtension::HandleConfigure()
 
     factionLabel = ElementFactory::BuildText(
         {drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
-        {{"Small"}, color, "Faction: 20"}
+        {{"Small"}, TEXT_COLOR, "Faction: 20"}
     );
     factionLabel->SetAlignment(Text::Alignments::LEFT);
     factionLabel->Enable();
@@ -224,7 +230,7 @@ void HoverExtension::HandleConfigure()
 
     buildingLabel = ElementFactory::BuildText(
         {drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
-        {{"Small"}, color, "Built:"}
+        {{"Small"}, TEXT_COLOR, "Built:"}
     );
     buildingLabel->SetAlignment(Text::Alignments::LEFT);
     buildingLabel->Enable();
@@ -232,7 +238,7 @@ void HoverExtension::HandleConfigure()
 
     groupLabel = ElementFactory::BuildText(
         {drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
-        {{"Small"}, color, "Groups:"}
+        {{"Small"}, TEXT_COLOR, "Groups:"}
     );
     groupLabel->SetAlignment(Text::Alignments::LEFT);
     groupLabel->Enable();
@@ -274,7 +280,7 @@ void HoverExtension::HandleConfigure()
 
     productionLabel = ElementFactory::BuildText(
         {drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
-        {{"Small"}, color, "Industry: 20"}
+        {{"Small"}, TEXT_COLOR, "Industry: 20"}
     );
     productionLabel->SetAlignment(Text::Alignments::LEFT);
     productionLabel->Enable();
@@ -299,7 +305,7 @@ void HoverExtension::HandleConfigure()
     {
         auto label = ElementFactory::BuildText(
             {drawOrder_ + 1, {pathLayout}},
-            {{"VerySmall"}, color, "Industry: 20"}
+            {{"VerySmall"}, TEXT_COLOR, "Industry: 20"}
         );
         label->SetAlignment(Text::Alignments::LEFT);
         label->Disable();
@@ -309,7 +315,7 @@ void HoverExtension::HandleConfigure()
 
     separator = ElementFactory::BuildText(
         {drawOrder_ + 1, {pathLayout}},
-        {{"VerySmall"}, color, "----------"}
+        {{"VerySmall"}, TEXT_COLOR, "----------"}
     );
     separator->SetAlignment(Text::Alignments::LEFT);
     separator->Enable();
@@ -327,7 +333,7 @@ void HoverExtension::HandleConfigure()
     {
         auto label = ElementFactory::BuildText <ConditionWidget>(
             {drawOrder_ + 1, {conditionLayout}},
-            {{"VerySmall"}, color, "Industry: 20"}
+            {{"VerySmall"}, TEXT_COLOR, "Industry: 20"}
         );
         label->SetAlignment(Text::Alignments::LEFT);
         label->Disable();
@@ -397,6 +403,24 @@ void SettlementLabel::HandleUpdate()
     else
     {
         distanceRelatedBackdrop->Disable();
+    }
+
+    if(settlement->IsAbandoned() == true)
+    {
+        if(settlement->IsRuins() == true)
+        {
+            abandonmentLabel->Setup("In ruins");
+        }
+        else
+        {
+            abandonmentLabel->Setup(LongWord() << "Abandoned (" << settlement->GetAbandonmentSeverity() << ")");
+        }
+
+        abandonmentLabel->Enable();
+    }
+    else
+    {
+        abandonmentLabel->Disable();
     }
 }
 

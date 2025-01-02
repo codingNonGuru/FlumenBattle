@@ -31,6 +31,16 @@ namespace world::settlement
     {
         friend class PopAllocator;
 
+        int population;
+
+        int growth;
+
+        int growthThreshold {1000};
+
+        int timeSinceAbandonment;
+
+        int abandonmentSeverity;
+
         container::Array <Need> needs;
         
         int happiness;
@@ -57,6 +67,26 @@ namespace world::settlement
         bool IsEcstatic() const {return isEcstatic;}
 
         float GetHappinessRatio() const;
+
+        int GetPopulation() const;
+
+        int GetGrowth() const {return growth;}
+
+        float GetGrowthRatio() const {return float(growth) / float(growthThreshold);}
+
+        bool IsSettlementAbandoned() const;
+
+        bool IsSettlementRuins() const;
+
+        int GetAbandonmentSeverity() const;
+
+        void IncreasePopulation(Settlement *);
+
+        void KillPopulation();
+
+        void CheckAbandonment(Settlement *);
+
+        void UpdateGrowth(Settlement *);
     };
 
     class PopAllocator

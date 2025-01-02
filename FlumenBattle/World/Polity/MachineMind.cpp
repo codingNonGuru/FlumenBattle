@@ -64,7 +64,7 @@ void MachineMind::UpdateWorkforce(Polity &polity) const
 
         settlement->needsToReorganizeWork = false;
 
-        if(settlement->population == 0)
+        if(settlement->GetPopulation() == 0)
         {
             for(auto &tile : settlement->tiles)
             {
@@ -76,11 +76,11 @@ void MachineMind::UpdateWorkforce(Polity &polity) const
             continue;
         }
 
-        if(settlement->population > settlement->tiles.GetSize())
+        if(settlement->GetPopulation() > settlement->tiles.GetSize())
             continue;
 
         auto workedTileCount = settlement->GetWorkedTiles();
-        if(workedTileCount == settlement->population + 1)
+        if(workedTileCount == settlement->GetPopulation() + 1)
             continue;
 
         if(workedTileCount == settlement->tiles.GetSize())
@@ -94,7 +94,7 @@ void MachineMind::UpdateWorkforce(Polity &polity) const
             tile.IsWorked = false;
         }
 
-        auto workerCount = settlement->population;
+        auto workerCount = settlement->GetPopulation();
         
         auto placeWorkersOnTilesOfType = [&] (world::WorldBiomes biomeType) -> bool
         {

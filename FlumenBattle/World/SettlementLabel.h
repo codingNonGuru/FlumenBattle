@@ -139,6 +139,8 @@ namespace world::settlement
 
         int wallsLevel;
 
+        Text *abandonmentLabel;
+
         void HandleConfigure() override;
 
         void HandleUpdate() override;

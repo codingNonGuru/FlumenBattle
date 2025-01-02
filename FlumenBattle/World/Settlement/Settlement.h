@@ -135,13 +135,7 @@ namespace world::settlement
 
         bool hasUsedSimulationChange {true};
 
-        Integer population;
-
         group::GroupDynamics *groupDynamics;
-
-        Integer growth;
-
-        Integer growthThreshold {1000};
 
         Integer cultureGrowth;
 
@@ -232,7 +226,7 @@ namespace world::settlement
 
         float GetCultureProgress() const;
 
-        Integer GetPopulation() const {return population;}
+        Integer GetPopulation() const;
 
         void IncreasePopulation();
 
@@ -248,9 +242,9 @@ namespace world::settlement
 
         float GetHappinessRatio() const {return popHandler.GetHappinessRatio();}
 
-        Integer GetGrowth() const {return growth;}
+        Integer GetGrowth() const {return popHandler.GetGrowth();}
 
-        float GetGrowthRatio() const {return float(growth) / float(growthThreshold);}
+        float GetGrowthRatio() const {return popHandler.GetGrowthRatio();}
 
         AbundanceLevels GetHousingAdequacy() const;
 
@@ -441,5 +435,13 @@ namespace world::settlement
         bool HasImprovement(SettlementTile *, TileImprovements) const;
 
         bool HasImprovement(WorldTile *, TileImprovements) const;
+
+        bool IsAbandoned() const;
+
+        bool IsRuins() const;
+
+        int GetAbandonmentSeverity() const;
+
+        void PromptWorkReorganizing() {needsToReorganizeWork = true;}
     };
 }
