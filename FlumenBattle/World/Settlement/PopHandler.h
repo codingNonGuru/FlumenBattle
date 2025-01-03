@@ -39,6 +39,8 @@ namespace world::settlement
 
         int timeSinceAbandonment;
 
+        int timeSinceRuined;
+
         int abandonmentSeverity;
 
         container::Array <Need> needs;
@@ -77,6 +79,8 @@ namespace world::settlement
         bool IsSettlementAbandoned() const;
 
         bool IsSettlementRuins() const;
+
+        bool IsSettlementCompletelyGone() const;
 
         int GetAbandonmentSeverity() const;
 

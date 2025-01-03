@@ -277,7 +277,7 @@ namespace world
 
         for(auto &settlement : *settlements)
         {
-            if(settlement.IsRuins() == true && settlement.IsValid() == true)
+            if(settlement.IsCompletelyGone() == true && settlement.IsValid() == true)
             {
                 settlement.MarkForDeletion();
 

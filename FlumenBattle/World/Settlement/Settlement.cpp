@@ -795,6 +795,11 @@ bool Settlement::IsRuins() const
     return popHandler.IsSettlementRuins();
 }
 
+bool Settlement::IsCompletelyGone() const
+{
+    return popHandler.IsSettlementCompletelyGone();
+}
+
 void Settlement::Update()
 {
     if(isValid == false)

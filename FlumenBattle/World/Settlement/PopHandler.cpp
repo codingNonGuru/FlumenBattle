@@ -3,6 +3,7 @@
 #include "FlumenBattle/World/Polity/Polity.h"
 #include "FlumenBattle/Config.h"
 #include "FlumenBattle/Utility/Utility.h"
+#include "FlumenBattle/World/WorldTime.h"
 
 using namespace world::settlement;
 
@@ -13,6 +14,8 @@ static const auto RECOVERY_FROM_ABANDONMENT_THRESHOLD = -5;
 static const auto FALL_INTO_RUINS_THRESHOLD = 5;
 
 static const auto ABANDONMENT_RECOVERY_DC = 17;
+
+static const auto COMPLETE_DISAPPEARENCE_TIME = world::WorldTime::GetTicksFromDays(7);
 
 void PopHandler::Initialize()
 {
@@ -222,7 +225,12 @@ int PopHandler::GetAbandonmentSeverity() const
 
 bool PopHandler::IsSettlementRuins() const
 {
-    return GetPopulation() == 0 && abandonmentSeverity == FALL_INTO_RUINS_THRESHOLD;
+    return IsSettlementAbandoned() && abandonmentSeverity == FALL_INTO_RUINS_THRESHOLD;
+}
+
+bool PopHandler::IsSettlementCompletelyGone() const
+{
+    return IsSettlementRuins() && timeSinceRuined >= COMPLETE_DISAPPEARENCE_TIME;
 }
 
 void PopHandler::IncreasePopulation(Settlement *settlement)
@@ -243,6 +251,9 @@ void PopHandler::KillPopulation()
 
 void PopHandler::CheckAbandonment(Settlement *settlement)
 {
+    if(settlement->IsValid() == false)
+        return;
+
     if(IsSettlementAbandoned() == true)
     {
         timeSinceAbandonment++;
@@ -283,7 +294,16 @@ void PopHandler::CheckAbandonment(Settlement *settlement)
                         abandonmentSeverity = FALL_INTO_RUINS_THRESHOLD;
                     }
                 }
+
+                if(abandonmentSeverity == FALL_INTO_RUINS_THRESHOLD)
+                {
+                    timeSinceRuined = 0;
+                }
             }
+        }
+        else
+        {
+            timeSinceRuined++;
         }
     }
     else

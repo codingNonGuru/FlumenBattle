@@ -450,6 +450,8 @@ namespace world::settlement
 
         bool IsRuins() const;
 
+        bool IsCompletelyGone() const;
+
         int GetAbandonmentSeverity() const;
 
         void PromptWorkReorganizing() {needsToReorganizeWork = true;}

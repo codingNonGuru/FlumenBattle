@@ -25,6 +25,10 @@ namespace world
 
         static constexpr const char *MONTH_LITERALS[12] = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"};
 
+        static constexpr int GetTicksFromDays(int dayCount) {return dayCount * TICKS_PER_HOUR * HOURS_IN_DAY;}
+
+        static constexpr int GetTicksFromHours(int hourCount) {return hourCount * TICKS_PER_HOUR;}
+
         int MinuteCount;
 
         int TotalMinuteCount;
