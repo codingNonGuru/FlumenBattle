@@ -226,3 +226,49 @@ PathSegment * SettlementAllocator::AllocateSegment()
 
     return segment;
 }
+
+void SettlementAllocator::Free(Settlement *settlement)
+{
+    settlement->groupDynamics->adventurers.Terminate(adventurerAllocator);
+
+    settlement->groupDynamics->merchants.Terminate(merchantAllocator);
+
+    settlement->groupDynamics->bandits.Terminate(banditAllocator);
+
+    settlement->groupDynamics->patrols.Terminate(patrolAllocator);
+
+    settlement->groupDynamics->garrisons.Terminate(garrisonAllocator);
+
+    settlement->groupDynamics->raiders.Terminate(raiderAllocator);
+
+    groupDynamics.RemoveAt(settlement->groupDynamics);
+
+    auto &tiles = settlement->GetTiles();
+    tiles.Terminate(tileAllocator);
+
+    settlement->afflictions.Terminate(afflictionAllocator);
+
+    settlement->events.Terminate(eventAllocator);
+
+    productionAllocator.RemoveAt(settlement->currentProduction);
+
+    ConditionAllocator::Free(conditionAllocator, *settlement->conditionManager);
+
+    conditionManagerAllocator.RemoveAt(settlement->conditionManager);
+
+    ModifierAllocator::Free(modifierAllocator, settlement->modifierManager);
+
+    buildingManagerAllocator.RemoveAt(settlement->buildingManager);
+
+    BuildingSetAllocator::Free(buildingAllocator, *settlement->buildingManager);
+
+    settlement->links.Terminate(linkAllocator);
+
+    ResourceAllocator::Free(resourceAllocator, settlement->resourceHandler);
+
+    PopAllocator::Free(needAllocator, settlement->popHandler);
+
+    settlement->finishedExplorations.Terminate(explorationAllocator);
+
+    settlements.RemoveAt(settlement);
+}

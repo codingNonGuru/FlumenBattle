@@ -74,6 +74,7 @@ void Polity::RemoveSettlement(settlement::Settlement *settlement)
 
     settlement->SetPolity(nullptr);
 
+    //Remove interest from interest map of polity
     auto &interests = interestMap.GetTiles();
     for(auto interest = interests.GetStart(); interest != interests.GetEnd(); ++interest)
     {
@@ -83,6 +84,7 @@ void Polity::RemoveSettlement(settlement::Settlement *settlement)
         }
     }
 
+    //Find all the settlements neighbor to settlement that is to be removed that share the same polity
     for(auto &link : settlement->GetLinks())
     {
         auto other = link.Path->GetOther(settlement);
@@ -427,6 +429,19 @@ void Polity::CleanUp()
 
         polity::PolityAllocator::Get()->FreeFaction(this, &faction);   
     }
+
+    for(auto &settlement : settlements)
+    {
+        if(settlement->IsValid() == true)
+            continue;
+
+        UndergoDivision(settlement);
+    }
+
+    if(settlements.GetSize() == 0 && isValid == true)
+    {
+        MarkForDeletion();
+    }
 }
 
 void Polity::MarkForDeletion()
@@ -434,6 +449,8 @@ void Polity::MarkForDeletion()
     isValid = false;
 
     turnsUntilDeletion = 3;
+
+    controller->RegisterMarkForDeletion();
 }
 
 void Polity::RegisterPopIncrease(settlement::Settlement *settlement)

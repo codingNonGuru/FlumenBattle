@@ -598,6 +598,15 @@ void HumanMind::RegisterTileExplored(settlement::Settlement *settlement, WorldTi
     //OnPlayerSettlementTileExplored.Invoke();
 }
 
+void HumanMind::RegisterMarkForDeletion() const 
+{
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+
+    playerGroup->SetDomain(nullptr);
+
+    OnPlayerPolityDeleted.Invoke();
+}
+
 WorldTile *HumanMind::GetLastExploredTile()
 {
     return lastExploredTile;

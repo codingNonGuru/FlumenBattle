@@ -99,5 +99,7 @@ namespace world::group
         bool HasMaximumSettlers() const;
 
         bool HasAnySettlers() const;
+
+        void MarkForDeletion();
     };
 }

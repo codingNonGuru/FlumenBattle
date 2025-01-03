@@ -195,11 +195,19 @@ namespace world::settlement
 
         ImprovementTarget currentImprovement;
 
+        bool isValid;
+
+        int turnsUntilDeletion;
+
         void Initialize(Word, Color, world::WorldTile *, const Race *);
 
         void GrowBorders();
 
     public:
+        bool IsValid() const {return isValid;}
+
+        bool ShouldBeDeleted() const {return isValid == false && turnsUntilDeletion == 0;}
+
         Word GetName() const {return name;}
 
         Color GetBanner() const {return banner;}
@@ -360,7 +368,9 @@ namespace world::settlement
 
         float GetTradeProgress() const {return tradeHandler.GetProgress(*this);}
 
-        void AddPath(Path *path);
+        void AddPath(Path *);
+
+        void RemoveLink(Settlement *);
 
         void UpdateColonialMap();
 
@@ -443,5 +453,7 @@ namespace world::settlement
         int GetAbandonmentSeverity() const;
 
         void PromptWorkReorganizing() {needsToReorganizeWork = true;}
+
+        void MarkForDeletion();
     };
 }

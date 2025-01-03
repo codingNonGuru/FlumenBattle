@@ -497,3 +497,23 @@ bool GroupDynamics::HasAnySettlers() const
 {
     return settlerCount > 0;
 }
+
+void GroupDynamics::MarkForDeletion()
+{
+    const auto groupFamilies = {&adventurers, &merchants, &patrols, &garrisons, &raiders, &bandits};
+
+    for(auto &family : groupFamilies)
+    {
+        for(auto &group : *family)
+        {
+            if(group.Group != nullptr)
+            {
+                group.Group->SetHome(nullptr);
+
+                group.Group->ChangeType(group::GroupClasses::BANDIT);
+            }
+
+            family->RemoveAt(&group);
+        }
+    }   
+}

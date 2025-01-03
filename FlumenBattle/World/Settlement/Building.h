@@ -181,6 +181,11 @@ namespace world::settlement
         {
             manager.buildingSet.buildings.Initialize(allocator);
         }
+
+        static void Free(container::PoolAllocator <Building> &allocator, BuildingManager &manager) 
+        {
+            manager.buildingSet.buildings.Terminate(allocator);
+        }
     };
 
     class BuildingDamager

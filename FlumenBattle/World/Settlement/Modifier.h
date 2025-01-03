@@ -57,5 +57,10 @@ namespace world::settlement
         {
             manager.modifiers.Initialize(allocator);
         }
+
+        static void Free(container::ArrayAllocator <Modifier> &allocator, ModifierManager &manager) 
+        {
+            manager.modifiers.Terminate(allocator);
+        }
     };
 }

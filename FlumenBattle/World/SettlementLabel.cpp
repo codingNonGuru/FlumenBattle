@@ -361,6 +361,13 @@ void SettlementLabel::HandleUpdate()
     if(this->settlement == nullptr)
         return;
 
+    if(this->settlement->IsValid() == false)
+    {
+        this->settlement = nullptr;
+        Disable();
+        return;
+    }
+
     if(IsSettlementHovered() == true)
     {
         auto extension = WorldInterface::Get()->GetHoverExtension();

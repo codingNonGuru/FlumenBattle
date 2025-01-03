@@ -42,6 +42,8 @@ bool Link::operator== (const settlement::Path &path) const
 
 void Settlement::Initialize(Word name, Color banner, world::WorldTile *location, const Race *race)
 {
+    this->isValid = true;
+
     this->location = location;
 
     this->race = race;
@@ -106,6 +108,11 @@ void Settlement::Initialize(Word name, Color banner, world::WorldTile *location,
 void Settlement::AddPath(Path *path) 
 {
     *links.Add() = {path, path->GetOther(this)};
+}
+
+void Settlement::RemoveLink(Settlement *settlement)
+{
+    links.Remove(settlement);
 }
 
 void Settlement::UpdateColonialMap()
@@ -392,13 +399,19 @@ AbundanceLevels Settlement::GetHousingAdequacy() const
 
 Integer Settlement::GetIndustrialProduction() const
 {
-    auto production = GetPopulation();
+    if(IsAbandoned() == true)
+        return 1;
 
-    return production;
+    auto population = GetPopulation();
+
+    return 3 + (population - 1) * 2;
 }
 
 Integer Settlement::GetScienceProduction() const
 {
+    if(IsAbandoned() == true)
+        return 0;
+
     auto production = GetPopulation() >= 10 ? 2 : 1;
     production += GetModifier(Modifiers::SCIENCE_PRODUCTION);
 
@@ -784,6 +797,12 @@ bool Settlement::IsRuins() const
 
 void Settlement::Update()
 {
+    if(isValid == false)
+    {
+        turnsUntilDeletion--;
+        return;
+    }
+
     static const auto &worldTime = world::WorldScene::Get()->GetTime();
 
     popHandler.CheckAbandonment(this);
@@ -891,6 +910,9 @@ void Settlement::Update()
 
 void Settlement::PrepareTransport()
 {
+    if(isValid == false)
+        return;
+
     if(IsAbandoned() == true)
         return;
 
@@ -899,6 +921,9 @@ void Settlement::PrepareTransport()
 
 void Settlement::SendTransport()
 {
+    if(isValid == false)
+        return;
+
     if(IsAbandoned() == true)
         return;
 
@@ -907,6 +932,9 @@ void Settlement::SendTransport()
 
 void Settlement::FinishTradeUpdate()
 {
+    if(isValid == false)
+        return;
+
     tradeHandler.FinishUpdate(*this);
 }
 
@@ -917,6 +945,9 @@ void Settlement::ReceiveTransport(ResourceTypes resource, int amount)
 
 void Settlement::UpdatePolitics()
 {
+    if(isValid == false)
+        return;
+
     if(IsAbandoned() == true)
         return;
 
@@ -1115,6 +1146,15 @@ void Settlement::AddExplorationProgress(int progress)
 
         currentExploration = {nullptr, 0};
     }
+}
+
+void Settlement::MarkForDeletion()
+{
+    isValid = false;
+
+    turnsUntilDeletion = 6;
+
+    groupDynamics->MarkForDeletion();
 }
 
 const ExplorationReward &Settlement::GetLastExplorationReward() const

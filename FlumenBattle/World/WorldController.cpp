@@ -329,6 +329,8 @@ namespace world
             return;
 
         isTravelPlanActive = true;
+
+        WorldScene::Get()->GetPlayerSettlement()->KillPopulation();
     }
 
     void WorldController::HandleTravelReleased()

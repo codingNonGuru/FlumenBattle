@@ -157,6 +157,8 @@ namespace world::settlement
 
         void PreallocateMaximumMemory();
 
+        void Free(Settlement *);
+
     public:
         container::Pool <Settlement> *GetSettlements() {return &settlements;}
 

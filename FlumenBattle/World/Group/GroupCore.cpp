@@ -729,3 +729,8 @@ Word GroupCore::GetLeaderName() const
 
     return world::character::NameGenerator::Get()->FetchName(uniqueId);
 }
+
+void GroupCore::ChangeType(GroupClasses newType)
+{
+    type = GroupTypeFactory::BuildGroupType(newType);
+}

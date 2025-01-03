@@ -86,6 +86,11 @@ namespace world::settlement
         {
             manager.conditionSet.conditions.Initialize(allocator);
         }
+
+        static void Free(container::PoolAllocator <Condition> &allocator, ConditionManager &manager) 
+        {
+            manager.conditionSet.conditions.Terminate(allocator);
+        }
     };
 
     class ConditionFactory : public core::Singleton <ConditionFactory>

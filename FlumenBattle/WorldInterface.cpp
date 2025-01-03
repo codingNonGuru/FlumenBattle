@@ -22,6 +22,7 @@
 #include "FlumenBattle/World/WorldTile.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Polity/Polity.h"
+#include "FlumenBattle/World/Polity/HumanMind.h"
 #include "FlumenBattle/World/Interface/InventoryMenu.h"
 #include "FlumenBattle/World/Interface/ReputationMenu.h"
 #include "FlumenBattle/World/Interface/SettlementMenu.h"
@@ -442,6 +443,8 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
 
     group::HumanMind::Get()->OnSettlementExited += {this, &WorldInterface::HandleSettlementExited};
 
+    polity::HumanMind::Get()->OnPlayerPolityDeleted += {this, &WorldInterface::HandlePlayerPolityDeleted};
+
     WorldScene::Get()->OnPlayerConquest += {this, &WorldInterface::HandlePlayerConquest};
 }
 
@@ -830,6 +833,13 @@ void WorldInterface::HandleSettlementEntered()
 void WorldInterface::HandleSettlementExited()
 {
     settlementMenu->Disable();
+}
+
+void WorldInterface::HandlePlayerPolityDeleted()
+{
+    isInRuleMode = false;
+    
+    ruleMenu->Disable();
 }
 
 void WorldInterface::HandlePlayerConquest()

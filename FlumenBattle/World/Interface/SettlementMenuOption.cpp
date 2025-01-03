@@ -62,9 +62,11 @@ void SettlementMenuOption::Setup(SettlementMenu *newMenu, SettlementMenuOptions 
         break;
     case SettlementMenuOptions::BUY_FOOD:
         priceCounter->Setup("Coin", std::function <int(void)> ([] -> int {
-            auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
+            auto playerSettlement = world::WorldScene::Get()->GetPlayerSettlement();
+            if(playerSettlement == nullptr)
+                return 0;
 
-            return playerGroup->GetCurrentSettlement()->GetResourcePrice(settlement::ResourceTypes::FOOD);
+            return playerSettlement->GetResourcePrice(settlement::ResourceTypes::FOOD);
         }));
         priceCounter->Enable();
 
@@ -72,9 +74,11 @@ void SettlementMenuOption::Setup(SettlementMenu *newMenu, SettlementMenuOptions 
         break;
     case SettlementMenuOptions::BUY_MULE:
         priceCounter->Setup("Coin", std::function <int(void)> ([] -> int {
-            auto playerGroup = world::WorldScene::Get()->GetPlayerGroup();
+            auto playerSettlement = world::WorldScene::Get()->GetPlayerSettlement();
+            if(playerSettlement == nullptr)
+                return 0;
 
-            return playerGroup->GetCurrentSettlement()->GetMulePrice();
+            return playerSettlement->GetMulePrice();
         }));
         priceCounter->Enable();
 

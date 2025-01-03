@@ -12,6 +12,8 @@ static const auto RECOVERY_FROM_ABANDONMENT_THRESHOLD = -5;
 
 static const auto FALL_INTO_RUINS_THRESHOLD = 5;
 
+static const auto ABANDONMENT_RECOVERY_DC = 17;
+
 void PopHandler::Initialize()
 {
     population = 1;
@@ -249,7 +251,7 @@ void PopHandler::CheckAbandonment(Settlement *settlement)
         {
             if(timeSinceAbandonment != 0 && timeSinceAbandonment % 144 == 0)
             {
-                auto savingThrow = utility::RollD20Dice(12);
+                auto savingThrow = utility::RollD20Dice(ABANDONMENT_RECOVERY_DC);
 
                 if(savingThrow.IsCriticalSuccess() == true)
                 {

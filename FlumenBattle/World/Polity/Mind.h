@@ -30,5 +30,7 @@ namespace world::polity
         virtual void RegisterPopIncrease(settlement::Settlement *) const = 0;
 
         virtual void RegisterTileExplored(settlement::Settlement *, WorldTile *) const = 0;
+
+        virtual void RegisterMarkForDeletion() const = 0;
     };
 }

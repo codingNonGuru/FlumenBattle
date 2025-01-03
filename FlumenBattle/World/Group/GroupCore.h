@@ -312,5 +312,7 @@ namespace world::group
         CharacterHandler &GetCharacterHandler() {return characterHandler;}
 
         Word GetLeaderName() const;
+
+        void ChangeType(GroupClasses);
     };
 }

@@ -102,6 +102,8 @@ class WorldInfoPanel : public Element, public core::Singleton<WorldInfoPanel>
 
     void HandleHeroJoinedParty();
 
+    void HandlePlayerPolityDeleted();
+
     void RefreshCharacterList();
 
 public:

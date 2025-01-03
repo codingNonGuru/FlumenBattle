@@ -68,6 +68,9 @@ void TradeHandler::PrepareTransport(Settlement &settlement)
 
         for(auto &link : settlement.GetLinks())
         {
+            if(link.Other->IsValid() == false)
+                continue;
+
             auto otherResource = link.Other->GetResource(ResourceTypes(i));
 
             if(otherResource->ScarcityDegree == 0)

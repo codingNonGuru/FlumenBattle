@@ -275,6 +275,26 @@ namespace world
 
         polity::HumanMind::Get()->ProcessWorldUpdateData();
 
+        for(auto &settlement : *settlements)
+        {
+            if(settlement.IsRuins() == true && settlement.IsValid() == true)
+            {
+                settlement.MarkForDeletion();
+
+                settlement.GetLocation()->RemoveSettlement();
+
+                for(auto &link : settlement.GetLinks())
+                {
+                    link.Other->RemoveLink(&settlement);
+                }
+            }
+
+            if(settlement.ShouldBeDeleted() == true)
+            {
+                settlement::SettlementAllocator::Get()->Free(&settlement);
+            }
+        }
+
         if(time.IsNewDay == true)
         {
             auto earthquakeCount = 10;

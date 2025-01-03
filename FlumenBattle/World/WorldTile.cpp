@@ -5,6 +5,8 @@
 #include "FlumenBattle/World/WorldBiome.h"
 #include "FlumenBattle/World/WorldRelief.h"
 #include "FlumenBattle/World/Settlement/Path.h"
+#include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/WorldScene.h"
 
 using namespace world;
@@ -24,7 +26,7 @@ settlement(nullptr), owner(nullptr), isBorderingOwnedTile(false)
     HexCoordinates.z = squareCoordinates.y;
     HexCoordinates.y = -HexCoordinates.x - HexCoordinates.z;
 
-    isRevealed = false;
+    isRevealed = true;
 }
 
 void WorldTile::Initialize()
@@ -194,6 +196,36 @@ void WorldTile::AssertOwnership(settlement::Settlement *owner)
     }
 
     WorldScene::Get()->UpdateOwnershipChangeQueue(this);
+}
+
+void WorldTile::RemoveSettlement() 
+{
+    for(auto &tile : settlement->GetTiles())
+    {
+        tile.Tile->owner = nullptr;
+
+        WorldScene::Get()->UpdateOwnershipChangeQueue(tile.Tile);
+    }
+
+    for(auto &tile : settlement->GetTiles())
+    {
+        bool hasOwnedNeighbor = false;
+        for(auto &neighbor : tile.Tile->GetNearbyTiles(2).Tiles)
+        {
+            if(neighbor->owner != nullptr)
+            {
+                hasOwnedNeighbor = true;
+                break;
+            }
+        }
+
+        if(hasOwnedNeighbor == false)
+        {
+            tile.Tile->isBorderingOwnedTile = false;
+        }
+    }
+
+    settlement = nullptr;
 }
 
 bool WorldTile::IsLinkedTo(WorldTile *tile) 

@@ -141,6 +141,8 @@ namespace world
 
         void AssertOwnership(settlement::Settlement *);
 
+        void RemoveSettlement();
+
         bool IsOwned() const {return owner != nullptr;}
 
         settlement::Settlement * GetOwner() const {return owner;}

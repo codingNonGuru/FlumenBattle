@@ -229,6 +229,9 @@ namespace world::group
 
     void MachineMind::DetermineActionAsBandit(GroupCore &group) const 
     {
+        if(group.home == nullptr)
+            return;
+
         if(group.GetAction() == nullptr)
         {
             if(group.travelActionData->IsOnRoute)

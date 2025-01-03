@@ -97,6 +97,8 @@ namespace world::polity
 
         Delegate OnImprovementStarted;
 
+        Delegate OnPlayerPolityDeleted;
+
         void ProcessProductionInput(settlement::ProductionOptions, settlement::Settlement *);
 
         void SetResearchTarget(science::Technologies);
@@ -110,6 +112,8 @@ namespace world::polity
         void RegisterPopIncrease(settlement::Settlement *) const override;
 
         void RegisterTileExplored(settlement::Settlement *, WorldTile *) const override;
+
+        void RegisterMarkForDeletion() const override;
 
         const WorldTile *GetSettleTarget(settlement::Settlement *) const;
 

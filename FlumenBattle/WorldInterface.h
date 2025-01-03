@@ -198,6 +198,8 @@ namespace world
 
         void HandleResourceDisplayPressed();
 
+        void HandlePlayerPolityDeleted();
+
         WorldInterface();
 
     public:

@@ -335,6 +335,9 @@ void WorldTileModel::RenderSettlements()
     auto settlements = worldScene->GetSettlements();
     for(auto& settlement : settlements)
     {
+        if(settlement.IsValid() == false)
+            continue;
+
         auto tile = settlement.GetLocation();
 
         shader->SetConstant(tile->Position, "hexPosition");

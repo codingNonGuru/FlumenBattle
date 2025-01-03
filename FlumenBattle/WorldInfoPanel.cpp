@@ -16,6 +16,7 @@
 #include "FlumenBattle/World/Polity/Polity.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
+#include "FlumenBattle/World/Polity/HumanMind.h"
 
 static const auto ANIMATION_NAME = "Flash";
 
@@ -362,6 +363,13 @@ void WorldInfoPanel::HandleConfigure()
     world::WorldScene::Get()->OnSceneEnabled += {this, &WorldInfoPanel::HandlePlayerBecameRuler};
 
     world::group::HumanMind::Get()->OnHeroJoinedParty += {this, &WorldInfoPanel::HandleHeroJoinedParty};
+
+    world::polity::HumanMind::Get()->OnPlayerPolityDeleted += {this, &WorldInfoPanel::HandlePlayerPolityDeleted};
+}
+
+void WorldInfoPanel::HandlePlayerPolityDeleted()
+{
+    playerDomainInfoBox->Disable();
 }
 
 void WorldInfoPanel::HandlePlayerBecameRuler()

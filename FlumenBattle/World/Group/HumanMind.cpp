@@ -328,9 +328,16 @@ void HumanMind::HandleSceneUpdate()
 void HumanMind::UpdateLocationStatus()
 {
     static auto playerGroup = WorldScene::Get()->GetPlayerGroup();
-    if(playerGroup->GetCurrentSettlement() != previousSettlement)
+
+    auto currentSettlement = playerGroup->GetCurrentSettlement();
+    if(currentSettlement != nullptr && currentSettlement->IsValid() == false)
     {
-        if(playerGroup->GetCurrentSettlement() != nullptr)
+        currentSettlement = nullptr;
+    }
+
+    if(currentSettlement != previousSettlement)
+    {
+        if(currentSettlement != nullptr)
         {
             OnSettlementEntered.Invoke();
         }
@@ -340,7 +347,7 @@ void HumanMind::UpdateLocationStatus()
         }
     }
 
-    previousSettlement = playerGroup->GetCurrentSettlement();
+    previousSettlement = currentSettlement;
 }
 
 void HumanMind::UpdateSpottings()
