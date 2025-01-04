@@ -248,7 +248,7 @@ void Settlement::DecideProduction()
 {
     static const ProductionOptions options[] = {
         //ProductionOptions::PATROL, 
-        ProductionOptions::SETTLERS, 
+        //ProductionOptions::SETTLERS, 
         ProductionOptions::GARRISON,
         /*ProductionOptions::IRRIGATION, 
         ProductionOptions::LIBRARY,

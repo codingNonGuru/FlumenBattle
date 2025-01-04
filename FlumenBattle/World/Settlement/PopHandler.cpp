@@ -13,7 +13,7 @@ static const auto RECOVERY_FROM_ABANDONMENT_THRESHOLD = -5;
 
 static const auto FALL_INTO_RUINS_THRESHOLD = 5;
 
-static const auto ABANDONMENT_RECOVERY_DC = 17;
+static const auto ABANDONMENT_RECOVERY_DC = 15;
 
 static const auto COMPLETE_DISAPPEARENCE_TIME = world::WorldTime::GetTicksFromDays(7);
 

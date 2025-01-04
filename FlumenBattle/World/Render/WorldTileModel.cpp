@@ -226,7 +226,7 @@ void WorldTileModel::RenderTiles()
 
 void WorldTileModel::RenderPaths()
 {
-    auto squareShader = ShaderManager::GetShader("Square");
+    static auto squareShader = ShaderManager::GetShader("Square");
     squareShader->Bind();
 
     squareShader->SetConstant(camera->GetMatrix(), "viewMatrix");
@@ -235,7 +235,7 @@ void WorldTileModel::RenderPaths()
 
 	squareShader->SetConstant(0.0f, "depth");
 
-    auto pathSegments = worldScene->pathSegments;
+    static auto pathSegments = worldScene->pathSegments;
     for(auto &segment : *pathSegments)
     {
         auto tile = segment.To;
@@ -1061,7 +1061,7 @@ void WorldTileModel::Render()
 
     RenderSnow();
 
-    //RenderPaths();
+    RenderPaths();
 
     BorderModel::Get()->Render();
 

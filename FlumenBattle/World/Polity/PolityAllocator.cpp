@@ -2,6 +2,7 @@
 #include "FlumenBattle/World/WorldGenerator.h"
 #include "FlumenBattle/World/Polity/Faction.h"
 #include "FlumenBattle/World/Polity/Polity.h"
+#include "FlumenBattle/World/Polity/Neighbor.h"
 #include "FlumenBattle/Config.h"
 
 using namespace world::polity;
@@ -9,6 +10,8 @@ using namespace world::polity;
 #define FACTION_MEMBERS_COUNT 16
 
 #define POLITY_FACTION_COUNT 16
+
+#define NEIGHBORS_PER_POLITY 32
 
 void PolityAllocator::PreallocateMaximumMemory()
 {
@@ -27,6 +30,8 @@ void PolityAllocator::PreallocateMaximumMemory()
     factionMemory = container::PoolAllocator <Faction>::PreallocateMemory(polityCount, POLITY_FACTION_COUNT);
 
     factionSettlementMemory = container::PoolAllocator <settlement::Settlement *>::PreallocateMemory(polityCount * POLITY_FACTION_COUNT, FACTION_MEMBERS_COUNT);
+
+    neighborMemory = container::ArrayAllocator <Neighbor>::PreallocateMemory(polityCount, NEIGHBORS_PER_POLITY);
 }
 
 void PolityAllocator::AllocateWorldMemory(int worldSize)
@@ -44,6 +49,8 @@ void PolityAllocator::AllocateWorldMemory(int worldSize)
     factionAllocator = container::PoolAllocator <Faction> (polityCount, POLITY_FACTION_COUNT, factionMemory);
 
     factionSettlementAllocator = container::PoolAllocator <settlement::Settlement *> (polityCount * POLITY_FACTION_COUNT, FACTION_MEMBERS_COUNT, factionSettlementMemory);
+
+    neighborAllocator = container::ArrayAllocator <Neighbor> (polityCount, NEIGHBORS_PER_POLITY, neighborMemory);
 }
 
 static int availableUniqueId = 0;
@@ -58,6 +65,8 @@ Polity *PolityAllocator::AllocatePolity()
     polity->factions.Initialize(factionAllocator);
 
     polity->settlements.Initialize(politySettlementAllocator);
+
+    NeighborAllocator::Allocate(neighborAllocator, polity->neighborHandler);
 
     return polity;
 }
@@ -81,6 +90,8 @@ void PolityAllocator::FreePolity(Polity *polity)
     polity->factions.Terminate(factionAllocator);
 
     polity->settlements.Terminate(politySettlementAllocator);
+
+    NeighborAllocator::Free(neighborAllocator, polity->neighborHandler);
 
     polities.RemoveAt(polity);
 }

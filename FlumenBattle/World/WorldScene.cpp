@@ -38,6 +38,7 @@
 #include "FlumenBattle/World/WorldUpdateHandler.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
 #include "FlumenBattle/World/Character/NameGenerator.h"
+#include "FlumenBattle/World/Polity/Neighbor.h"
 
 #define AWAIT(length) \
     static float timer = 0.0f;\
@@ -49,6 +50,8 @@
 
 namespace world
 {
+    static auto politiesAffectedByLinkChange = container::Array <polity::Polity *> (256);
+
     WorldScene::WorldScene()
     {}
 
@@ -124,6 +127,8 @@ namespace world
         time++;
 
         WorldUpdateHandler::Get()->ResetAllData();
+
+        politiesAffectedByLinkChange.Reset();
 
         auto refreshBattles = [this] 
         {
@@ -279,21 +284,7 @@ namespace world
         {
             if(settlement.IsCompletelyGone() == true && settlement.IsValid() == true)
             {
-                settlement.MarkForDeletion();
-
-                settlement.GetLocation()->RemoveSettlement();
-
-                for(auto &tile : settlement.GetTiles())
-                {
-                    bool isSettlementCenter = settlement.GetLocation() == tile.Tile;
-
-                    tile.Tile->AddRuin(&settlement, isSettlementCenter);
-                }
-
-                for(auto &link : settlement.GetLinks())
-                {
-                    link.Other->RemoveLink(&settlement);
-                }
+                DestroySettlement(&settlement);
             }
 
             if(settlement.ShouldBeDeleted() == true)
@@ -340,6 +331,37 @@ namespace world
                     SplitPolity(decision.Faction);
                 }
             }
+
+            static auto processedPolities = container::Array <polity::Polity *> (politiesAffectedByLinkChange.GetCapacity());
+
+            processedPolities.Reset();
+
+            for(auto &polity : politiesAffectedByLinkChange)
+            {
+                if(polity->IsValid() == false)
+                    continue;
+
+                if(processedPolities.Find(polity) != nullptr)
+                    continue;
+
+                polity->RecalculateLinks();
+
+                *processedPolities.Add() = polity;
+            }
+
+            for(auto &polity : *polities)
+            {
+                if(polity.IsValid() == false)
+                    continue;
+
+                std::cout<<"Neighbors of "<<polity.GetRuler()->GetName()<<": ";
+                for(auto &neighbor : polity.GetNeighbors())
+                {
+                    std::cout<<neighbor.Polity->GetRuler()->GetName()<<" ";
+                }
+                std::cout<<"\n";
+            }
+            std::cout<<"\n";
 
             for(auto &polity : *polities)
             {
@@ -506,6 +528,8 @@ namespace world
                 playerGroup->SetDomain(otherPolity);
 
                 otherPolity->SetController(true);
+
+                *politiesAffectedByLinkChange.Add() = otherPolity;
             }
             else
             {
@@ -540,13 +564,22 @@ namespace world
         auto timeElapsed = GetTime().GetTickCount() - lastEmergenceDate;
         if(timeElapsed > WorldTime::GetTicksFromDays(DAYS_BETWEEN_EMERGENCE))
         {
-            auto tile = worldMap->GetRandomLandTile();
+            auto settlement = settlements->GetRandom();
+            auto tile = settlement->GetLocation()->GetTileRing(6).Tiles.GetRandom();
+            if((*tile)->HasRelief(WorldReliefs::SEA) == false && (*tile)->IsBorderingOwnedTile() == false)
+            {
+                FoundSettlement(*tile, RaceTypes::GNOME, nullptr);
+
+                lastEmergenceDate = GetTime().GetTickCount();
+            }
+
+            /*auto tile = worldMap->GetRandomLandTile();
             if(tile->IsBorderingOwnedTile() == false)
             {
                 FoundSettlement(tile, RaceTypes::GNOME, nullptr);
 
                 lastEmergenceDate = GetTime().GetTickCount();
-            }
+            }*/
         }
     }
 
@@ -559,7 +592,7 @@ namespace world
         auto polity = mother != nullptr ? mother->GetPolity() : nullptr;
         if(polity == nullptr)
         {
-            FoundPolity(settlement, false);
+            polity = FoundPolity(settlement, false);
         }
         else
         {
@@ -570,6 +603,8 @@ namespace world
         {
             ForgePath(settlement, mother);
         }
+
+        *politiesAffectedByLinkChange.Add() = polity;
 
         auto tiles = location->GetNearbyTiles(MAXIMUM_COLONIZATION_RANGE);
         for(auto &tile : tiles)
@@ -584,7 +619,9 @@ namespace world
             if(settlement->GetPathTo(other) != nullptr)
                 continue;
 
-            ForgePath(settlement, other, MAXIMUM_COLONIZATION_RANGE);                        
+            ForgePath(settlement, other, MAXIMUM_COLONIZATION_RANGE);
+
+            *politiesAffectedByLinkChange.Add() = other->GetPolity();                        
         }
 
         settlement->UpdateColonialMap();
@@ -632,6 +669,29 @@ namespace world
         }
     }
 
+    void WorldScene::DestroySettlement(settlement::Settlement *settlement)
+    {
+        settlement->MarkForDeletion();
+
+        settlement->GetLocation()->RemoveSettlement();
+
+        for(auto &tile : settlement->GetTiles())
+        {
+            bool isSettlementCenter = settlement->GetLocation() == tile.Tile;
+
+            tile.Tile->AddRuin(settlement, isSettlementCenter);
+        }
+
+        *politiesAffectedByLinkChange.Add() = settlement->GetPolity();
+
+        for(auto &link : settlement->GetLinks())
+        {
+            *politiesAffectedByLinkChange.Add() = link.Other->GetPolity();
+
+            link.Other->RemoveLink(settlement);
+        }
+    }
+
     polity::Polity *WorldScene::FoundPolity(settlement::Settlement *ruler, bool isPlayerControlled)
     {
         auto polity = polity::PolityAllocator::Get()->AllocatePolity();
@@ -646,11 +706,15 @@ namespace world
 
         polity->SetRuler(*polity->GetSettlements().GetRandom());
 
+        *politiesAffectedByLinkChange.Add() = polity;
+
         auto &neighbours = polity->GetSecederNeighbours();
         for(auto &neighbour : neighbours)
         {
             neighbour->UpdateDistanceToCapital();
             neighbour->UpdateColonialMap();
+
+            *politiesAffectedByLinkChange.Add() = neighbour->GetPolity();
         }
     }
 
@@ -675,11 +739,15 @@ namespace world
             member->UpdateColonialMap();
         }
 
+        *politiesAffectedByLinkChange.Add() = newPolity;
+
         auto &neighbours = polity->GetSecederNeighbours();
         for(auto &neighbour : neighbours)
         {
             neighbour->UpdateDistanceToCapital();
             neighbour->UpdateColonialMap();
+
+            *politiesAffectedByLinkChange.Add() = neighbour->GetPolity();
         }
 
         polity::PolityAllocator::Get()->FreeFaction(polity, faction);

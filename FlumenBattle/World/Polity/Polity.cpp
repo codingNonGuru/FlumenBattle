@@ -462,3 +462,8 @@ void Polity::RegisterTileExplored(settlement::Settlement *settlement, tile::Worl
 {
     controller->RegisterTileExplored(settlement, tile);
 }
+
+void Polity::RecalculateLinks()
+{
+    neighborHandler.CalculateNeighbors(this);
+}

@@ -13,6 +13,7 @@ namespace world::polity
 {
     class Faction;
     class Polity;
+    struct Neighbor;
 
     class PolityAllocator : public core::Singleton <PolityAllocator>
     {
@@ -24,6 +25,8 @@ namespace world::polity
 
         container::PoolAllocator <Faction>::Memory factionMemory;
 
+        container::ArrayAllocator <Neighbor>::Memory neighborMemory;
+
 
         container::Pool <Polity> polities;
 
@@ -32,6 +35,8 @@ namespace world::polity
         container::PoolAllocator <settlement::Settlement *> factionSettlementAllocator;
 
         container::PoolAllocator <Faction> factionAllocator;
+
+        container::ArrayAllocator <Neighbor> neighborAllocator;
 
     public:
         void AllocateWorldMemory(int);

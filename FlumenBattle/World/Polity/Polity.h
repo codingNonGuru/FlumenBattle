@@ -4,6 +4,7 @@
 #include "FlumenCore/Container/HexGrid.h"
 
 #include "FlumenBattle/World/Science/Types.h"
+#include "FlumenBattle/World/Polity/NeighborHandler.h"
 
 namespace world
 {
@@ -89,6 +90,8 @@ namespace world::polity
 
         container::HexGrid <Interest> interestMap;
 
+        NeighborHandler neighborHandler;
+
         void MapInterest(settlement::Settlement *);
 
         FusionData CheckFactionMergers();
@@ -96,7 +99,9 @@ namespace world::polity
         void MergeFactions(FusionData);
 
     public:
-        int GetUniqueId() {return uniqueId;}
+        bool IsValid() const {return isValid;}
+
+        int GetUniqueId() const {return uniqueId;}
 
         void Initialize(settlement::Settlement *, bool);
 
@@ -161,5 +166,9 @@ namespace world::polity
         void RegisterPopIncrease(settlement::Settlement *);
 
         void RegisterTileExplored(settlement::Settlement *, tile::WorldTile *);
+
+        void RecalculateLinks();
+
+        const container::Array <Neighbor> &GetNeighbors() const {return neighborHandler.neighbors;}
     };
 }
