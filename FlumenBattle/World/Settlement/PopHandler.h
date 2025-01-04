@@ -33,6 +33,8 @@ namespace world::settlement
 
         int population;
 
+        int highestPopulationEver;
+
         int growth;
 
         int growthThreshold {1000};
@@ -71,6 +73,8 @@ namespace world::settlement
         float GetHappinessRatio() const;
 
         int GetPopulation() const;
+
+        int GetHighestPopulationEver() const {return highestPopulationEver;}
 
         int GetGrowth() const {return growth;}
 

@@ -13,11 +13,15 @@
 #include "FlumenBattle/World/SimulationDomain.h"
 #include "FlumenBattle/World/Group/GroupBatchMap.h"
 #include "FlumenBattle/World/Group/GroupBatch.h"
+#include "FlumenBattle/World/Tile/Ruin.h"
+#include "FlumenBattle/World/Tile/RuinHandler.h"
 #include "FlumenBattle/Config.h"
 
 using namespace world;
 
 #define OWNERSHIP_QUEUE_SIZE_FACTOR 16
+
+#define RUINS_PER_TILE 8
 
 WorldAllocator::WorldAllocator()
 {
@@ -40,6 +44,10 @@ WorldAllocator::WorldAllocator()
     groupBatchMemory = container::PoolAllocator <group::GroupCore *>::PreallocateMemory(size * size, GROUPS_PER_BATCH);
 
     ownershipChangeMemory = container::Array <tile::WorldTile *>::PreallocateMemory(size * size / OWNERSHIP_QUEUE_SIZE_FACTOR);
+
+    ruinMemory = container::ArrayAllocator <tile::Ruin>::PreallocateMemory(size * size, RUINS_PER_TILE);
+
+    ruinHandlerMemory = container::Array <tile::RuinHandler>::PreallocateMemory(size * size);
 
     polity::PolityAllocator::Get()->PreallocateMaximumMemory();
 
@@ -75,6 +83,10 @@ void WorldAllocator::AllocateMap(tile::WorldMap &map, int size)
     {
         group::GroupBatchAllocator::AllocateBatch(*batch, groupBatchAllocator);
     }
+
+    ruinHandlerAllocator.Initialize(size * size, ruinHandlerMemory);
+
+    ruinAllocator = container::ArrayAllocator <tile::Ruin> (size * size, RUINS_PER_TILE, ruinMemory);
 }
 
 void WorldAllocator::AllocateSociety(int worldSize)
@@ -86,4 +98,13 @@ void WorldAllocator::AllocateSociety(int worldSize)
     world::group::GroupAllocator::Get()->AllocateWorldMemory(worldSize);
 
     world::character::CharacterAllocator::Get()->AllocateWorldMemory(worldSize);
+}
+
+tile::RuinHandler *WorldAllocator::AllocateRuinHandler()
+{
+    auto handler = ruinHandlerAllocator.Add();
+
+    tile::RuinAllocator::Allocate(ruinAllocator, *handler);
+
+    return handler;
 }

@@ -119,6 +119,10 @@ namespace world::settlement
 
         friend class polity::HumanMind;
 
+        bool isValid;
+
+        int foundationDate;
+
         Word name;
 
         Color banner;
@@ -195,8 +199,6 @@ namespace world::settlement
 
         ImprovementTarget currentImprovement;
 
-        bool isValid;
-
         int turnsUntilDeletion;
 
         void Initialize(Word, Color, tile::WorldTile *, const Race *);
@@ -207,6 +209,8 @@ namespace world::settlement
         bool IsValid() const {return isValid;}
 
         bool ShouldBeDeleted() const {return isValid == false && turnsUntilDeletion == 0;}
+
+        int GetFoundationDate() const {return foundationDate;}
 
         Word GetName() const {return name;}
 
@@ -453,6 +457,8 @@ namespace world::settlement
         bool IsCompletelyGone() const;
 
         int GetAbandonmentSeverity() const;
+
+        int GetHighestPopulationEver() const;
 
         void PromptWorkReorganizing() {needsToReorganizeWork = true;}
 

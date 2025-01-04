@@ -44,6 +44,8 @@ void Settlement::Initialize(Word name, Color banner, tile::WorldTile *location, 
 {
     this->isValid = true;
 
+    this->foundationDate = WorldScene::Get()->GetTime().GetTickCount();
+
     this->location = location;
 
     this->race = race;
@@ -788,6 +790,11 @@ bool Settlement::IsAbandoned() const
 int Settlement::GetAbandonmentSeverity() const
 {
     return popHandler.GetAbandonmentSeverity();
+}
+
+int Settlement::GetHighestPopulationEver() const 
+{
+    return popHandler.GetHighestPopulationEver();
 }
 
 bool Settlement::IsRuins() const

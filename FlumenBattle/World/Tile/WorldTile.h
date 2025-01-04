@@ -31,6 +31,7 @@ namespace world::tile
     class WorldMap;
     struct WorldRelief;
     struct WorldBiome;
+    class RuinHandler;
 
     struct WorldTile
     {
@@ -59,6 +60,8 @@ namespace world::tile
         bool isRevealed;
 
         container::SmartBlock <settlement::PathSegment *, 6> links;
+
+        RuinHandler *ruinHandler;
 
         //int pathData;
 
@@ -180,6 +183,10 @@ namespace world::tile
         void RevealTile() {isRevealed = true;}
 
         bool IsRevealed() const {return isRevealed;}
+
+        void AddRuin(settlement::Settlement *, bool);
+
+        int GetRuinCount() const;
 
         static float GetSeasonalTemperatureSwing();
 

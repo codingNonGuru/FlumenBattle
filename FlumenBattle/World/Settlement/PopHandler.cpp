@@ -21,6 +21,8 @@ void PopHandler::Initialize()
 {
     population = 1;
 
+    highestPopulationEver = population;
+
     timeSinceAbandonment = 0;
 
     abandonmentSeverity = 0;
@@ -236,6 +238,11 @@ bool PopHandler::IsSettlementCompletelyGone() const
 void PopHandler::IncreasePopulation(Settlement *settlement)
 {
     population++;
+
+    if(population > highestPopulationEver)
+    {
+        highestPopulationEver = population;
+    }
 
     settlement->GetPolity()->RegisterPopIncrease(settlement);
 }

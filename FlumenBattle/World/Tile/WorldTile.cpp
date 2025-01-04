@@ -8,6 +8,8 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/WorldAllocator.h"
+#include "FlumenBattle/World/Tile/RuinHandler.h"
 
 using namespace world::tile;
 
@@ -27,6 +29,8 @@ settlement(nullptr), owner(nullptr), isBorderingOwnedTile(false)
     HexCoordinates.y = -HexCoordinates.x - HexCoordinates.z;
 
     isRevealed = true;
+
+    ruinHandler = nullptr;
 }
 
 void WorldTile::Initialize()
@@ -255,6 +259,28 @@ world::settlement::PathSegment * WorldTile::GetLinkTo(WorldTile *tile)
     }
     
     return nullptr;
+}
+
+void WorldTile::AddRuin(settlement::Settlement *settlement, bool isSettlementCenter)
+{
+    if(ruinHandler == nullptr)
+    {
+        ruinHandler = WorldAllocator::Get()->AllocateRuinHandler();
+    }
+
+    ruinHandler->Add(settlement, isSettlementCenter);
+}
+
+int WorldTile::GetRuinCount() const
+{
+    if(ruinHandler == nullptr)
+    {
+        return 0;
+    }
+    else
+    {
+        return ruinHandler->GetCount();
+    }
 }
 
 int WorldTile::GetSeasonalTemperature() const

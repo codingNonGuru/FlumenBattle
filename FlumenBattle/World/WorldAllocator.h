@@ -10,8 +10,14 @@
 namespace world
 {
     class WorldScene;
-    namespace tile {struct WorldTile;}
-    namespace tile {class WorldMap;}
+    namespace tile 
+    {
+        struct WorldTile;
+        class WorldMap;
+        class Ruin;
+        class RuinHandler;
+    }
+
     class Polity;
     struct SimulationDomain;
 
@@ -50,8 +56,16 @@ namespace world
 
         container::Array <tile::WorldTile *>::Memory ownershipChangeMemory;
 
+        container::ArrayAllocator <tile::Ruin>::Memory ruinMemory;
+
+        container::Array <tile::RuinHandler>::Memory ruinHandlerMemory;
+
 
         container::PoolAllocator <group::GroupCore *> groupBatchAllocator;
+
+        container::ArrayAllocator <tile::Ruin> ruinAllocator;
+
+        container::Array <tile::RuinHandler> ruinHandlerAllocator;
 
         void AllocateMap(tile::WorldMap &/*, container::SmartBlock< container::Array <WorldTilePointer>, 4> &*/, int);
 
@@ -59,5 +73,7 @@ namespace world
 
     public:
         WorldAllocator();
+
+        tile::RuinHandler *AllocateRuinHandler();
     };
 }

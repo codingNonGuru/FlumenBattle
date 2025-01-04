@@ -283,6 +283,13 @@ namespace world
 
                 settlement.GetLocation()->RemoveSettlement();
 
+                for(auto &tile : settlement.GetTiles())
+                {
+                    bool isSettlementCenter = settlement.GetLocation() == tile.Tile;
+
+                    tile.Tile->AddRuin(&settlement, isSettlementCenter);
+                }
+
                 for(auto &link : settlement.GetLinks())
                 {
                     link.Other->RemoveLink(&settlement);
