@@ -46,9 +46,14 @@ void PolityAllocator::AllocateWorldMemory(int worldSize)
     factionSettlementAllocator = container::PoolAllocator <settlement::Settlement *> (polityCount * POLITY_FACTION_COUNT, FACTION_MEMBERS_COUNT, factionSettlementMemory);
 }
 
+static int availableUniqueId = 0;
+
 Polity *PolityAllocator::AllocatePolity()
 {
     auto polity = polities.Add();
+
+    polity->uniqueId = availableUniqueId;
+    availableUniqueId++;
 
     polity->factions.Initialize(factionAllocator);
 

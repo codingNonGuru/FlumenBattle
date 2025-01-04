@@ -6,6 +6,8 @@ namespace world::tile
 {
     struct Ruin
     {
+        Word Name;
+
         int FoundationDate;
 
         int ExtinctionDate;
@@ -15,5 +17,7 @@ namespace world::tile
         RaceTypes DominantRace;
 
         bool IsSettlementCenter;
+
+        int RulerUniqueId;
     };
 }

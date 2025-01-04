@@ -73,6 +73,8 @@ namespace world::polity
 
         int turnsUntilDeletion;
 
+        int uniqueId;
+
         Mind* controller;
 
         Pool <settlement::Settlement *> settlements;
@@ -94,6 +96,8 @@ namespace world::polity
         void MergeFactions(FusionData);
 
     public:
+        int GetUniqueId() {return uniqueId;}
+
         void Initialize(settlement::Settlement *, bool);
 
         void ExtendRealm(settlement::Settlement *);

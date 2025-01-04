@@ -46,8 +46,7 @@ void ExplorationMenu::HandleConfigure()
         },
         {
             {"Medium"}, 
-            TEXT_COLOR, 
-            ""
+            TEXT_COLOR
         }
     );
     reliefLabel->Enable();
@@ -59,9 +58,8 @@ void ExplorationMenu::HandleConfigure()
             {ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, reliefLabel}
         },
         {
-            {"Small"}, 
-            TEXT_COLOR, 
-            ""
+            {"VerySmall"}, 
+            TEXT_COLOR
         }
     );
     ownerLabel->Enable();
@@ -127,6 +125,19 @@ void ExplorationMenu::HandleUpdate()
         else 
             return LongWord() << "Belongs to " << playerLocation->GetOwner()->GetName();  
     } ();
+
+    if(playerLocation->GetRuinCount() == 0)
+    {
+        string << ", has no ruins";
+    }
+    else if(playerLocation->GetRuinCount() == 1)
+    {
+        string << ", has ruins";
+    }
+    else
+    {
+        string << ", has" << playerLocation->GetRuinCount() << "ruins";
+    }
 
     ownerLabel->Setup(string);
 }
