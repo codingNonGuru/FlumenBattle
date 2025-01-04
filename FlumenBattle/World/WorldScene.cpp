@@ -302,6 +302,8 @@ namespace world
             }
         }
 
+        CheckSettlementEmergence();
+
         if(time.IsNewDay == true)
         {
             auto earthquakeCount = 10;
@@ -527,6 +529,25 @@ namespace world
         }
 
         OnPlayerConquest.Invoke();
+    }
+
+    void WorldScene::CheckSettlementEmergence()
+    {
+        static auto lastEmergenceDate = GetTime().GetTickCount();
+
+        static const auto DAYS_BETWEEN_EMERGENCE = 3;
+
+        auto timeElapsed = GetTime().GetTickCount() - lastEmergenceDate;
+        if(timeElapsed > WorldTime::GetTicksFromDays(DAYS_BETWEEN_EMERGENCE))
+        {
+            auto tile = worldMap->GetRandomLandTile();
+            if(tile->IsBorderingOwnedTile() == false)
+            {
+                FoundSettlement(tile, RaceTypes::GNOME, nullptr);
+
+                lastEmergenceDate = GetTime().GetTickCount();
+            }
+        }
     }
 
     static settlement::Settlement *foundedSettlement = nullptr;

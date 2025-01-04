@@ -99,6 +99,8 @@ namespace world
 
         void SlowDownTime();
 
+        void CheckSettlementEmergence();
+
         void HandleBattleRoundEnded();
 
     public:
