@@ -1,9 +1,9 @@
 #include "TileImprovement.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 
 using namespace world::settlement;
 
-int TileImprovementType::GetBonus(ResourceTypes resource, WorldTile *tile) const
+int TileImprovementType::GetBonus(ResourceTypes resource, tile::WorldTile *tile) const
 {
     if(Resource != resource)
         return 0;

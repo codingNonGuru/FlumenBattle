@@ -6,7 +6,7 @@ class ProgressBar;
 
 namespace world
 {
-    class WorldTile;
+    namespace tile {struct WorldTile;}
 
     namespace settlement
     {

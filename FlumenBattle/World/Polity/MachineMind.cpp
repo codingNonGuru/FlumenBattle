@@ -3,8 +3,8 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
-#include "FlumenBattle/World/WorldTile.h"
-#include "FlumenBattle/World/WorldBiome.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldBiome.h"
 #include "FlumenBattle/World/Science/Technology.h"
 
 using namespace world::polity;
@@ -155,11 +155,11 @@ void MachineMind::GrowBorders(settlement::Settlement *settlement)
 
     //mutex.lock();
 
-    auto findNewTileInRing = [&] (int distance) -> WorldTile *
+    auto findNewTileInRing = [&] (int distance) -> tile::WorldTile *
     {
         auto tileRing = settlement->location->GetTileRing(distance);
 
-        auto findNewTile = [this, &tileRing] (world::WorldBiomes biomeType) -> WorldTile *
+        auto findNewTile = [this, &tileRing] (world::WorldBiomes biomeType) -> tile::WorldTile *
         {
             for(auto &tile : tileRing)
             {

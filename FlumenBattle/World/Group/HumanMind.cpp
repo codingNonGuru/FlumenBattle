@@ -5,7 +5,7 @@
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldController.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/GroupActionFactory.h"
 #include "FlumenBattle/World/Group/GroupCore.h"
@@ -54,7 +54,7 @@ GroupActionResult selectedActionResult;
 
 GroupActionResult performedActionResult;
 
-utility::PathData <world::WorldTile> extendedPath;
+utility::PathData <world::tile::WorldTile> extendedPath;
 
 int extendedPathIndex = 0;
 
@@ -668,9 +668,9 @@ void HumanMind::PursueSighting(const GroupSpotting &spotting)
     WorldScene::Get()->InitiateEncounter(playerGroup, group);
 }
 
-const utility::PathData <world::WorldTile> HumanMind::GetFullPathData()
+const utility::PathData <world::tile::WorldTile> HumanMind::GetFullPathData()
 {
-    utility::PathData <world::WorldTile> pathData;
+    utility::PathData <world::tile::WorldTile> pathData;
 
     auto playerGroup = WorldScene::Get()->GetPlayerGroup();
 
@@ -690,7 +690,7 @@ const utility::PathData <world::WorldTile> HumanMind::GetFullPathData()
     return pathData;
 }
 
-world::WorldTile *HumanMind::GetFinalDestination() const
+world::tile::WorldTile *HumanMind::GetFinalDestination() const
 {
     if(extendedPath.Tiles.GetSize() == 0)
     {

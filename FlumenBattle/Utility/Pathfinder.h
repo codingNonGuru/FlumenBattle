@@ -7,7 +7,7 @@
 #include "FlumenCore/Container/HexGrid.h"
 #include "FlumenCore/Container/Graph.h"
 
-#include "FlumenBattle/World/WorldMap.h"
+#include "FlumenBattle/World/Tile/WorldMap.h"
 #include "FlumenBattle/Utility/Types.h"
 
 using namespace std::chrono;

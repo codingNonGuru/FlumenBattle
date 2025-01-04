@@ -1,4 +1,4 @@
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/Battle/BattleTile.h"
 #include "Pathfinder.h"
 #include "FlumenBattle/World/WorldScene.h"
@@ -8,9 +8,9 @@ using namespace utility;
 template <class TileType>
 PathData <TileType>::PathData(GenericPathData *genericPathData)
 {
-    if constexpr(std::same_as <TileType, world::WorldTile>)
+    if constexpr(std::same_as <TileType, world::tile::WorldTile>)
     {
-        auto pathData = static_cast <utility::PathfindResult <world::WorldTile> *> (genericPathData);
+        auto pathData = static_cast <utility::PathfindResult <world::tile::WorldTile> *> (genericPathData);
         for(auto &tile : pathData->Tiles)
         {
             *Tiles.Add() = tile.Tile;
@@ -34,7 +34,7 @@ PathData <TileType>::PathData(GenericPathData *genericPathData)
     }
 }
 
-template class utility::PathData <world::WorldTile>;
+template class utility::PathData <world::tile::WorldTile>;
 template class utility::PathData <battle::BattleTile>;
 
 template <class TileType> requires CanBeTravelled <TileType>
@@ -54,5 +54,5 @@ Pathfinder <TileType>::Pathfinder()
     }
 }
 
-template class utility::Pathfinder <world::WorldTile>;
+template class utility::Pathfinder <world::tile::WorldTile>;
 template class utility::Pathfinder <battle::BattleTile>;

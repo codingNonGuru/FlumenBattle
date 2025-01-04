@@ -5,7 +5,7 @@
 #include "GeneratedWorldMenu.h"
 #include "FlumenBattle/PreGame/PreGameState.h"
 #include "FlumenBattle/World/WorldScene.h"
-#include "FlumenBattle/World/WorldMap.h"
+#include "FlumenBattle/World/Tile/WorldMap.h"
 #include "FlumenBattle/World/WorldGenerator.h"
 
 using namespace pregame;

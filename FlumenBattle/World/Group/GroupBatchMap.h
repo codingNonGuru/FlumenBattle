@@ -7,7 +7,7 @@
 namespace world
 {
     class WorldAllocator;
-    class WorldTile;
+    namespace tile {struct WorldTile;}
 }
 
 namespace world::group
@@ -39,12 +39,12 @@ namespace world::group
         container::Grid <GroupBatch> batches;
 
     public:
-        GroupBatch *GetBatch(world::WorldTile *);
+        GroupBatch *GetBatch(tile::WorldTile *);
 
         const container::Grid <GroupBatch> &GetBatches() const {return batches;}
 
-        const GroupBuffer GetNearbyGroups(WorldTile *, int = 1) const;
+        const GroupBuffer GetNearbyGroups(tile::WorldTile *, int = 1) const;
 
-        const GroupBuffer GetGroupsInTile(WorldTile *) const;
+        const GroupBuffer GetGroupsInTile(tile::WorldTile *) const;
     };
 }

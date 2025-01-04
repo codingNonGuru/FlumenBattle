@@ -9,9 +9,9 @@
 
 #include "FlumenEngine/Thread/ThreadManager.h"
 
-#include "FlumenBattle/World/TileBuffer.h"
+#include "FlumenBattle/World/Tile/TileBuffer.h"
 
-namespace world
+namespace world::tile
 {
     template <typename TileType>
     class TileBufferManager : public core::Singleton <TileBufferManager <TileType>>

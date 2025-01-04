@@ -12,7 +12,7 @@ namespace battle
 
 namespace world
 {
-    class WorldMap;
+    namespace tile {class WorldMap;}
 }
 
 namespace battle
@@ -21,7 +21,7 @@ namespace battle
     {
         friend class BattleMap;
 
-        friend class world::WorldMap;
+        friend class world::tile::WorldMap;
 
     private:
         BattleMap* Map;

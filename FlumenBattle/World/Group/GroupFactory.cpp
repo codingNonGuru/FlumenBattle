@@ -9,7 +9,7 @@
 #include "FlumenBattle/World/Group/CharacterEssence.h"
 #include "FlumenBattle/World/Group/GroupAllocator.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/Character/CharacterFactory.h"
 #include "FlumenBattle/RaceFactory.h"
 #include "FlumenBattle/World/Character/ClassFactory.h"

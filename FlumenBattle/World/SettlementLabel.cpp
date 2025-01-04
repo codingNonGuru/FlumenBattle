@@ -12,7 +12,7 @@
 #include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/Settlement/Path.h"
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/Settlement/Affliction.h"
 #include "FlumenBattle/World/Settlement/Condition.h"
 #include "FlumenBattle/World/Settlement/Building.h"

@@ -9,7 +9,7 @@
 
 namespace world
 {
-    struct WorldTile;
+    namespace tile {struct WorldTile;}
 
     namespace settlement
     {

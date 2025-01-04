@@ -8,7 +8,7 @@
 #include "FlumenBattle/World/Polity/HumanMind.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/WorldScene.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 
 using namespace world::interface;
 

@@ -5,7 +5,7 @@
 #include "TileResourceInfo.h"
 #include "FlumenBattle/World/Settlement/Resource.h"
 #include "FlumenBattle/Types.hpp"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/Interface/Counter.h"
 #include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/World/WorldScene.h"
@@ -102,7 +102,7 @@ void TileResourceInfo::HandleUpdate()
     tilePosition = tile->Position;
 }
 
-void TileResourceInfo::Setup(WorldTile *tile)
+void TileResourceInfo::Setup(tile::WorldTile *tile)
 {
     this->tile = tile;
 

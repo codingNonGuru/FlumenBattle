@@ -9,7 +9,7 @@
 
 namespace world
 {
-    struct WorldTile;
+    namespace tile {struct WorldTile;}
 
     namespace settlement
     {
@@ -60,9 +60,9 @@ namespace world::group
 
     struct TravelActionData
     {
-        WorldTile *Source {nullptr};
+        tile::WorldTile *Source {nullptr};
 
-        WorldTile *Destination {nullptr};
+        tile::WorldTile *Destination {nullptr};
 
         Integer Progress {0};
 
@@ -72,7 +72,7 @@ namespace world::group
 
         bool IsLost {false};
 
-        WorldTile *Route[TILES_PER_GROUP_ROUTE];
+        tile::WorldTile *Route[TILES_PER_GROUP_ROUTE];
 
         bool IsOnRoute {false};
 
@@ -102,14 +102,14 @@ namespace world::group
             friend class GroupCore;
 
         private:
-            WorldTile *Tile;
+            tile::WorldTile *Tile;
 
-            GroupLocation &operator =(WorldTile *tile) {Tile = tile;}
+            GroupLocation &operator =(tile::WorldTile *tile) {Tile = tile;}
 
         public:
-            operator WorldTile *() {return Tile;}
+            operator tile::WorldTile *() {return Tile;}
 
-            WorldTile *operator ->() {return Tile;}
+            tile::WorldTile *operator ->() {return Tile;}
         };
 
         bool isAlive;
@@ -128,7 +128,7 @@ namespace world::group
 
         settlement::Settlement *home;
 
-        WorldTile *tile;
+        tile::WorldTile *tile;
 
         Encounter *encounter;
 
@@ -173,7 +173,7 @@ namespace world::group
 
         Encounter *GetEncounter() const {return encounter;}
 
-        WorldTile *GetTile() const {return tile;}
+        tile::WorldTile *GetTile() const {return tile;}
 
         settlement::Settlement *GetHome() const {return home;}
 
@@ -209,11 +209,11 @@ namespace world::group
 
         int GetCarriedWeight() const;
 
-        WorldTile *GetDestination() const {return travelActionData->Destination;}
+        tile::WorldTile *GetDestination() const {return travelActionData->Destination;}
 
-        WorldTile *GetFinalDestination() const;
+        tile::WorldTile *GetFinalDestination() const;
 
-        WorldTile *GetTravelStartPoint() const {return travelActionData->Source;}
+        tile::WorldTile *GetTravelStartPoint() const {return travelActionData->Source;}
 
         float GetTravelProgress() const;
 
@@ -249,7 +249,7 @@ namespace world::group
 
         void RemoveItemAmount(character::ItemTypes, int);
 
-        void SetTile(WorldTile *tile);
+        void SetTile(tile::WorldTile *tile);
 
         void SetHome(settlement::Settlement *newHome) {home = newHome;}
 

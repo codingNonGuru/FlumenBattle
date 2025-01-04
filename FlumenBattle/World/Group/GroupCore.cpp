@@ -5,7 +5,7 @@
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/World/Character/ClassFactory.h"
 #include "FlumenBattle/World/Character/CharacterClass.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/GroupBatch.h"
 #include "FlumenBattle/World/Group/GroupType.h"
@@ -179,7 +179,7 @@ world::character::Character *GroupCore::GetLeader() const
     return extraData->GetLeader();
 }
 
-world::WorldTile *GroupCore::GetFinalDestination() const
+world::tile::WorldTile *GroupCore::GetFinalDestination() const
 {
     return travelActionData->IsOnRoute == true ? travelActionData->Route[travelActionData->PlannedDestinationCount - 1] : nullptr;
 }
@@ -475,7 +475,7 @@ void GroupCore::RemoveItemAmount(character::ItemTypes type, int amount)
     itemValue -= character::ItemFactory::Get()->CreateType(type)->Value * amount;
 }
 
-void GroupCore::SetTile(WorldTile *newTile)
+void GroupCore::SetTile(tile::WorldTile *newTile)
 {
     if(this->tile == newTile)
         return;

@@ -1,6 +1,6 @@
 #include "GroupBatchMap.h"
 #include "FlumenBattle/World/Group/GroupBatch.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/Config.h"
 #include "FlumenBattle/World/Group/GroupCore.h"
 
@@ -12,7 +12,7 @@ static const auto GROUP_BUFFERS_PER_BATCH_MAP = 4;
 
 static auto buffers = container::Pool <GroupBuffer> (GROUP_BUFFERS_PER_BATCH_MAP);
 
-GroupBatch *GroupBatchMap::GetBatch(world::WorldTile *tile)
+GroupBatch *GroupBatchMap::GetBatch(tile::WorldTile *tile)
 {
     static const auto GROUP_BATCH_TILE_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_BATCH_TILE_SIZE).Integer;
 
@@ -27,7 +27,7 @@ GroupBatch *GroupBatchMap::GetBatch(world::WorldTile *tile)
     return batches.Get(x, y);
 }
 
-const GroupBuffer GroupBatchMap::GetNearbyGroups(WorldTile *tile, int maximumGroupDistance) const
+const GroupBuffer GroupBatchMap::GetNearbyGroups(tile::WorldTile *tile, int maximumGroupDistance) const
 {
     static const auto GROUP_BATCH_TILE_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_BATCH_TILE_SIZE).Integer;
 
@@ -64,7 +64,7 @@ const GroupBuffer GroupBatchMap::GetNearbyGroups(WorldTile *tile, int maximumGro
     return std::move(*newBuffer);
 }
 
-const GroupBuffer GroupBatchMap::GetGroupsInTile(WorldTile *tile) const
+const GroupBuffer GroupBatchMap::GetGroupsInTile(tile::WorldTile *tile) const
 {
     static const auto GROUP_BATCH_TILE_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::GROUP_BATCH_TILE_SIZE).Integer;
 

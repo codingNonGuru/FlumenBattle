@@ -8,7 +8,7 @@
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Group/GroupCore.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/Config.h"
 #include "FlumenBattle/World/Interface/SpottingItem.h"

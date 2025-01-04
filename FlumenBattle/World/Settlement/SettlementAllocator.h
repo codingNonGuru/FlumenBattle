@@ -7,7 +7,7 @@
 
 namespace world
 {
-    class WorldTile;
+    namespace tile {struct WorldTile;}
     class WorldScene;
     class WorldAllocator;
     namespace group

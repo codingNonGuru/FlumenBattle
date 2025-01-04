@@ -1,15 +1,15 @@
 #include "FlumenEngine/Utility/Color.hpp"
 
-#include "FlumenBattle/World/WorldTile.h"
-#include "FlumenBattle/World/WorldMap.h"
-#include "FlumenBattle/World/WorldBiome.h"
-#include "FlumenBattle/World/WorldRelief.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldMap.h"
+#include "FlumenBattle/World/Tile/WorldBiome.h"
+#include "FlumenBattle/World/Tile/WorldRelief.h"
 #include "FlumenBattle/World/Settlement/Path.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/WorldScene.h"
 
-using namespace world;
+using namespace world::tile;
 
 static constexpr auto VARIATION_FACTOR = 0.07f;
 
@@ -246,7 +246,7 @@ void WorldTile::AddLink(WorldTile *tile, settlement::PathSegment *segment)
     *links.Add() = segment;
 }
 
-settlement::PathSegment * WorldTile::GetLinkTo(WorldTile *tile)
+world::settlement::PathSegment * WorldTile::GetLinkTo(WorldTile *tile)
 {
     for(auto iterator = links.GetFirst(); iterator != links.GetLast(); ++iterator)
     {

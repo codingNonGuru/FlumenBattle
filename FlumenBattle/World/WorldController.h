@@ -16,7 +16,7 @@ namespace world
         class Encounter;
     }
     
-    class WorldTile;
+    namespace tile {struct WorldTile;}
     class WorldInterface;
 
     class WorldController : public core::Singleton <WorldController>
@@ -25,7 +25,7 @@ namespace world
 
         friend class WorldInterface;
 
-        WorldTile *hoveredTile;
+        tile::WorldTile *hoveredTile;
 
         bool isGrabbingScreen {false};
 
@@ -169,7 +169,7 @@ namespace world
 
         void Disable();
 
-        WorldTile * GetHoveredTile() const {return hoveredTile;}
+        tile::WorldTile * GetHoveredTile() const {return hoveredTile;}
 
         group::Encounter * GetPlayerBattle() const;
 
@@ -225,7 +225,7 @@ namespace world
 
         bool IsTileDevelopModeActive() const {return isTileDevelopModeActive;}
 
-        utility::PathData <WorldTile> GetPlannedPath() const;
+        utility::PathData <tile::WorldTile> GetPlannedPath() const;
 
         void CancelActiveModes();
     };

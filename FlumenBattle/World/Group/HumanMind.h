@@ -8,7 +8,7 @@
 
 namespace world
 {
-    class WorldTile;
+    namespace tile {struct WorldTile;}
 
     namespace character
     {
@@ -145,9 +145,9 @@ namespace world::group
 
         const GroupActionResult & GetPerformedActionResult();
 
-        const utility::PathData <WorldTile> GetFullPathData();
+        const utility::PathData <tile::WorldTile> GetFullPathData();
 
-        world::WorldTile *GetFinalDestination() const;
+        tile::WorldTile *GetFinalDestination() const;
 
         bool IsSellModeActive() const {return isSellModeActive;}
 

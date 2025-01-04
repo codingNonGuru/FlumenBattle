@@ -7,8 +7,8 @@
 
 #include "FlumenBattle/WorldDecisionMenu.h"
 #include "FlumenBattle/World/WorldScene.h"
-#include "FlumenBattle/World/WorldTile.h"
-#include "FlumenBattle/World/WorldBiome.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldBiome.h"
 #include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/HumanMind.h"

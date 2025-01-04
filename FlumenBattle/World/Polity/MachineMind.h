@@ -6,7 +6,7 @@
 
 namespace world
 {
-    class WorldTile;
+    namespace tile {struct WorldTile;}
 }
 
 namespace world::settlement
@@ -30,7 +30,7 @@ namespace world::polity
 
         void RegisterPopIncrease(settlement::Settlement *) const override {}
 
-        void RegisterTileExplored(settlement::Settlement *, WorldTile *) const override {}
+        void RegisterTileExplored(settlement::Settlement *, tile::WorldTile *) const override {}
 
         void RegisterMarkForDeletion() const override {}
 

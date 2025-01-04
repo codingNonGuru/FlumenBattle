@@ -4,7 +4,7 @@
 #include "GroupCore.h"
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/World/Character/CharacterClass.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Group/GroupBatch.h"
 #include "FlumenBattle/World/Group/GroupType.h"

@@ -13,7 +13,7 @@
 #include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/WorldInterface.h"
 #include "FlumenBattle/World/WorldController.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/Science/Technology.h"
 #include "FlumenBattle/World/Polity/WorkInstruction.h"
 #include "FlumenBattle/World/Settlement/Building.h"
@@ -51,7 +51,7 @@ struct SettleTarget
 {
     settlement::Settlement *Settlement;
 
-    WorldTile *Tile;
+    tile::WorldTile *Tile;
 
     bool operator== (const SettleTarget &other) {return Settlement == other.Settlement && Tile == other.Tile;}
 
@@ -567,7 +567,7 @@ const container::Pool <WorkInstruction> *HumanMind::GetSettlementInstructions() 
     }
 }
 
-const WorldTile *HumanMind::GetSettleTarget(settlement::Settlement *settlement) const
+const tile::WorldTile *HumanMind::GetSettleTarget(settlement::Settlement *settlement) const
 {
     auto target = settleTargets.Find(settlement);
     if(target == nullptr)
@@ -584,11 +584,11 @@ void HumanMind::RegisterPopIncrease(settlement::Settlement *settlement) const
     OnPlayerSettlementPopIncrease.Invoke();
 }
 
-WorldTile *lastExploredTile = nullptr;
+tile::WorldTile *lastExploredTile = nullptr;
 
 settlement::Settlement *lastExplorerSettlement = nullptr;
 
-void HumanMind::RegisterTileExplored(settlement::Settlement *settlement, WorldTile *tile) const
+void HumanMind::RegisterTileExplored(settlement::Settlement *settlement, tile::WorldTile *tile) const
 {
     lastExploredTile = tile;
 
@@ -607,7 +607,7 @@ void HumanMind::RegisterMarkForDeletion() const
     OnPlayerPolityDeleted.Invoke();
 }
 
-WorldTile *HumanMind::GetLastExploredTile()
+tile::WorldTile *HumanMind::GetLastExploredTile()
 {
     return lastExploredTile;
 }

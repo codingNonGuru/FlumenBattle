@@ -1,6 +1,6 @@
 #include "SimulationMap.h"
 #include "FlumenBattle/World/WorldScene.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/SimulationDomain.h"
 #include "FlumenBattle/World/Group/GroupCore.h"
 
@@ -15,7 +15,7 @@ SimulationDomain *SimulationMap::GetDomain(int x, int y)
     return domains.Get(x / TILES_PER_SIMULATION_DOMAIN, y / TILES_PER_SIMULATION_DOMAIN);
 }
 
-SimulationDomain *SimulationMap::GetDomain(WorldTile *tile)
+SimulationDomain *SimulationMap::GetDomain(tile::WorldTile *tile)
 {
     return domains.Get(tile->SquareCoordinates.x / TILES_PER_SIMULATION_DOMAIN, tile->SquareCoordinates.y / TILES_PER_SIMULATION_DOMAIN);
 }

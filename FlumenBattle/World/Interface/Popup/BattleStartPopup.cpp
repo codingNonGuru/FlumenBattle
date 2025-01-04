@@ -1,7 +1,7 @@
 #include "FlumenEngine/Interface/Text.hpp"
 
 #include "BattleStartPopup.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/World/Group/Encounter.h"

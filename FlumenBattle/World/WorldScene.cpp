@@ -9,9 +9,9 @@
 
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/WorldInterface.h"
-#include "FlumenBattle/World/WorldMap.h"
-#include "FlumenBattle/World/WorldTile.h"
-#include "FlumenBattle/World/WorldBiome.h"
+#include "FlumenBattle/World/Tile/WorldMap.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldBiome.h"
 #include "FlumenBattle/World/WorldGenerator.h"
 #include "FlumenBattle/World/Render/WorldTileModel.h"
 #include "FlumenBattle/World/Disaster/Earthquake.h"
@@ -524,7 +524,7 @@ namespace world
 
     static settlement::Settlement *foundedSettlement = nullptr;
 
-    settlement::Settlement * WorldScene::FoundSettlement(WorldTile *location, RaceTypes race, settlement::Settlement *mother)
+    settlement::Settlement * WorldScene::FoundSettlement(tile::WorldTile *location, RaceTypes race, settlement::Settlement *mother)
     {
         auto settlement = settlement::SettlementFactory::Create({location, race});
 
@@ -581,7 +581,7 @@ namespace world
 
     settlement::Settlement *WorldScene::ForgePath(settlement::Settlement *from, settlement::Settlement *to, int complexityLimit)
     {
-        auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(from->GetLocation(), to->GetLocation(), MAXIMUM_COLONIZATION_RANGE - 2);
+        auto pathData = utility::Pathfinder <tile::WorldTile>::Get()->FindPathDjikstra(from->GetLocation(), to->GetLocation(), MAXIMUM_COLONIZATION_RANGE - 2);
         
         if(pathData.Complexity > complexityLimit)
             return nullptr;
@@ -706,7 +706,7 @@ namespace world
         }
     }
 
-    container::Grid <WorldTile> &WorldScene::GetTiles() const 
+    container::Grid <tile::WorldTile> &WorldScene::GetTiles() const 
     {
         return worldMap->tiles;
     }
@@ -722,12 +722,12 @@ namespace world
         return nullptr;
     }
 
-    const group::GroupBuffer WorldScene::GetNearbyGroups(WorldTile *tile, int maximumGroupDistance)
+    const group::GroupBuffer WorldScene::GetNearbyGroups(tile::WorldTile *tile, int maximumGroupDistance)
     {
         return group::GroupBatchMap::Get()->GetNearbyGroups(tile, maximumGroupDistance);
     }
 
-    const group::GroupBuffer WorldScene::GetGroupsInTile(WorldTile *tile)
+    const group::GroupBuffer WorldScene::GetGroupsInTile(tile::WorldTile *tile)
     {
         return group::GroupBatchMap::Get()->GetGroupsInTile(tile);
     }
@@ -737,7 +737,7 @@ namespace world
         return conqueredSettlement;
     }
 
-    void WorldScene::UpdateOwnershipChangeQueue(WorldTile *tile)
+    void WorldScene::UpdateOwnershipChangeQueue(tile::WorldTile *tile)
     {
         *ownershipChangeQueue.Add() = tile;
     }

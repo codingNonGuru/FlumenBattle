@@ -1,10 +1,10 @@
 #include "Path.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/Settlement/SettlementAllocator.h"
 
 using namespace world::settlement;
 
-void Path::AddTile(WorldTile *tile) 
+void Path::AddTile(tile::WorldTile *tile) 
 {
     *Tiles.Add() = tile;
 
@@ -25,9 +25,9 @@ void Path::AddTile(WorldTile *tile)
     tile->AddLink(previousTile, segment);
 }
 
-const container::SmartBlock <world::WorldTile *, 16> Path::GetTilesTo(const Settlement *settlement) const
+const container::SmartBlock <world::tile::WorldTile *, 16> Path::GetTilesTo(const Settlement *settlement) const
 {
-    container::SmartBlock <world::WorldTile *, 16> tiles;
+    container::SmartBlock <tile::WorldTile *, 16> tiles;
 
     bool isForward = true;
 

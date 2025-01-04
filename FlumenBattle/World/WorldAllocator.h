@@ -10,8 +10,8 @@
 namespace world
 {
     class WorldScene;
-    class WorldTile;
-    class WorldMap;
+    namespace tile {struct WorldTile;}
+    namespace tile {class WorldMap;}
     class Polity;
     struct SimulationDomain;
 
@@ -30,17 +30,17 @@ namespace world
 
     class WorldAllocator : public core::Singleton <WorldAllocator>
     {
-        typedef WorldTile* WorldTilePointer;
+        typedef tile::WorldTile* WorldTilePointer;
 
         friend class WorldGenerator;
 
-        friend class WorldMap;
+        friend class tile::WorldMap;
 
         friend class settlement::SettlementAllocator;
 
         bool hasPreallocatedMaximumMemory {false};
 
-        container::Grid <WorldTile>::Memory worldTileMemory;
+        container::Grid <tile::WorldTile>::Memory worldTileMemory;
 
         container::Grid <SimulationDomain>::Memory simulationMemory;
 
@@ -48,12 +48,12 @@ namespace world
 
         container::PoolAllocator <group::GroupCore *>::Memory groupBatchMemory;
 
-        container::Array <WorldTile *>::Memory ownershipChangeMemory;
+        container::Array <tile::WorldTile *>::Memory ownershipChangeMemory;
 
 
         container::PoolAllocator <group::GroupCore *> groupBatchAllocator;
 
-        void AllocateMap(WorldMap &/*, container::SmartBlock< container::Array <WorldTilePointer>, 4> &*/, int);
+        void AllocateMap(tile::WorldMap &/*, container::SmartBlock< container::Array <WorldTilePointer>, 4> &*/, int);
 
         void AllocateSociety(int);
 

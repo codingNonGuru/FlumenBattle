@@ -2,7 +2,7 @@
 
 namespace world
 {
-    class WorldTile;
+    namespace tile {struct WorldTile;}
 }
 
 namespace world::settlement
@@ -29,7 +29,7 @@ namespace world::polity
 
         virtual void RegisterPopIncrease(settlement::Settlement *) const = 0;
 
-        virtual void RegisterTileExplored(settlement::Settlement *, WorldTile *) const = 0;
+        virtual void RegisterTileExplored(settlement::Settlement *, tile::WorldTile *) const = 0;
 
         virtual void RegisterMarkForDeletion() const = 0;
     };

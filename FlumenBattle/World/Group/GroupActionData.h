@@ -7,7 +7,7 @@
 
 namespace world
 {
-    class WorldTile;
+    namespace tile {struct WorldTile;}
 
     namespace settlement
     {
@@ -21,7 +21,7 @@ namespace world::group
 
     union GroupActionData
     {
-        WorldTile *TravelDestination;
+        tile::WorldTile *TravelDestination;
 
         settlement::Settlement *LootTarget;
 
@@ -29,7 +29,7 @@ namespace world::group
 
         GroupActionData() {}
 
-        GroupActionData(WorldTile *travelDestination) : TravelDestination(travelDestination) {}
+        GroupActionData(tile::WorldTile *travelDestination) : TravelDestination(travelDestination) {}
 
         GroupActionData(settlement::Settlement *lootTarget) : LootTarget(lootTarget) {}
 

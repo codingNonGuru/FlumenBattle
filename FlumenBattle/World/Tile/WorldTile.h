@@ -6,14 +6,10 @@
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/World/Types.h"
 #include "FlumenBattle/World/Settlement/Types.h"
-#include "FlumenBattle/World/TileBuffer.h"
+#include "FlumenBattle/World/Tile/TileBuffer.h"
 
 namespace world
 {
-    class WorldMap;
-    struct WorldBiome;
-    struct WorldRelief;
-
     namespace group
     {
         class GroupCore;
@@ -27,14 +23,18 @@ namespace world
     }
 }
 
-namespace world
+namespace world::tile
 {
     template <typename TileType>
     struct TileBuffer; 
 
+    class WorldMap;
+    struct WorldRelief;
+    struct WorldBiome;
+
     struct WorldTile
     {
-        friend class world::WorldMap;
+        friend class WorldMap;
 
         friend class world::group::GroupCore;
 

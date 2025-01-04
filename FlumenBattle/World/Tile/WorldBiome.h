@@ -2,7 +2,7 @@
 
 #include "FlumenBattle/World/Types.h"
 
-namespace world
+namespace world::tile
 {
     struct WorldBiome
     {

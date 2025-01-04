@@ -20,12 +20,12 @@
 #include "FlumenBattle/World/Render/RendererAllocator.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldController.h"
-#include "FlumenBattle/World/WorldMap.h"
+#include "FlumenBattle/World/Tile/WorldMap.h"
 #include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/Battle/Combatant.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/SettlementTile.h"
@@ -38,7 +38,7 @@
 #include "FlumenBattle/World/Polity/HumanMind.h"
 #include "FlumenBattle/Config.h"
 
-#define WORLD_TILE_SIZE WorldMap::WORLD_TILE_SIZE
+#define WORLD_TILE_SIZE tile::WorldMap::WORLD_TILE_SIZE
 
 const Float CAMERA_SHIFT_DURATION = 0.5f;
 
@@ -454,9 +454,9 @@ void WorldTileModel::RenderSnow()
 
     static auto &worldTime = worldScene->GetTime();
 
-    auto seasonalFactor = WorldTile::GetSeasonalTemperatureSwing() / 100.0f;
+    auto seasonalFactor = tile::WorldTile::GetSeasonalTemperatureSwing() / 100.0f;
 
-    auto diurnalFactor = WorldTile::GetDiurnalTemperatureSwing() / 100.0f;
+    auto diurnalFactor = tile::WorldTile::GetDiurnalTemperatureSwing() / 100.0f;
 
     snowShader->SetConstant(seasonalFactor + diurnalFactor, "weatherFactor");
 
@@ -1045,7 +1045,7 @@ void WorldTileModel::Render()
             //*colors.Add() = Color((float)tile->Elevation / 100.0f);
             *colors.Add() = tile.GetShade();
 
-            *temperatures.Add() = tile.Type == WorldTiles::LAND ? (float)tile.Heat / (float)WorldTile::MAXIMUM_TILE_HEAT : 1.0f;
+            *temperatures.Add() = tile.Type == WorldTiles::LAND ? (float)tile.Heat / (float)tile::WorldTile::MAXIMUM_TILE_HEAT : 1.0f;
         }
 
         positionBuffer = new DataBuffer(positions.GetMemorySize(), positions.GetStart());

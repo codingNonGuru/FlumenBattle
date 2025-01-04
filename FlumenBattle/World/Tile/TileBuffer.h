@@ -3,7 +3,7 @@
 #include "FlumenCore/Container/Pool.hpp"
 #include "FlumenCore/Container/Array.hpp"
 
-namespace world
+namespace world::tile
 {
     #define TILES_PER_BUFFER 1024
 

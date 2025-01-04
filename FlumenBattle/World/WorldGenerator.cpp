@@ -2,10 +2,10 @@
 
 #include "WorldGenerator.h"
 #include "FlumenBattle/World/WorldScene.h"
-#include "FlumenBattle/World/WorldMap.h"
-#include "FlumenBattle/World/WorldTile.h"
-#include "FlumenBattle/World/WorldBiome.h"
-#include "FlumenBattle/World/WorldRelief.h"
+#include "FlumenBattle/World/Tile/WorldMap.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldBiome.h"
+#include "FlumenBattle/World/Tile/WorldRelief.h"
 #include "FlumenBattle/World/WorldAllocator.h"
 #include "FlumenBattle/World/Settlement/SettlementAllocator.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
@@ -45,7 +45,7 @@ int WorldGenerator::GenerateWorld(
 
     auto &scene = *WorldScene::Get();
 
-    scene.worldMap = new WorldMap(data.Size);
+    scene.worldMap = new tile::WorldMap(data.Size);
 
     auto map = scene.worldMap;
 
@@ -115,7 +115,7 @@ int WorldGenerator::GenerateWorld(
 
             if(tile->Type == WorldTiles::SEA)
             {
-                tile->Relief = WorldReliefFactory::BuildRelief(WorldReliefs::SEA);
+                tile->Relief = tile::WorldReliefFactory::BuildRelief(WorldReliefs::SEA);
             }
             else
             {
@@ -127,11 +127,11 @@ int WorldGenerator::GenerateWorld(
 
                 if(utility::GetRandom(1, 100) <= mountainChance)
                 {
-                    tile->Relief = WorldReliefFactory::BuildRelief(WorldReliefs::MOUNTAINS);
+                    tile->Relief = tile::WorldReliefFactory::BuildRelief(WorldReliefs::MOUNTAINS);
                 }
                 else
                 {
-                    tile->Relief = WorldReliefFactory::BuildRelief(WorldReliefs::PLAINS);
+                    tile->Relief = tile::WorldReliefFactory::BuildRelief(WorldReliefs::PLAINS);
                 }
             }
         }
@@ -176,7 +176,7 @@ int WorldGenerator::GenerateWorld(
         {
             if(*flag)
             {
-                tile->Relief = WorldReliefFactory::BuildRelief(WorldReliefs::MOUNTAINS);
+                tile->Relief = tile::WorldReliefFactory::BuildRelief(WorldReliefs::MOUNTAINS);
             }
         }
     };
@@ -217,7 +217,7 @@ int WorldGenerator::GenerateWorld(
         {
             if(*flag)
             {
-                tile->Relief = WorldReliefFactory::BuildRelief(WorldReliefs::PLAINS);
+                tile->Relief = tile::WorldReliefFactory::BuildRelief(WorldReliefs::PLAINS);
             }
         }
     };
@@ -242,7 +242,7 @@ int WorldGenerator::GenerateWorld(
 
             heatFactor = desertValue * heatFactor * 0.35f + heatFactor * 0.65f;
 
-            tile->Heat = int(heatFactor * float(WorldTile::MAXIMUM_TILE_HEAT));
+            tile->Heat = int(heatFactor * float(tile::WorldTile::MAXIMUM_TILE_HEAT));
 
             auto getMountainCount = [&] (int range)
             {
@@ -276,7 +276,7 @@ int WorldGenerator::GenerateWorld(
         {
             if(tile->Type == WorldTiles::SEA)
             {
-                tile->Biome = WorldBiomeFactory::BuildBiome(WorldBiomes::MARINE);
+                tile->Biome = tile::WorldBiomeFactory::BuildBiome(WorldBiomes::MARINE);
 
                 tile->SetResource(settlement::ResourceTypes::FOOD, 1);
                 tile->SetResource(settlement::ResourceTypes::TIMBER, 0);
@@ -288,7 +288,7 @@ int WorldGenerator::GenerateWorld(
 
                 if(tile->HasRelief(WorldReliefs::MOUNTAINS))
                 {
-                    tile->Biome = WorldBiomeFactory::BuildBiome(WorldBiomes::DESERT);
+                    tile->Biome = tile::WorldBiomeFactory::BuildBiome(WorldBiomes::DESERT);
 
                     tile->SetResource(settlement::ResourceTypes::FOOD, 0);
                     tile->SetResource(settlement::ResourceTypes::TIMBER, utility::GetRandom(1, 100) < 50 ? 2 : 1);
@@ -327,7 +327,7 @@ int WorldGenerator::GenerateWorld(
 
                     if(forestValue > 0.45f || (isOneMountainNearby && utility::GetRandom(1, 100) < nearbyMountainCount + farawayMountainCount))
                     {
-                        tile->Biome = WorldBiomeFactory::BuildBiome(WorldBiomes::WOODS);
+                        tile->Biome = tile::WorldBiomeFactory::BuildBiome(WorldBiomes::WOODS);
 
                         tile->SetResource(settlement::ResourceTypes::FOOD, utility::RollD100Dice() < 50 ? 1 : 0);
                         tile->SetResource(settlement::ResourceTypes::TIMBER, utility::GetRandom(1, 100) < 50 ? 2 : 3);
@@ -336,7 +336,7 @@ int WorldGenerator::GenerateWorld(
                     {
                         if(tile->Heat < 80)
                         {
-                            tile->Biome = WorldBiomeFactory::BuildBiome(WorldBiomes::STEPPE);
+                            tile->Biome = tile::WorldBiomeFactory::BuildBiome(WorldBiomes::STEPPE);
 
                             tile->IsScrubland = tile->Heat < SCRUBLAND_HEAT_THRESHOLD;
 
@@ -364,7 +364,7 @@ int WorldGenerator::GenerateWorld(
                         }
                         else 
                         {
-                            tile->Biome = WorldBiomeFactory::BuildBiome(WorldBiomes::DESERT);
+                            tile->Biome = tile::WorldBiomeFactory::BuildBiome(WorldBiomes::DESERT);
 
                             tile->SetResource(settlement::ResourceTypes::FOOD, 0);
                             tile->SetResource(settlement::ResourceTypes::TIMBER, utility::GetRandom(1, 100) < 50 ? 1 : 0);

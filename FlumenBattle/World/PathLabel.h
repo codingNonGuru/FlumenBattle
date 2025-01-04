@@ -6,13 +6,13 @@ class Text;
 
 namespace world
 {
-    class WorldTile;
+    namespace tile {struct WorldTile;}
 
     class PathLabel : public Element
     {
         Text * label;
 
-        WorldTile *tile;
+        tile::WorldTile *tile;
 
         int value;
 
@@ -21,7 +21,7 @@ namespace world
         void HandleUpdate() override;
 
     public:
-        void SetTile(WorldTile *newTile, int newValue) 
+        void SetTile(tile::WorldTile *newTile, int newValue) 
         {
             tile = newTile;
             

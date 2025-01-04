@@ -4,7 +4,7 @@
 
 namespace world
 {
-    class WorldTile;
+    namespace tile {struct WorldTile;}
 
     namespace settlement
     {
@@ -36,7 +36,7 @@ namespace world::interface
             void Setup(int, bool);
         };
 
-        WorldTile *tile {nullptr};
+        tile::WorldTile *tile {nullptr};
 
         Position2 tilePosition;
 
@@ -47,6 +47,6 @@ namespace world::interface
         void HandleUpdate() override;
 
     public:
-        void Setup(WorldTile *);
+        void Setup(tile::WorldTile *);
     };
 }

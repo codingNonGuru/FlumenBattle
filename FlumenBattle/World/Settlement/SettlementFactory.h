@@ -7,7 +7,7 @@
 
 namespace world
 {
-    class WorldTile;
+    namespace tile {struct WorldTile;}
 }
 
 namespace world::settlement
@@ -16,7 +16,7 @@ namespace world::settlement
 
     struct SettlementBuildData
     {
-        world::WorldTile * Location;
+        tile::WorldTile * Location;
 
         RaceTypes Race;
     };

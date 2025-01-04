@@ -7,7 +7,7 @@
 
 namespace world
 {
-    class WorldTile;
+    namespace tile {struct WorldTile;}
 
     namespace settlement
     {
@@ -156,6 +156,6 @@ namespace world::polity
 
         void RegisterPopIncrease(settlement::Settlement *);
 
-        void RegisterTileExplored(settlement::Settlement *, WorldTile *);
+        void RegisterTileExplored(settlement::Settlement *, tile::WorldTile *);
     };
 }

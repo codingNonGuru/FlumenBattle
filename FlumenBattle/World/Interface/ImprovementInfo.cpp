@@ -11,7 +11,7 @@
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
 #include "FlumenBattle/World/Settlement/TileImprovement.h"
 #include "FlumenBattle/World/WorldScene.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 
 using namespace world::interface;
 

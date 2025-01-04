@@ -6,8 +6,8 @@
 
 #include "BorderModel.h"
 #include "FlumenBattle/World/WorldScene.h"
-#include "FlumenBattle/World/WorldMap.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldMap.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/PreGame/PreGameState.h"
@@ -147,7 +147,7 @@ void BorderModel::Update()
 
             auto edgeCoordinates = tiles.GetEdgeCoordinates(borderTile, neighbour.Neighbour);
 
-            auto determineBorder = [border] (WorldTile *firstTile, WorldTile *secondTile, BorderData &borderData)
+            auto determineBorder = [border] (tile::WorldTile *firstTile, tile::WorldTile *secondTile, BorderData &borderData)
             {
                 if(firstTile->IsOwned() == false)
                 {
@@ -169,7 +169,7 @@ void BorderModel::Update()
                     position = (position + firstTile->Position * 0.5f) / 1.5f;
                 }
                 
-                auto length = WorldMap::WORLD_TILE_SIZE * 1.0f;
+                auto length = tile::WorldMap::WORLD_TILE_SIZE * 1.0f;
                 auto thickness = isHardBorder == true ? EXTERNAL_BORDER_THICKNESS : INTERNAL_BORDER_THICKNESS;
 
                 auto rotation = border->Rotation;

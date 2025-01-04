@@ -18,8 +18,8 @@ namespace world::settlement
 
 namespace world
 {
-    class WorldMap;
-    class WorldTile;
+    namespace tile {class WorldMap;}
+    namespace tile {struct WorldTile;}
 
     namespace polity
     {
@@ -55,7 +55,7 @@ namespace world
 
         WorldTime time;
 
-        WorldMap *worldMap;
+        tile::WorldMap *worldMap;
 
         Pool <group::Encounter> *battles;
 
@@ -71,7 +71,7 @@ namespace world
 
         Pool <settlement::PathSegment> *pathSegments;
 
-        Array <WorldTile *> ownershipChangeQueue;
+        Array <tile::WorldTile *> ownershipChangeQueue;
 
         settlement::Settlement *conqueredSettlement;
 
@@ -137,9 +137,9 @@ namespace world
 
         settlement::Settlement *GetPlayerSettlement() const;
 
-        WorldMap * GetWorldMap() const {return worldMap;}
+        tile::WorldMap * GetWorldMap() const {return worldMap;}
 
-        container::Grid <WorldTile> &GetTiles() const;
+        container::Grid <tile::WorldTile> &GetTiles() const;
 
         Pool <settlement::Settlement> & GetSettlements() {return *settlements;}
 
@@ -161,9 +161,9 @@ namespace world
 
         group::GroupCore *GetGroup(int);
 
-        const group::GroupBuffer GetNearbyGroups(WorldTile *, int = 1);
+        const group::GroupBuffer GetNearbyGroups(tile::WorldTile *, int = 1);
 
-        const group::GroupBuffer GetGroupsInTile(WorldTile *);
+        const group::GroupBuffer GetGroupsInTile(tile::WorldTile *);
 
         void InitiateEncounter(group::GroupCore *, group::GroupCore *);
 
@@ -181,7 +181,7 @@ namespace world
 
         void AccomplishPlayerConquest(settlement::Settlement *);
 
-        settlement::Settlement * FoundSettlement(WorldTile *, RaceTypes, settlement::Settlement *);
+        settlement::Settlement * FoundSettlement(tile::WorldTile *, RaceTypes, settlement::Settlement *);
 
         settlement::Settlement * ForgePath(settlement::Settlement *, settlement::Settlement *, int = INT_MAX);
 
@@ -191,9 +191,9 @@ namespace world
 
         void DiminishPolity(polity::Polity *, settlement::Settlement *);
 
-        void UpdateOwnershipChangeQueue(WorldTile *);
+        void UpdateOwnershipChangeQueue(tile::WorldTile *);
 
-        const Array <WorldTile *> &GetOwnershipChangeQueue() const {return ownershipChangeQueue;}
+        const Array <tile::WorldTile *> &GetOwnershipChangeQueue() const {return ownershipChangeQueue;}
 
         bool IsNightTime() const {return time.HourCount < 6 || time.HourCount >= 22;}
 

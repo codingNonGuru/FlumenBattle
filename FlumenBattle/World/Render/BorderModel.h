@@ -10,7 +10,7 @@ class Camera;
 
 namespace world
 {
-    class WorldTile;
+    namespace tile {struct WorldTile;}
 }
 
 namespace world::render
@@ -28,7 +28,7 @@ namespace world::render
 
         container::Block <NeighbourData, 6> Neighbours;
 
-        WorldTile *Tile;
+        tile::WorldTile *Tile;
 
         bool HasBorderAt(BorderHex *hex)
         {

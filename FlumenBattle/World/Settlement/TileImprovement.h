@@ -7,7 +7,7 @@
 
 namespace world
 {
-    class WorldTile;
+    namespace tile {struct WorldTile;}
 }
 
 namespace world::settlement
@@ -24,7 +24,7 @@ namespace world::settlement
 
         int Cost;
 
-        int GetBonus(ResourceTypes, WorldTile *) const;
+        int GetBonus(ResourceTypes, tile::WorldTile *) const;
     };
 
     class TileImprovementFactory : public core::Singleton <TileImprovementFactory>

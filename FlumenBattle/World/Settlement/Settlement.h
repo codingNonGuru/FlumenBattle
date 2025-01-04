@@ -15,7 +15,7 @@ struct Race;
 
 namespace world
 {
-    class WorldTile;
+    namespace tile {struct WorldTile;}
     class WorldScene;
     struct SimulationDomain;
     enum class SimulationLevels;
@@ -70,20 +70,20 @@ namespace world::settlement
 
     struct Exploration
     {
-        WorldTile *Tile;
+        tile::WorldTile *Tile;
 
         int Progress;
 
         float GetProgressFactor() const;
 
-        bool operator == (const WorldTile *tile) const {return Tile == tile;}
+        bool operator == (const tile::WorldTile *tile) const {return Tile == tile;}
     };
 
     struct ExploreResult
     {
-        WorldTile *Tile;
+        tile::WorldTile *Tile;
 
-        bool operator == (const WorldTile *tile) const {return Tile == tile;}
+        bool operator == (const tile::WorldTile *tile) const {return Tile == tile;}
     };
 
     struct ImprovementTarget
@@ -123,7 +123,7 @@ namespace world::settlement
 
         Color banner;
 
-        world::WorldTile *location;
+        tile::WorldTile *location;
 
         const Race *race;
 
@@ -199,7 +199,7 @@ namespace world::settlement
 
         int turnsUntilDeletion;
 
-        void Initialize(Word, Color, world::WorldTile *, const Race *);
+        void Initialize(Word, Color, tile::WorldTile *, const Race *);
 
         void GrowBorders();
 
@@ -214,7 +214,7 @@ namespace world::settlement
 
         Color GetRulerBanner() const;
 
-        world::WorldTile *GetLocation() const;
+        tile::WorldTile *GetLocation() const;
 
         Pool <SettlementTile> & GetTiles();
 
@@ -224,13 +224,13 @@ namespace world::settlement
 
         bool CanGrowBorders() const;
 
-        bool CanExpandHere(WorldTile *) const;
+        bool CanExpandHere(tile::WorldTile *) const;
 
-        bool CanSettleHere(WorldTile *) const;
+        bool CanSettleHere(tile::WorldTile *) const;
 
-        int GetExpansionCost(WorldTile *) const;
+        int GetExpansionCost(tile::WorldTile *) const;
 
-        bool CanAffordToExpandHere(WorldTile *) const;
+        bool CanAffordToExpandHere(tile::WorldTile *) const;
 
         float GetCultureProgress() const;
 
@@ -258,7 +258,7 @@ namespace world::settlement
 
         Integer GetWorkedTiles() const;
 
-        bool IsTileImproved(WorldTile *) const;
+        bool IsTileImproved(tile::WorldTile *) const;
 
         Integer GetFreeWorkerCount() const;
 
@@ -322,7 +322,7 @@ namespace world::settlement
 
         void SetupSimulation();
 
-        world::WorldTile *FindColonySpot();
+        tile::WorldTile *FindColonySpot();
 
         void RemoveGroup(const group::GroupCore &);
 
@@ -402,41 +402,41 @@ namespace world::settlement
 
         bool HasAnySettlers() const;
 
-        bool IsExploring(WorldTile *) const;
+        bool IsExploring(tile::WorldTile *) const;
 
         bool IsExploring() const;
 
         const Exploration &GetCurrentExploration() {return currentExploration;}
 
-        WorldTile *GetCurrentlyExploredTile() {return currentExploration.Tile;}
+        tile::WorldTile *GetCurrentlyExploredTile() {return currentExploration.Tile;}
 
-        bool HasExplored(WorldTile *) const;
+        bool HasExplored(tile::WorldTile *) const;
 
-        container::Array <WorldTile *> &GetExploredTiles() const;
+        container::Array <tile::WorldTile *> &GetExploredTiles() const;
 
         const container::Pool <ExploreResult> &GetFinishedExplorations() const {return finishedExplorations;}
 
-        bool CanExploreHere(WorldTile *) const;
+        bool CanExploreHere(tile::WorldTile *) const;
 
-        void StartExploring(WorldTile *);
+        void StartExploring(tile::WorldTile *);
 
         void StopExploring();
 
-        void RemoveFinishedExploration(WorldTile *);
+        void RemoveFinishedExploration(tile::WorldTile *);
 
         void AddExplorationProgress(int);
 
         const ExplorationReward &GetLastExplorationReward() const;
 
-        bool CanImproveHere(WorldTile *, TileImprovements) const;
+        bool CanImproveHere(tile::WorldTile *, TileImprovements) const;
 
-        void StartImprovingTile(WorldTile *, TileImprovements);
+        void StartImprovingTile(tile::WorldTile *, TileImprovements);
 
         bool IsImprovingAnyTile() const {return currentImprovement.Tile != nullptr;}
 
         bool IsImprovingTile(SettlementTile *, TileImprovements) const;
 
-        bool IsImprovingTile(WorldTile *, TileImprovements) const;
+        bool IsImprovingTile(tile::WorldTile *, TileImprovements) const;
 
         const ImprovementTarget &GetCurrentImprovement() const {return currentImprovement;}
 
@@ -444,7 +444,7 @@ namespace world::settlement
 
         bool HasImprovement(SettlementTile *, TileImprovements) const;
 
-        bool HasImprovement(WorldTile *, TileImprovements) const;
+        bool HasImprovement(tile::WorldTile *, TileImprovements) const;
 
         bool IsAbandoned() const;
 

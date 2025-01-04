@@ -2,7 +2,7 @@
 #include "FlumenBattle/World/Settlement/Types.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/SettlementTile.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/Settlement/Building.h"
 
 using namespace world::settlement;

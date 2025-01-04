@@ -4,7 +4,7 @@
 
 namespace world
 {
-    class WorldTile;
+    namespace tile {struct WorldTile;}
     class WorldScene;
 }
 
@@ -19,14 +19,14 @@ namespace world::disaster
     {
         static const int baseDifficultyClass = 2;
 
-        WorldTile *epicenter;
+        tile::WorldTile *epicenter;
 
         int range;
 
         int strength;
 
     public:
-        Earthquake(WorldTile *, int);
+        Earthquake(tile::WorldTile *, int);
 
         void ApplyEffect() const;
 

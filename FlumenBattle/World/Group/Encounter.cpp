@@ -4,7 +4,7 @@
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/World/Group/CharacterEssence.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 
 namespace world::group
 {

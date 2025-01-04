@@ -9,8 +9,8 @@
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/SettlementTile.h"
-#include "FlumenBattle/World/WorldTile.h"
-#include "FlumenBattle/World/WorldMap.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldMap.h"
 #include "FlumenBattle/World/Render/WorldTileModel.h"
 
 using namespace world::render;

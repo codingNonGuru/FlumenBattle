@@ -9,7 +9,7 @@
 
 namespace world
 {
-    class WorldTile;
+    namespace tile {struct WorldTile;}
 }
 
 namespace world::settlement
@@ -52,13 +52,13 @@ namespace world::settlement
     public:
         SettlementTile * improvementTarget;
 
-        world::WorldTile * colonizationTarget;
+        tile::WorldTile * colonizationTarget;
 
         ProductionData() {}
 
         ProductionData(SettlementTile *target) : improvementTarget(target) {}
 
-        ProductionData(world::WorldTile *target) : colonizationTarget(target) {}
+        ProductionData(tile::WorldTile *target) : colonizationTarget(target) {}
     };
 
     struct ProductionInquiry

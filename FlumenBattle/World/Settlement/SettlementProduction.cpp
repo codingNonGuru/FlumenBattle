@@ -4,7 +4,7 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/Group/GroupDynamics.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Settlement/ProductionEvaluator.h"
 #include "FlumenBattle/Race.h"

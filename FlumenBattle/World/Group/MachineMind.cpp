@@ -2,7 +2,7 @@
 #include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/World/Group/GroupType.h"
 #include "FlumenBattle/World/Group/GroupAction.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/Path.h"
@@ -14,7 +14,7 @@ namespace world::group
 {
     #define ADVENTURER_FIGHT_DC 10
 
-    static auto nearbyPassableTiles = container::Array <WorldTile *> (6);
+    static auto nearbyPassableTiles = container::Array <tile::WorldTile *> (6);
 
     void MachineMind::DetermineAction(GroupCore &group) const 
     {
@@ -183,7 +183,7 @@ namespace world::group
             }
             else
             {
-                auto destination = [&] () -> WorldTile *
+                auto destination = [&] () -> tile::WorldTile *
                 {
                     if(group.tile == group.home->GetLocation())
                     {
@@ -213,7 +213,7 @@ namespace world::group
 
                 auto distance = group.tile->GetDistanceTo(*destination);
 
-                auto pathData = utility::Pathfinder <WorldTile>::Get()->FindPathDjikstra(destination, group.tile, distance + 1);
+                auto pathData = utility::Pathfinder <tile::WorldTile>::Get()->FindPathDjikstra(destination, group.tile, distance + 1);
 
                 group.travelActionData->PlannedDestinationCount = pathData.Tiles.GetSize() - 1;
                 for(int i = 1; i < pathData.Tiles.GetSize(); ++i)

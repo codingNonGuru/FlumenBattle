@@ -4,7 +4,7 @@
 #include "FlumenBattle/World/Settlement/SettlementEvent.h"
 #include "FlumenBattle/World/Science/Technology.h"
 #include "FlumenBattle/World/WorldScene.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 #include "FlumenBattle/World/Polity/Faction.h"
 #include "FlumenBattle/World/Polity/PolityAllocator.h"
@@ -146,7 +146,7 @@ void Polity::UndergoDivision(settlement::Settlement *settlement)
 
 void Polity::MapInterest(settlement::Settlement *domain)
 {
-    auto &mappedTiles = utility::Pathfinder <WorldTile>::Get()->MapArea(domain->GetLocation(), MAXIMUM_COLONIZATION_RANGE);
+    auto &mappedTiles = utility::Pathfinder <tile::WorldTile>::Get()->MapArea(domain->GetLocation(), MAXIMUM_COLONIZATION_RANGE);
 
     for(auto &tile : mappedTiles)
     {
@@ -458,7 +458,7 @@ void Polity::RegisterPopIncrease(settlement::Settlement *settlement)
     controller->RegisterPopIncrease(settlement);
 }
 
-void Polity::RegisterTileExplored(settlement::Settlement *settlement, WorldTile *tile)
+void Polity::RegisterTileExplored(settlement::Settlement *settlement, tile::WorldTile *tile)
 {
     controller->RegisterTileExplored(settlement, tile);
 }

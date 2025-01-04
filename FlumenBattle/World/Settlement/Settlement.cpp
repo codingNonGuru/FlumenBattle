@@ -6,10 +6,10 @@
 #include "Settlement.h"
 #include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/Settlement/TileImprovement.h"
-#include "FlumenBattle/World/WorldTile.h"
-#include "FlumenBattle/World/WorldBiome.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldBiome.h"
 #include "FlumenBattle/World/WorldScene.h"
-#include "FlumenBattle/World/WorldMap.h"
+#include "FlumenBattle/World/Tile/WorldMap.h"
 #include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/World/Polity/Polity.h"
 #include "FlumenBattle/World/Polity/Faction.h"
@@ -40,7 +40,7 @@ bool Link::operator== (const settlement::Path &path) const
     return *Path == path;
 }
 
-void Settlement::Initialize(Word name, Color banner, world::WorldTile *location, const Race *race)
+void Settlement::Initialize(Word name, Color banner, tile::WorldTile *location, const Race *race)
 {
     this->isValid = true;
 
@@ -151,9 +151,9 @@ Path *Settlement::GetPathTo(Settlement *settlement)
     return nullptr;
 }
 
-static Array <world::WorldTile *> candidateTiles = Array <world::WorldTile *> (128);
+static Array <world::tile::WorldTile *> candidateTiles = Array <world::tile::WorldTile *> (128);
 
-world::WorldTile * Settlement::FindColonySpot()
+world::tile::WorldTile * Settlement::FindColonySpot()
 {
     static std::mutex mutex;
     mutex.lock();
@@ -161,7 +161,7 @@ world::WorldTile * Settlement::FindColonySpot()
     candidateTiles.Reset();
 
     auto bestChance = INT_MAX;
-    WorldTile *bestTile = nullptr;
+    tile::WorldTile *bestTile = nullptr;
     for(int i = MINIMUM_COLONIZATION_RANGE; i <= MAXIMUM_COLONIZATION_RANGE; ++i)
     {
         auto tileRing = location->GetTileRing(i);
@@ -343,7 +343,7 @@ Color Settlement::GetRulerBanner() const
     return polity->GetRuler()->GetBanner();
 }
 
-world::WorldTile * Settlement::GetLocation() const
+world::tile::WorldTile * Settlement::GetLocation() const
 {
     return this->location;
 }
@@ -423,7 +423,7 @@ bool Settlement::CanGrowBorders() const
     return cultureGrowth == BORDER_GROWTH_THRESHOLD;
 }
 
-bool Settlement::CanExpandHere(WorldTile *tile) const
+bool Settlement::CanExpandHere(tile::WorldTile *tile) const
 {
     if(tile->IsOwned() == true)
         return false;
@@ -454,7 +454,7 @@ bool Settlement::CanExpandHere(WorldTile *tile) const
     return true;
 }
 
-bool Settlement::CanSettleHere(WorldTile *tile) const
+bool Settlement::CanSettleHere(tile::WorldTile *tile) const
 {
     if(tile->HasRelief(WorldReliefs::SEA) == true)
         return false;
@@ -469,7 +469,7 @@ bool Settlement::CanSettleHere(WorldTile *tile) const
     return true;
 }
 
-int Settlement::GetExpansionCost(WorldTile *tile) const
+int Settlement::GetExpansionCost(tile::WorldTile *tile) const
 {
     auto distance = GetLocation()->GetDistanceTo(*tile);
 
@@ -491,7 +491,7 @@ int Settlement::GetExpansionCost(WorldTile *tile) const
     }
 }
 
-bool Settlement::CanAffordToExpandHere(WorldTile *tile) const
+bool Settlement::CanAffordToExpandHere(tile::WorldTile *tile) const
 {
     return cultureGrowth >= GetExpansionCost(tile);
 }
@@ -530,7 +530,7 @@ Integer Settlement::GetFreeWorkerCount() const
     return populationWithoutTileWorkers - buildingPersonnelCount;
 }
 
-bool Settlement::IsTileImproved(WorldTile* tile) const
+bool Settlement::IsTileImproved(tile::WorldTile* tile) const
 {
     for(auto &settlementTile : tiles)
     {
@@ -1006,7 +1006,7 @@ bool Settlement::HasAnySettlers() const
     return groupDynamics->HasAnySettlers();
 }
 
-bool Settlement::IsExploring(WorldTile *tile) const
+bool Settlement::IsExploring(tile::WorldTile *tile) const
 {
     return currentExploration.Tile == tile;
 }
@@ -1016,17 +1016,17 @@ bool Settlement::IsExploring() const
     return currentExploration.Tile != nullptr;
 }
 
-bool Settlement::HasExplored(WorldTile *tile) const
+bool Settlement::HasExplored(tile::WorldTile *tile) const
 {
     auto exploration = finishedExplorations.Find(tile);
     return exploration != nullptr;
 }
 
-container::Array <world::WorldTile *> &Settlement::GetExploredTiles() const
+container::Array <world::tile::WorldTile *> &Settlement::GetExploredTiles() const
 {
     static const auto EXPLORATIONS_PER_SETTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::EXPLORATIONS_PER_SETTLEMENT).Integer;
 
-    static auto exploredTiles = container::Array <world::WorldTile *> (EXPLORATIONS_PER_SETTLEMENT);
+    static auto exploredTiles = container::Array <tile::WorldTile *> (EXPLORATIONS_PER_SETTLEMENT);
 
     exploredTiles.Reset();
 
@@ -1038,7 +1038,7 @@ container::Array <world::WorldTile *> &Settlement::GetExploredTiles() const
     return exploredTiles;
 }
 
-bool Settlement::CanExploreHere(WorldTile *tile) const
+bool Settlement::CanExploreHere(tile::WorldTile *tile) const
 {
     if(tile->IsOwned() == true)
         return false;
@@ -1052,7 +1052,7 @@ bool Settlement::CanExploreHere(WorldTile *tile) const
     return true;
 }
 
-bool Settlement::CanImproveHere(WorldTile *tile, TileImprovements type) const
+bool Settlement::CanImproveHere(tile::WorldTile *tile, TileImprovements type) const
 {
     if(tile->IsOwned() == false)
         return false;
@@ -1074,7 +1074,7 @@ bool Settlement::CanImproveHere(WorldTile *tile, TileImprovements type) const
     return true;
 }
 
-void Settlement::StartImprovingTile(WorldTile *tile, TileImprovements improvement)
+void Settlement::StartImprovingTile(tile::WorldTile *tile, TileImprovements improvement)
 {
     currentImprovement = {tiles.Find(tile), improvement};
 
@@ -1086,7 +1086,7 @@ bool Settlement::IsImprovingTile(SettlementTile *tile, TileImprovements improvem
     return currentImprovement.Tile == tile && currentImprovement.ImprovementType == improvement;
 }
 
-bool Settlement::IsImprovingTile(WorldTile *tile, TileImprovements improvement) const
+bool Settlement::IsImprovingTile(tile::WorldTile *tile, TileImprovements improvement) const
 {
     if(currentImprovement.Tile == nullptr)
         return false;
@@ -1101,7 +1101,7 @@ void Settlement::CancelImproving()
     SetProduction(ProductionOptions::NONE);
 }
 
-bool Settlement::HasImprovement(WorldTile *tile, TileImprovements improvement) const
+bool Settlement::HasImprovement(tile::WorldTile *tile, TileImprovements improvement) const
 {
     auto settlementTile = tiles.Find(tile);
 
@@ -1116,7 +1116,7 @@ bool Settlement::HasImprovement(SettlementTile *tile, TileImprovements improveme
     return tile->GetImprovementType()->Type == improvement;
 }
 
-void Settlement::StartExploring(WorldTile *tile)
+void Settlement::StartExploring(tile::WorldTile *tile)
 {
     currentExploration = {tile, 0};
 }
@@ -1126,7 +1126,7 @@ void Settlement::StopExploring()
     currentExploration.Tile = nullptr;
 }
 
-void Settlement::RemoveFinishedExploration(WorldTile *tile)
+void Settlement::RemoveFinishedExploration(tile::WorldTile *tile)
 {
     finishedExplorations.Remove(tile);
 }

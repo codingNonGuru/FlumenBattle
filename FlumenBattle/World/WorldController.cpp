@@ -10,8 +10,8 @@
 
 #include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/World/WorldScene.h"
-#include "FlumenBattle/World/WorldMap.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldMap.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/Group/Encounter.h"
 #include "FlumenBattle/Battle/BattleState.h"
 #include "FlumenBattle/World/Group/GroupCore.h"
@@ -194,7 +194,7 @@ namespace world
             auto mesh = MeshManager::GetMesh("Hex"); 
             for(auto &nearbyTile : nearbyTiles)
             {
-                bool isMouseOverTile = PickHandler::CheckCollision(camera, mesh, Position3(nearbyTile->Position, 0.0f), WorldMap::WORLD_TILE_SIZE); 
+                bool isMouseOverTile = PickHandler::CheckCollision(camera, mesh, Position3(nearbyTile->Position, 0.0f), tile::WorldMap::WORLD_TILE_SIZE); 
                 if(isMouseOverTile)
                 {
                     hoveredTile = nearbyTile;
@@ -211,7 +211,7 @@ namespace world
         willCheckTileSelection = true;
     }
 
-    static utility::PathData <WorldTile> plannedPath;
+    static utility::PathData <tile::WorldTile> plannedPath;
 
     void WorldController::Update()
     {
@@ -266,7 +266,7 @@ namespace world
         if(hoveredTile == playerLocation || playerLocation->GetDistanceTo(*hoveredTile) >= PLANNED_PATH_MAXIMUM_SIZE || isTravelPlanActive == false)
             return;
 
-        plannedPath = utility::Pathfinder <WorldTile>::Get()->FindPathAsGeneric(hoveredTile, playerLocation, PLANNED_PATH_MAXIMUM_SIZE - 4);
+        plannedPath = utility::Pathfinder <tile::WorldTile>::Get()->FindPathAsGeneric(hoveredTile, playerLocation, PLANNED_PATH_MAXIMUM_SIZE - 4);
     }
 
     void WorldController::HandleBattleStarted()
@@ -892,7 +892,7 @@ namespace world
         return WorldScene::Get()->GetPlayerGroup()->GetEncounter();
     }
 
-    utility::PathData <WorldTile> WorldController::GetPlannedPath() const
+    utility::PathData <tile::WorldTile> WorldController::GetPlannedPath() const
     {
         return plannedPath;
     }

@@ -6,8 +6,8 @@
 namespace world
 {
     struct SimulationDomain;
-    class WorldMap;
-    class WorldTile;
+    namespace tile {class WorldMap;}
+    namespace tile {struct WorldTile;}
 
     class SimulationMap : public core::Singleton <SimulationMap>
     {
@@ -22,6 +22,6 @@ namespace world
 
         SimulationDomain *GetDomain(int, int);
 
-        SimulationDomain *GetDomain(WorldTile *);
+        SimulationDomain *GetDomain(tile::WorldTile *);
     };
 }

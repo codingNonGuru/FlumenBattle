@@ -1,13 +1,13 @@
 #include "Earthquake.h"
 #include "FlumenBattle/World/WorldScene.h"
-#include "FlumenBattle/World/WorldMap.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldMap.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/Utility/Utility.h"
 
 using namespace world::disaster;
 
-Earthquake::Earthquake(WorldTile *tile, int strength)
+Earthquake::Earthquake(tile::WorldTile *tile, int strength)
 {
     this->epicenter = tile;
     this->strength = strength;

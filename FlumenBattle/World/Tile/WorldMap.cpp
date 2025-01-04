@@ -3,12 +3,12 @@
 
 #include "FlumenEngine/Thread/ThreadManager.h"
 
-#include "FlumenBattle/World/WorldMap.h"
-#include "FlumenBattle/World/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldMap.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/WorldAllocator.h"
-#include "FlumenBattle/World/TileBufferManager.h"
+#include "FlumenBattle/World/Tile/TileBufferManager.h"
 
-using namespace world;
+using namespace world::tile;
 
 WorldMap::WorldMap(Length size) 
 {

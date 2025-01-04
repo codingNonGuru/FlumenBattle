@@ -1,6 +1,6 @@
 #include "FlumenBattle/World/WorldAllocator.h"
-#include "FlumenBattle/World/WorldTile.h"
-#include "FlumenBattle/World/WorldMap.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldMap.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/WorldGenerator.h"
 #include "FlumenBattle/World/Polity/Polity.h"
@@ -21,11 +21,11 @@ using namespace world;
 
 WorldAllocator::WorldAllocator()
 {
-    std::cout<<"Memory size of a World Tile is "<<sizeof(WorldTile)<<"\n";
+    std::cout<<"Memory size of a World Tile is "<<sizeof(tile::WorldTile)<<"\n";
 
     static const auto MAXIMUM_WORLD_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_WORLD_SIZE).Integer;
 
-    worldTileMemory = container::Grid <WorldTile>::PreallocateMemory(MAXIMUM_WORLD_SIZE * MAXIMUM_WORLD_SIZE);
+    worldTileMemory = container::Grid <tile::WorldTile>::PreallocateMemory(MAXIMUM_WORLD_SIZE * MAXIMUM_WORLD_SIZE);
 
     auto size = MAXIMUM_WORLD_SIZE / TILES_PER_SIMULATION_DOMAIN;
     simulationMemory = container::Grid <SimulationDomain>::PreallocateMemory(size * size);
@@ -39,7 +39,7 @@ WorldAllocator::WorldAllocator()
 
     groupBatchMemory = container::PoolAllocator <group::GroupCore *>::PreallocateMemory(size * size, GROUPS_PER_BATCH);
 
-    ownershipChangeMemory = container::Array <WorldTile *>::PreallocateMemory(size * size / OWNERSHIP_QUEUE_SIZE_FACTOR);
+    ownershipChangeMemory = container::Array <tile::WorldTile *>::PreallocateMemory(size * size / OWNERSHIP_QUEUE_SIZE_FACTOR);
 
     polity::PolityAllocator::Get()->PreallocateMaximumMemory();
 
@@ -50,7 +50,7 @@ WorldAllocator::WorldAllocator()
     world::character::CharacterAllocator::Get()->PreallocateMaximumMemory();
 }
 
-void WorldAllocator::AllocateMap(WorldMap &map, int size)
+void WorldAllocator::AllocateMap(tile::WorldMap &map, int size)
 {
     const auto CHANGE_QUEUE_SIZE = size * size / OWNERSHIP_QUEUE_SIZE_FACTOR;
     WorldScene::Get()->ownershipChangeQueue.Initialize(CHANGE_QUEUE_SIZE, ownershipChangeMemory);

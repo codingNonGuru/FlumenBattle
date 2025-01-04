@@ -7,7 +7,7 @@
 
 namespace world
 {
-    class WorldTile;
+    namespace tile {struct WorldTile;}
 }
 
 namespace world::settlement
@@ -47,12 +47,12 @@ namespace world::settlement
 
         Settlement *Settlement;
 
-        WorldTile *Tile;
+        tile::WorldTile *Tile;
     };
 
     class ExplorationHandler : public core::Singleton <ExplorationHandler>
     {
     public:
-        ExplorationReward GetReward(WorldTile *);
+        ExplorationReward GetReward(tile::WorldTile *);
     };
 }

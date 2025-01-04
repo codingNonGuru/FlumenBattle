@@ -3,7 +3,7 @@
 
 using namespace world::settlement;
 
-ExplorationReward ExplorationHandler::GetReward(WorldTile *tile)
+ExplorationReward ExplorationHandler::GetReward(tile::WorldTile *tile)
 {
     auto diceRoll = utility::RollD100Dice();
     if(diceRoll >= 1 && diceRoll <= 5)

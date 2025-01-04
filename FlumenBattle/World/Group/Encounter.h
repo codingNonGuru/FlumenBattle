@@ -9,7 +9,7 @@ namespace world
         class GroupCore;
     }
 
-    class WorldTile;
+    namespace tile {struct WorldTile;}
 }
 
 namespace world::group
@@ -32,7 +32,7 @@ namespace world::group
 
         GroupCore *winner;
 
-        WorldTile *location;
+        tile::WorldTile *location;
 
     public:
         Encounter() {}

@@ -8,7 +8,7 @@
 
 namespace world
 {
-    class WorldTile;
+    namespace tile {struct WorldTile;}
 }
 
 namespace world::settlement
@@ -17,17 +17,17 @@ namespace world::settlement
 
     struct PathSegment
     {
-        WorldTile *To;
+        tile::WorldTile *To;
 
-        WorldTile *From;
+        tile::WorldTile *From;
 
         RoadTypes Type;
 
         PathSegment() {}
 
-        PathSegment(WorldTile *to, WorldTile *from) : To(to), From(from) {}
+        PathSegment(tile::WorldTile *to, tile::WorldTile *from) : To(to), From(from) {}
 
-        PathSegment(WorldTile *to, WorldTile *from, RoadTypes type) : To(to), From(from), Type(type) {}
+        PathSegment(tile::WorldTile *to, tile::WorldTile *from, RoadTypes type) : To(to), From(from), Type(type) {}
 
         /*bool operator== (const std::pair <WorldTile *, WorldTile *> tilePair) 
         {
@@ -46,7 +46,7 @@ namespace world::settlement
 
         Settlement *From;
 
-        container::SmartBlock <WorldTile *, 16> Tiles;
+        container::SmartBlock <tile::WorldTile *, 16> Tiles;
 
         int Complexity;
 
@@ -59,7 +59,7 @@ namespace world::settlement
             return ((To == path.To && From == path.From) || (To == path.From && From == path.To));
         }
 
-        void AddTile(WorldTile *tile);
+        void AddTile(tile::WorldTile *tile);
 
         Settlement *GetOther(const Settlement *settlement) 
         {
@@ -73,6 +73,6 @@ namespace world::settlement
             }
         }
 
-        const container::SmartBlock <WorldTile *, 16> GetTilesTo(const Settlement *settlement) const;
+        const container::SmartBlock <tile::WorldTile *, 16> GetTilesTo(const Settlement *settlement) const;
     };
 }

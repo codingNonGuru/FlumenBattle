@@ -2,7 +2,7 @@
 
 namespace world
 {
-    class WorldTile;
+    namespace tile {struct WorldTile;}
 }
 
 namespace world::settlement
@@ -17,7 +17,7 @@ namespace world::settlement
         const TileImprovementType *ImprovementType;
 
     public:
-        world::WorldTile *Tile;
+        tile::WorldTile *Tile;
 
         bool IsWorked;
 
@@ -33,6 +33,6 @@ namespace world::settlement
 
         bool HasImprovement(TileImprovements) const;
 
-        bool operator==(const world::WorldTile *otherTile) {return Tile == otherTile;}
+        bool operator==(const tile::WorldTile *otherTile) {return Tile == otherTile;}
     };
 }

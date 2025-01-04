@@ -3,9 +3,20 @@
 #include "FlumenCore/Conventions.hpp"
 #include "FlumenCore/Container/Block.hpp"
 
-#include "FlumenBattle/World/TileBuffer.h"
+#include "FlumenBattle/World/Tile/TileBuffer.h"
 
 namespace world
+{
+    class WorldGenerator;
+
+    class WorldAllocator;
+
+    class WorldScene;
+    
+    class WorldController;
+}
+
+namespace world::tile
 {
     struct WorldTile;
 
@@ -14,15 +25,15 @@ namespace world
 
     class WorldMap
     {
-        friend class WorldScene;
+        friend class world::WorldScene;
 
-        friend class WorldController;
+        friend class world::WorldController;
 
         friend class WorldTileModel;
 
-        friend class WorldGenerator;
+        friend class world::WorldGenerator;
 
-        friend class WorldAllocator;
+        friend class world::WorldAllocator;
 
         friend class WorldInterface;
 
