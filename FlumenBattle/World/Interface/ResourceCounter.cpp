@@ -128,6 +128,13 @@ void ResourceCounter::SetOffset(float newOffset)
     label->SetBasePosition({offset, 0.0f});
 }
 
+void ResourceCounter::SetIconScale(float scale)
+{
+    icon->GetSprite()->SetTextureSize(Scale2(scale));
+
+    icon->AdjustSizeToTexture();
+}
+
 void ResourceCounter::SetIconTexture(Word textureName)
 {
     icon->SetTexture(textureName);

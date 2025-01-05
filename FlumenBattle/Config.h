@@ -38,5 +38,6 @@ namespace game
         static constexpr auto BORDER_EXPANSION_MAX_DISTANCE = "BORDER_EXPANSION_MAX_DISTANCE";
         static constexpr auto EXPLORATIONS_PER_SETTLEMENT = "EXPLORATIONS_PER_SETTLEMENT";
         static constexpr auto MAXIMUM_CHARACTER_LEVEL = "MAXIMUM_CHARACTER_LEVEL";
+        static constexpr auto NEIGHBORS_PER_POLITY = "NEIGHBORS_PER_POLITY";
     };
 }

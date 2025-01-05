@@ -49,6 +49,8 @@ namespace world::interface
 
         void SetOffset(float);
 
+        void SetIconScale(float);
+
         void MakeSignSensitive() {isSignSensitive = true;}
 
         void SetIconTexture(Word);

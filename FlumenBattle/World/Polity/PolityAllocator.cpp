@@ -11,11 +11,11 @@ using namespace world::polity;
 
 #define POLITY_FACTION_COUNT 16
 
-#define NEIGHBORS_PER_POLITY 32
-
 void PolityAllocator::PreallocateMaximumMemory()
 {
     static const auto MAXIMUM_WORLD_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_WORLD_SIZE).Integer;
+
+    static const auto NEIGHBORS_PER_POLITY = engine::ConfigManager::Get()->GetValue(game::ConfigValues::NEIGHBORS_PER_POLITY).Integer;
 
     auto worldGenerator = WorldGenerator::Get();
 
@@ -36,7 +36,9 @@ void PolityAllocator::PreallocateMaximumMemory()
 
 void PolityAllocator::AllocateWorldMemory(int worldSize)
 {
-    auto worldGenerator = WorldGenerator::Get();
+    static const auto NEIGHBORS_PER_POLITY = engine::ConfigManager::Get()->GetValue(game::ConfigValues::NEIGHBORS_PER_POLITY).Integer;
+
+    static const auto worldGenerator = WorldGenerator::Get();
 
     auto polityCount = worldGenerator->GetMaximumPolityCount(worldSize);
 

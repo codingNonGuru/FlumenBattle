@@ -565,7 +565,7 @@ namespace world
         if(timeElapsed > WorldTime::GetTicksFromDays(DAYS_BETWEEN_EMERGENCE))
         {
             auto settlement = settlements->GetRandom();
-            auto tile = settlement->GetLocation()->GetTileRing(6).Tiles.GetRandom();
+            auto tile = settlement->GetLocation()->GetTileRing(5).Tiles.GetRandom();
             if((*tile)->HasRelief(WorldReliefs::SEA) == false && (*tile)->IsBorderingOwnedTile() == false)
             {
                 FoundSettlement(*tile, RaceTypes::GNOME, nullptr);
