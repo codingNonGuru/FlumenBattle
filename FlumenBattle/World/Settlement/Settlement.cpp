@@ -157,9 +157,6 @@ static Array <world::tile::WorldTile *> candidateTiles = Array <world::tile::Wor
 
 world::tile::WorldTile * Settlement::FindColonySpot()
 {
-    static std::mutex mutex;
-    mutex.lock();
-
     candidateTiles.Reset();
 
     auto bestChance = INT_MAX;
@@ -191,7 +188,6 @@ world::tile::WorldTile * Settlement::FindColonySpot()
 
     if(bestTile == nullptr)
     {
-        mutex.unlock();
         return nullptr;
     }
 
@@ -218,8 +214,6 @@ world::tile::WorldTile * Settlement::FindColonySpot()
             }
         }
     }
-
-    mutex.unlock();
 
     auto candidate = candidateTiles.GetRandom();
     if(candidate == nullptr)
@@ -895,6 +889,8 @@ void Settlement::Update()
     if(currentProduction->IsDone())
     {
         currentProduction->Finish(*this);
+
+        GetPolity()->RegisterProductionFinished(this);
             
         *currentProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
     }

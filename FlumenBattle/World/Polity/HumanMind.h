@@ -113,6 +113,8 @@ namespace world::polity
 
         void RegisterTileExplored(settlement::Settlement *, tile::WorldTile *) const override;
 
+        void RegisterProductionFinished(settlement::Settlement *) const override;
+
         void RegisterMarkForDeletion() const override;
 
         const tile::WorldTile *GetSettleTarget(settlement::Settlement *) const;

@@ -301,7 +301,18 @@ void HumanMind::HandleTileSettled()
     auto data = settleTargets.Find(SettleTarget{playerSettlement, hoveredTile});
     if(data == nullptr)
     {
+        auto otherTile = settleTargets.Find(playerSettlement);
+        if(otherTile != nullptr)
+        {
+            settleTargets.RemoveAt(otherTile);
+        }
+        
         *settleTargets.Add() = {playerSettlement, hoveredTile};
+
+        if(playerSettlement->GetCurrentProduction()->GetType() != settlement::ProductionOptions::SETTLERS)
+        {
+            playerSettlement->SetProduction(settlement::ProductionOptions::SETTLERS);
+        }
     }
     else
     {
@@ -596,6 +607,27 @@ void HumanMind::RegisterTileExplored(settlement::Settlement *settlement, tile::W
 
     interface::popup::PopupManager::Get()->AddPopup(PopupTypes::EXPLORATION_REWARD);
     //OnPlayerSettlementTileExplored.Invoke();
+}
+
+void HumanMind::RegisterProductionFinished(settlement::Settlement *settlement) const 
+{
+    if(settlement->GetCurrentProduction()->GetType() == settlement::ProductionOptions::SETTLERS)
+    {
+        auto target = settleTargets.Find(settlement);
+        if(target != nullptr)
+        {
+            if(settlement->CanSettleHere(target->Tile) == true)
+            {
+                WorldScene::Get()->FoundSettlement(target->Tile, settlement->GetRace()->Type, settlement);
+
+                OnPlayerSettlementColonized.Invoke();
+
+                settlement->RemoveSettlers();
+            }
+
+            settleTargets.RemoveAt(target);
+        }
+    }
 }
 
 void HumanMind::RegisterMarkForDeletion() const 

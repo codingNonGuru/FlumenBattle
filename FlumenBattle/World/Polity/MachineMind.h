@@ -32,6 +32,8 @@ namespace world::polity
 
         void RegisterTileExplored(settlement::Settlement *, tile::WorldTile *) const override {}
 
+        void RegisterProductionFinished(settlement::Settlement *) const override {}
+
         void RegisterMarkForDeletion() const override {}
 
         void GrowBorders(settlement::Settlement *);

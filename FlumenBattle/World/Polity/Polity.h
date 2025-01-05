@@ -167,6 +167,8 @@ namespace world::polity
 
         void RegisterTileExplored(settlement::Settlement *, tile::WorldTile *);
 
+        void RegisterProductionFinished(settlement::Settlement *);
+
         void RecalculateLinks();
 
         const container::Array <Neighbor> &GetNeighbors() const {return neighborHandler.neighbors;}

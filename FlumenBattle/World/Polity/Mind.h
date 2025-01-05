@@ -31,6 +31,8 @@ namespace world::polity
 
         virtual void RegisterTileExplored(settlement::Settlement *, tile::WorldTile *) const = 0;
 
+        virtual void RegisterProductionFinished(settlement::Settlement *) const = 0;
+
         virtual void RegisterMarkForDeletion() const = 0;
     };
 }
