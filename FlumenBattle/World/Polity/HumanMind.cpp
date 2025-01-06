@@ -438,6 +438,10 @@ settlement::Shipment currentShipment;
 
 void HumanMind::ProcessTrade(Polity &polity) const
 {
+    static auto incomingShipments = container::Array <const settlement::Shipment *> (256);
+
+    incomingShipments.Reset();
+
     for(auto &settlement : polity.GetSettlements())
     {
         auto &shipment = settlement->GetLastOutgoingShipment();
@@ -447,6 +451,29 @@ void HumanMind::ProcessTrade(Polity &polity) const
             currentShipment = shipment;
 
             OnTradeShipment.Invoke();
+        }
+
+        for(auto &link : settlement->GetLinks())
+        {
+            if(link.Other->GetPolity() == &polity)
+                continue;
+
+            auto &incomingShipment = link.Other->GetLastOutgoingShipment();
+
+            if(incomingShipment.TimeInAbsoluteTicks != WorldScene::Get()->GetTime().GetTickCount())
+                continue;
+
+            if(incomingShipment.To != settlement)
+                continue;
+
+            if(incomingShipments.Find(&incomingShipment) != nullptr)
+                continue;
+
+            currentShipment = incomingShipment;
+
+            OnTradeShipment.Invoke();
+
+            *incomingShipments.Add() = &incomingShipment;
         }
     }
 }

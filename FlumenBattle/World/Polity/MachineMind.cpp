@@ -6,6 +6,7 @@
 #include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/Tile/WorldBiome.h"
 #include "FlumenBattle/World/Science/Technology.h"
+#include "FlumenBattle/World/Polity/HumanMind.h"
 
 using namespace world::polity;
 
