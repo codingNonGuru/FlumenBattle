@@ -74,7 +74,9 @@ void Settlement::Initialize(Word name, Color banner, tile::WorldTile *location, 
 
     this->currentImprovement = {nullptr};
 
-    *this->currentProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
+    *this->buildingProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
+
+    *this->groupProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
 
     auto tile = tiles.Add();
     tile->Tile = location;
@@ -238,19 +240,19 @@ struct NecessityMap
     container::Array <ProductionOptions> ExcludedOptions {16};
 };
 
-void Settlement::DecideProduction()
+void Settlement::DecideProduction(ProductionClasses productionClass)
 {
-    static const ProductionOptions options[] = {
-        //ProductionOptions::PATROL, 
-        //ProductionOptions::SETTLERS, 
-        ProductionOptions::GARRISON,
-        /*ProductionOptions::IRRIGATION, 
-        ProductionOptions::LIBRARY,
-        ProductionOptions::WALLS,
-        ProductionOptions::SEWAGE,
-        ProductionOptions::HOUSING,
-        ProductionOptions::FARM*/
-        };
+    static const container::Array <ProductionOptions> options = [&] -> std::initializer_list <ProductionOptions>
+    {
+        if(productionClass == ProductionClasses::RECRUITMENT)
+            return {
+                ProductionOptions::GARRISON
+            };
+        else if(productionClass == ProductionClasses::BUILDING)
+            return {
+                ProductionOptions::HOUSING
+            };
+    } ();
 
     auto resourceHandler = game::ThreadedResourceHandler <NecessityMap>::Get();
     const auto necessityMap = resourceHandler->GetUsableResource();
@@ -306,7 +308,11 @@ void Settlement::DecideProduction()
 
         if(proposedOption.Key_ == ProductionOptions::NONE)
         {
-            *currentProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
+            if(productionClass == ProductionClasses::BUILDING)
+                *buildingProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
+            else if(productionClass == ProductionClasses::RECRUITMENT)
+                *groupProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);                
+
             break;
         }
         else
@@ -314,7 +320,11 @@ void Settlement::DecideProduction()
             auto inquiry = SettlementProduction::CanProduce(*this, proposedOption.Key_);
             if(inquiry.CanProduce == true)
             {
-                *currentProduction = SettlementProductionFactory::Get()->Create(proposedOption.Key_, inquiry.Data);
+                if(productionClass == ProductionClasses::BUILDING)
+                    *buildingProduction = SettlementProductionFactory::Get()->Create(proposedOption.Key_, inquiry.Data);
+                else if(productionClass == ProductionClasses::RECRUITMENT)
+                    *groupProduction = SettlementProductionFactory::Get()->Create(proposedOption.Key_, inquiry.Data);
+
                 break;
             }
             else
@@ -325,13 +335,22 @@ void Settlement::DecideProduction()
     }
 }
 
-void Settlement::SetProduction(ProductionOptions option)
+void Settlement::SetBuildingProduction(ProductionOptions option)
 {
     auto inquiry = SettlementProduction::CanProduce(*this, option);
     if(inquiry.CanProduce == false)
         return;
 
-    *currentProduction = SettlementProductionFactory::Get()->Create(option);
+    *buildingProduction = SettlementProductionFactory::Get()->Create(option);
+}
+
+void Settlement::SetGroupProduction(ProductionOptions option)
+{
+    auto inquiry = SettlementProduction::CanProduce(*this, option);
+    if(inquiry.CanProduce == false)
+        return;
+
+    *groupProduction = SettlementProductionFactory::Get()->Create(option);
 }
 
 Color Settlement::GetRulerBanner() const
@@ -394,6 +413,16 @@ AbundanceLevels Settlement::GetHousingAdequacy() const
 }
 
 Integer Settlement::GetIndustrialProduction() const
+{
+    if(IsAbandoned() == true)
+        return 1;
+
+    auto population = GetPopulation();
+
+    return 3 + (population - 1) * 2;
+}
+
+Integer Settlement::GetRecruitmentCapacity() const
 {
     if(IsAbandoned() == true)
         return 1;
@@ -881,18 +910,26 @@ void Settlement::Update()
         }
     }
 
-    //WorkNewTile();
-
-
-    currentProduction->AddProgress(currentProduction->Is(ProductionOptions::NONE) ? 1 : GetIndustrialProduction());
+    buildingProduction->AddProgress(buildingProduction->Is(ProductionOptions::NONE) ? 1 : GetIndustrialProduction());
     
-    if(currentProduction->IsDone())
+    if(buildingProduction->IsDone())
     {
-        currentProduction->Finish(*this);
+        buildingProduction->Finish(*this);
 
         GetPolity()->RegisterProductionFinished(this);
             
-        *currentProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
+        *buildingProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
+    }
+
+    groupProduction->AddProgress(groupProduction->Is(ProductionOptions::NONE) ? 1 : GetIndustrialProduction());
+    
+    if(groupProduction->IsDone())
+    {
+        groupProduction->Finish(*this);
+
+        GetPolity()->RegisterProductionFinished(this);
+            
+        *groupProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
     }
 
     if(worldTime.MinuteCount == 0)
@@ -1081,7 +1118,7 @@ void Settlement::StartImprovingTile(tile::WorldTile *tile, TileImprovements impr
 {
     currentImprovement = {tiles.Find(tile), improvement};
 
-    SetProduction(ProductionOptions::FARM);
+    SetBuildingProduction(ProductionOptions::FARM);
 }
 
 bool Settlement::IsImprovingTile(SettlementTile *tile, TileImprovements improvement) const
@@ -1101,7 +1138,7 @@ void Settlement::CancelImproving()
 {
     currentImprovement = {nullptr};
 
-    SetProduction(ProductionOptions::NONE);
+    SetBuildingProduction(ProductionOptions::NONE);
 }
 
 bool Settlement::HasImprovement(tile::WorldTile *tile, TileImprovements improvement) const

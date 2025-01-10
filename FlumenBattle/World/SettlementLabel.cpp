@@ -545,11 +545,11 @@ void HoverExtension::HandleUpdate()
     groupLabel->Setup(text);
 
     text = "Building: ";
-    text << settlement->GetCurrentProduction()->GetName();
+    text << settlement->GetBuildingProduction()->GetName();
     productionLabel->Setup(text);
 
-    auto progress = settlement->GetCurrentProduction()->GetProgressRatio();
-    if(settlement->GetCurrentProduction()->Is(ProductionOptions::NONE) == true)
+    auto progress = settlement->GetBuildingProduction()->GetProgressRatio();
+    if(settlement->GetBuildingProduction()->Is(ProductionOptions::NONE) == true)
     {
         progress = 0.0f;
     }

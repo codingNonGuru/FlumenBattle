@@ -114,7 +114,7 @@ void HumanMind::MakeDecision(Polity &polity) const
 
     /*for(auto &command : commands)
     {
-        if(command.Settlement->GetCurrentProduction()->Is(command.Type) == true)
+        if(command.Settlement->GetBuildingProduction()->Is(command.Type) == true)
             continue;
 
         command.Settlement->SetProduction(command.Type);
@@ -189,14 +189,26 @@ void HumanMind::SetResearchTarget(science::Technologies tech)
     techRoster->StartResearching(tech);
 }
 
-void HumanMind::ProcessProductionInput(settlement::ProductionOptions option, settlement::Settlement *settlement)
+void HumanMind::ProcessProductionInput(settlement::ProductionOptions option, settlement::ProductionClasses productionClass, settlement::Settlement *settlement)
 {
-    if(settlement->GetCurrentProduction()->Is(option) == true)
-        return;
+    if(productionClass == settlement::ProductionClasses::BUILDING)
+    {
+        if(settlement->GetBuildingProduction()->Is(option) == false)
+        {
+            settlement->SetBuildingProduction(option);
 
-    settlement->SetProduction(option);
+            OnProductionDecided.Invoke();
+        }
+    }
+    else if(productionClass == settlement::ProductionClasses::RECRUITMENT)
+    {
+        if(settlement->GetGroupProduction()->Is(option) == false)
+        {
+            settlement->SetGroupProduction(option);
 
-    OnProductionDecided.Invoke();
+            OnProductionDecided.Invoke();
+        }
+    }
 
     /*for(auto &command : commands)
     {
@@ -309,9 +321,9 @@ void HumanMind::HandleTileSettled()
         
         *settleTargets.Add() = {playerSettlement, hoveredTile};
 
-        if(playerSettlement->GetCurrentProduction()->GetType() != settlement::ProductionOptions::SETTLERS)
+        if(playerSettlement->GetBuildingProduction()->GetType() != settlement::ProductionOptions::SETTLERS)
         {
-            playerSettlement->SetProduction(settlement::ProductionOptions::SETTLERS);
+            playerSettlement->SetGroupProduction(settlement::ProductionOptions::SETTLERS);
         }
     }
     else
@@ -638,7 +650,7 @@ void HumanMind::RegisterTileExplored(settlement::Settlement *settlement, tile::W
 
 void HumanMind::RegisterProductionFinished(settlement::Settlement *settlement) const 
 {
-    if(settlement->GetCurrentProduction()->GetType() == settlement::ProductionOptions::SETTLERS)
+    if(settlement->GetBuildingProduction()->GetType() == settlement::ProductionOptions::SETTLERS)
     {
         auto target = settleTargets.Find(settlement);
         if(target != nullptr)

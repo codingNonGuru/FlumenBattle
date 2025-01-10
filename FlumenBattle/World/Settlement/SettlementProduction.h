@@ -27,14 +27,17 @@ namespace world::settlement
 
         SettlementProductionType(ProductionOptions type, Integer cost, void (*onFinish) (Settlement &)) : Type(type), Cost(cost), OnFinish(onFinish) {}
 
-        SettlementProductionType(ProductionOptions type, Word name, Integer cost, void (*onFinish) (Settlement &)) : Type(type), Name(name), Cost(cost), OnFinish(onFinish) {}
+        SettlementProductionType(ProductionOptions type, Word name, ProductionClasses productionClass, Integer cost, void (*onFinish) (Settlement &)) : 
+            Type(type), Name(name), Class(productionClass), Cost(cost), OnFinish(onFinish) {}
 
-        SettlementProductionType(ProductionOptions type, Word name, Integer cost, void (*onFinish) (Settlement &), void (*onInitialize) (Settlement &)) : 
-            Type(type), Name(name), Cost(cost), OnFinish(onFinish), OnInitialize(onInitialize) {}
+        SettlementProductionType(ProductionOptions type, Word name, ProductionClasses productionClass, Integer cost, void (*onFinish) (Settlement &), void (*onInitialize) (Settlement &)) : 
+            Type(type), Name(name), Class(productionClass), Cost(cost), OnFinish(onFinish), OnInitialize(onInitialize) {}
 
         ProductionOptions Type;
 
         Word Name;
+
+        ProductionClasses Class;
 
         Integer Cost;
 
@@ -124,46 +127,50 @@ namespace world::settlement
     {
         friend class SettlementProduction;
 
-        const SettlementProductionType *BuildProductionType(ProductionOptions);
+        const SettlementProductionType *BuildProductionType(ProductionOptions) const;
 
-        const SettlementProductionType *BuildPatrolProduction();
+        const SettlementProductionType *BuildPatrolProduction() const;
 
-        const SettlementProductionType *BuildGarrisonProduction();
+        const SettlementProductionType *BuildGarrisonProduction() const;
 
-        const SettlementProductionType *BuildFarmProduction();
+        const SettlementProductionType *BuildFarmProduction() const;
 
-        const SettlementProductionType *BuildSewageProduction();
+        const SettlementProductionType *BuildSewageProduction() const;
 
-        const SettlementProductionType *BuildSettlersProduction();
+        const SettlementProductionType *BuildSettlersProduction() const;
 
-        const SettlementProductionType *BuildIrrigationProduction();
+        const SettlementProductionType *BuildIrrigationProduction() const;
 
-        const SettlementProductionType *BuildLibraryProduction();
+        const SettlementProductionType *BuildLibraryProduction() const;
 
-        const SettlementProductionType *BuildHousingProduction();
+        const SettlementProductionType *BuildHousingProduction() const;
 
-        const SettlementProductionType *BuildLumberMillProduction();
+        const SettlementProductionType *BuildLumberMillProduction() const;
 
-        const SettlementProductionType *BuildCarpenterProduction();
+        const SettlementProductionType *BuildCarpenterProduction() const;
 
-        const SettlementProductionType *BuildBakeryProduction();
+        const SettlementProductionType *BuildBakeryProduction() const;
 
-        const SettlementProductionType *BuildWallsProduction();
+        const SettlementProductionType *BuildWallsProduction() const;
 
-        const SettlementProductionType *BuildWeavingMillProduction();
+        const SettlementProductionType *BuildWeavingMillProduction() const;
 
-        const SettlementProductionType *BuildTailoryProduction();
+        const SettlementProductionType *BuildTailoryProduction() const;
 
-        const SettlementProductionType *BuildKeepProduction();
+        const SettlementProductionType *BuildKeepProduction() const;
 
-        const SettlementProductionType *BuildMarketProduction();
+        const SettlementProductionType *BuildMarketProduction() const;
 
-        const SettlementProductionType *BuildPotteryProduction();
+        const SettlementProductionType *BuildPotteryProduction() const;
 
-        const SettlementProductionType *BuildNoneProduction();
+        const SettlementProductionType *BuildNoneProduction() const;
 
     public:
         SettlementProduction Create(ProductionOptions, ProductionData = ProductionData());
+
+        const container::Array <const SettlementProductionType *> &GetRecruitmentOptions() const;
+
+        const container::Array <const SettlementProductionType *> &GetBuildingOptions() const;
     };
 
     class ProductionFinisher

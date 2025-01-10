@@ -38,7 +38,7 @@ namespace world::character
 
         //*spellSlots.Add() = {2};
 
-        items = container::Block <Item *, (int)ItemPositions::COUNT> {nullptr};
+        items = container::Block <Item *, (int)ItemPositions::COUNT> (nullptr);
 
         proficiencies.Initialize();
 

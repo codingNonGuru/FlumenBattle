@@ -161,7 +161,9 @@ namespace world::settlement
 
         Pool <Link> links;
 
-        SettlementProduction *currentProduction;
+        SettlementProduction *buildingProduction;
+
+        SettlementProduction *groupProduction;
 
         ModifierManager modifierManager;
 
@@ -224,6 +226,8 @@ namespace world::settlement
 
         Integer GetIndustrialProduction() const;
 
+        Integer GetRecruitmentCapacity() const;
+
         Integer GetScienceProduction() const;
 
         bool CanGrowBorders() const;
@@ -282,7 +286,9 @@ namespace world::settlement
 
         int GetStock(ResourceTypes type) const {return resourceHandler.Get(type)->Storage;}
 
-        SettlementProduction *GetCurrentProduction() const {return currentProduction;}
+        SettlementProduction *GetBuildingProduction() const {return buildingProduction;}
+
+        SettlementProduction *GetGroupProduction() const {return groupProduction;}
 
         const container::Pool <Building> &GetBuildings() const;
 
@@ -354,9 +360,11 @@ namespace world::settlement
 
         void Update();
 
-        void DecideProduction();
+        void DecideProduction(ProductionClasses);
 
-        void SetProduction(ProductionOptions);
+        void SetBuildingProduction(ProductionOptions);
+
+        void SetGroupProduction(ProductionOptions);
 
         void UpdatePolitics();
 

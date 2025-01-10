@@ -107,7 +107,7 @@ void ImprovementInfo::HandleUpdate()
 
         const auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
 
-        progressBar->SetProgress(playerSettlement->GetCurrentProduction()->GetProgressRatio());
+        progressBar->SetProgress(playerSettlement->GetBuildingProduction()->GetProgressRatio());
     }
 }
 

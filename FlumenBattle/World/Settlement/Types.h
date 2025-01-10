@@ -8,7 +8,6 @@ namespace world::settlement
 {
     enum class ProductionOptions
     {
-        NONE,
         PATROL,
         GARRISON,
         FARM,
@@ -27,8 +26,11 @@ namespace world::settlement
         WEAVING_MILL,
         TAILORY,
         KEEP,
-        POTTERY
+        POTTERY,
+        NONE
     };
+
+    enum class ProductionClasses {RECRUITMENT, BUILDING, NONE};
 
     enum class BuildingTypes
     {

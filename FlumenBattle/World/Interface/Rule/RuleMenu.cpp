@@ -11,6 +11,7 @@
 #include "TradeTab.h"
 #include "GroupTab.h"
 #include "DiplomacyTab.h"
+#include "RecruitmentTab.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Polity/Polity.h"
@@ -36,6 +37,8 @@ static const auto TRADE_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SC
 static const auto GROUPS_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_G, {InputHandler::SHIFT}};
 
 static const auto DIPLOMACY_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_D, {InputHandler::SHIFT}};
+
+static const auto RECRUITMENT_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_C, {InputHandler::SHIFT}};
 
 void TabButton::HandleConfigure()
 {
@@ -68,6 +71,8 @@ void TabButton::Setup(RuleMenuTabs tab)
             return "G";
         case RuleMenuTabs::DIPLOMACY:
             return "D";
+        case RuleMenuTabs::RECRUITMENT:
+            return "C";
         }
     } ();
 
@@ -152,6 +157,8 @@ void RuleMenu::HandleEnable()
 
     InputHandler::RegisterEvent(DIPLOMACY_DISPLAY_KEY, {this, &RuleMenu::HandleDiplomacyPressed});
 
+    InputHandler::RegisterEvent(RECRUITMENT_DISPLAY_KEY, {this, &RuleMenu::HandleRecruitmentPressed});
+
     const auto playerPolity = WorldScene::Get()->GetPlayerPolity();
 
     rulerLabel->Setup(LongWord() << "Realm of " << playerPolity->GetRuler()->GetName());
@@ -172,6 +179,8 @@ void RuleMenu::HandleDisable()
     InputHandler::UnregisterEvent(GROUPS_DISPLAY_KEY);
 
     InputHandler::UnregisterEvent(DIPLOMACY_DISPLAY_KEY);
+
+    InputHandler::UnregisterEvent(RECRUITMENT_DISPLAY_KEY);
 }
 
 void RuleMenu::HandleEconomyPressed()
@@ -207,6 +216,11 @@ void RuleMenu::HandleGroupsPressed()
 void RuleMenu::HandleDiplomacyPressed()
 {
     SetCurrentTab(RuleMenuTabs::DIPLOMACY);
+}
+
+void RuleMenu::HandleRecruitmentPressed()
+{
+    SetCurrentTab(RuleMenuTabs::RECRUITMENT);
 }
 
 void RuleMenu::Setup()
@@ -296,6 +310,17 @@ void RuleMenu::Setup()
     );
 
     *tabs.Add(RuleMenuTabs::DIPLOMACY) = diplomacyTab;
+
+    auto recruitmentTab = ElementFactory::BuildElement <RecruitmentTab>
+    (
+        {
+            size_, 
+            drawOrder_, 
+            {this}
+        }
+    );
+
+    *tabs.Add(RuleMenuTabs::RECRUITMENT) = recruitmentTab;
 
     currentTab = RuleMenuTabs::ECONOMY;
 

@@ -16,10 +16,15 @@ void MachineMind::MakeDecision(Polity &polity) const
 
     for(auto &settlement : polity.GetSettlements())
     {
-        if(settlement->GetCurrentProduction()->Is(settlement::ProductionOptions::NONE) == false)
-            continue;
+        if(settlement->GetBuildingProduction()->Is(settlement::ProductionOptions::NONE) == true)
+        {
+            settlement->DecideProduction(settlement::ProductionClasses::BUILDING);
+        }
 
-        settlement->DecideProduction();
+        if(settlement->GetGroupProduction()->Is(settlement::ProductionOptions::NONE) == true)
+        {
+            settlement->DecideProduction(settlement::ProductionClasses::RECRUITMENT);
+        }
     }
 }
 

@@ -2,6 +2,8 @@
 
 #include "FlumenEngine/Interface/Element.hpp"
 
+#include "FlumenBattle/World/Settlement/Types.h"
+
 class Text;
 class SimpleList;
 class ProgressBar;
@@ -20,10 +22,19 @@ namespace world::interface
 
 namespace world::interface::rule
 {
-    class ProductionDecisionItem;
+    struct ProductionInterfaceData : public AdditionalElementData
+    {
+        settlement::ProductionClasses Type;
 
+        ProductionInterfaceData(settlement::ProductionClasses type) : Type(type) {}
+    };
+
+    class ProductionDecisionItem;
+    
     class ProductionDecisionInterface : public Element
     {
+        settlement::ProductionClasses productionType;
+
         Text *productionLabel;
 
         ProgressBar *productionProgress;
@@ -40,7 +51,7 @@ namespace world::interface::rule
 
         int industrialCapacity;
 
-        void HandleConfigure() override;
+        void HandleConfigure(AdditionalElementData *) override;
 
         void HandleUpdate() override;
 

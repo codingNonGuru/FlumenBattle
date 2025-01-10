@@ -8,6 +8,7 @@
 namespace world::settlement
 {
     enum class ProductionOptions;
+    enum class ProductionClasses;
     class Settlement;
     class Shipment;
     class Building;
@@ -99,7 +100,7 @@ namespace world::polity
 
         Delegate OnPlayerPolityDeleted;
 
-        void ProcessProductionInput(settlement::ProductionOptions, settlement::Settlement *);
+        void ProcessProductionInput(settlement::ProductionOptions, settlement::ProductionClasses, settlement::Settlement *);
 
         void SetResearchTarget(science::Technologies);
 

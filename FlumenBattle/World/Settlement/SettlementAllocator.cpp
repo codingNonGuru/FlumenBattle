@@ -71,7 +71,7 @@ void SettlementAllocator::PreallocateMaximumMemory()
 
     eventMemory = container::PoolAllocator <Event>::PreallocateMemory (settlementCount, MAXIMUM_EVENTS_PER_SETTLEMENT);
 
-    productionMemory = container::Pool <SettlementProduction>::PreallocateMemory (settlementCount);
+    productionMemory = container::Pool <SettlementProduction>::PreallocateMemory (settlementCount * 2);
 
     conditionManagerMemory = container::Pool <ConditionManager>::PreallocateMemory (settlementCount);
 
@@ -132,7 +132,7 @@ void SettlementAllocator::AllocateWorldMemory(int worldSize)
 
     eventAllocator = container::PoolAllocator <Event> (settlementCount, MAXIMUM_EVENTS_PER_SETTLEMENT, eventMemory);
 
-    productionAllocator = container::Pool <SettlementProduction> (settlementCount, productionMemory);
+    productionAllocator = container::Pool <SettlementProduction> (settlementCount * 2, productionMemory);
 
     conditionManagerAllocator = container::Pool <ConditionManager> (settlementCount, conditionManagerMemory);
 
@@ -190,7 +190,9 @@ Settlement * SettlementAllocator::Allocate()
 
     settlement->events.Initialize(eventAllocator);
 
-    settlement->currentProduction = productionAllocator.Add();
+    settlement->buildingProduction = productionAllocator.Add();
+
+    settlement->groupProduction = productionAllocator.Add();
 
     settlement->conditionManager = conditionManagerAllocator.Add();
 
@@ -250,7 +252,9 @@ void SettlementAllocator::Free(Settlement *settlement)
 
     settlement->events.Terminate(eventAllocator);
 
-    productionAllocator.RemoveAt(settlement->currentProduction);
+    productionAllocator.RemoveAt(settlement->buildingProduction);
+
+    productionAllocator.RemoveAt(settlement->groupProduction);
 
     ConditionAllocator::Free(conditionAllocator, *settlement->conditionManager);
 

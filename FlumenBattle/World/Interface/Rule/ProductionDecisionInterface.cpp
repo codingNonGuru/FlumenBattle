@@ -1,3 +1,5 @@
+#include <stdarg.h>
+
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/Text.hpp"
 #include "FlumenEngine/Interface/SimpleList.h"
@@ -26,11 +28,14 @@ static constexpr auto DEFAULT_FONT_SIZE = "Medium";
 
 static constexpr auto OPTION_LAYOUT_POSITION = Position2(0.0f, 70.0f);
 
-static const settlement::ProductionOptions options[] = {
-    settlement::ProductionOptions::WALLS,
-    settlement::ProductionOptions::PATROL, 
-    settlement::ProductionOptions::GARRISON,
+static const container::Array <settlement::ProductionOptions> recruitmentOptions = {
     settlement::ProductionOptions::SETTLERS, 
+    settlement::ProductionOptions::PATROL,
+    settlement::ProductionOptions::GARRISON
+    };
+
+static const container::Array <settlement::ProductionOptions> buildingOptions = {
+    settlement::ProductionOptions::WALLS, 
     settlement::ProductionOptions::IRRIGATION, 
     settlement::ProductionOptions::LIBRARY,
     settlement::ProductionOptions::SEWAGE,
@@ -47,7 +52,7 @@ static const settlement::ProductionOptions options[] = {
 
 #define ITEM_CAPACITY std::size(options)
 
-void ProductionDecisionInterface::HandleConfigure()
+void ProductionDecisionInterface::HandleConfigure(AdditionalElementData *additionalData)
 {
     productionLabel = ElementFactory::BuildText
     (
@@ -88,19 +93,25 @@ void ProductionDecisionInterface::HandleConfigure()
     laborCounter->Setup("WorkHammer", &industrialCapacity, "VeryLarge", Scale2(1.25f));
     laborCounter->SetOffset(5.0f);
 
+    auto data = (ProductionInterfaceData *)additionalData;
+
+    productionType = data->Type;
+
+    auto maximumItemCount = productionType == settlement::ProductionClasses::RECRUITMENT ? recruitmentOptions.GetSize() : buildingOptions.GetSize();
+
     optionLayout = ElementFactory::BuildSimpleList
     (
         {drawOrder_ + 5, {OPTION_LAYOUT_POSITION, ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}},
-        std::size(options),
+        maximumItemCount,
         ListOrientations::VERTICAL,
         5.0f
     );
-    optionLayout->MakeScrollable(6, std::size(options));
+    optionLayout->MakeScrollable(6, maximumItemCount);
     optionLayout->Enable();
 
     static const auto OPTION_ITEM_SIZE = Size(size_.x, 35);
 
-    optionItems.Initialize(ITEM_CAPACITY);
+    optionItems.Initialize(maximumItemCount);
     for(auto i = 0; i < optionItems.GetCapacity(); ++i)
     {
         auto optionItem = ElementFactory::BuildElement <ProductionDecisionItem>
@@ -128,6 +139,8 @@ void ProductionDecisionInterface::HandleUpdate()
 
     int validOptionCount = 0;
 
+    auto &options = (productionType == settlement::ProductionClasses::RECRUITMENT ? recruitmentOptions : buildingOptions);
+
     auto item = optionItems.GetStart();
     for(auto &option : options)
     {
@@ -145,13 +158,19 @@ void ProductionDecisionInterface::HandleUpdate()
 
     optionLayout->SetScrollableChildCount(validOptionCount);
 
-    const auto currentProduction = currentSettlement->GetCurrentProduction();
+    const auto currentProduction = [&] 
+    {
+        if(productionType == settlement::ProductionClasses::BUILDING)
+            return currentSettlement->GetBuildingProduction();
+        else if(productionType == settlement::ProductionClasses::RECRUITMENT)
+            return currentSettlement->GetGroupProduction();
+    } ();
 
-    auto text = Word() << "Building " << currentProduction->GetName();
+    auto text = Word() << (productionType == settlement::ProductionClasses::BUILDING ? "Building " : "Recruiting ") << currentProduction->GetName();
 
     productionLabel->Setup(text);
 
-    industrialCapacity = currentSettlement->GetIndustrialProduction();
+    industrialCapacity = productionType == settlement::ProductionClasses::BUILDING ? currentSettlement->GetIndustrialProduction() : currentSettlement->GetRecruitmentCapacity();
 
     if(currentProduction->Is(settlement::ProductionOptions::NONE) == false)
     {
@@ -184,5 +203,5 @@ void ProductionDecisionInterface::Setup(settlement::Settlement *settlement)
 
 void ProductionDecisionInterface::ProcessInput(settlement::ProductionOptions option)
 {
-    polity::HumanMind::Get()->ProcessProductionInput(option, currentSettlement);
+    polity::HumanMind::Get()->ProcessProductionInput(option, productionType, currentSettlement);
 }

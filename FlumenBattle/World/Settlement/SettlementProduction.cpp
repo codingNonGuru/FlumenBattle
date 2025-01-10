@@ -107,7 +107,7 @@ const SettlementProductionType *SettlementProduction::GetType(ProductionOptions 
     return SettlementProductionFactory::Get()->BuildProductionType(option);
 }
 
-const SettlementProductionType * SettlementProductionFactory::BuildProductionType(ProductionOptions option)
+const SettlementProductionType * SettlementProductionFactory::BuildProductionType(ProductionOptions option) const
 {
     switch(option)
     {
@@ -150,112 +150,154 @@ const SettlementProductionType * SettlementProductionFactory::BuildProductionTyp
     }
 }
 
-const SettlementProductionType * SettlementProductionFactory::BuildPatrolProduction()
+const SettlementProductionType * SettlementProductionFactory::BuildPatrolProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::PATROL, "Patrol", 200, &ProductionFinisher::FinishPatrol};
+    static const SettlementProductionType productionType = {ProductionOptions::PATROL, "Patrol", ProductionClasses::RECRUITMENT, 200, &ProductionFinisher::FinishPatrol};
     return &productionType;
 }
 
-const SettlementProductionType * SettlementProductionFactory::BuildGarrisonProduction()
+const SettlementProductionType * SettlementProductionFactory::BuildGarrisonProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::GARRISON, "Garrison", 200, &ProductionFinisher::FinishGarrison};
+    static const SettlementProductionType productionType = {ProductionOptions::GARRISON, "Garrison", ProductionClasses::RECRUITMENT, 200, &ProductionFinisher::FinishGarrison};
     return &productionType;
 }
 
-const SettlementProductionType * SettlementProductionFactory::BuildFarmProduction()
+const SettlementProductionType * SettlementProductionFactory::BuildFarmProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::FARM, "Tile improvement", 300, &ProductionFinisher::FinishFarm};
+    static const SettlementProductionType productionType = {ProductionOptions::FARM, "Tile improvement", ProductionClasses::BUILDING, 300, &ProductionFinisher::FinishFarm};
     return &productionType;
 }
 
-const SettlementProductionType * SettlementProductionFactory::BuildSettlersProduction()
+const SettlementProductionType * SettlementProductionFactory::BuildSettlersProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::SETTLERS, "Settlers", 300, &ProductionFinisher::FinishSettlers};
+    static const SettlementProductionType productionType = {ProductionOptions::SETTLERS, "Settlers", ProductionClasses::RECRUITMENT, 300, &ProductionFinisher::FinishSettlers};
     return &productionType;
 }
 
-const SettlementProductionType * SettlementProductionFactory::BuildSewageProduction()
+const SettlementProductionType * SettlementProductionFactory::BuildSewageProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::SEWAGE, "Sewage", 400, &ProductionFinisher::FinishSewage};
+    static const SettlementProductionType productionType = {ProductionOptions::SEWAGE, "Sewage", ProductionClasses::BUILDING, 400, &ProductionFinisher::FinishSewage};
     return &productionType;
 }
 
-const SettlementProductionType * SettlementProductionFactory::BuildIrrigationProduction()
+const SettlementProductionType * SettlementProductionFactory::BuildIrrigationProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::IRRIGATION, "Irrigation", 700, &ProductionFinisher::FinishIrrigation};
+    static const SettlementProductionType productionType = {ProductionOptions::IRRIGATION, "Irrigation", ProductionClasses::BUILDING, 700, &ProductionFinisher::FinishIrrigation};
     return &productionType;
 }
 
-const SettlementProductionType * SettlementProductionFactory::BuildLibraryProduction()
+const SettlementProductionType * SettlementProductionFactory::BuildLibraryProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::LIBRARY, "Library", 500, &ProductionFinisher::FinishLibrary};
+    static const SettlementProductionType productionType = {ProductionOptions::LIBRARY, "Library", ProductionClasses::BUILDING, 500, &ProductionFinisher::FinishLibrary};
     return &productionType;
 }
 
-const SettlementProductionType * SettlementProductionFactory::BuildWallsProduction()
+const SettlementProductionType * SettlementProductionFactory::BuildWallsProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::WALLS, "Walls", 500, &ProductionFinisher::FinishWalls};
+    static const SettlementProductionType productionType = {ProductionOptions::WALLS, "Walls", ProductionClasses::BUILDING, 500, &ProductionFinisher::FinishWalls};
     return &productionType;
 }
 
-const SettlementProductionType * SettlementProductionFactory::BuildHousingProduction()
+const SettlementProductionType * SettlementProductionFactory::BuildHousingProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::HOUSING, "Housing", 300, &ProductionFinisher::FinishHousing};
+    static const SettlementProductionType productionType = {ProductionOptions::HOUSING, "Housing", ProductionClasses::BUILDING, 300, &ProductionFinisher::FinishHousing};
     return &productionType;
 }
 
-const SettlementProductionType *SettlementProductionFactory::BuildLumberMillProduction()
+const SettlementProductionType *SettlementProductionFactory::BuildLumberMillProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::LUMBER_MILL, "Lumber mill", 300, &ProductionFinisher::FinishLumberMill};
+    static const SettlementProductionType productionType = {ProductionOptions::LUMBER_MILL, "Lumber mill", ProductionClasses::BUILDING, 300, &ProductionFinisher::FinishLumberMill};
     return &productionType;
 }
 
-const SettlementProductionType *SettlementProductionFactory::BuildWeavingMillProduction()
+const SettlementProductionType *SettlementProductionFactory::BuildWeavingMillProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::WEAVING_MILL, "Weaving mill", 300, &ProductionFinisher::FinishWeavingMill};
+    static const SettlementProductionType productionType = {ProductionOptions::WEAVING_MILL, "Weaving mill", ProductionClasses::BUILDING, 300, &ProductionFinisher::FinishWeavingMill};
     return &productionType;
 }
 
-const SettlementProductionType *SettlementProductionFactory::BuildPotteryProduction()
+const SettlementProductionType *SettlementProductionFactory::BuildPotteryProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::POTTERY, "Pottery", 300, &ProductionFinisher::FinishPottery};
+    static const SettlementProductionType productionType = {ProductionOptions::POTTERY, "Pottery", ProductionClasses::BUILDING, 300, &ProductionFinisher::FinishPottery};
     return &productionType;
 }
 
-const SettlementProductionType *SettlementProductionFactory::BuildTailoryProduction()
+const SettlementProductionType *SettlementProductionFactory::BuildTailoryProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::TAILORY, "Tailory", 300, &ProductionFinisher::FinishTailory};
+    static const SettlementProductionType productionType = {ProductionOptions::TAILORY, "Tailory", ProductionClasses::BUILDING, 300, &ProductionFinisher::FinishTailory};
     return &productionType;
 }
 
-const SettlementProductionType *SettlementProductionFactory::BuildCarpenterProduction()
+const SettlementProductionType *SettlementProductionFactory::BuildCarpenterProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::CARPENTER, "Carpenter", 300, &ProductionFinisher::FinishCarpenter};
+    static const SettlementProductionType productionType = {ProductionOptions::CARPENTER, "Carpenter", ProductionClasses::BUILDING, 300, &ProductionFinisher::FinishCarpenter};
     return &productionType;
 }
 
-const SettlementProductionType *SettlementProductionFactory::BuildBakeryProduction()
+const SettlementProductionType *SettlementProductionFactory::BuildBakeryProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::BAKERY, "Bakery", 300, &ProductionFinisher::FinishBakery};
+    static const SettlementProductionType productionType = {ProductionOptions::BAKERY, "Bakery", ProductionClasses::BUILDING, 300, &ProductionFinisher::FinishBakery};
     return &productionType;
 }
 
-const SettlementProductionType *SettlementProductionFactory::BuildMarketProduction()
+const SettlementProductionType *SettlementProductionFactory::BuildMarketProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::MARKET, "Market", 300, &ProductionFinisher::FinishMarket};
+    static const SettlementProductionType productionType = {ProductionOptions::MARKET, "Market", ProductionClasses::BUILDING, 300, &ProductionFinisher::FinishMarket};
     return &productionType;
 }
 
-const SettlementProductionType *SettlementProductionFactory::BuildKeepProduction()
+const SettlementProductionType *SettlementProductionFactory::BuildKeepProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::KEEP, "Keep", 300, &ProductionFinisher::FinishKeep};
+    static const SettlementProductionType productionType = {ProductionOptions::KEEP, "Keep", ProductionClasses::BUILDING, 300, &ProductionFinisher::FinishKeep};
     return &productionType;
 }
 
-const SettlementProductionType * SettlementProductionFactory::BuildNoneProduction()
+const SettlementProductionType * SettlementProductionFactory::BuildNoneProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::NONE, "Nothing", 6, nullptr};
+    static const SettlementProductionType productionType = {ProductionOptions::NONE, "Nothing", ProductionClasses::NONE, 6, nullptr};
     return &productionType;
+}
+
+const container::Array <const SettlementProductionType *> &SettlementProductionFactory::GetRecruitmentOptions() const
+{
+    static const auto options = [&]
+    {
+        static container::Array <const SettlementProductionType *> options;
+
+        for(int i = 0; i < (int)ProductionOptions::NONE; ++i)
+        {
+            auto type = BuildProductionType(ProductionOptions(i));
+            if(type->Class == ProductionClasses::RECRUITMENT)
+            {
+                *options.Add() = type;
+            }
+        }
+
+        return &options;
+    } ();
+
+    return *options;
+}
+
+const container::Array <const SettlementProductionType *> &SettlementProductionFactory::GetBuildingOptions() const
+{
+    static const auto options = [&]
+    {
+        static container::Array <const SettlementProductionType *> options;
+
+        for(int i = 0; i < (int)ProductionOptions::NONE; ++i)
+        {
+            auto type = BuildProductionType(ProductionOptions(i));
+            if(type->Class == ProductionClasses::BUILDING)
+            {
+                *options.Add() = type;
+            }
+        }
+
+        return &options;
+    } ();
+
+    return *options;
 }
 
 void ProductionFinisher::FinishPatrol(Settlement &settlement)
@@ -328,7 +370,7 @@ void ProductionFinisher::FinishFarm(Settlement &settlement)
     settlement.currentImprovement.Tile->AddImprovement(settlement.currentImprovement.ImprovementType);
 
     settlement.currentImprovement = {nullptr};
-    //auto target = settlement.currentProduction->data.improvementTarget;
+    //auto target = settlement.buildingProduction->data.improvementTarget;
     //target->IsBuilt = true;
 }      
 
@@ -357,7 +399,7 @@ void ProductionFinisher::FinishSettlers(Settlement &settlement)
     }
 
     /*auto polity = settlement.polity;
-    auto target = settlement.currentProduction->data.colonizationTarget;
+    auto target = settlement.buildingProduction->data.colonizationTarget;
 
     if(target->IsBorderingOwnedTile() == true)
     {
