@@ -26,6 +26,7 @@ namespace world::interface::rule
     class BuildingTab;
     class BuildingHoverInfo;
     class ProductionDecisionInterface;
+    class ProductionQueueItem;
 
     struct BuildingItem : public Element
     {
@@ -74,6 +75,10 @@ namespace world::interface::rule
         LayoutGroup *buildingLayout;
 
         BuildingHoverInfo *buildingHoverInfo;
+
+        container::Array <ProductionQueueItem *> queueItems;
+
+        SimpleList *queueItemList;
 
         void HandleConfigure() override;
 

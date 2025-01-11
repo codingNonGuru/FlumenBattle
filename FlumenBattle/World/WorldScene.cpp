@@ -293,7 +293,7 @@ namespace world
             }
         }
 
-        CheckSettlementEmergence();
+        //CheckSettlementEmergence();
 
         if(time.IsNewDay == true)
         {

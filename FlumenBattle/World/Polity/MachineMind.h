@@ -12,6 +12,7 @@ namespace world
 namespace world::settlement
 {
     class Settlement;
+    enum class ProductionOptions;
 }
 
 namespace world::polity
@@ -32,7 +33,7 @@ namespace world::polity
 
         void RegisterTileExplored(settlement::Settlement *, tile::WorldTile *) const override {}
 
-        void RegisterProductionFinished(settlement::Settlement *) const override {}
+        void RegisterProductionFinished(settlement::Settlement *, settlement::ProductionOptions) const override {}
 
         void RegisterMarkForDeletion() const override {}
 

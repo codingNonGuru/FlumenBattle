@@ -335,7 +335,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     ruleMenu = ElementFactory::BuildElement <interface::rule::RuleMenu>
     (
         {
-            Size(720, 500), 
+            Size(720, 540), 
             DrawOrder(14), 
             {canvas}, 
             {false}, 

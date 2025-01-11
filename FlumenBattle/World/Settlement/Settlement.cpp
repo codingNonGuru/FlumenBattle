@@ -916,9 +916,11 @@ void Settlement::Update()
     {
         buildingProduction->Finish(*this);
 
-        GetPolity()->RegisterProductionFinished(this);
+        auto productionType = buildingProduction->GetType();
             
         *buildingProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
+
+        GetPolity()->RegisterProductionFinished(this, productionType);
     }
 
     groupProduction->AddProgress(groupProduction->Is(ProductionOptions::NONE) ? 1 : GetIndustrialProduction());
@@ -927,9 +929,11 @@ void Settlement::Update()
     {
         groupProduction->Finish(*this);
 
-        GetPolity()->RegisterProductionFinished(this);
+        auto productionType = groupProduction->GetType();
             
         *groupProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
+
+        GetPolity()->RegisterProductionFinished(this, productionType);
     }
 
     if(worldTime.MinuteCount == 0)

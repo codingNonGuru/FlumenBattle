@@ -9,6 +9,7 @@ namespace world::settlement
 {
     enum class ProductionOptions;
     enum class ProductionClasses;
+    struct SettlementProductionType;
     class Settlement;
     class Shipment;
     class Building;
@@ -30,6 +31,15 @@ namespace world::science
 namespace world::polity
 {
     struct WorkInstruction;
+
+    struct ProductionQueueSlot
+    {
+        settlement::ProductionOptions Option;
+
+        int Priority;
+
+        bool operator == (int priority) {return priority == Priority;}
+    };
 
     class HumanMind : public Mind, public core::Singleton <HumanMind>
     {
@@ -114,7 +124,7 @@ namespace world::polity
 
         void RegisterTileExplored(settlement::Settlement *, tile::WorldTile *) const override;
 
-        void RegisterProductionFinished(settlement::Settlement *) const override;
+        void RegisterProductionFinished(settlement::Settlement *, settlement::ProductionOptions) const override;
 
         void RegisterMarkForDeletion() const override;
 
@@ -127,5 +137,11 @@ namespace world::polity
         settlement::Settlement *GetLastExplorerSettlement();
 
         void ProcessWorldUpdateData();
+
+        void CancelProduction(ProductionQueueSlot *);
+
+        const container::Pool <ProductionQueueSlot> &GetBuildingQueue() const;
+
+        const container::Pool <ProductionQueueSlot> &GetRecruitmentQueue() const;
     };
 }

@@ -463,9 +463,9 @@ void Polity::RegisterTileExplored(settlement::Settlement *settlement, tile::Worl
     controller->RegisterTileExplored(settlement, tile);
 }
 
-void Polity::RegisterProductionFinished(settlement::Settlement *settlement)
+void Polity::RegisterProductionFinished(settlement::Settlement *settlement, settlement::ProductionOptions option)
 {
-    controller->RegisterProductionFinished(settlement);
+    controller->RegisterProductionFinished(settlement, option);
 }
 
 void Polity::RecalculateLinks()

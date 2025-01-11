@@ -13,6 +13,7 @@ namespace world
     namespace settlement
     {
         class Settlement;
+        enum class ProductionOptions;
     }
 
     namespace science
@@ -167,7 +168,7 @@ namespace world::polity
 
         void RegisterTileExplored(settlement::Settlement *, tile::WorldTile *);
 
-        void RegisterProductionFinished(settlement::Settlement *);
+        void RegisterProductionFinished(settlement::Settlement *, settlement::ProductionOptions);
 
         void RecalculateLinks();
 

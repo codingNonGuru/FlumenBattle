@@ -22,6 +22,7 @@
 #include "FlumenBattle/World/WorldUpdateHandler.h"
 #include "FlumenBattle/World/Settlement/ExplorationHandler.h"
 #include "FlumenBattle/World/Group/GroupDynamics.h"
+#include "FlumenBattle/Config.h"
 
 using namespace world;
 using namespace world::polity;
@@ -59,6 +60,24 @@ struct SettleTarget
 };
 
 auto settleTargets = container::Pool <SettleTarget> (64);
+
+static auto &buildingQueue = [] -> container::Pool <ProductionQueueSlot> &
+{
+    static const auto PRODUCTION_QUEUE_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::PRODUCTION_QUEUE_SIZE).Integer;
+
+    static auto queue = container::Pool <ProductionQueueSlot> (PRODUCTION_QUEUE_SIZE);
+
+    return queue;
+} ();
+
+static auto &recruitmentQueue = [] -> container::Pool <ProductionQueueSlot> &
+{
+    static const auto PRODUCTION_QUEUE_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::PRODUCTION_QUEUE_SIZE).Integer;
+
+    static auto queue = container::Pool <ProductionQueueSlot> (PRODUCTION_QUEUE_SIZE);
+
+    return queue;
+} ();
 
 HumanMind::HumanMind()
 {
@@ -193,12 +212,25 @@ void HumanMind::ProcessProductionInput(settlement::ProductionOptions option, set
 {
     if(productionClass == settlement::ProductionClasses::BUILDING)
     {
-        if(settlement->GetBuildingProduction()->Is(option) == false)
+        if(buildingQueue.IsFull() == false)
+        {
+            auto slot = buildingQueue.Add();
+            *slot = {option, buildingQueue.GetSize()};
+
+            if(buildingQueue.GetSize() == 1 && settlement->GetBuildingProduction()->Is(option) == false)
+            {
+                settlement->SetBuildingProduction(option);
+
+                OnProductionDecided.Invoke();
+            }  
+        }
+
+        /*if(settlement->GetBuildingProduction()->Is(option) == false)
         {
             settlement->SetBuildingProduction(option);
 
             OnProductionDecided.Invoke();
-        }
+        }*/
     }
     else if(productionClass == settlement::ProductionClasses::RECRUITMENT)
     {
@@ -648,9 +680,9 @@ void HumanMind::RegisterTileExplored(settlement::Settlement *settlement, tile::W
     //OnPlayerSettlementTileExplored.Invoke();
 }
 
-void HumanMind::RegisterProductionFinished(settlement::Settlement *settlement) const 
+void HumanMind::RegisterProductionFinished(settlement::Settlement *settlement, settlement::ProductionOptions option) const 
 {
-    if(settlement->GetBuildingProduction()->GetType() == settlement::ProductionOptions::SETTLERS)
+    if(option == settlement::ProductionOptions::SETTLERS)
     {
         auto target = settleTargets.Find(settlement);
         if(target != nullptr)
@@ -665,6 +697,38 @@ void HumanMind::RegisterProductionFinished(settlement::Settlement *settlement) c
             }
 
             settleTargets.RemoveAt(target);
+        }
+    }
+
+    auto &queue = settlement::SettlementProduction::GetType(option)->Class == settlement::ProductionClasses::BUILDING ? buildingQueue : recruitmentQueue;
+    for(auto &slot : queue)
+    {
+        if(slot.Priority == 1)
+        {
+            queue.RemoveAt(&slot);
+            break;
+        }
+    }
+
+    for(auto &slot : queue)
+    {
+        slot.Priority--;
+    }
+
+    for(auto &slot : queue)
+    {
+        if(slot.Priority == 1)
+        {
+            if(settlement::SettlementProduction::GetType(option)->Class == settlement::ProductionClasses::BUILDING)
+            {
+                settlement->SetBuildingProduction(slot.Option);
+            }
+            else
+            {
+                settlement->SetGroupProduction(slot.Option);
+            }
+
+            break;
         }
     }
 }
@@ -704,4 +768,62 @@ void HumanMind::ProcessWorldUpdateData()
 
         RegisterTileExplored(data.Settlement, data.Tile);
     }
+}
+
+void HumanMind::CancelProduction(ProductionQueueSlot *queueSlot)
+{
+    auto isBuilding = settlement::SettlementProduction::GetType(queueSlot->Option)->Class == settlement::ProductionClasses::BUILDING;
+    auto &queue = isBuilding == true ? buildingQueue : recruitmentQueue;
+
+    auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
+
+    if(queue.GetSize() == 1)
+    {
+        if(isBuilding == true)
+            playerSettlement->SetBuildingProduction(settlement::ProductionOptions::NONE);
+        else
+            playerSettlement->SetGroupProduction(settlement::ProductionOptions::NONE);
+
+        queue.Reset();
+    }
+    else if(queueSlot->Priority == 1)
+    {
+        queue.RemoveAt(queueSlot);
+
+        for(auto &slot : queue)
+        {
+            slot.Priority--;
+        }
+
+        auto highestPrioritySlot = queue.Find(1);
+
+        if(isBuilding == true)
+            playerSettlement->SetBuildingProduction(highestPrioritySlot->Option);
+        else
+            playerSettlement->SetGroupProduction(highestPrioritySlot->Option);
+    }
+    else
+    {
+        auto priority = queueSlot->Priority;
+
+        queue.RemoveAt(queueSlot);
+
+        for(auto &slot : queue)
+        {
+            if(slot.Priority > priority)
+            {
+                slot.Priority--;
+            }
+        }
+    }
+}  
+
+const container::Pool <ProductionQueueSlot> &HumanMind::GetBuildingQueue() const
+{
+    return buildingQueue;
+}
+
+const container::Pool <ProductionQueueSlot> &HumanMind::GetRecruitmentQueue() const
+{
+    return recruitmentQueue;
 }

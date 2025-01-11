@@ -12,6 +12,7 @@
 #include "FlumenBattle/World/Interface/Rule/BuildingHoverInfo.h"
 #include "FlumenBattle/WorldInterface.h"
 #include "FlumenBattle/World/Interface/Rule/ProductionDecisionInterface.h"
+#include "FlumenBattle/World/Interface/Rule/ProductionQueueItem.h"
 #include "FlumenBattle/Race.h"
 #include "FlumenBattle/Config.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
@@ -145,9 +146,7 @@ void BuildingTab::HandleConfigure()
         {
             Size(320, 400), 
             drawOrder_, 
-            {Position2(0.0f, 30.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}, 
-            {false}, 
-            Opacity(0.0f)
+            {Position2(0.0f, 30.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}
         },
         new ProductionInterfaceData{settlement::ProductionClasses::BUILDING}
     );
@@ -157,9 +156,7 @@ void BuildingTab::HandleConfigure()
     (
         { 
             drawOrder_,
-            {Position2{0.0f, -10.0f}, ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, this}, 
-            {false},
-            Opacity(0.0f)
+            {Position2{0.0f, -10.0f}, ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, this}
         }
     );
     buildingLayout->SetDistancing(MAXIMUM_BUILDING_COUNT / 2, 5.0f, 5.0f);
@@ -180,6 +177,42 @@ void BuildingTab::HandleConfigure()
         item->Enable();
 
         *buildingItems.Allocate() = item;
+    }
+
+    static const auto PRODUCTION_QUEUE_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::PRODUCTION_QUEUE_SIZE).Integer;
+
+    queueItems.Initialize(PRODUCTION_QUEUE_SIZE);
+
+    queueItemList = ElementFactory::BuildSimpleList <SimpleList>
+    (
+        { 
+            drawOrder_,
+            {Position2{0.0f, -5.0f}, ElementAnchors::UPPER_CENTER, ElementPivots::LOWER_CENTER, nullptr}
+        },
+        PRODUCTION_QUEUE_SIZE,
+        ListOrientations::HORIZONTAL,
+        5.0f
+    );
+    queueItemList->SetFixedElementCount(PRODUCTION_QUEUE_SIZE);
+    queueItemList->Enable();
+
+    queueItemList->SetDynamicParent(buildingLayout);
+
+    for(auto i = 0; i < PRODUCTION_QUEUE_SIZE; ++i)
+    {
+        auto item = ElementFactory::BuildElement <ProductionQueueItem>
+        (
+            {
+                Size(40, 40), 
+                drawOrder_ + 1, 
+                {queueItemList}, 
+                {"panel-border-015", true}
+            }
+        );
+        item->SetSpriteColor(BORDER_COLOR);
+        item->Enable();
+
+        *queueItems.Allocate() = item;
     }
 
     buildingHoverInfo = ElementFactory::BuildElement <interface::rule::BuildingHoverInfo>
@@ -222,6 +255,25 @@ void BuildingTab::HandleUpdate()
         (*item)->SetInteractivity(false);
 
         item++;
+    }
+
+    auto &buildingQueue = polity::HumanMind::Get()->GetBuildingQueue();
+
+    for(auto &queueItem : queueItems)
+    {
+        queueItem->Disable();
+    }
+
+    auto queueItem = queueItems.GetStart();
+    for(int priority = 1; priority <= buildingQueue.GetSize(); ++priority)
+    {
+        auto queueSlot = buildingQueue.Find(priority);
+
+        (*queueItem)->Setup(queueSlot);
+
+        (*queueItem)->Enable();
+
+        queueItem++;
     }
 
     nameLabel->Setup(settlement->GetName());
