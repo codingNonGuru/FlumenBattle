@@ -127,6 +127,14 @@ void TradeItem::Setup(const settlement::Shipment &shipment, settlement::Settleme
 
 void TradeTab::HandleConfigure()
 {
+    shipmentCounter = ElementFactory::BuildText 
+    (
+        {Size(), drawOrder_ + 1, {Position2(10.0f, 50.0f), ElementAnchors::UPPER_LEFT, ElementPivots::UPPER_LEFT, this}},
+        {{"VerySmall"}, TEXT_COLOR}
+    );
+    shipmentCounter->SetAlignment(Text::Alignments::LEFT);
+    shipmentCounter->Enable();
+
     timeBar = ElementFactory::BuildProgressBar <ProgressBar>(
         {Size(120, 28), drawOrder_ + 1, {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}, {"BaseBar", true}},
         {"BaseFillerRed", {6.0f, 6.0f}}
@@ -262,7 +270,16 @@ void TradeTab::HandleUpdate()
         (*linkItem)->Enable();
 
         linkItem++;
-    }     
+    }
+
+    Phrase counterText;
+    counterText << "Day:     " << settlement->GetTradeHandler().dailyShipmentCount << "\n";
+    counterText << "Week:   " << settlement->GetTradeHandler().weeklyShipmentCount << "\n";
+    counterText << "Month:  " << settlement->GetTradeHandler().monthlyShipmentCount << "\n";
+    counterText << "Year:    " << settlement->GetTradeHandler().yearlyShipmentCount << "\n";
+    counterText << "All:      " << settlement->GetTradeHandler().totalShipmentCount;
+
+    shipmentCounter->Setup(counterText);
 }
 
 void TradeTab::HandlePlayerShipment()

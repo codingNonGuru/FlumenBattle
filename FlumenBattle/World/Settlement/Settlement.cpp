@@ -928,7 +928,8 @@ void Settlement::Update()
             
         *buildingProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
 
-        GetPolity()->RegisterProductionFinished(this, productionType);
+        if(productionType != ProductionOptions::NONE)
+            GetPolity()->RegisterProductionFinished(this, productionType);
     }
 
     groupProduction->AddProgress(groupProduction->Is(ProductionOptions::NONE) ? 1 : GetIndustrialProduction());
@@ -941,7 +942,8 @@ void Settlement::Update()
             
         *groupProduction = SettlementProductionFactory::Get()->Create(ProductionOptions::NONE);
 
-        GetPolity()->RegisterProductionFinished(this, productionType);
+        if(productionType != ProductionOptions::NONE)
+            GetPolity()->RegisterProductionFinished(this, productionType);
     }
 
     if(worldTime.MinuteCount == 0)
@@ -998,6 +1000,8 @@ void Settlement::FinishTradeUpdate()
 void Settlement::ReceiveTransport(ResourceTypes resource, int amount)
 {
     resourceHandler.Get(resource)->Storage += amount;
+
+    tradeHandler.ReceiveTransport(*this);
 }
 
 void Settlement::UpdatePolitics()

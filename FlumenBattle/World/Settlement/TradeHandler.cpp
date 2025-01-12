@@ -40,6 +40,21 @@ static const auto MAXIMUM_TRAFFIC = [&RELATIVE_THRESHOLDS]
     return amount;
 } ();
 
+void TradeHandler::Initialize() 
+{
+    lastShipmentTime = 0;
+
+    dailyShipmentCount = 0;
+
+    weeklyShipmentCount = 0;
+
+    monthlyShipmentCount = 0;
+
+    yearlyShipmentCount = 0;
+
+    totalShipmentCount = 0;
+}
+
 void TradeHandler::PrepareTransport(Settlement &settlement)
 {
     willShipThisTurn = false;
@@ -144,6 +159,21 @@ void TradeHandler::SendTransport(Settlement &settlement)
 
     link = finalPriority.To->GetLinks().Find(&settlement);
     link->Traffic += RELATIONSHIP_GAIN_PER_SHIPMENT;
+
+    dailyShipmentCount++;
+    weeklyShipmentCount++;
+    monthlyShipmentCount++;
+    yearlyShipmentCount++;
+    totalShipmentCount++;
+}
+
+void TradeHandler::ReceiveTransport(Settlement &settlement)
+{
+    dailyShipmentCount++;
+    weeklyShipmentCount++;
+    monthlyShipmentCount++;
+    yearlyShipmentCount++;
+    totalShipmentCount++;
 }
 
 void TradeHandler::FinishUpdate(Settlement &settlement)
@@ -159,6 +189,26 @@ void TradeHandler::FinishUpdate(Settlement &settlement)
         else if(link.Traffic > MAXIMUM_TRAFFIC)
         {
             link.Traffic = MAXIMUM_TRAFFIC;
+        }
+    }
+
+    if(WorldScene::Get()->GetTime().IsNewHour && WorldScene::Get()->GetTime().IsNewDay)
+    {
+        dailyShipmentCount = 0;
+
+        if(WorldScene::Get()->GetTime().IsNewYear)
+        {
+            yearlyShipmentCount = 0;
+        }
+
+        if(WorldScene::Get()->GetTime().TotalDayCount % 7 == 0)
+        {
+            weeklyShipmentCount = 0;
+        }
+
+        if(WorldScene::Get()->GetTime().TotalDayCount % 30 == 0)
+        {
+            monthlyShipmentCount = 0;
         }
     }
 }

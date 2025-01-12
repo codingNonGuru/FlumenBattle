@@ -63,6 +63,8 @@ namespace world::interface::rule
 
         settlement::Settlement *settlement;
 
+        Text *shipmentCounter;
+
         void HandleConfigure() override;
 
         void HandleUpdate() override;

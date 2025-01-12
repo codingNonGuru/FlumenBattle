@@ -380,6 +380,8 @@ namespace world::settlement
 
         float GetTradeProgress() const {return tradeHandler.GetProgress(*this);}
 
+        const TradeHandler &GetTradeHandler() const {return tradeHandler;}
+
         void AddPath(Path *);
 
         void RemoveLink(Settlement *);

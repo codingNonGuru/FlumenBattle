@@ -2,6 +2,11 @@
 
 #include "FlumenBattle/World/Settlement/Shipment.h"
 
+namespace world::interface::rule
+{
+    class TradeTab;
+}
+
 namespace world::settlement
 {
     class Settlement;
@@ -20,6 +25,8 @@ namespace world::settlement
     {
         friend class Settlement;
 
+        friend class interface::rule::TradeTab;
+
         int lastShipmentTime;
 
         ShipmentPriority finalPriority;
@@ -28,11 +35,23 @@ namespace world::settlement
 
         Shipment lastOutgoingShipment;
 
-        void Initialize() {lastShipmentTime = 0;}
+        int dailyShipmentCount;
+
+        int weeklyShipmentCount;
+
+        int monthlyShipmentCount;
+
+        int yearlyShipmentCount;
+
+        int totalShipmentCount;
+
+        void Initialize();
 
         void PrepareTransport(Settlement &);
 
         void SendTransport(Settlement &);
+
+        void ReceiveTransport(Settlement &);
 
         void FinishUpdate(Settlement &);
 

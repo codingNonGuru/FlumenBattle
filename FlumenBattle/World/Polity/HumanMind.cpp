@@ -730,6 +730,12 @@ void HumanMind::RegisterProductionFinished(settlement::Settlement *settlement, s
     }
 
     auto queueSet = productionQueues.Find(settlement);
+    if(queueSet == nullptr)
+    {
+        queueSet = productionQueues.Add();
+
+        queueSet->Initialize(settlement);
+    }
 
     auto &queue = settlement::SettlementProduction::GetType(option)->Class == settlement::ProductionClasses::BUILDING ? queueSet->BuildingQueue : queueSet->RecruitmentQueue;
     for(auto &slot : queue)
