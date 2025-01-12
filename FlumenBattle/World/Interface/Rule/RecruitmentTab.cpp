@@ -12,6 +12,7 @@
 #include "FlumenBattle/World/Interface/Rule/BuildingHoverInfo.h"
 #include "FlumenBattle/WorldInterface.h"
 #include "FlumenBattle/World/Interface/Rule/ProductionDecisionInterface.h"
+#include "FlumenBattle/World/Interface/Rule/ProductionQueueItem.h"
 #include "FlumenBattle/Race.h"
 #include "FlumenBattle/Config.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
@@ -45,6 +46,40 @@ void RecruitmentTab::HandleConfigure()
     );
     decisionInterface->Enable();
 
+    static const auto PRODUCTION_QUEUE_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::PRODUCTION_QUEUE_SIZE).Integer;
+
+    queueItems.Initialize(PRODUCTION_QUEUE_SIZE);
+
+    queueItemList = ElementFactory::BuildSimpleList <SimpleList>
+    (
+        { 
+            drawOrder_,
+            {Position2{0.0f, -200.0f}, ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, this}
+        },
+        PRODUCTION_QUEUE_SIZE,
+        ListOrientations::HORIZONTAL,
+        5.0f
+    );
+    queueItemList->SetFixedElementCount(PRODUCTION_QUEUE_SIZE);
+    queueItemList->Enable();
+
+    for(auto i = 0; i < PRODUCTION_QUEUE_SIZE; ++i)
+    {
+        auto item = ElementFactory::BuildElement <ProductionQueueItem>
+        (
+            {
+                Size(40, 40), 
+                drawOrder_ + 1, 
+                {queueItemList}, 
+                {"panel-border-015", true}
+            }
+        );
+        item->SetSpriteColor(BORDER_COLOR);
+        item->Enable();
+
+        *queueItems.Allocate() = item;
+    }
+
     static const auto ruleMenu = WorldInterface::Get()->GetRuleMenu();
 
     ruleMenu->OnSettlementChanged += {this, &RecruitmentTab::HandleSettlementChanged};
@@ -58,6 +93,25 @@ void RecruitmentTab::HandleUpdate()
 
     if(settlement == nullptr)
         return;
+
+    auto &recruitmentQueue = polity::HumanMind::Get()->GetRecruitmentQueue();
+
+    for(auto &queueItem : queueItems)
+    {
+        queueItem->Disable();
+    }
+
+    auto queueItem = queueItems.GetStart();
+    for(int priority = 1; priority <= recruitmentQueue.GetSize(); ++priority)
+    {
+        auto queueSlot = recruitmentQueue.Find(priority);
+
+        (*queueItem)->Setup(queueSlot);
+
+        (*queueItem)->Enable();
+
+        queueItem++;
+    }
 
     nameLabel->Setup(settlement->GetName());
 }

@@ -224,21 +224,20 @@ void HumanMind::ProcessProductionInput(settlement::ProductionOptions option, set
                 OnProductionDecided.Invoke();
             }  
         }
-
-        /*if(settlement->GetBuildingProduction()->Is(option) == false)
-        {
-            settlement->SetBuildingProduction(option);
-
-            OnProductionDecided.Invoke();
-        }*/
     }
     else if(productionClass == settlement::ProductionClasses::RECRUITMENT)
     {
-        if(settlement->GetGroupProduction()->Is(option) == false)
+        if(recruitmentQueue.IsFull() == false)
         {
-            settlement->SetGroupProduction(option);
+            auto slot = recruitmentQueue.Add();
+            *slot = {option, recruitmentQueue.GetSize()};
 
-            OnProductionDecided.Invoke();
+            if(recruitmentQueue.GetSize() == 1 && settlement->GetGroupProduction()->Is(option) == false)
+            {
+                settlement->SetGroupProduction(option);
+
+                OnProductionDecided.Invoke();
+            }  
         }
     }
 

@@ -7,6 +7,7 @@
 class Text;
 class LayoutGroup;
 class ProgressBar;
+class SimpleList;
 
 namespace world::settlement
 {
@@ -23,12 +24,17 @@ namespace world::interface::rule
 {
     class RuleMenu;
     class ProductionDecisionInterface;
+    class ProductionQueueItem;
 
     class RecruitmentTab : public Element
     {
         Text *nameLabel;
 
         ProductionDecisionInterface *decisionInterface;
+
+        container::Array <ProductionQueueItem *> queueItems;
+
+        SimpleList *queueItemList;
 
         void HandleConfigure() override;
 
