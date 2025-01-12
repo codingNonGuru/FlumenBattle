@@ -468,6 +468,11 @@ void Polity::RegisterProductionFinished(settlement::Settlement *settlement, sett
     controller->RegisterProductionFinished(settlement, option);
 }
 
+void Polity::RegisterSettlementDeletion(settlement::Settlement *settlement)
+{
+    controller->RegisterSettlementDeletion(settlement);
+}
+
 void Polity::RecalculateLinks()
 {
     neighborHandler.CalculateNeighbors(this);

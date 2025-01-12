@@ -170,6 +170,8 @@ namespace world::polity
 
         void RegisterProductionFinished(settlement::Settlement *, settlement::ProductionOptions);
 
+        void RegisterSettlementDeletion(settlement::Settlement *);
+
         void RecalculateLinks();
 
         const container::Array <Neighbor> &GetNeighbors() const {return neighborHandler.neighbors;}

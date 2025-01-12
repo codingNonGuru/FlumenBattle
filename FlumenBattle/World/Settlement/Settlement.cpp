@@ -242,16 +242,24 @@ struct NecessityMap
 
 void Settlement::DecideProduction(ProductionClasses productionClass)
 {
-    static const container::Array <ProductionOptions> options = [&] -> std::initializer_list <ProductionOptions>
+    const container::Array <ProductionOptions> &options = [&] 
     {
         if(productionClass == ProductionClasses::RECRUITMENT)
-            return {
+        {
+            static const container::Array <ProductionOptions> options = {
                 ProductionOptions::GARRISON
             };
+
+            return options;
+        }
         else if(productionClass == ProductionClasses::BUILDING)
-            return {
+        {
+            static const container::Array <ProductionOptions> options = {
                 ProductionOptions::HOUSING
             };
+
+            return options;
+        }
     } ();
 
     auto resourceHandler = game::ThreadedResourceHandler <NecessityMap>::Get();
@@ -1204,6 +1212,8 @@ void Settlement::MarkForDeletion()
     turnsUntilDeletion = 6;
 
     groupDynamics->MarkForDeletion();
+
+    GetPolity()->RegisterSettlementDeletion(this);
 }
 
 const ExplorationReward &Settlement::GetLastExplorationReward() const

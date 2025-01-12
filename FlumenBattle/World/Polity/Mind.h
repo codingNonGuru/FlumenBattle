@@ -34,6 +34,8 @@ namespace world::polity
 
         virtual void RegisterProductionFinished(settlement::Settlement *, settlement::ProductionOptions) const = 0;
 
+        virtual void RegisterSettlementDeletion(settlement::Settlement *) const = 0;
+
         virtual void RegisterMarkForDeletion() const = 0;
     };
 }

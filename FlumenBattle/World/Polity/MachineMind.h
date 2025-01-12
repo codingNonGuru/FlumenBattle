@@ -35,6 +35,8 @@ namespace world::polity
 
         void RegisterProductionFinished(settlement::Settlement *, settlement::ProductionOptions) const override {}
 
+        void RegisterSettlementDeletion(settlement::Settlement *) const override {}
+
         void RegisterMarkForDeletion() const override {}
 
         void GrowBorders(settlement::Settlement *);

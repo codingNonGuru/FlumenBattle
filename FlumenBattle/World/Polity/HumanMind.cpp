@@ -61,22 +61,44 @@ struct SettleTarget
 
 auto settleTargets = container::Pool <SettleTarget> (64);
 
-static auto &buildingQueue = [] -> container::Pool <ProductionQueueSlot> &
+struct ProductionQueueSet
 {
-    static const auto PRODUCTION_QUEUE_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::PRODUCTION_QUEUE_SIZE).Integer;
+    settlement::Settlement *Settlement;
 
-    static auto queue = container::Pool <ProductionQueueSlot> (PRODUCTION_QUEUE_SIZE);
+    container::Pool <ProductionQueueSlot> BuildingQueue;
 
-    return queue;
-} ();
+    container::Pool <ProductionQueueSlot> RecruitmentQueue;
 
-static auto &recruitmentQueue = [] -> container::Pool <ProductionQueueSlot> &
+    bool operator == (const settlement::Settlement *otherSettlement) {return Settlement == otherSettlement;}
+
+    void Initialize(settlement::Settlement *settlement)
+    {
+        Settlement = settlement;
+        BuildingQueue.Reset();
+        RecruitmentQueue.Reset();
+    }
+};
+
+static auto &productionQueues = [] -> container::Pool <ProductionQueueSet> &
 {
-    static const auto PRODUCTION_QUEUE_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::PRODUCTION_QUEUE_SIZE).Integer;
+    auto capacity = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_POLITY_SIZE).Integer;
 
-    static auto queue = container::Pool <ProductionQueueSlot> (PRODUCTION_QUEUE_SIZE);
+    static container::Pool <ProductionQueueSet> queues(capacity);
 
-    return queue;
+    for(int i = 0; i < capacity; ++i)
+    {
+        auto queueSet = queues.Add();
+
+        static const auto PRODUCTION_QUEUE_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::PRODUCTION_QUEUE_SIZE).Integer;
+
+        queueSet->BuildingQueue.Initialize(PRODUCTION_QUEUE_SIZE);
+
+        queueSet->RecruitmentQueue.Initialize(PRODUCTION_QUEUE_SIZE);
+    }
+
+    queues.Reset();
+    
+    return queues;
 } ();
 
 HumanMind::HumanMind()
@@ -210,14 +232,22 @@ void HumanMind::SetResearchTarget(science::Technologies tech)
 
 void HumanMind::ProcessProductionInput(settlement::ProductionOptions option, settlement::ProductionClasses productionClass, settlement::Settlement *settlement)
 {
+    auto queueSet = productionQueues.Find(settlement);
+    if(queueSet == nullptr)
+    {
+        queueSet = productionQueues.Add();
+
+        queueSet->Initialize(settlement);
+    }
+
     if(productionClass == settlement::ProductionClasses::BUILDING)
     {
-        if(buildingQueue.IsFull() == false)
+        if(queueSet->BuildingQueue.IsFull() == false)
         {
-            auto slot = buildingQueue.Add();
-            *slot = {option, buildingQueue.GetSize()};
+            auto slot = queueSet->BuildingQueue.Add();
+            *slot = {option, queueSet->BuildingQueue.GetSize()};
 
-            if(buildingQueue.GetSize() == 1 && settlement->GetBuildingProduction()->Is(option) == false)
+            if(queueSet->BuildingQueue.GetSize() == 1 && settlement->GetBuildingProduction()->Is(option) == false)
             {
                 settlement->SetBuildingProduction(option);
 
@@ -227,12 +257,12 @@ void HumanMind::ProcessProductionInput(settlement::ProductionOptions option, set
     }
     else if(productionClass == settlement::ProductionClasses::RECRUITMENT)
     {
-        if(recruitmentQueue.IsFull() == false)
+        if(queueSet->RecruitmentQueue.IsFull() == false)
         {
-            auto slot = recruitmentQueue.Add();
-            *slot = {option, recruitmentQueue.GetSize()};
+            auto slot = queueSet->RecruitmentQueue.Add();
+            *slot = {option, queueSet->RecruitmentQueue.GetSize()};
 
-            if(recruitmentQueue.GetSize() == 1 && settlement->GetGroupProduction()->Is(option) == false)
+            if(queueSet->RecruitmentQueue.GetSize() == 1 && settlement->GetGroupProduction()->Is(option) == false)
             {
                 settlement->SetGroupProduction(option);
 
@@ -699,7 +729,9 @@ void HumanMind::RegisterProductionFinished(settlement::Settlement *settlement, s
         }
     }
 
-    auto &queue = settlement::SettlementProduction::GetType(option)->Class == settlement::ProductionClasses::BUILDING ? buildingQueue : recruitmentQueue;
+    auto queueSet = productionQueues.Find(settlement);
+
+    auto &queue = settlement::SettlementProduction::GetType(option)->Class == settlement::ProductionClasses::BUILDING ? queueSet->BuildingQueue : queueSet->RecruitmentQueue;
     for(auto &slot : queue)
     {
         if(slot.Priority == 1)
@@ -730,6 +762,11 @@ void HumanMind::RegisterProductionFinished(settlement::Settlement *settlement, s
             break;
         }
     }
+}
+
+void HumanMind::RegisterSettlementDeletion(settlement::Settlement *settlement) const
+{
+    productionQueues.Remove(settlement);
 }
 
 void HumanMind::RegisterMarkForDeletion() const 
@@ -771,10 +808,12 @@ void HumanMind::ProcessWorldUpdateData()
 
 void HumanMind::CancelProduction(ProductionQueueSlot *queueSlot)
 {
-    auto isBuilding = settlement::SettlementProduction::GetType(queueSlot->Option)->Class == settlement::ProductionClasses::BUILDING;
-    auto &queue = isBuilding == true ? buildingQueue : recruitmentQueue;
-
     auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
+
+    auto queueSet = productionQueues.Find(playerSettlement);
+
+    auto isBuilding = settlement::SettlementProduction::GetType(queueSlot->Option)->Class == settlement::ProductionClasses::BUILDING;
+    auto &queue = isBuilding == true ? queueSet->BuildingQueue : queueSet->RecruitmentQueue;
 
     if(queue.GetSize() == 1)
     {
@@ -819,10 +858,30 @@ void HumanMind::CancelProduction(ProductionQueueSlot *queueSlot)
 
 const container::Pool <ProductionQueueSlot> &HumanMind::GetBuildingQueue() const
 {
-    return buildingQueue;
+    auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
+
+    auto queueSet = productionQueues.Find(playerSettlement);
+    if(queueSet == nullptr)
+    {
+        queueSet = productionQueues.Add();
+
+        queueSet->Initialize(playerSettlement);
+    }
+
+    return queueSet->BuildingQueue;
 }
 
 const container::Pool <ProductionQueueSlot> &HumanMind::GetRecruitmentQueue() const
 {
-    return recruitmentQueue;
+    auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
+
+    auto queueSet = productionQueues.Find(playerSettlement);
+    if(queueSet == nullptr)
+    {
+        queueSet = productionQueues.Add();
+
+        queueSet->Initialize(playerSettlement);
+    }
+
+    return queueSet->RecruitmentQueue;
 }
