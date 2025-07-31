@@ -94,7 +94,7 @@ namespace world
 
         //ownershipChangeQueue.Reset();
 
-        auto refreshCount = time.FlowSpeed == 5 ? 2 : 1;
+        auto refreshCount = time.FlowSpeed == 5 ? 3 : 1;
         for(int i = 0; i < refreshCount; ++i)
         {
             Refresh();

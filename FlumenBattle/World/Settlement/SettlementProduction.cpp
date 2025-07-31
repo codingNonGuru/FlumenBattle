@@ -152,103 +152,103 @@ const SettlementProductionType * SettlementProductionFactory::BuildProductionTyp
 
 const SettlementProductionType * SettlementProductionFactory::BuildPatrolProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::PATROL, "Patrol", ProductionClasses::RECRUITMENT, 200, &ProductionFinisher::FinishPatrol};
+    static const SettlementProductionType productionType = {ProductionOptions::PATROL, "Patrol", ProductionClasses::RECRUITMENT, 2000, &ProductionFinisher::FinishPatrol};
     return &productionType;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildGarrisonProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::GARRISON, "Garrison", ProductionClasses::RECRUITMENT, 200, &ProductionFinisher::FinishGarrison};
+    static const SettlementProductionType productionType = {ProductionOptions::GARRISON, "Garrison", ProductionClasses::RECRUITMENT, 2000, &ProductionFinisher::FinishGarrison};
     return &productionType;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildFarmProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::FARM, "Tile improvement", ProductionClasses::BUILDING, 300, &ProductionFinisher::FinishFarm};
+    static const SettlementProductionType productionType = {ProductionOptions::FARM, "Tile improvement", ProductionClasses::BUILDING, 3000, &ProductionFinisher::FinishFarm};
     return &productionType;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildSettlersProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::SETTLERS, "Settlers", ProductionClasses::RECRUITMENT, 300, &ProductionFinisher::FinishSettlers};
+    static const SettlementProductionType productionType = {ProductionOptions::SETTLERS, "Settlers", ProductionClasses::RECRUITMENT, 3000, &ProductionFinisher::FinishSettlers};
     return &productionType;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildSewageProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::SEWAGE, "Sewage", ProductionClasses::BUILDING, 400, &ProductionFinisher::FinishSewage};
+    static const SettlementProductionType productionType = {ProductionOptions::SEWAGE, "Sewage", ProductionClasses::BUILDING, 4000, &ProductionFinisher::FinishSewage};
     return &productionType;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildIrrigationProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::IRRIGATION, "Irrigation", ProductionClasses::BUILDING, 700, &ProductionFinisher::FinishIrrigation};
+    static const SettlementProductionType productionType = {ProductionOptions::IRRIGATION, "Irrigation", ProductionClasses::BUILDING, 7000, &ProductionFinisher::FinishIrrigation};
     return &productionType;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildLibraryProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::LIBRARY, "Library", ProductionClasses::BUILDING, 500, &ProductionFinisher::FinishLibrary};
+    static const SettlementProductionType productionType = {ProductionOptions::LIBRARY, "Library", ProductionClasses::BUILDING, 5000, &ProductionFinisher::FinishLibrary};
     return &productionType;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildWallsProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::WALLS, "Walls", ProductionClasses::BUILDING, 500, &ProductionFinisher::FinishWalls};
+    static const SettlementProductionType productionType = {ProductionOptions::WALLS, "Walls", ProductionClasses::BUILDING, 5000, &ProductionFinisher::FinishWalls};
     return &productionType;
 }
 
 const SettlementProductionType * SettlementProductionFactory::BuildHousingProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::HOUSING, "Housing", ProductionClasses::BUILDING, 300, &ProductionFinisher::FinishHousing};
+    static const SettlementProductionType productionType = {ProductionOptions::HOUSING, "Housing", ProductionClasses::BUILDING, 3000, &ProductionFinisher::FinishHousing};
     return &productionType;
 }
 
 const SettlementProductionType *SettlementProductionFactory::BuildLumberMillProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::LUMBER_MILL, "Lumber mill", ProductionClasses::BUILDING, 300, &ProductionFinisher::FinishLumberMill};
+    static const SettlementProductionType productionType = {ProductionOptions::LUMBER_MILL, "Lumber mill", ProductionClasses::BUILDING, 3000, &ProductionFinisher::FinishLumberMill};
     return &productionType;
 }
 
 const SettlementProductionType *SettlementProductionFactory::BuildWeavingMillProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::WEAVING_MILL, "Weaving mill", ProductionClasses::BUILDING, 300, &ProductionFinisher::FinishWeavingMill};
+    static const SettlementProductionType productionType = {ProductionOptions::WEAVING_MILL, "Weaving mill", ProductionClasses::BUILDING, 3000, &ProductionFinisher::FinishWeavingMill};
     return &productionType;
 }
 
 const SettlementProductionType *SettlementProductionFactory::BuildPotteryProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::POTTERY, "Pottery", ProductionClasses::BUILDING, 300, &ProductionFinisher::FinishPottery};
+    static const SettlementProductionType productionType = {ProductionOptions::POTTERY, "Pottery", ProductionClasses::BUILDING, 3000, &ProductionFinisher::FinishPottery};
     return &productionType;
 }
 
 const SettlementProductionType *SettlementProductionFactory::BuildTailoryProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::TAILORY, "Tailory", ProductionClasses::BUILDING, 300, &ProductionFinisher::FinishTailory};
+    static const SettlementProductionType productionType = {ProductionOptions::TAILORY, "Tailory", ProductionClasses::BUILDING, 3000, &ProductionFinisher::FinishTailory};
     return &productionType;
 }
 
 const SettlementProductionType *SettlementProductionFactory::BuildCarpenterProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::CARPENTER, "Carpenter", ProductionClasses::BUILDING, 300, &ProductionFinisher::FinishCarpenter};
+    static const SettlementProductionType productionType = {ProductionOptions::CARPENTER, "Carpenter", ProductionClasses::BUILDING, 3000, &ProductionFinisher::FinishCarpenter};
     return &productionType;
 }
 
 const SettlementProductionType *SettlementProductionFactory::BuildBakeryProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::BAKERY, "Bakery", ProductionClasses::BUILDING, 300, &ProductionFinisher::FinishBakery};
+    static const SettlementProductionType productionType = {ProductionOptions::BAKERY, "Bakery", ProductionClasses::BUILDING, 3000, &ProductionFinisher::FinishBakery};
     return &productionType;
 }
 
 const SettlementProductionType *SettlementProductionFactory::BuildMarketProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::MARKET, "Market", ProductionClasses::BUILDING, 300, &ProductionFinisher::FinishMarket};
+    static const SettlementProductionType productionType = {ProductionOptions::MARKET, "Market", ProductionClasses::BUILDING, 3000, &ProductionFinisher::FinishMarket};
     return &productionType;
 }
 
 const SettlementProductionType *SettlementProductionFactory::BuildKeepProduction() const
 {
-    static const SettlementProductionType productionType = {ProductionOptions::KEEP, "Keep", ProductionClasses::BUILDING, 300, &ProductionFinisher::FinishKeep};
+    static const SettlementProductionType productionType = {ProductionOptions::KEEP, "Keep", ProductionClasses::BUILDING, 3000, &ProductionFinisher::FinishKeep};
     return &productionType;
 }
 

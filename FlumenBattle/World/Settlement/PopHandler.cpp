@@ -17,6 +17,8 @@ static const auto ABANDONMENT_RECOVERY_DC = 15;
 
 static const auto COMPLETE_DISAPPEARENCE_TIME = world::WorldTime::GetTicksFromDays(7);
 
+static const auto GROWTH_THRESHOLD = 10000;
+
 void PopHandler::Initialize()
 {
     population = 1;
@@ -215,6 +217,11 @@ int PopHandler::GetPopulation() const
     return population;
 }
 
+float PopHandler::GetGrowthRatio() const 
+{
+    return float(growth) / float(GROWTH_THRESHOLD);
+}
+
 bool PopHandler::IsSettlementAbandoned() const
 {
     return GetPopulation() == 0;
@@ -368,7 +375,7 @@ void PopHandler::UpdateGrowth(Settlement *settlement)
     } ();
 
     growth += addedGrowth;
-    if(growth >= growthThreshold)
+    if(growth >= GROWTH_THRESHOLD)
     {
         growth = 0;
         

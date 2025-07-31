@@ -37,8 +37,6 @@ namespace world::settlement
 
         int growth;
 
-        int growthThreshold {1000};
-
         int timeSinceAbandonment;
 
         int timeSinceRuined;
@@ -78,7 +76,7 @@ namespace world::settlement
 
         int GetGrowth() const {return growth;}
 
-        float GetGrowthRatio() const {return float(growth) / float(growthThreshold);}
+        float GetGrowthRatio() const;
 
         bool IsSettlementAbandoned() const;
 
