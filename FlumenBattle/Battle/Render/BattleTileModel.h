@@ -37,5 +37,9 @@ namespace battle::render
         void CreateCamera();
 
         void HandleCharacterSelected();
+
+        void AddRenderJob(Event);
+
+        void RemoveRenderJob(Event);
     };
 }

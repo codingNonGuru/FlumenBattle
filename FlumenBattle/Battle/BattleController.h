@@ -65,6 +65,8 @@ namespace battle
 
         void HandleMoveAnimationFinished();
 
+        void HandleActAnimationFinished();
+
     public:
         Delegate OnCharacterActed;
 

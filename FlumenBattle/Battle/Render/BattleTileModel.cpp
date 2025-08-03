@@ -42,6 +42,8 @@ static Float shadeTimer = 0.0f;
 
 static const auto BACKGROUND_COLOR = Color(0.1f, 0.1f, 0.7f, 1.0f);
 
+static Pool <Event> lastRenderPassJobs = Pool <Event> (16);
+
 BattleTileModel::BattleTileModel()
 {
     auto hexMesh = MeshManager::GetMeshes().Add("Hex"); 
@@ -316,4 +318,19 @@ void BattleTileModel::Render()
     RenderPath();
 
     RenderSpellArea();
+
+    for(auto &job : lastRenderPassJobs)
+    {
+        job.Invoke();
+    }
+}
+
+void BattleTileModel::AddRenderJob(Event job)
+{
+    *lastRenderPassJobs.Add() = job;
+}
+
+void BattleTileModel::RemoveRenderJob(Event job)
+{
+    lastRenderPassJobs.Remove(job);
 }

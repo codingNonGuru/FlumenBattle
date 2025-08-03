@@ -5,6 +5,11 @@
 
 namespace battle
 {
+    namespace render
+    {
+        struct FireballEffect;
+    }
+
     struct BattleTile;
 
     class BattleAnimator : public core::Singleton <BattleAnimator>
@@ -32,8 +37,12 @@ namespace battle
     public:
         void FollowPathMovement(Event);
 
+        void SetupActionAnimation(Event);
+
         bool IsWorking() const {return isAnimating;}
 
         float GetAnimationLength() const;
+
+        const render::FireballEffect &GetFireballEffect() const;
     };
 }

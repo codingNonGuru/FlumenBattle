@@ -141,6 +141,10 @@ void BattleController::SelectAction(Integer actionIndex)
     }
 }
 
+static bool canActAgainstCombatant;
+
+static bool canActAgainstTile;
+
 void BattleController::Act()
 {
     if(selectedCombatant == nullptr)
@@ -149,11 +153,16 @@ void BattleController::Act()
     if(battleScene->IsCharactersTurn(selectedCombatant) == false)
         return;
 
-    bool canActAgainstCombatant = targetedCombatant != nullptr && selectedCombatant->CanAct(targetedCombatant) == true;
-    bool canActAgainstTile = targetedTile != nullptr && selectedCombatant->CanAct(targetedTile) == true;
+    canActAgainstCombatant = targetedCombatant != nullptr && selectedCombatant->CanAct(targetedCombatant) == true;
+    canActAgainstTile = targetedTile != nullptr && selectedCombatant->CanAct(targetedTile) == true;
     if(canActAgainstCombatant == false && canActAgainstTile == false)
         return;
 
+    BattleAnimator::Get()->SetupActionAnimation({this, &BattleController::HandleActAnimationFinished});
+}
+
+void BattleController::HandleActAnimationFinished()
+{
     if(canActAgainstCombatant)
     {
         lastActionData = selectedCombatant->Act(targetedCombatant);

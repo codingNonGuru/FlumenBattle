@@ -6,6 +6,10 @@
 #include "FlumenBattle/Battle/BattleTile.h"
 #include "FlumenBattle/Battle/BattleScene.h"
 #include "FlumenBattle/Battle/Combatant.h"
+#include "FlumenBattle/World/Character/Character.h"
+#include "FlumenBattle/World/Character/CharacterAction.h"
+#include "FlumenBattle/World/Character/Spell.h"
+#include "FlumenBattle/Battle/Render/FireballEffect.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 
 using namespace battle;
@@ -26,6 +30,10 @@ struct FollowPathData
 auto jumpsLeft = 0;
 
 static constexpr auto JUMP_TIME_LENGTH = 0.5f;
+
+enum class BattleAnimations {MOVEMENT, FIREBALL};
+
+static BattleAnimations currentAnimation;
 
 BattleAnimator::BattleAnimator()
 {
@@ -69,9 +77,44 @@ float BattleAnimator::GetAnimationLength() const
     return totalLength;
 }
 
+static battle::render::FireballEffect *fireballEffect = nullptr;
+
+const battle::render::FireballEffect &BattleAnimator::GetFireballEffect() const
+{
+    return *fireballEffect;
+}
+
+void BattleAnimator::SetupActionAnimation(Event onFinished)
+{
+    static const auto battleController = BattleController::Get();
+
+    bool isActionSpell = battleController->GetSelectedCharacter()->GetSelectedAction()->Type == world::character::CharacterActions::CAST_SPELL;
+
+    bool isSpellFireball = battleController->GetSelectedCharacter()->GetSelectedSpell()->Type == SpellTypes::FIRE_BALL;
+
+    if(isActionSpell == true && isSpellFireball == true)
+    {
+        currentAnimation = BattleAnimations::FIREBALL;
+
+        isAnimating = true;
+
+        time = 0.0f;
+
+        OnFinished = onFinished;
+
+        fireballEffect = new render::FireballEffect(battleController->GetTargetedTile(), 2);    
+    }
+    else
+    {
+        onFinished.Invoke();
+    }
+}
+
 void BattleAnimator::FollowPathMovement(Event onFinished)
 {
     static const auto battleController = BattleController::Get();
+
+    currentAnimation = BattleAnimations::MOVEMENT;
 
     isAnimating = true;
 
@@ -116,33 +159,54 @@ void BattleAnimator::Update()
 
     time += Time::GetDelta();
 
-    auto timeFactor = time / jumpLength;
-
-    auto oldPosition = followPathData.Combatant->GetPosition();
-
-    auto newPosition = followPathData.StartPosition * (1.0f - timeFactor) + followPathData.EndPosition * timeFactor;
-    followPathData.Combatant->SetPosition(newPosition);
-
-    auto direction = newPosition - oldPosition;
-
-    auto newRotation = atan2(direction.y, direction.x);
-    followPathData.Combatant->SetRotation(newRotation);
-
-    if(time > jumpLength)
+    switch(currentAnimation)
     {
-        jumpsLeft--;
-
-        if(jumpsLeft == 0)
+        case BattleAnimations::MOVEMENT:
         {
-            isAnimating = false;
+            auto timeFactor = time / jumpLength;
 
-            OnFinished.Invoke();
+            auto oldPosition = followPathData.Combatant->GetPosition();
+
+            auto newPosition = followPathData.StartPosition * (1.0f - timeFactor) + followPathData.EndPosition * timeFactor;
+            followPathData.Combatant->SetPosition(newPosition);
+
+            auto direction = newPosition - oldPosition;
+
+            auto newRotation = atan2(direction.y, direction.x);
+            followPathData.Combatant->SetRotation(newRotation);
+
+            if(time > jumpLength)
+            {
+                jumpsLeft--;
+
+                if(jumpsLeft == 0)
+                {
+                    isAnimating = false;
+
+                    OnFinished.Invoke();
+                }
+                else
+                {
+                    time = 0.0f;
+
+                    Advance();
+                }
+            }
+            break;
         }
-        else
+        case BattleAnimations::FIREBALL:
         {
-            time = 0.0f;
+            auto hasFinished = fireballEffect->Update();
 
-            Advance();
+            if(hasFinished == true)
+            {
+                isAnimating = false;
+
+                delete fireballEffect;
+
+                OnFinished.Invoke();
+            }
+            break;
         }
     }
 }
