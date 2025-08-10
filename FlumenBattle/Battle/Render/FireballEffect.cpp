@@ -19,6 +19,32 @@ FireballEffect::FireballEffect(BattleTile *newTile, BattleTile *startTile, int n
 {
     isActive = true;
 
+    for(auto &particle : flightParticles)
+    {
+        auto x = utility::GetRandom(-15.0f, 15.0f);
+
+        auto y = utility::GetRandom(-15.0f, 15.0f);
+
+        auto scale = utility::GetRandom(0.5f, 0.65f);
+
+        auto tint = utility::GetRandom(0.3f, 1.0f);
+
+        particle = Particle{{x, y}, scale, tint};
+    }
+
+    for(auto &particle : boomParticles)
+    {
+        auto x = utility::GetRandom(-10.0f, 10.0f);
+
+        auto y = utility::GetRandom(-10.0f, 10.0f);
+
+        auto scale = utility::GetRandom(0.8f, 1.1f);
+
+        auto tint = utility::GetRandom(0.3f, 1.0f);
+
+        particle = Particle{{x, y}, scale, tint};
+    }
+
     lifeTime = 0.0f;
 
     strength = 1.0f;
@@ -44,11 +70,11 @@ bool FireballEffect::Update()
     {
         phase = Phases::EXPLOSION;
 
-        engine::SoundManager::Get()->PlaySound("FireballBoom");
+        engine::SoundManager::Get()->PlaySound("Explosion3");
     }
 
     if(phase == Phases::FLIGHT)
-        strength = 1.0f;
+        strength = 0.4f;
     else
         strength = 2.0f - lifeTime;
 
@@ -74,11 +100,7 @@ void FireballEffect::Render()
 
 	shader->SetConstant(camera->GetMatrix(), "viewMatrix");
 
-	shader->SetConstant(BattleMap::TILE_SIZE, "hexSize");
-
     shader->SetConstant(0.0f, "depth");
-
-	shader->SetConstant(strength, "opacity");
 
     if(phase == Phases::FLIGHT)
     {
@@ -86,26 +108,39 @@ void FireballEffect::Render()
 
         auto position = startingTile->Position * (1.0f - factor) + targetTile->Position * factor;
 
-        shader->SetConstant(position, "hexPosition");
+        auto size = BattleMap::TILE_SIZE * 0.5f * (1.0f - factor) + BattleMap::TILE_SIZE * 1.2f * factor;
 
-        auto size = BattleMap::TILE_SIZE * 0.3f * (1.0f - factor) + BattleMap::TILE_SIZE * 1.2f * factor;
+        for(auto &particle : flightParticles)
+        {
+            shader->SetConstant(strength, "opacity");
 
-        shader->SetConstant(size, "hexSize");
+            shader->SetConstant(position + particle.Position, "hexPosition");
 
-        shader->SetConstant(Color::ORANGE, "color");
+            shader->SetConstant(size * particle.Size, "hexSize");
 
-        glDrawArrays(GL_TRIANGLES, 0, 18);
+            auto color = Color::ORANGE * particle.TintFactor + Color::YELLOW * (1.0f - particle.TintFactor);
+            shader->SetConstant(color, "color");
+
+            glDrawArrays(GL_TRIANGLES, 0, 18);
+        }
     }
     else
     {
+        shader->SetConstant(strength, "opacity");
+
+        auto i = 0;
+
         auto &neighbours = targetTile->GetNearbyTiles(range);
         for(auto nearbyTile : neighbours)
         {
-            shader->SetConstant(nearbyTile->Position, "hexPosition");
+            auto &particle = *boomParticles.Get(i++);
 
-            shader->SetConstant(BattleMap::TILE_SIZE, "hexSize");
+            shader->SetConstant(nearbyTile->Position + particle.Position, "hexPosition");
 
-            shader->SetConstant(Color::ORANGE, "color");
+            shader->SetConstant(BattleMap::TILE_SIZE * particle.Size, "hexSize");
+
+            auto color = Color::ORANGE * particle.TintFactor + Color::YELLOW * (1.0f - particle.TintFactor);
+            shader->SetConstant(color, "color");
 
             glDrawArrays(GL_TRIANGLES, 0, 18);
         }

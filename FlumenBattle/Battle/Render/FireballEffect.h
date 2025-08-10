@@ -1,5 +1,7 @@
 #pragma once
 
+#include "FlumenCore/Conventions.hpp"
+
 namespace battle
 {
     class BattleScene;
@@ -11,6 +13,15 @@ namespace battle::render
 {
     class FireballEffect
     {
+        struct Particle
+        {
+            Position2 Position;
+
+            float Size;
+
+            float TintFactor;
+        };
+
         enum class Phases {FLIGHT, EXPLOSION};
 
         bool isActive;
@@ -26,6 +37,10 @@ namespace battle::render
         int range;
 
         float strength;
+
+        container::Block <Particle, 10> flightParticles;
+
+        container::Block <Particle, 19> boomParticles;
 
     public:
         FireballEffect(BattleTile *, BattleTile *, int);
