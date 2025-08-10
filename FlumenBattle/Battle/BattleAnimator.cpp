@@ -90,7 +90,7 @@ void BattleAnimator::SetupActionAnimation(Event onFinished)
 
     bool isActionSpell = battleController->GetSelectedCharacter()->GetSelectedAction()->Type == world::character::CharacterActions::CAST_SPELL;
 
-    bool isSpellFireball = battleController->GetSelectedCharacter()->GetSelectedSpell()->Type == SpellTypes::FIRE_BALL;
+    bool isSpellFireball = isActionSpell == true ? battleController->GetSelectedCharacter()->GetSelectedSpell()->Type == SpellTypes::FIRE_BALL : false;
 
     if(isActionSpell == true && isSpellFireball == true)
     {
@@ -102,7 +102,7 @@ void BattleAnimator::SetupActionAnimation(Event onFinished)
 
         OnFinished = onFinished;
 
-        fireballEffect = new render::FireballEffect(battleController->GetTargetedTile(), 2);    
+        fireballEffect = new render::FireballEffect(battleController->GetTargetedTile(), battleController->GetSelectedCombatant()->GetTile(), 2);    
     }
     else
     {

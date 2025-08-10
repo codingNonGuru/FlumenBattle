@@ -5,6 +5,7 @@
 #include "FlumenEngine/Render/Camera.hpp"
 #include "FlumenEngine/Render/Shader.hpp"
 #include "FlumenEngine/Render/ShaderManager.hpp"
+#include "FlumenEngine/Sound/SoundManager.h"
 
 #include "FireballEffect.h"
 #include "FlumenBattle/Types.hpp"
@@ -14,7 +15,7 @@
 
 using namespace battle::render;
 
-FireballEffect::FireballEffect(BattleTile *newTile, int newRange)
+FireballEffect::FireballEffect(BattleTile *newTile, BattleTile *startTile, int newRange)
 {
     isActive = true;
 
@@ -22,9 +23,15 @@ FireballEffect::FireballEffect(BattleTile *newTile, int newRange)
 
     strength = 1.0f;
 
-    tile = newTile;
+    targetTile = newTile;
+
+    startingTile = startTile;
 
     range = newRange;
+
+    phase = Phases::FLIGHT;
+
+    engine::SoundManager::Get()->PlaySound("FireballFlight");
 
     BattleTileModel::Get()->AddRenderJob({this, &FireballEffect::Render});
 }
@@ -33,9 +40,19 @@ bool FireballEffect::Update()
 {
     lifeTime += Time::GetDelta();
 
-    strength = 1.0f - lifeTime;
+    if(lifeTime > 1.0f && phase == Phases::FLIGHT)
+    {
+        phase = Phases::EXPLOSION;
 
-    if(lifeTime > 1.0f)
+        engine::SoundManager::Get()->PlaySound("FireballBoom");
+    }
+
+    if(phase == Phases::FLIGHT)
+        strength = 1.0f;
+    else
+        strength = 2.0f - lifeTime;
+
+    if(lifeTime > 2.0f)
     {
         isActive = false;
 
@@ -59,20 +76,39 @@ void FireballEffect::Render()
 
 	shader->SetConstant(BattleMap::TILE_SIZE, "hexSize");
 
+    shader->SetConstant(0.0f, "depth");
+
 	shader->SetConstant(strength, "opacity");
 
-	shader->SetConstant(0.0f, "depth");
-
-    auto &neighbours = tile->GetNearbyTiles(range);
-    for(auto nearbyTile : neighbours)
+    if(phase == Phases::FLIGHT)
     {
-        shader->SetConstant(nearbyTile->Position, "hexPosition");
+        auto factor = lifeTime;
 
-        shader->SetConstant(BattleMap::TILE_SIZE, "hexSize");
+        auto position = startingTile->Position * (1.0f - factor) + targetTile->Position * factor;
+
+        shader->SetConstant(position, "hexPosition");
+
+        auto size = BattleMap::TILE_SIZE * 0.3f * (1.0f - factor) + BattleMap::TILE_SIZE * 1.2f * factor;
+
+        shader->SetConstant(size, "hexSize");
 
         shader->SetConstant(Color::ORANGE, "color");
 
         glDrawArrays(GL_TRIANGLES, 0, 18);
+    }
+    else
+    {
+        auto &neighbours = targetTile->GetNearbyTiles(range);
+        for(auto nearbyTile : neighbours)
+        {
+            shader->SetConstant(nearbyTile->Position, "hexPosition");
+
+            shader->SetConstant(BattleMap::TILE_SIZE, "hexSize");
+
+            shader->SetConstant(Color::ORANGE, "color");
+
+            glDrawArrays(GL_TRIANGLES, 0, 18);
+        }
     }
 
     shader->Unbind();
