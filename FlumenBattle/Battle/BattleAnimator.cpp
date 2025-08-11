@@ -10,6 +10,7 @@
 #include "FlumenBattle/World/Character/CharacterAction.h"
 #include "FlumenBattle/World/Character/Spell.h"
 #include "FlumenBattle/Battle/Render/FireballEffect.h"
+#include "FlumenBattle/Battle/Render/SacredFlameEffect.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 
 using namespace battle;
@@ -31,7 +32,7 @@ auto jumpsLeft = 0;
 
 static constexpr auto JUMP_TIME_LENGTH = 0.5f;
 
-enum class BattleAnimations {MOVEMENT, FIREBALL};
+enum class BattleAnimations {MOVEMENT, FIREBALL, SACRED_FLAME};
 
 static BattleAnimations currentAnimation;
 
@@ -79,6 +80,8 @@ float BattleAnimator::GetAnimationLength() const
 
 static battle::render::FireballEffect *fireballEffect = nullptr;
 
+static battle::render::SacredFlameEffect *sacredFlameEffect = nullptr;
+
 const battle::render::FireballEffect &BattleAnimator::GetFireballEffect() const
 {
     return *fireballEffect;
@@ -92,17 +95,28 @@ void BattleAnimator::SetupActionAnimation(Event onFinished)
 
     bool isSpellFireball = isActionSpell == true ? battleController->GetSelectedCharacter()->GetSelectedSpell()->Type == SpellTypes::FIRE_BALL : false;
 
-    if(isActionSpell == true && isSpellFireball == true)
-    {
-        currentAnimation = BattleAnimations::FIREBALL;
+    bool isSpellSacredFlame = isActionSpell == true ? battleController->GetSelectedCharacter()->GetSelectedSpell()->Type == SpellTypes::SACRED_FLAME : false;
 
+    if(isActionSpell == true && (isSpellFireball == true || isSpellSacredFlame == true))
+    {
         isAnimating = true;
 
         time = 0.0f;
 
         OnFinished = onFinished;
 
-        fireballEffect = new render::FireballEffect(battleController->GetTargetedTile(), battleController->GetSelectedCombatant()->GetTile(), 2);    
+        if(isSpellSacredFlame == true)
+        {
+            currentAnimation = BattleAnimations::SACRED_FLAME;
+
+            sacredFlameEffect = new render::SacredFlameEffect(battleController->GetTargetedCombatant()->GetTile());    
+        }
+        else
+        {
+            currentAnimation = BattleAnimations::FIREBALL;
+
+            fireballEffect = new render::FireballEffect(battleController->GetTargetedTile(), battleController->GetSelectedCombatant()->GetTile(), 2);    
+        }
     }
     else
     {
@@ -203,6 +217,20 @@ void BattleAnimator::Update()
                 isAnimating = false;
 
                 delete fireballEffect;
+
+                OnFinished.Invoke();
+            }
+            break;
+        }
+        case BattleAnimations::SACRED_FLAME:
+        {
+            auto hasFinished = sacredFlameEffect->Update();
+
+            if(hasFinished == true)
+            {
+                isAnimating = false;
+
+                delete sacredFlameEffect;
 
                 OnFinished.Invoke();
             }

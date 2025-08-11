@@ -2,11 +2,11 @@
     "PartyMembers": 
     [
         {
-            "Class": "wizard",
+            "Class": "cleric",
             "Race": "dwarf"
         },
         {
-            "Class": "fighter",
+            "Class": "cleric",
             "Race": "human"
         },
         {
@@ -14,11 +14,11 @@
             "Race": "gnome"
         },
         {
-            "Class": "ranger",
+            "Class": "cleric",
             "Race": "human"
         },
         {
-            "Class": "fighter",
+            "Class": "cleric",
             "Race": "orc"
         }
     ]
