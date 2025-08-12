@@ -1,6 +1,7 @@
 #include "FlumenEngine/Core/InputHandler.hpp"
 #include "FlumenEngine/Utility/PickHandler.h"
 #include "FlumenEngine/Render/MeshManager.hpp"
+#include "FlumenEngine/Render/Camera.hpp"
 
 #include "FlumenBattle/Battle/HumanController.h"
 #include "FlumenBattle/Battle/BattleController.h"
@@ -131,6 +132,13 @@ void HumanController::CheckTileSelection()
     }
 
     hoveredTile = nullptr;
+}
+
+Position2 HumanController::GetHoveredPosition() const
+{
+    Position2 mousePosition = InputHandler::GetMousePosition();
+
+    return camera->GetWorldPosition(mousePosition);
 }
 
 void HumanController::HandleSpacePressed()

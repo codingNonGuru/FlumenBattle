@@ -9,6 +9,8 @@
 #include "FlumenBattle/Utility/Utility.h"
 #include "FlumenBattle/Battle/BattleScene.h"
 #include "FlumenBattle/Battle/BattleTile.h"
+#include "FlumenBattle/Battle/HumanController.h"
+#include "FlumenBattle/Battle/BattleMap.h"
 
 using namespace battle;
 using namespace world::character;
@@ -114,6 +116,31 @@ void SpellCaster::RollSavingThrow(Combatant &combatant, const Spell &spell)
     spellResult.IsCritical = savingThrow.IsCriticalFailure() || savingThrow.IsCriticalSuccess();
 
     *spellResult.Effects.Allocate() = {{&combatant, savingThrow}, 0};
+}
+
+container::Array <BattleTile *> tiles = container::Array <BattleTile *> (128);
+
+container::Array <BattleTile *> &SpellCaster::GetAffectedTiles(Combatant &caster, const Spell &spell)
+{
+    tiles.Reset();
+
+    //*tiles.Add() = caster.GetTile();
+
+    if(spell.Type == SpellTypes::BURNING_HANDS)
+    {
+        auto hoveredTile = HumanController::Get()->GetHoveredTile();
+        auto distance = hoveredTile->GetDistanceTo(*caster.GetTile());
+
+        for (int i = 0; i <= distance; ++i)
+        {
+            auto factor = 1.0f / float(distance) * float(i);
+            auto coords = utility::RoundHexCoords(utility::InterpolateHexly(hoveredTile->HexCoordinates, caster.GetTile()->HexCoordinates, factor));
+
+            *tiles.Allocate() = BattleScene::Get()->GetBattleMap()->GetTile(coords);
+        }
+    }
+
+    return tiles;
 }
 
 CharacterActionData SpellCaster::ApplyFrostRay(Combatant &caster, const Spell & spell)

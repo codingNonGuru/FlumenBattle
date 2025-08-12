@@ -26,6 +26,7 @@
 #include "FlumenBattle/Battle/Render/CombatantModel.h"
 #include "FlumenBattle/World/Character/CharacterAction.h"
 #include "FlumenBattle/World/Character/Spell.h"
+#include "FlumenBattle/Battle/SpellCaster.h"
 
 using namespace battle;
 using namespace battle::render;
@@ -220,11 +221,11 @@ void BattleTileModel::RenderSpellArea()
     if(hoveredTile == nullptr)
         return;
 
-    auto &nearbyTiles = hoveredTile->GetNearbyTiles(spell->EffectArea.Size);
+    auto &tiles = SpellCaster::GetAffectedTiles(*BattleController::Get()->GetSelectedCombatant(), *spell);
 
     shader->Bind();
 
-    for(auto &tile : nearbyTiles)
+    for(auto &tile : tiles)
     {
         shader->SetConstant(tile->Position, "hexPosition");
 

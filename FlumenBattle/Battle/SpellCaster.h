@@ -46,5 +46,7 @@ namespace battle
 
     public:
         static CharacterActionData ApplyEffect(Combatant *, BattleTile *, const world::character::Spell &);
+
+        static container::Array <BattleTile *> &GetAffectedTiles(Combatant &caster, const world::character::Spell &);
     };
 }

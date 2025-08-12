@@ -84,6 +84,8 @@ namespace battle
 
         const utility::PathData <BattleTile> &GetHoveredPath();
 
+        Position2 GetHoveredPosition() const;
+
         static HumanController * Get()
         {
             static HumanController controller;
