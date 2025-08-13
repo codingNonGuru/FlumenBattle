@@ -32,5 +32,7 @@ namespace render
         container::Array <Float> &GetRotations() {return rotations;}
 
         container::Array <Float4> &GetColors() {return colors;}
+
+        static void RenderLine(Camera *, Position2, float, float, float, Float4, float);
     };
 }

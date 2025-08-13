@@ -12,6 +12,7 @@
 #include "FlumenBattle/Battle/Render/FireballEffect.h"
 #include "FlumenBattle/Battle/Render/SacredFlameEffect.h"
 #include "FlumenBattle/Battle/Render/BurningHandsEffect.h"
+#include "FlumenBattle/Battle/Render/FrostRayEffect.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 
 using namespace battle;
@@ -33,7 +34,7 @@ auto jumpsLeft = 0;
 
 static constexpr auto JUMP_TIME_LENGTH = 0.5f;
 
-enum class BattleAnimations {MOVEMENT, FIREBALL, SACRED_FLAME, BURNING_HANDS};
+enum class BattleAnimations {MOVEMENT, FIREBALL, SACRED_FLAME, BURNING_HANDS, FROST_RAY};
 
 static BattleAnimations currentAnimation;
 
@@ -94,6 +95,10 @@ float BattleAnimator::GetAnimationLength(world::character::CharacterActions acti
         {
             return render::BurningHandsEffect::DURATION;
         }
+        else if(spell == SpellTypes::FROST_RAY)
+        {
+            return render::FrostRayEffect::DURATION;
+        }
         else
         {
             return 0.0f;
@@ -111,6 +116,8 @@ static battle::render::SacredFlameEffect *sacredFlameEffect = nullptr;
 
 static battle::render::BurningHandsEffect *burningHandsEffect = nullptr;
 
+static battle::render::FrostRayEffect *frostRayEffect = nullptr;
+
 const battle::render::FireballEffect &BattleAnimator::GetFireballEffect() const
 {
     return *fireballEffect;
@@ -122,6 +129,8 @@ void BattleAnimator::SetupActionAnimation(Event onFinished)
 
     auto character = battleController->GetSelectedCharacter();
 
+    auto combatant = battleController->GetSelectedCombatant();
+
     bool isActionSpell = character->GetSelectedAction()->Type == world::character::CharacterActions::CAST_SPELL;
 
     bool isSpellFireball = isActionSpell == true ? character->GetSelectedSpell()->Type == SpellTypes::FIRE_BALL : false;
@@ -130,7 +139,9 @@ void BattleAnimator::SetupActionAnimation(Event onFinished)
 
     bool isSpellBurningHands = isActionSpell == true ? character->GetSelectedSpell()->Type == SpellTypes::BURNING_HANDS : false;
 
-    if(isActionSpell == true && (isSpellFireball == true || isSpellSacredFlame == true || isSpellBurningHands == true))
+    bool isSpellFrostRay = isActionSpell == true ? character->GetSelectedSpell()->Type == SpellTypes::FROST_RAY : false;
+
+    if(isActionSpell == true && (isSpellFireball == true || isSpellSacredFlame == true || isSpellBurningHands == true || isSpellFrostRay))
     {
         isAnimating = true;
 
@@ -150,11 +161,17 @@ void BattleAnimator::SetupActionAnimation(Event onFinished)
 
             fireballEffect = new render::FireballEffect(battleController->GetTargetedTile(), battleController->GetSelectedCombatant()->GetTile(), character->GetSelectedSpell()->EffectArea.Size);    
         }
-        else
+        else if(isSpellBurningHands == true)
         {
             currentAnimation = BattleAnimations::BURNING_HANDS;
 
             burningHandsEffect = new render::BurningHandsEffect(*battleController->GetSelectedCombatant(), battleController->GetTargetedTile());
+        }
+        else
+        {
+            currentAnimation = BattleAnimations::FROST_RAY;
+
+            frostRayEffect = new render::FrostRayEffect(combatant->GetTile(), battleController->GetTargetedCombatant()->GetTile());
         }
     }
     else
@@ -284,6 +301,20 @@ void BattleAnimator::Update()
                 isAnimating = false;
 
                 delete burningHandsEffect;
+
+                OnFinished.Invoke();
+            }
+            break;
+        }
+        case BattleAnimations::FROST_RAY:
+        {
+            auto hasFinished = frostRayEffect->Update();
+
+            if(hasFinished == true)
+            {
+                isAnimating = false;
+
+                delete frostRayEffect;
 
                 OnFinished.Invoke();
             }

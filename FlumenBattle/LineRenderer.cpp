@@ -85,3 +85,31 @@ void LineRenderer::Render(Camera *camera, float opacity)
 
     lineShader->Unbind();
 }
+
+void LineRenderer::RenderLine(Camera *camera, Position2 position, float length, float thickness, float rotation, Float4 color, float opacity)
+{
+    static auto lineShader = ShaderManager::GetShader("LineSingular");
+
+    lineShader->Bind();
+
+    lineShader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+    lineShader->SetConstant(opacity, "opacity");
+
+    lineShader->SetConstant(0.0f, "depth");
+
+    lineShader->SetConstant(position, "position");
+
+    lineShader->SetConstant(length, "length");
+
+    lineShader->SetConstant(thickness, "thickness");
+
+    lineShader->SetConstant(rotation, "rotation");
+
+    lineShader->SetConstant(color, "color");
+
+    static const auto INDICES_PER_LINE = 6;
+    glDrawArrays(GL_TRIANGLES, 0, INDICES_PER_LINE);
+
+    lineShader->Unbind();
+}

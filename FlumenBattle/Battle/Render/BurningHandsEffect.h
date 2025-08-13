@@ -30,10 +30,6 @@ namespace battle::render
 
         float lifeTime;
 
-        BattleTile *startingTile;
-
-        BattleTile *targetTile;
-
         float strength;
 
         container::SmartBlock <Particle, 512> particles;
