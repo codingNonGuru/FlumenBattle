@@ -11,6 +11,7 @@
 #include "FlumenBattle/World/Character/Spell.h"
 #include "FlumenBattle/Battle/Render/FireballEffect.h"
 #include "FlumenBattle/Battle/Render/SacredFlameEffect.h"
+#include "FlumenBattle/Battle/Render/BurningHandsEffect.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 
 using namespace battle;
@@ -32,7 +33,7 @@ auto jumpsLeft = 0;
 
 static constexpr auto JUMP_TIME_LENGTH = 0.5f;
 
-enum class BattleAnimations {MOVEMENT, FIREBALL, SACRED_FLAME};
+enum class BattleAnimations {MOVEMENT, FIREBALL, SACRED_FLAME, BURNING_HANDS};
 
 static BattleAnimations currentAnimation;
 
@@ -76,7 +77,9 @@ void BattleAnimator::Advance()
 float BattleAnimator::GetAnimationLength(world::character::CharacterActions action, SpellTypes spell) const
 {
     if(action == world::character::CharacterActions::MOVE)
+    {
         return totalLength;
+    }
     else if(action == world::character::CharacterActions::CAST_SPELL)
     {
         if(spell == SpellTypes::FIRE_BALL)
@@ -86,6 +89,10 @@ float BattleAnimator::GetAnimationLength(world::character::CharacterActions acti
         else if(spell == SpellTypes::SACRED_FLAME)
         {
             return render::SacredFlameEffect::DURATION;
+        }
+        else if(spell == SpellTypes::BURNING_HANDS)
+        {
+            return render::BurningHandsEffect::DURATION;
         }
         else
         {
@@ -101,6 +108,8 @@ float BattleAnimator::GetAnimationLength(world::character::CharacterActions acti
 static battle::render::FireballEffect *fireballEffect = nullptr;
 
 static battle::render::SacredFlameEffect *sacredFlameEffect = nullptr;
+
+static battle::render::BurningHandsEffect *burningHandsEffect = nullptr;
 
 const battle::render::FireballEffect &BattleAnimator::GetFireballEffect() const
 {
@@ -119,7 +128,9 @@ void BattleAnimator::SetupActionAnimation(Event onFinished)
 
     bool isSpellSacredFlame = isActionSpell == true ? character->GetSelectedSpell()->Type == SpellTypes::SACRED_FLAME : false;
 
-    if(isActionSpell == true && (isSpellFireball == true || isSpellSacredFlame == true))
+    bool isSpellBurningHands = isActionSpell == true ? character->GetSelectedSpell()->Type == SpellTypes::BURNING_HANDS : false;
+
+    if(isActionSpell == true && (isSpellFireball == true || isSpellSacredFlame == true || isSpellBurningHands == true))
     {
         isAnimating = true;
 
@@ -133,11 +144,17 @@ void BattleAnimator::SetupActionAnimation(Event onFinished)
 
             sacredFlameEffect = new render::SacredFlameEffect(battleController->GetTargetedCombatant()->GetTile());    
         }
-        else
+        else if(isSpellFireball == true)
         {
             currentAnimation = BattleAnimations::FIREBALL;
 
             fireballEffect = new render::FireballEffect(battleController->GetTargetedTile(), battleController->GetSelectedCombatant()->GetTile(), character->GetSelectedSpell()->EffectArea.Size);    
+        }
+        else
+        {
+            currentAnimation = BattleAnimations::BURNING_HANDS;
+
+            burningHandsEffect = new render::BurningHandsEffect(*battleController->GetSelectedCombatant(), battleController->GetTargetedTile());
         }
     }
     else
@@ -253,6 +270,20 @@ void BattleAnimator::Update()
                 isAnimating = false;
 
                 delete sacredFlameEffect;
+
+                OnFinished.Invoke();
+            }
+            break;
+        }
+        case BattleAnimations::BURNING_HANDS:
+        {
+            auto hasFinished = burningHandsEffect->Update();
+
+            if(hasFinished == true)
+            {
+                isAnimating = false;
+
+                delete burningHandsEffect;
 
                 OnFinished.Invoke();
             }
