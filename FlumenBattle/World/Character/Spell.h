@@ -9,9 +9,11 @@ namespace world::character
 {
     struct EffectArea
     {
-        enum class Shapes {CIRCLE, LINE, NONE} Shape {Shapes::NONE};
+        enum class Shapes {CIRCLE, LINE, CONE, NONE} Shape {Shapes::NONE};
 
         int Size;
+
+        int Breadth;
     };
 
     struct SpellSlot
@@ -158,6 +160,13 @@ namespace world::character
             return spell;
         }
 
+        static const Spell BuildBurningHands()
+        {
+            static Spell spell = {SpellTypes::BURNING_HANDS, 1, utility::RollDies::D8, 2, 6, "Burning Hands", true, false, false, true, SavingThrows::REFLEX};
+            spell.EffectArea = {EffectArea::Shapes::CONE, 6, 5};
+            return spell;
+        }
+
         static const Spell Build(SpellTypes type)
         {
             switch(type)
@@ -180,6 +189,8 @@ namespace world::character
                 return BuildSacredFlame();
             case SpellTypes::SHOCKING_GRASP:
                 return BuildShockingGrasp();
+            case SpellTypes::BURNING_HANDS:
+                return BuildBurningHands();
             }
         }
     };

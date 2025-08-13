@@ -44,9 +44,11 @@ namespace battle
 
         static CharacterActionData ApplyFireball(Combatant &, BattleTile &, const world::character::Spell &);
 
+        static CharacterActionData ApplyBurningHands(Combatant &, BattleTile &, const world::character::Spell &);
+
     public:
         static CharacterActionData ApplyEffect(Combatant *, BattleTile *, const world::character::Spell &);
 
-        static container::Array <BattleTile *> &GetAffectedTiles(Combatant &caster, const world::character::Spell &);
+        static container::Array <BattleTile *> &GetAffectedTiles(Combatant &, const world::character::Spell &, BattleTile *);
     };
 }

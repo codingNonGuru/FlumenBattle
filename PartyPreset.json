@@ -2,23 +2,23 @@
     "PartyMembers": 
     [
         {
-            "Class": "cleric",
+            "Class": "wizard",
             "Race": "dwarf"
         },
         {
-            "Class": "cleric",
+            "Class": "wizard",
             "Race": "human"
         },
         {
-            "Class": "cleric",
+            "Class": "wizard",
             "Race": "gnome"
         },
         {
-            "Class": "cleric",
+            "Class": "wizard",
             "Race": "human"
         },
         {
-            "Class": "cleric",
+            "Class": "wizard",
             "Race": "orc"
         }
     ]

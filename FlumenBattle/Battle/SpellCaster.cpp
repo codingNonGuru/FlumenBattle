@@ -118,25 +118,67 @@ void SpellCaster::RollSavingThrow(Combatant &combatant, const Spell &spell)
     *spellResult.Effects.Allocate() = {{&combatant, savingThrow}, 0};
 }
 
-container::Array <BattleTile *> tiles = container::Array <BattleTile *> (128);
+container::Array <BattleTile *> tiles = container::Array <BattleTile *> (256);
 
-container::Array <BattleTile *> &SpellCaster::GetAffectedTiles(Combatant &caster, const Spell &spell)
+container::Array <BattleTile *> &SpellCaster::GetAffectedTiles(Combatant &caster, const Spell &spell, BattleTile *targetTile)
 {
     tiles.Reset();
 
-    //*tiles.Add() = caster.GetTile();
-
     if(spell.Type == SpellTypes::BURNING_HANDS)
     {
-        auto hoveredTile = HumanController::Get()->GetHoveredTile();
-        auto distance = hoveredTile->GetDistanceTo(*caster.GetTile());
+        if(caster.GetTile() == targetTile)
+            return tiles;
 
-        for (int i = 0; i <= distance; ++i)
+        auto distance = targetTile->GetDistanceTo(*caster.GetTile());
+
+        auto ratio = (float) spell.EffectArea.Size / (float) distance;
+        
+        Float3 delta = targetTile->HexCoordinates - caster.GetTile()->HexCoordinates;
+        auto newCoords = utility::RoundHexCoords(Float3(caster.GetTile()->HexCoordinates) + delta * ratio);
+
+        static auto endTiles = container::Array <BattleTile *> (64);
+
+        endTiles.Reset();
+
+        auto centerEndTile = BattleScene::Get()->GetBattleMap()->GetTile(newCoords);
+
+        auto range = (spell.EffectArea.Breadth - 1) / 2;
+
+        auto &neighbours = centerEndTile->GetNearbyTiles(range);
+        for(auto &neighbour : neighbours)
         {
-            auto factor = 1.0f / float(distance) * float(i);
-            auto coords = utility::RoundHexCoords(utility::InterpolateHexly(hoveredTile->HexCoordinates, caster.GetTile()->HexCoordinates, factor));
+            auto distanceToNeighbour = caster.GetTile()->GetDistanceTo(*neighbour);
+            if(distanceToNeighbour != spell.EffectArea.Size)
+                continue;
 
-            *tiles.Allocate() = BattleScene::Get()->GetBattleMap()->GetTile(coords);
+            *endTiles.Allocate() = neighbour;
+        }
+
+        for(auto &endTile : endTiles)
+        {
+            for (int i = 0; i <= spell.EffectArea.Size; ++i)
+            {
+                auto factor = float(i) / float(spell.EffectArea.Size);
+                auto coords = utility::RoundHexCoords(utility::InterpolateHexly(caster.GetTile()->HexCoordinates, endTile->HexCoordinates, factor));
+
+                auto tile = BattleScene::Get()->GetBattleMap()->GetTile(coords);
+                if(tiles.Find(tile) != nullptr)
+                    continue;
+
+                if(tile == caster.GetTile())
+                    continue;
+
+                *tiles.Allocate() = tile;
+            }
+        }
+    }
+    else if(spell.Type == SpellTypes::FIRE_BALL)
+    {
+        auto &nearbyTiles = targetTile->GetNearbyTiles(spell.EffectArea.Size);
+
+        for(auto &tile : nearbyTiles)
+        {
+            *tiles.Allocate() = tile;
         }
     }
 
@@ -201,9 +243,26 @@ CharacterActionData SpellCaster::ApplyFireball(Combatant &caster, BattleTile &ti
 {
     ComputeDifficultyClass(caster);
 
-    auto &nearbyTiles = tile.GetNearbyTiles(spell.EffectArea.Size);
+    auto &tiles = GetAffectedTiles(caster, spell, &tile);
 
-    for(auto &tile : nearbyTiles)
+    for(auto &tile : tiles)
+    {
+        if(tile->Combatant == nullptr)
+            continue;
+
+        RollSavingThrow(*tile->Combatant, spell);
+
+        RollDamage(*tile->Combatant, spell, true);
+    }
+}
+
+CharacterActionData SpellCaster::ApplyBurningHands(Combatant &caster, BattleTile &tile, const Spell &spell)
+{
+    ComputeDifficultyClass(caster);
+
+    auto &tiles = GetAffectedTiles(caster, spell, &tile);
+
+    for(auto &tile : tiles)
     {
         if(tile->Combatant == nullptr)
             continue;
@@ -243,6 +302,9 @@ CharacterActionData SpellCaster::ApplyEffect(Combatant *caster, BattleTile *tile
             break;
         case SpellTypes::FIRE_BALL:
             ApplyFireball(*caster, *tile, spell);
+            break;
+        case SpellTypes::BURNING_HANDS:
+            ApplyBurningHands(*caster, *tile, spell);
             break;
         default:
             return CharacterActionData();    

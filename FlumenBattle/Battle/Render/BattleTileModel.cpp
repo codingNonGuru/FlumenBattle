@@ -221,7 +221,7 @@ void BattleTileModel::RenderSpellArea()
     if(hoveredTile == nullptr)
         return;
 
-    auto &tiles = SpellCaster::GetAffectedTiles(*BattleController::Get()->GetSelectedCombatant(), *spell);
+    auto &tiles = SpellCaster::GetAffectedTiles(*BattleController::Get()->GetSelectedCombatant(), *spell, hoveredTile);
 
     shader->Bind();
 
