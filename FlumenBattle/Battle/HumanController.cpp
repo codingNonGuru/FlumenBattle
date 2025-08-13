@@ -143,6 +143,9 @@ Position2 HumanController::GetHoveredPosition() const
 
 void HumanController::HandleSpacePressed()
 {
+    if(BattleController::Get()->IsAnimationOngoing() == true)
+        return;
+        
     auto battleController = BattleController::Get();
     auto selectedCombatant = battleController->selectedCombatant;
 
@@ -215,6 +218,9 @@ void HumanController::HandleMPressed()
 
 void HumanController::HandleTPressed()
 {
+    if(BattleController::Get()->IsAnimationOngoing() == true)
+        return;
+
     auto battleController = BattleController::Get();
     auto selectedCombatant = battleController->selectedCombatant;
 
@@ -238,6 +244,9 @@ void HumanController::HandleTPressed()
 
 void HumanController::HandleAPressed()
 {
+    if(BattleController::Get()->IsAnimationOngoing() == true)
+        return;
+
     auto battleController = BattleController::Get();
     auto selectedCombatant = battleController->selectedCombatant;
 

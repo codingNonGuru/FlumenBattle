@@ -3,6 +3,9 @@
 #include "FlumenCore/Singleton.h"
 #include "FlumenCore/Observer.h"
 
+#include "FlumenBattle/World/Character/Types.h"
+#include "FlumenBattle/Types.hpp"
+
 namespace battle
 {
     namespace render
@@ -41,7 +44,7 @@ namespace battle
 
         bool IsWorking() const {return isAnimating;}
 
-        float GetAnimationLength() const;
+        float GetAnimationLength(world::character::CharacterActions, SpellTypes = SpellTypes::NONE) const;
 
         const render::FireballEffect &GetFireballEffect() const;
     };

@@ -78,7 +78,7 @@ bool FireballEffect::Update()
     else
         strength = 2.0f - lifeTime;
 
-    if(lifeTime > 2.0f)
+    if(lifeTime > DURATION)
     {
         isActive = false;
 

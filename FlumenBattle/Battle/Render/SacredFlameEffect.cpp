@@ -18,8 +18,6 @@ using namespace battle::render;
 
 #define BUFFER_COUNT 5
 
-static const auto DURATION = 2.0f;
-
 static render::LineRenderer *lineRenderer = nullptr;
 
 SacredFlameEffect::SacredFlameEffect(BattleTile *newTile)

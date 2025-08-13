@@ -74,7 +74,7 @@ namespace world::group
 
         auto type = GroupTypeFactory::BuildGroupType(buildData.Type);
 
-        auto size = type->Size; //utility::GetRandom(4, 7);
+        auto size = 3;//type->Size; //utility::GetRandom(4, 7);
 
         auto color = GetColor();
 
@@ -128,7 +128,7 @@ namespace world::group
 
             auto characterEssence = group->characterHandler.AddCharacter();
             
-            characterEssence->Initialize(characterClass);
+            characterEssence->Initialize(character::CharacterClasses::CLERIC);
         }
 
         group->Initialize(type, size, buildData.Race);

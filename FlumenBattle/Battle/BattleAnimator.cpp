@@ -73,9 +73,29 @@ void BattleAnimator::Advance()
     followPathData.EndPosition = followPathData.NextTile->Position;
 }
 
-float BattleAnimator::GetAnimationLength() const
+float BattleAnimator::GetAnimationLength(world::character::CharacterActions action, SpellTypes spell) const
 {
-    return totalLength;
+    if(action == world::character::CharacterActions::MOVE)
+        return totalLength;
+    else if(action == world::character::CharacterActions::CAST_SPELL)
+    {
+        if(spell == SpellTypes::FIRE_BALL)
+        {
+            return render::FireballEffect::DURATION;
+        }
+        else if(spell == SpellTypes::SACRED_FLAME)
+        {
+            return render::SacredFlameEffect::DURATION;
+        }
+        else
+        {
+            return 0.0f;
+        }
+    }
+    else
+    {
+        return 0.0f;
+    }
 }
 
 static battle::render::FireballEffect *fireballEffect = nullptr;
@@ -91,11 +111,13 @@ void BattleAnimator::SetupActionAnimation(Event onFinished)
 {
     static const auto battleController = BattleController::Get();
 
-    bool isActionSpell = battleController->GetSelectedCharacter()->GetSelectedAction()->Type == world::character::CharacterActions::CAST_SPELL;
+    auto character = battleController->GetSelectedCharacter();
 
-    bool isSpellFireball = isActionSpell == true ? battleController->GetSelectedCharacter()->GetSelectedSpell()->Type == SpellTypes::FIRE_BALL : false;
+    bool isActionSpell = character->GetSelectedAction()->Type == world::character::CharacterActions::CAST_SPELL;
 
-    bool isSpellSacredFlame = isActionSpell == true ? battleController->GetSelectedCharacter()->GetSelectedSpell()->Type == SpellTypes::SACRED_FLAME : false;
+    bool isSpellFireball = isActionSpell == true ? character->GetSelectedSpell()->Type == SpellTypes::FIRE_BALL : false;
+
+    bool isSpellSacredFlame = isActionSpell == true ? character->GetSelectedSpell()->Type == SpellTypes::SACRED_FLAME : false;
 
     if(isActionSpell == true && (isSpellFireball == true || isSpellSacredFlame == true))
     {
@@ -115,7 +137,7 @@ void BattleAnimator::SetupActionAnimation(Event onFinished)
         {
             currentAnimation = BattleAnimations::FIREBALL;
 
-            fireballEffect = new render::FireballEffect(battleController->GetTargetedTile(), battleController->GetSelectedCombatant()->GetTile(), 2);    
+            fireballEffect = new render::FireballEffect(battleController->GetTargetedTile(), battleController->GetSelectedCombatant()->GetTile(), character->GetSelectedSpell()->EffectArea.Size);    
         }
     }
     else

@@ -37,6 +37,8 @@ namespace battle::render
         container::Block <Particle, 512> particles;
 
     public:
+        static const auto DURATION = 2.0f;
+
         SacredFlameEffect(BattleTile *);
 
         bool Update();

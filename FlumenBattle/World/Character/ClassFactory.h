@@ -82,7 +82,7 @@ namespace world::character
                 {CharacterActions::ATTACK, CharacterActions::DODGE, CharacterActions::DASH, CharacterActions::CAST_SPELL},
                 {
                     AbilityTypes::INTELLIGENCE, 
-                    {SpellFactory::BuildFrostRay(), SpellFactory::BuildShockingGrasp(), SpellFactory::BuildFireBolt(), SpellFactory::BuildBurningHands()}
+                    {SpellFactory::BuildFrostRay(), SpellFactory::BuildShockingGrasp(), SpellFactory::BuildFireBolt(), SpellFactory::BuildFireball()}
                 }
             };
             return wizardClass;

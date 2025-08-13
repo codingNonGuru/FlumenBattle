@@ -660,7 +660,7 @@ namespace battle
         {
             MoveCharacter();
 
-            jumpDelay = BattleAnimator::Get()->GetAnimationLength();
+            jumpDelay = BattleAnimator::Get()->GetAnimationLength(action->Action);
         }
         else
         {
@@ -671,12 +671,16 @@ namespace battle
                 //selectedCombatant->character->SelectWeapon(action->WeaponType);
 
                 battleController->TargetCombatant(action->Target);
+
+                jumpDelay = BattleAnimator::Get()->GetAnimationLength(action->Action);
             }
             else if(action->Action == world::character::CharacterActions::CAST_SPELL)
             {
                 selectedCombatant->character->SelectSpell(action->SpellType);
 
                 battleController->TargetCombatant(action->Target);
+
+                jumpDelay = BattleAnimator::Get()->GetAnimationLength(action->Action, action->SpellType);
             }
 
             battleController->Act();
