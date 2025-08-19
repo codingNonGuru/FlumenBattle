@@ -34,5 +34,7 @@ namespace render
         container::Array <Float4> &GetColors() {return colors;}
 
         static void RenderLine(Camera *, Position2, float, float, float, Float4, float);
+
+        static void RenderDottedLine(Camera *, Position2, Position2, float, Float4, float, bool, bool);
     };
 }
