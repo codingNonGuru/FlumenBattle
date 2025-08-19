@@ -6,15 +6,15 @@
             "Race": "dwarf"
         },
         {
-            "Class": "wizard",
+            "Class": "cleric",
             "Race": "human"
         },
         {
-            "Class": "wizard",
+            "Class": "fighter",
             "Race": "gnome"
         },
         {
-            "Class": "wizard",
+            "Class": "ranger",
             "Race": "human"
         },
         {

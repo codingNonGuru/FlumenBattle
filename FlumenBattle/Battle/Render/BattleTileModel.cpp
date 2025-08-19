@@ -27,6 +27,7 @@
 #include "FlumenBattle/World/Character/CharacterAction.h"
 #include "FlumenBattle/World/Character/Spell.h"
 #include "FlumenBattle/Battle/SpellCaster.h"
+#include "FlumenBattle/LineRenderer.h"
 
 using namespace battle;
 using namespace battle::render;
@@ -319,6 +320,17 @@ void BattleTileModel::Render()
     RenderPath();
 
     RenderSpellArea();
+
+    bool isHoveringTargetWhileInitiating = humanController->IsInitiatingTargeting() == true && humanController->GetHoveredTile() != nullptr && humanController->GetHoveredTile()->Combatant != nullptr;
+    bool isTargeting = battleController->IsPlayerControlling() == true && battleController->GetTargetedCombatant() != nullptr;
+    if(isHoveringTargetWhileInitiating == true || isTargeting == true)
+    {
+        auto opacity = isHoveringTargetWhileInitiating == true ? 0.7f : 1.0f;
+
+        auto endPosition = isHoveringTargetWhileInitiating == true ? humanController->GetHoveredTile()->Position : battleController->GetTargetedCombatant()->GetPosition();
+
+        ::render::LineRenderer::RenderDottedLine(camera, battleController->GetSelectedCombatant()->GetPosition(), endPosition, 10.0f, Color::RED, opacity, true, true);
+    }
 
     for(auto &job : lastRenderPassJobs)
     {

@@ -105,5 +105,7 @@ namespace battle
         const utility::PathData <battle::BattleTile> &GetPathData() const;
 
         bool IsAnimationOngoing() const;
+
+        bool IsPlayerControlling() const;
     };
 }

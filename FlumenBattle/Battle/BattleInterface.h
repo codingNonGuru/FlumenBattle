@@ -19,6 +19,7 @@ namespace battle
         class ActionInfoPanel;
         class TargetCursor;
         class ConditionPopup;
+        class TargetingCard;
     }
 
     class BattleInfoPanel;
@@ -53,6 +54,8 @@ namespace battle
         interface::TargetCursor *targetCursor;
 
         container::Pool <interface::ConditionPopup *> conditionPopups;
+
+        interface::TargetingCard *targetingCard;
 
         BattleInterface();
 

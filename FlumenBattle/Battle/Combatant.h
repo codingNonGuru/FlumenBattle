@@ -23,6 +23,13 @@ namespace battle
     class CharacterInfo;
     struct CharacterActionData;
 
+    struct AttackData 
+    {
+        int AttackBonus; 
+        
+        int EnemyArmorClass;
+    };
+
     class Combatant
     {
         friend class container::Array <Combatant>;
@@ -179,6 +186,8 @@ namespace battle
         Integer GetAttackRating() const;
 
         bool IsWithinActionRange(BattleTile *);
+
+        AttackData GetStrikeData(Combatant *);
 
         void SetPosition(Position2 newPosition) {position = newPosition;}
 

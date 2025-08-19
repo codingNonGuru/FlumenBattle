@@ -320,3 +320,8 @@ bool BattleController::IsAnimationOngoing() const
 {
     return BattleAnimator::Get()->IsWorking() == true;
 }
+
+bool BattleController::IsPlayerControlling() const
+{
+    return selectedCombatant->GetGroup() == battleScene->GetPlayerGroup();
+}

@@ -8,6 +8,8 @@
 #include "FlumenEngine/Core/Engine.hpp"
 
 #include "FlumenBattle/Battle/BattleInterface.h"
+#include "FlumenBattle/Battle/BattleTile.h"
+#include "FlumenBattle/Battle/BattleController.h"
 #include "FlumenBattle/World/Character/Condition.h"
 #include "FlumenBattle/World/Character/Character.h"
 #include "FlumenBattle/Battle/Combatant.h"
@@ -24,6 +26,8 @@
 #include "FlumenBattle/Battle/HumanController.h"
 #include "FlumenBattle/Battle/Interface/TargetCursor.h"
 #include "FlumenBattle/Battle/Interface/ConditionPopup.h"
+#include "FlumenBattle/Battle/Interface/TargetingCard.h"
+#include "FlumenBattle/LineRenderer.h"
 
 using namespace battle;
 
@@ -149,6 +153,18 @@ BattleInterface::BattleInterface()
     }
 
     conditionPopups.Reset();
+
+    targetingCard = ElementFactory::BuildElement <interface::TargetingCard>
+    (
+        {
+            Size(90, 50), 
+            DrawOrder(4), 
+            {canvas}, 
+            {false}, 
+            Opacity(0.6f)
+        }
+    );
+    targetingCard->Disable();
 }
 
 void BattleInterface::Initialize()
@@ -202,6 +218,21 @@ void BattleInterface::Update()
 
             popupData.LastPopupTimestamp = timestamp;
         }
+    }
+
+    static auto battleController = BattleController::Get();
+
+    static auto humanController = HumanController::Get();
+
+    bool isHoveringTargetWhileInitiating = humanController->IsInitiatingTargeting() == true && humanController->GetHoveredTile() != nullptr && humanController->GetHoveredTile()->Combatant != nullptr;
+    if(isHoveringTargetWhileInitiating == true)
+    {
+        targetingCard->Setup(battleController->GetSelectedCombatant(), humanController->GetHoveredTile()->Combatant);
+        targetingCard->Enable();
+    }
+    else
+    {
+        targetingCard->Disable();
     }
 }
 

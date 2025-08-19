@@ -460,7 +460,7 @@ CharacterActionData Combatant::Act(BattleTile *finalTarget)
     }
 }
 
-CharacterActionData Combatant::Strike()
+AttackData Combatant::GetStrikeData(Combatant *target)
 {
     auto targetArmor = target->GetArmorClass();
 
@@ -477,7 +477,14 @@ CharacterActionData Combatant::Strike()
 
     auto attackBonus = GetAttackRating();
 
-    auto attackRoll = utility::RollD20Dice(targetArmor, attackBonus);
+    return {attackBonus, targetArmor};
+}
+
+CharacterActionData Combatant::Strike()
+{
+    auto attackData = GetStrikeData(target);
+
+    auto attackRoll = utility::RollD20Dice(attackData.EnemyArmorClass, attackData.AttackBonus);
 
     auto damage = 0;
 
@@ -498,7 +505,7 @@ CharacterActionData Combatant::Strike()
 
     remainingActionCount--;
 
-    return CharacterActionData(character->selectedAction->Type, this, attackRoll.Roll + attackRoll.Modifier, targetArmor, damage, hasHit);
+    return CharacterActionData(character->selectedAction->Type, this, attackRoll.Roll + attackRoll.Modifier, attackData.EnemyArmorClass, damage, hasHit);
 }
 
 CharacterActionData Combatant::CastSpell()
