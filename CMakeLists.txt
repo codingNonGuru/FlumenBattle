@@ -17,6 +17,7 @@ include_directories(/home/andrei/Documents/Code/Libraries/nlohmann)
 include_directories(/home/andrei/Documents/Code/Libraries/glm)
 include_directories(/home/andrei/Documents/Code/Libraries/FlumenCore)
 include_directories(/home/andrei/Documents/Code/Libraries/FlumenEngine)
+include_directories(/home/andrei/Documents/Code/Libraries/tinyobjloader)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 link_directories(/home/andrei/Documents/Code/Libraries/FlumenCore)

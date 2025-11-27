@@ -2,8 +2,12 @@
 
 #include "FlumenCore/Conventions.hpp"
 #include "FlumenCore/Container/Block.hpp"
+#include "FlumenCore/Hex/Hex.h"
 
-#include "FlumenBattle/World/Tile/TileBuffer.h"
+#include "FlumenEngine/Container/HexGrid.h"
+#include "FlumenEngine/Thread/HexBuffer.h"
+
+#include "FlumenBattle/World/Tile/WorldTile.h"
 
 namespace world
 {
@@ -18,12 +22,7 @@ namespace world
 
 namespace world::tile
 {
-    struct WorldTile;
-
-    template <typename TileType>
-    struct TileBuffer;
-
-    class WorldMap
+    class WorldMap : public container::HexGrid <WorldTile>
     {
         friend class world::WorldScene;
 
@@ -37,43 +36,21 @@ namespace world::tile
 
         friend class WorldInterface;
 
-        Grid <WorldTile> tiles;
-
         WorldMap() {}
 
         WorldMap(Length size);
-
-        WorldTile* GetRandomTile();
 
     public:
         static constexpr Float TILE_DISTANCING = 60.0f; 
 
         static constexpr Float WORLD_TILE_SIZE = 34.6666f;
 
-        WorldTile* GetTile(Integer3) const;
-
-        WorldTile* GetTile(Integer2) const;
-
-        WorldTile* GetTile(Float2) const;
+        WorldTile* GetTileFromPosition(Float2) const;
 
         WorldTile* GetRandomLandTile();
 
         WorldTile* GetEmptyRandomTile(bool = true);
 
-        WorldTile* GetCenterTile();
-
         WorldTile* GetEmptyTileAroundTile(WorldTile *, Integer);
-
-        const TileBuffer <WorldTile> GetNearbyTiles(WorldTile*, Integer);
-
-        container::Block <WorldTile *, 6> GetNearbyTiles(WorldTile*);
-
-        const TileBuffer <WorldTile> GetTileRing(WorldTile*, Integer);
-
-        const int GetSize() const {return tiles.GetWidth();}
-
-        const int GetTileCount() const {return tiles.GetWidth() * tiles.GetHeight();}
-
-        const Grid <WorldTile> &GetTiles() const {return tiles;}
     };
 }

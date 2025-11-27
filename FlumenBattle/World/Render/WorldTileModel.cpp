@@ -1257,7 +1257,7 @@ Rectangle WorldTileModel::GetFrustum()
     static auto worldMap = worldScene->GetWorldMap();
 
     const auto targetPosition =  camera->GetTarget();
-    const auto targetTile = worldMap->GetTile(Float2{targetPosition.x, targetPosition.y});
+    const auto targetTile = worldMap->GetTileFromPosition(Float2{targetPosition.x, targetPosition.y});
 
     const auto coordinates = targetTile->SquareCoordinates;
 

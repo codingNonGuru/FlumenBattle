@@ -21,12 +21,14 @@ const auto DIURNAL_TEMPERATURE_SWING = 1.5f;
 
 const auto WINTER_THRESHOLD = 50;
 
-WorldTile::WorldTile(Position2 position, Integer2 squareCoordinates) : Position(position), SquareCoordinates(squareCoordinates), 
+WorldTile::WorldTile(Position2 position, Integer2 squareCoordinates) : SquareCoordinates(squareCoordinates), 
 settlement(nullptr), owner(nullptr), isBorderingOwnedTile(false)
 {
-    HexCoordinates.x = squareCoordinates.x - squareCoordinates.y / 2;
-    HexCoordinates.z = squareCoordinates.y;
-    HexCoordinates.y = -HexCoordinates.x - HexCoordinates.z;
+    Position = position;
+
+    Coordinates.x = squareCoordinates.x - squareCoordinates.y / 2;
+    Coordinates.z = squareCoordinates.y;
+    Coordinates.y = -Coordinates.x - Coordinates.z;
 
     isRevealed = true;
 
@@ -96,7 +98,7 @@ void WorldTile::Initialize()
     Shade = color;
 }
 
-const TileBuffer <WorldTile> WorldTile::GetNearbyTiles(Integer range)
+const engine::thread::HexBuffer <WorldTile> WorldTile::GetNearbyTiles(Integer range)
 {
     return map->GetNearbyTiles(this, range);
 }
@@ -106,7 +108,7 @@ container::Block <WorldTile *, 6> WorldTile::GetNearbyTiles()
     return map->GetNearbyTiles(this);
 }
 
-const TileBuffer <WorldTile> WorldTile::GetTileRing(Integer range)
+const engine::thread::HexBuffer <WorldTile> WorldTile::GetTileRing(Integer range)
 {
     return map->GetTileRing(this, range);
 }
@@ -118,7 +120,7 @@ WorldTile* WorldTile::GetEmptyTileInRange(Integer range)
 
 WorldTile * WorldTile::GetNeighbor(Integer3 direction)
 {
-    auto coordinates = HexCoordinates + direction;
+    auto coordinates = Coordinates + direction;
     return map->GetTile(coordinates);
 }
 

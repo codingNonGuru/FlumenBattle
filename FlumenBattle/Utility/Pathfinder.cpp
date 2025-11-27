@@ -50,7 +50,7 @@ Pathfinder <TileType>::Pathfinder()
     auto &worldTiles = map->GetTiles();
     for(auto tile = worldTiles.GetStart(); tile != worldTiles.GetEnd(); ++tile)
     {
-        nodeMap.GetTile(tile->HexCoordinates)->Coordinates = tile->HexCoordinates;
+        nodeMap.GetTile(tile->Coordinates)->Coordinates = tile->Coordinates;
     }
 }
 

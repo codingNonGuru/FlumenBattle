@@ -6,11 +6,13 @@
 
 using namespace battle;
 
-BattleTile::BattleTile(Position2 position, Integer2 squareCoordinates) : Position(position), SquareCoordinates(squareCoordinates), Combatant(nullptr)
+BattleTile::BattleTile(Position2 position, Integer2 squareCoordinates) : SquareCoordinates(squareCoordinates), Combatant(nullptr)
 {
-    HexCoordinates.x = squareCoordinates.x - squareCoordinates.y / 2;
-    HexCoordinates.z = squareCoordinates.y;
-    HexCoordinates.y = -HexCoordinates.x - HexCoordinates.z;
+    Position = position;
+
+    Coordinates.x = squareCoordinates.x - squareCoordinates.y / 2;
+    Coordinates.z = squareCoordinates.y;
+    Coordinates.y = -Coordinates.x - Coordinates.z;
 
     IsObstacle = utility::GetRandom(1, 100) < 15 ? true : false;
 
@@ -43,7 +45,7 @@ int BattleTile::GetPenalty() const
     return IsObstacle ? 3 : 1;
 }
 
-const Array <BattleTile *> &BattleTile::GetNearbyTiles(Integer range)
+const engine::thread::HexBuffer <BattleTile> BattleTile::GetNearbyTiles(Integer range)
 {
     return Map->GetNearbyTiles(this, range);
 }
@@ -53,7 +55,7 @@ container::Block <BattleTile *, 6> BattleTile::GetNearbyTiles()
     return Map->GetNearbyTiles(this);
 }
 
-const Array <BattleTile *> &BattleTile::GetTileRing(Integer range)
+const engine::thread::HexBuffer <BattleTile> BattleTile::GetTileRing(Integer range)
 {
     return Map->GetTileRing(this, range);
 }   
@@ -65,7 +67,7 @@ BattleTile* BattleTile::GetEmptyTileInRange(Integer range)
 
 BattleTile * BattleTile::GetNeighbor(Integer3 direction)
 {
-    auto coordinates = HexCoordinates + direction;
+    auto coordinates = Coordinates + direction;
     return Map->GetTile(coordinates);
 }
 

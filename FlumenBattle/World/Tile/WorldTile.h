@@ -2,11 +2,13 @@
 
 #include "FlumenCore/Conventions.hpp"
 #include "FlumenCore/Container/Map.hpp"
+#include "FlumenCore/Hex/Hex.h"
+
+#include "FlumenEngine/Thread/HexBuffer.h"
 
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/World/Types.h"
 #include "FlumenBattle/World/Settlement/Types.h"
-#include "FlumenBattle/World/Tile/TileBuffer.h"
 
 namespace world
 {
@@ -33,7 +35,7 @@ namespace world::tile
     struct WorldBiome;
     class RuinHandler;
 
-    struct WorldTile
+    struct WorldTile : public core::hex::PhysicalTile
     {
         friend class WorldMap;
 
@@ -75,11 +77,11 @@ namespace world::tile
             bool IsToBeVisited = false;
         } PathData;
 
-        Position2 Position;
+        //Position2 Position;
 
         Integer2 SquareCoordinates;
 
-        Integer3 HexCoordinates;
+        //Integer3 HexCoordinates;
 
         Integer Elevation;
 
@@ -101,17 +103,17 @@ namespace world::tile
 
         void Initialize();
 
-        Integer GetDistanceTo(const WorldTile& other) 
+        /*Integer GetDistanceTo(const WorldTile& other) 
         {
-            auto direction = this->HexCoordinates - other.HexCoordinates;
+            auto direction = this->Coordinates - other.Coordinates;
             return (abs(direction.x) + abs(direction.y) + abs(direction.z)) / 2;
-        }
+        }*/
 
-        Float GetPhysicalDistanceTo(const WorldTile& other)
+        /*Float GetPhysicalDistanceTo(const WorldTile& other)
         {
             auto direction = this->Position - other.Position;
             return glm::length(direction);
-        }
+        }*/
 
         Float GetPhysicalAngle(const WorldTile& other)
         {
@@ -120,11 +122,11 @@ namespace world::tile
             return angle;//angle + angle > 0 ? angle : (TWO_PI + angle);
         }
 
-        const TileBuffer <WorldTile> GetNearbyTiles(Integer);
+        const engine::thread::HexBuffer <WorldTile> GetNearbyTiles(Integer);
 
         container::Block <WorldTile *, 6> GetNearbyTiles();
 
-        const TileBuffer <WorldTile> GetTileRing(Integer);
+        const engine::thread::HexBuffer <WorldTile> GetTileRing(Integer);
 
         WorldTile * GetEmptyTileInRange(Integer);
 

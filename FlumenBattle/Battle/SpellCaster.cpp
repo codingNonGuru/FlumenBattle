@@ -133,8 +133,8 @@ container::Array <BattleTile *> &SpellCaster::GetAffectedTiles(Combatant &caster
 
         auto ratio = (float) spell.EffectArea.Size / (float) distance;
         
-        Float3 delta = targetTile->HexCoordinates - caster.GetTile()->HexCoordinates;
-        auto newCoords = utility::RoundHexCoords(Float3(caster.GetTile()->HexCoordinates) + delta * ratio);
+        Float3 delta = targetTile->Coordinates - caster.GetTile()->Coordinates;
+        auto newCoords = utility::RoundHexCoords(Float3(caster.GetTile()->Coordinates) + delta * ratio);
 
         static auto endTiles = container::Array <BattleTile *> (64);
 
@@ -159,7 +159,7 @@ container::Array <BattleTile *> &SpellCaster::GetAffectedTiles(Combatant &caster
             for (int i = 0; i <= spell.EffectArea.Size; ++i)
             {
                 auto factor = float(i) / float(spell.EffectArea.Size);
-                auto coords = utility::RoundHexCoords(utility::InterpolateHexly(caster.GetTile()->HexCoordinates, endTile->HexCoordinates, factor));
+                auto coords = utility::RoundHexCoords(utility::InterpolateHexly(caster.GetTile()->Coordinates, endTile->Coordinates, factor));
 
                 auto tile = BattleScene::Get()->GetBattleMap()->GetTile(coords);
                 if(tiles.Find(tile) != nullptr)

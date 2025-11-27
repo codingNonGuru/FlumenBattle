@@ -48,7 +48,7 @@ void BorderModel::Initialize()
     {
         hexTile->Tile = worldTile;
 
-        hexTile->Coordinates = worldTile->HexCoordinates;
+        hexTile->Coordinates = worldTile->Coordinates;
     }
 
     for(auto hexTile = tiles.GetTiles().GetStart(); hexTile != tiles.GetTiles().GetEnd(); ++hexTile)
@@ -136,7 +136,7 @@ void BorderModel::Update()
 
     for(auto &tile : changeQueue)
     {
-        auto borderTile = tiles.GetTile(tile->HexCoordinates);
+        auto borderTile = tiles.GetTile(tile->Coordinates);
 
         for(auto &neighbour : borderTile->Neighbours)
         {

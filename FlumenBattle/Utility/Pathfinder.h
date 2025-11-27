@@ -4,8 +4,9 @@
 #include <chrono>
 
 #include "FlumenCore/Singleton.h"
-#include "FlumenCore/Container/HexGrid.h"
 #include "FlumenCore/Container/Graph.h"
+
+#include "FlumenEngine/Container/HexGrid.h"
 
 #include "FlumenBattle/World/Tile/WorldMap.h"
 #include "FlumenBattle/Utility/Types.h"
@@ -324,8 +325,8 @@ namespace utility
 
             tilePaths.Clear();
 
-            auto coordinates = (startTile->HexCoordinates + endTile->HexCoordinates) / 2;
-            TileType *middleTile = startTile->GetNeighbor(endTile->HexCoordinates - coordinates);
+            auto coordinates = (startTile->Coordinates + endTile->Coordinates) / 2;
+            TileType *middleTile = startTile->GetNeighbor(endTile->Coordinates - coordinates);
 
             auto tiles = middleTile->GetNearbyTiles(range);
             for(auto &tile : tiles)
@@ -348,7 +349,7 @@ namespace utility
             visitedTiles.Reset();
             *visitedTiles.Add() = startTile;
 
-            auto middleNode = nodeMap.GetTile(middleTile->HexCoordinates);
+            auto middleNode = nodeMap.GetTile(middleTile->Coordinates);
             auto &nearbyNodes = nodeMap.GetNearbyTiles(middleNode, range + 1);
             for(auto &node : nearbyNodes)
             {
@@ -357,7 +358,7 @@ namespace utility
 
             typename TileGraph::Node *championPath = tilePaths.StartGraph({startTile, 0});
 
-            auto startNode = nodeMap.GetTile(startTile->HexCoordinates);
+            auto startNode = nodeMap.GetTile(startTile->Coordinates);
             startNode->Node = championPath;
             //startTile->PathData.Node = (void *)championPath;
 
@@ -383,7 +384,7 @@ namespace utility
                     {
                         if(nearbyTile->PathData.IsVisited == false && nearbyTile->PathData.IsToBeVisited == true)
                         {                               
-                            auto nearbyTileNode = nodeMap.GetTile(nearbyTile->HexCoordinates);
+                            auto nearbyTileNode = nodeMap.GetTile(nearbyTile->Coordinates);
                             auto nearbyNodeMappings = nodeMap.GetNearbyTiles(nearbyTileNode);
                             for(auto &nearbyNodeMapping : nearbyNodeMappings)
                             {
@@ -429,7 +430,7 @@ namespace utility
                 championPath = newNode;
                 bestTile->PathData.IsVisited = true;
                 *visitedTiles.Add() = bestTile;
-                nodeMap.GetTile(bestTile->HexCoordinates)->Node = newNode;
+                nodeMap.GetTile(bestTile->Coordinates)->Node = newNode;
 
                 if(championPath->Content.Tile == endTile)
                 {

@@ -41,7 +41,7 @@ void Polity::Initialize(settlement::Settlement *ruler, bool isPlayerControlled)
         for(int y = 0; y < worldTiles.GetHeight(); ++y)
         {
             auto interestTile = interestMap.Get(x, y);
-            *interestTile = {worldTiles.Get(x, y)->HexCoordinates, nullptr, 0};
+            *interestTile = {worldTiles.Get(x, y)->Coordinates, nullptr, 0};
         }   
     }
 
@@ -150,7 +150,7 @@ void Polity::MapInterest(settlement::Settlement *domain)
 
     for(auto &tile : mappedTiles)
     {
-        auto existingInterest = interestMap.GetTile(tile.Tile->HexCoordinates);
+        auto existingInterest = interestMap.GetTile(tile.Tile->Coordinates);
         if(tile.Tile == domain->GetLocation())
         {
             existingInterest->Owner = domain;

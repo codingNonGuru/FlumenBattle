@@ -1,7 +1,8 @@
 #pragma once
 
 #include "FlumenCore/Conventions.hpp"
-#include "FlumenCore/Container/HexGrid.h"
+
+#include "FlumenEngine/Container/HexGrid.h"
 
 #include "FlumenBattle/World/Science/Types.h"
 #include "FlumenBattle/World/Polity/NeighborHandler.h"

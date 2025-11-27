@@ -182,7 +182,7 @@ namespace world
         auto mousePosition = InputHandler::GetMousePosition();
         auto worldPosition = camera->GetWorldPosition(mousePosition);
 
-        auto tile = map->GetTile(worldPosition);
+        auto tile = map->GetTileFromPosition(worldPosition);
         if(tile == nullptr)
         {
             hoveredTile = nullptr;
@@ -329,8 +329,6 @@ namespace world
             return;
 
         isTravelPlanActive = true;
-
-        WorldScene::Get()->GetPlayerSettlement()->KillPopulation();
     }
 
     void WorldController::HandleTravelReleased()

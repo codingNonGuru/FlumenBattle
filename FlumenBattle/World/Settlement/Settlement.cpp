@@ -122,7 +122,7 @@ void Settlement::RemoveLink(Settlement *settlement)
 void Settlement::UpdateColonialMap()
 {
     auto &interestMap = polity->GetInterestMap();
-    auto centerMapping = interestMap.GetTile(location->HexCoordinates);
+    auto centerMapping = interestMap.GetTile(location->Coordinates);
 
     for(int i = MINIMUM_COLONIZATION_RANGE; i <= MAXIMUM_COLONIZATION_RANGE; ++i)
     {
@@ -175,7 +175,7 @@ world::tile::WorldTile * Settlement::FindColonySpot()
                 continue;
 
             auto &interestMap = this->GetPolity()->GetInterestMap();
-            auto prospectedTile = interestMap.GetTile(tile->HexCoordinates);
+            auto prospectedTile = interestMap.GetTile(tile->Coordinates);
             auto stakeholder = prospectedTile->GetOwner();
             if(stakeholder != nullptr && stakeholder != this)
                 continue;
@@ -205,7 +205,7 @@ world::tile::WorldTile * Settlement::FindColonySpot()
                 continue;
 
             auto &interestMap = this->GetPolity()->GetInterestMap();
-            auto prospectedTile = interestMap.GetTile(tile->HexCoordinates);
+            auto prospectedTile = interestMap.GetTile(tile->Coordinates);
             auto stakeholder = prospectedTile->GetOwner();
             if(stakeholder != nullptr && stakeholder != this)
                 continue;

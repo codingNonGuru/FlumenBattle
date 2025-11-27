@@ -62,10 +62,9 @@ bool Combatant::HasDisadvantage() const
 {
     if(character->GetActionRange() > 1)
     {
-        auto& tiles = tile->GetNearbyTiles(1);
-        for(auto otherTileIterator = tiles.GetStart(); otherTileIterator != tiles.GetEnd(); ++otherTileIterator)
+        auto tiles = tile->GetNearbyTiles(1);
+        for(auto &otherTile : tiles)
         {
-            auto otherTile = *otherTileIterator;
             if(tile == otherTile)
                 continue;
 

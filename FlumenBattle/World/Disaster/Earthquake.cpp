@@ -1,3 +1,5 @@
+#include "FlumenEngine/Thread/HexBuffer.h"
+
 #include "Earthquake.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Tile/WorldMap.h"

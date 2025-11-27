@@ -1,6 +1,9 @@
 #pragma once
 
 #include "FlumenCore/Conventions.hpp"
+#include "FlumenCore/Hex/Hex.h"
+
+#include "FlumenEngine/Thread/HexBuffer.h"
 
 #include "FlumenBattle/Types.hpp"
 
@@ -17,7 +20,7 @@ namespace world
 
 namespace battle
 {
-    struct BattleTile
+    struct BattleTile : public core::hex::PhysicalTile
     {
         friend class BattleMap;
 
@@ -34,11 +37,7 @@ namespace battle
             Integer Distance;
         };
 
-        Position2 Position;
-
         Integer2 SquareCoordinates;
-
-        Integer3 HexCoordinates;
 
         Float4 Shade;
 
@@ -57,24 +56,13 @@ namespace battle
 
         BattleTile() {}
 
-        BattleTile(Position2 position, Integer2 squareCoordinates);/* : Position(position), SquareCoordinates(squareCoordinates), Combatant(nullptr)
-        {
-            HexCoordinates.x = squareCoordinates.x - squareCoordinates.y / 2;
-            HexCoordinates.z = squareCoordinates.y;
-            HexCoordinates.y = -HexCoordinates.x - HexCoordinates.z;
-        }*/
-
-        Integer GetDistanceTo(const BattleTile& other) 
-        {
-            auto direction = this->HexCoordinates - other.HexCoordinates;
-            return (abs(direction.x) + abs(direction.y) + abs(direction.z)) / 2;
-        }
+        BattleTile(Position2 position, Integer2 squareCoordinates);
 
         int GetPenalty() const;
 
         TravelPenalty GetTravelPenalty() const;
 
-        const Array <BattleTile *> &GetNearbyTiles(Integer);
+        const engine::thread::HexBuffer <BattleTile> GetNearbyTiles(Integer);
 
         container::Block <BattleTile *, 6> GetNearbyTiles();
 
@@ -82,7 +70,7 @@ namespace battle
 
         BattleTile * GetNeighbor(Integer3);
 
-        const Array <BattleTile *> &GetTileRing(Integer);
+        const engine::thread::HexBuffer <BattleTile> GetTileRing(Integer);
 
         const Array <OldPathData> & FindPath(Integer);
     };
