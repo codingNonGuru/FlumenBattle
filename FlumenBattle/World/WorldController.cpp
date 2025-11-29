@@ -63,6 +63,8 @@ static const auto TILE_DEVELOP_MODE_KEY = InputHandler::Trigger{SDL_Scancode::SD
 
 static const auto RULE_MENU_OPEN_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_P};
 
+static const auto DISPLAY_MODE_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_F1};
+
 namespace world
 {
     WorldController::WorldController() {}
@@ -106,6 +108,7 @@ namespace world
         InputHandler::RegisterEvent(SETTLE_MODE_KEY, {this, &WorldController::HandleSettleModePressed});
         InputHandler::RegisterEvent(EXPLORE_MODE_KEY, {this, &WorldController::HandleExploreModePressed});
         InputHandler::RegisterEvent(TILE_DEVELOP_MODE_KEY, {this, &WorldController::HandleTileDevelopModePressed});
+        InputHandler::RegisterEvent(DISPLAY_MODE_KEY, {this, &WorldController::HandleReliefDisplayPressed});
         
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_1, {this, &WorldController::HandleCharacterSelected});
         InputHandler::RegisterEvent(SDL_Scancode::SDL_SCANCODE_2, {this, &WorldController::HandleCharacterSelected});
@@ -674,6 +677,14 @@ namespace world
         OnTileDevelopModeToggled.Invoke();
     }
 
+    void WorldController::HandleReliefDisplayPressed()
+    {
+        if(reliefDisplayMode == 0)
+            reliefDisplayMode = 1;
+        else
+            reliefDisplayMode = 0;
+    }
+
     void WorldController::HandleSettlementExited()
     {
         isWorkerPlaceModeActive = false;
@@ -709,6 +720,7 @@ namespace world
         InputHandler::UnregisterEvent(SETTLE_MODE_KEY);
         InputHandler::UnregisterEvent(EXPLORE_MODE_KEY);
         InputHandler::UnregisterEvent(TILE_DEVELOP_MODE_KEY);
+        InputHandler::UnregisterEvent(DISPLAY_MODE_KEY);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_1);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_2);
         InputHandler::UnregisterEvent(SDL_Scancode::SDL_SCANCODE_3);

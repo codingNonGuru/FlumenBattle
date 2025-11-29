@@ -43,7 +43,7 @@ namespace battle::render
         container::Block <Particle, 19> boomParticles;
 
     public:
-        static const auto DURATION = 2.0f;
+        static constexpr auto DURATION = 2.0f;
 
         FireballEffect(BattleTile *, BattleTile *, int);
 

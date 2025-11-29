@@ -27,9 +27,6 @@ namespace world
 
 namespace world::tile
 {
-    template <typename TileType>
-    struct TileBuffer; 
-
     class WorldMap;
     struct WorldRelief;
     struct WorldBiome;
@@ -77,11 +74,7 @@ namespace world::tile
             bool IsToBeVisited = false;
         } PathData;
 
-        //Position2 Position;
-
         Integer2 SquareCoordinates;
-
-        //Integer3 HexCoordinates;
 
         Integer Elevation;
 
@@ -90,6 +83,10 @@ namespace world::tile
         Float4 Shade;
 
         WorldTiles Type;
+
+        bool IsCoastline;
+
+        bool IsPeninsula;
 
         const WorldRelief *Relief;
 

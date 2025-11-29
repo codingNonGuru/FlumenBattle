@@ -13,6 +13,7 @@ namespace world
     namespace tile 
     {
         struct WorldTile;
+        struct WorldEdge;
         class WorldMap;
         class Ruin;
         class RuinHandler;
@@ -47,6 +48,8 @@ namespace world
         bool hasPreallocatedMaximumMemory {false};
 
         container::Grid <tile::WorldTile>::Memory worldTileMemory;
+
+        container::Grid <tile::WorldEdge>::Memory worldEdgeMemory;
 
         container::Grid <SimulationDomain>::Memory simulationMemory;
 

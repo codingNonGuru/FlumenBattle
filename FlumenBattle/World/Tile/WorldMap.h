@@ -4,10 +4,10 @@
 #include "FlumenCore/Container/Block.hpp"
 #include "FlumenCore/Hex/Hex.h"
 
-#include "FlumenEngine/Container/HexGrid.h"
+#include "FlumenEngine/Container/EdgyHexGrid.h"
 #include "FlumenEngine/Thread/HexBuffer.h"
 
-#include "FlumenBattle/World/Tile/WorldTile.h"
+#include "FlumenBattle/World/Tile/WorldEdge.h"
 
 namespace world
 {
@@ -22,7 +22,9 @@ namespace world
 
 namespace world::tile
 {
-    class WorldMap : public container::HexGrid <WorldTile>
+    class River;
+
+    class WorldMap : public container::EdgyHexGrid <WorldTile, WorldEdge>
     {
         friend class world::WorldScene;
 
@@ -36,7 +38,9 @@ namespace world::tile
 
         friend class WorldInterface;
 
-        WorldMap() {}
+        container::Array <River> rivers;
+
+        WorldMap();
 
         WorldMap(Length size);
 
@@ -52,5 +56,9 @@ namespace world::tile
         WorldTile* GetEmptyRandomTile(bool = true);
 
         WorldTile* GetEmptyTileAroundTile(WorldTile *, Integer);
+
+        River *AddRiver(WorldEdge *);
+
+        container::Array <River> &GetRivers() {return rivers;}
     };
 }

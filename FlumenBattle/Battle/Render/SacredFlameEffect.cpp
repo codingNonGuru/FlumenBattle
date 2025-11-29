@@ -6,9 +6,9 @@
 #include "FlumenEngine/Render/ShaderManager.hpp"
 #include "FlumenEngine/Sound/SoundManager.h"
 #include "FlumenEngine/Render/DataBuffer.hpp"
+#include "FlumenEngine/Render/LineRenderer.h"
 
 #include "SacredFlameEffect.h"
-#include "FlumenBattle/LineRenderer.h"
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/Battle/Render/BattleTileModel.h"
 #include "FlumenBattle/Battle/BattleTile.h"
@@ -18,13 +18,13 @@ using namespace battle::render;
 
 #define BUFFER_COUNT 5
 
-static render::LineRenderer *lineRenderer = nullptr;
+static engine::render::LineRenderer *lineRenderer = nullptr;
 
 SacredFlameEffect::SacredFlameEffect(BattleTile *newTile)
 {
     if(lineRenderer == nullptr)
     {
-        lineRenderer = new ::render::LineRenderer(particles.GetCapacity());
+        lineRenderer = new engine::render::LineRenderer(particles.GetCapacity());
     }
 
     isActive = true;

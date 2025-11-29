@@ -31,6 +31,8 @@ WorldAllocator::WorldAllocator()
 
     worldTileMemory = container::Grid <tile::WorldTile>::PreallocateMemory(MAXIMUM_WORLD_SIZE * MAXIMUM_WORLD_SIZE);
 
+    worldEdgeMemory = container::Grid <tile::WorldEdge>::PreallocateMemory(MAXIMUM_WORLD_SIZE * MAXIMUM_WORLD_SIZE * 3);
+
     auto size = MAXIMUM_WORLD_SIZE / TILES_PER_SIMULATION_DOMAIN;
     simulationMemory = container::Grid <SimulationDomain>::PreallocateMemory(size * size);
 
@@ -60,11 +62,13 @@ WorldAllocator::WorldAllocator()
 
 void WorldAllocator::AllocateMap(tile::WorldMap &map, int size)
 {
-    const auto CHANGE_QUEUE_SIZE = size * size / OWNERSHIP_QUEUE_SIZE_FACTOR;
+    const auto CHANGE_QUEUE_SIZE = size / OWNERSHIP_QUEUE_SIZE_FACTOR;
     WorldScene::Get()->ownershipChangeQueue.Initialize(CHANGE_QUEUE_SIZE, ownershipChangeMemory);
 
     auto height = size;
     map.tiles.Initialize(size, height, worldTileMemory);
+
+    map.AddEdges(worldEdgeMemory);
 
     auto simulationSize = size / TILES_PER_SIMULATION_DOMAIN;
     SimulationMap::Get()->domains.Initialize(simulationSize, simulationSize, simulationMemory);

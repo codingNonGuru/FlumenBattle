@@ -188,15 +188,15 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     );
     travelLabel->Enable();
 
-    /*pathLabels.Initialize(1024);
-    for(int i = 0; i < 1024; i++)
+    pathLabels.Initialize(512);
+    for(int i = 0; i < pathLabels.GetCapacity(); i++)
     {
         auto label = ElementFactory::BuildElement<PathLabel>(
-            {Size(30, 30), DrawOrder(3), {Position2(0.0f, 0.0f), canvas}, {false}, Opacity(0.2f)}
+            {Size(30, 30), DrawOrder(3), {Position2(), canvas}, {false}, Opacity(0.0f)}
         );
         label->Disable();
         *pathLabels.Add() = label;
-    }*/
+    }
 
     vendorCursor = ElementFactory::BuildElement <interface::VendorCursor>
     (
@@ -951,10 +951,10 @@ void WorldInterface::Update()
         }
     }
 
-    /*for(auto &label : pathLabels)
+    for(auto &label : pathLabels)
     {
         label->Disable();
-    }*/
+    }
 
     auto worldMap = WorldScene::Get()->GetWorldMap();
     auto polity = WorldScene::Get()->GetPolities().Get(0);
@@ -983,6 +983,20 @@ void WorldInterface::Update()
         label->Enable();
         index++;
     }*/
+
+    int index = 0;
+    auto hoveredTile = WorldController::Get()->GetHoveredTile();
+    if(hoveredTile != nullptr)
+    {
+        auto neighbours = hoveredTile->GetNearbyTiles(2);
+        for(auto &tile : neighbours)
+        {
+            auto label = *pathLabels.Get(index);
+            label->SetTile(worldMap->GetTile(tile->Coordinates), tile->Elevation);
+            label->Enable();
+            index++;
+        }
+    }
 }
 
 void WorldInterface::RemoveActionPopup(interface::ActionPopup *popup)

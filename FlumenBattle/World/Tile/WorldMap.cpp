@@ -6,8 +6,11 @@
 
 #include "FlumenBattle/World/Tile/WorldMap.h"
 #include "FlumenBattle/World/WorldAllocator.h"
+#include "FlumenBattle/World/Tile/River.h"
 
 using namespace world::tile;
+
+WorldMap::WorldMap() {}
 
 WorldMap::WorldMap(Length size) 
 {
@@ -32,6 +35,15 @@ WorldMap::WorldMap(Length size)
             tile->map = this;
         }
     }
+
+    for(auto &edge : GetEdges())
+    {
+        edge.River = nullptr;
+
+        edge.Downstream = nullptr;
+    }
+
+    rivers.Initialize(128);
 }
 
 WorldTile* WorldMap::GetTileFromPosition(Float2 position) const
@@ -85,4 +97,12 @@ WorldTile* WorldMap::GetEmptyTileAroundTile(WorldTile * tile, Integer range)
             return otherTile;
         //}
     }
+}
+
+River *WorldMap::AddRiver(WorldEdge *firstSegment)
+{
+    auto newRiver = rivers.Add();
+    newRiver->Initialize();
+
+    newRiver->AddSegment(firstSegment);
 }

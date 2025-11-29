@@ -6,12 +6,12 @@
 #include "FlumenEngine/Render/Shader.hpp"
 #include "FlumenEngine/Render/ShaderManager.hpp"
 #include "FlumenEngine/Sound/SoundManager.h"
+#include "FlumenEngine/Render/LineRenderer.h"
 
 #include "FrostRayEffect.h"
 #include "FlumenBattle/Types.hpp"
 #include "FlumenBattle/Battle/Render/BattleTileModel.h"
 #include "FlumenBattle/Battle/BattleTile.h"
-#include "FlumenBattle/LineRenderer.h"
 
 using namespace battle::render;
 
@@ -66,5 +66,5 @@ void FrostRayEffect::Render()
 
     static auto color = Color::BLUE * 0.5f + Color::WHITE * 0.5f;
 
-    ::render::LineRenderer::RenderLine(camera, position, length, 12.0f, rotation, color, strength);
+    engine::render::LineRenderer::RenderLine(camera, position, length, 12.0f, rotation, color, strength);
 }

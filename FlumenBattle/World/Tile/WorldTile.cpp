@@ -48,7 +48,7 @@ void WorldTile::Initialize()
     {
         if(Type == WorldTiles::SEA)
         {
-            auto depthFactor = (float)Elevation / 50.0f;
+            auto depthFactor = (float)Elevation / 500.0f;
             depthFactor *= depthFactor * depthFactor;
             depthFactor *= depthFactor * depthFactor;
             return SEA_COLOR * (1.0f - depthFactor) + Color::CYAN * depthFactor;

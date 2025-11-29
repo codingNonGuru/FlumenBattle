@@ -10,6 +10,7 @@
 #include "FlumenEngine/Core/Engine.hpp"
 #include "FlumenEngine/Render/DataBuffer.hpp"
 #include "FlumenEngine/Interface/Sprite.hpp"
+#include "FlumenEngine/Render/LineRenderer.h"
 
 #include "FlumenBattle/Battle/Render/BattleTileModel.h"
 #include "FlumenBattle/Battle/BattleScene.h"
@@ -27,7 +28,6 @@
 #include "FlumenBattle/World/Character/CharacterAction.h"
 #include "FlumenBattle/World/Character/Spell.h"
 #include "FlumenBattle/Battle/SpellCaster.h"
-#include "FlumenBattle/LineRenderer.h"
 
 using namespace battle;
 using namespace battle::render;
@@ -329,7 +329,7 @@ void BattleTileModel::Render()
 
         auto endPosition = isHoveringTargetWhileInitiating == true ? humanController->GetHoveredTile()->Position : battleController->GetTargetedCombatant()->GetPosition();
 
-        ::render::LineRenderer::RenderDottedLine(camera, battleController->GetSelectedCombatant()->GetPosition(), endPosition, 10.0f, Color::RED, opacity, true, true);
+        engine::render::LineRenderer::RenderDottedLine(camera, battleController->GetSelectedCombatant()->GetPosition(), endPosition, 10.0f, Color::RED, opacity, true, true);
     }
 
     for(auto &job : lastRenderPassJobs)

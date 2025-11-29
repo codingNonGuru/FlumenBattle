@@ -26,7 +26,7 @@ namespace battle::render
         float strength;
 
     public:
-        static const auto DURATION = 1.0f;
+        static constexpr auto DURATION = 1.0f;
 
         FrostRayEffect(BattleTile *, BattleTile *);
 

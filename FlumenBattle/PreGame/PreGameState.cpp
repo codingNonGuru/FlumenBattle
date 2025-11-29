@@ -98,7 +98,7 @@ namespace pregame
     {
         generatorPopup->Enable();
 
-        Perlin::Generate(Size(perlinNoise.GetWidth(), perlinNoise.GetHeight()), 0.25f, ContrastThreshold(0.5f), ContrastStrength(4.0f));
+        Perlin::Generate(Size(perlinNoise.GetWidth(), perlinNoise.GetHeight()), 0.2f, ContrastThreshold(0.5f), ContrastStrength(2.0f));
         
         Perlin::Download(&perlinNoise);
 

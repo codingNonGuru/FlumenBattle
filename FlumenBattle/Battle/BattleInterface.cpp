@@ -6,6 +6,7 @@
 #include "FlumenEngine/Core/SceneManager.hpp"
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Core/Engine.hpp"
+#include "FlumenEngine/Render/LineRenderer.h"
 
 #include "FlumenBattle/Battle/BattleInterface.h"
 #include "FlumenBattle/Battle/BattleTile.h"
@@ -27,7 +28,6 @@
 #include "FlumenBattle/Battle/Interface/TargetCursor.h"
 #include "FlumenBattle/Battle/Interface/ConditionPopup.h"
 #include "FlumenBattle/Battle/Interface/TargetingCard.h"
-#include "FlumenBattle/LineRenderer.h"
 
 using namespace battle;
 

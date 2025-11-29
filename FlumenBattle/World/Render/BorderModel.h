@@ -3,7 +3,7 @@
 #include "FlumenCore/Singleton.h"
 #include "FlumenCore/Container/Block.hpp"
 
-#include "FlumenEngine/Container/HexGrid.h"
+#include "FlumenEngine/Container/EdgyHexGrid.h"
 #include "FlumenEngine/Render/Model.hpp"
 
 class Camera;

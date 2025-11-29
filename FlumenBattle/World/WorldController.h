@@ -78,6 +78,8 @@ namespace world
 
         Delegate onRuleMenuPressed;
 
+        int reliefDisplayMode;
+
         WorldController();
 
         void CheckTileSelection();
@@ -143,6 +145,8 @@ namespace world
         void HandleExploreModePressed();
 
         void HandleTileDevelopModePressed();
+
+        void HandleReliefDisplayPressed();
 
         void EnableHardInput();
 
@@ -228,5 +232,7 @@ namespace world
         utility::PathData <tile::WorldTile> GetPlannedPath() const;
 
         void CancelActiveModes();
+
+        int GetDisplayMode() const {return reliefDisplayMode;}
     };
 }

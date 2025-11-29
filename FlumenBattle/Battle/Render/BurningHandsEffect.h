@@ -35,7 +35,7 @@ namespace battle::render
         container::SmartBlock <Particle, 512> particles;
 
     public:
-        static const auto DURATION = 2.0f;
+        static constexpr auto DURATION = 2.0f;
 
         BurningHandsEffect(Combatant &, BattleTile *);
 
