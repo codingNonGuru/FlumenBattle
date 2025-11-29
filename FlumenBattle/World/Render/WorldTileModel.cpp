@@ -39,6 +39,7 @@
 #include "FlumenBattle/World/Group/GroupSpotting.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
 #include "FlumenBattle/World/Render/RiverModel.h"
+#include "FlumenBattle/World/Render/TreeModel.h"
 #include "FlumenBattle/Config.h"
 
 #define WORLD_TILE_SIZE tile::WorldMap::WORLD_TILE_SIZE
@@ -118,6 +119,8 @@ void WorldTileModel::Initialize()
     RendererAllocator::Get()->Allocate(size);
 
     FarmModel::Get()->Initialize();
+
+    TreeModel::Get()->Initialize();
 }
 
 void WorldTileModel::Enable()
@@ -1077,6 +1080,8 @@ void WorldTileModel::Render()
     RenderSnow();
 
     RiverModel::Get()->Render();
+
+    TreeModel::Get()->Render();
 
     RenderPaths();
 

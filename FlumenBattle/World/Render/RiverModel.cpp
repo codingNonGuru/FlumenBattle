@@ -34,6 +34,6 @@ void RiverModel::Render()
         auto thickness = (float)edge.Discharge * RIVER_THICKNESS_FACTOR;
         thickness += 5.0f;
 
-        engine::render::LineRenderer::RenderLine(camera, position, 34.0f, thickness, rotation, Color::BLUE, 0.5f);
+        engine::render::LineRenderer::RenderLine(camera, position, 34.0f, thickness, rotation, Color::BLUE, 0.5f, 0.1f);
     }
 }
