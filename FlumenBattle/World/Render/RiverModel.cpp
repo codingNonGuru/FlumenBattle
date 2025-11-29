@@ -13,7 +13,7 @@
 
 using namespace world::render;
 
-#define RIVER_THICKNESS_FACTOR 0.5f
+#define RIVER_THICKNESS_FACTOR 0.35f
 
 void RiverModel::Render()
 {
@@ -32,6 +32,7 @@ void RiverModel::Render()
         auto rotation = atan2(to.y, to.x) + HALF_PI;
 
         auto thickness = (float)edge.Discharge * RIVER_THICKNESS_FACTOR;
+        thickness += 5.0f;
 
         engine::render::LineRenderer::RenderLine(camera, position, 34.0f, thickness, rotation, Color::BLUE, 0.5f);
     }

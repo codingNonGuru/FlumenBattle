@@ -12,7 +12,9 @@ using namespace world;
 
 #define MOUTH_MINIMUM_SLOPE 10
 
-#define SLOPE_VIABILITY_FACTOR 3
+#define SLOPE_VIABILITY_FACTOR 2
+
+#define CARVE_ITERATION_COUNT 4096
 
 struct DummyTile : core::hex::PhysicalTile {bool HasRiver;};
 
@@ -134,7 +136,6 @@ void RiverGenerator::ComputeSlopes()
             + (edge.End->Elevation - edge.Second->Elevation) 
             + (edge.First->Elevation - edge.Start->Elevation) 
             + (edge.Second->Elevation - edge.Start->Elevation);
-            //+ (edge.End->Elevation - edge.Start->Elevation);
 
         if(delta >= SLOPE_VIABILITY_FACTOR)
             return FlowData{edge.Start, delta};
@@ -236,15 +237,86 @@ void RiverGenerator::CarveUpstream()
 
     auto isFlowingInSameDirection = [&] (tile::WorldEdge &edge, tile::WorldEdge &otherEdge)
     {
-        return edge.Downstream->GetDistanceTo(*otherEdge.Downstream) == 1;
+        return edge.Downstream->GetDistanceTo(*otherEdge.Downstream) == 1 && edge.GetUpstream()->GetDistanceTo(*otherEdge.GetUpstream()) == 1;
     };
 
-    container::Pool <tile::WorldEdge *> riverCandidates(1024);
-
-    for(int i = 0; i < 30; ++i)
+    auto isAtJunction = [&] (tile::WorldEdge &edge, tile::River &river)
     {
-        riverCandidates.Reset();
+        auto isUpstream = map->GetEdge(edge.First, edge.GetUpstream())->River == &river && map->GetEdge(edge.Second, edge.GetUpstream())->River == &river;
+        auto isDownstream = map->GetEdge(edge.First, edge.Downstream)->River == &river && map->GetEdge(edge.Second, edge.Downstream)->River == &river;
 
+        return isUpstream || isDownstream;
+    };
+
+    for(int i = 0; i < CARVE_ITERATION_COUNT; ++i)
+    {
+        auto river = map->GetRivers().GetRandom();
+
+        auto source = *(river->GetSegments().GetLast() - 1);
+
+        container::SmartBlock <tile::WorldEdge *, 16> candidates;
+
+        auto neighbours = getNeighbouringEdges(*source);
+
+        for(auto &neighbour : neighbours)
+        {
+            if(neighbour->River != nullptr)
+                continue;
+
+            if(neighbour->Downstream == nullptr)
+                continue;
+
+            if(neighbour->First->Type == WorldTiles::SEA || neighbour->Second->Type == WorldTiles::SEA)
+                continue;
+
+            auto farNeighbours = getNeighbouringEdges(*neighbour);
+            bool hasFound = false;
+            for(auto &farNeighbour : farNeighbours)
+            {
+                if(farNeighbour->River != river && farNeighbour->River != nullptr)
+                {
+                    hasFound = true;
+                    break;
+                }
+            }
+
+            if(hasFound == true)
+                continue;
+
+            if(isFlowingInSameDirection(*source, *neighbour) == false)
+                continue;
+
+            if(isAtJunction(*neighbour, *river) == true)
+                continue;
+
+            *candidates.Add() = neighbour;
+        }
+
+        /*auto biggestSlope = 0;
+        tile::WorldEdge *bestCandidate = nullptr;
+        for(auto &candidate : candidates)
+        {
+            if(abs(candidate->HeightDelta) > biggestSlope)
+            {
+                biggestSlope = abs(candidate->HeightDelta);
+                bestCandidate = candidate;
+            }
+        }*/
+
+        if(candidates.GetSize() == 0)
+            continue;
+
+        auto bestCandidate = *candidates.GetRandom();
+
+        if(bestCandidate == nullptr)
+            continue;
+
+        bestCandidate->River = river;
+        river->AddSegment(bestCandidate);
+    }
+
+    /*for(int i = 0; i < 30; ++i)
+    {
         for(auto &edge : map->GetEdges())
         {
             if(edge.River != nullptr)
@@ -293,19 +365,8 @@ void RiverGenerator::CarveUpstream()
             edge.River = adjacentRiver;
 
             adjacentRiver->AddSegment(&edge);
-
-            //*riverCandidates.Add() = &edge;
         }
-
-        /*while(riverCandidates.GetSize() != 0)
-        {
-            auto candidatePointer = riverCandidates.GetRandom();
-
-            (*candidatePointer)->River = (tile::River *)1;   
-
-            riverCandidates.RemoveAt(candidatePointer);
-        }*/
-    }
+    }*/
 }
 
 void RiverGenerator::ComputeDischarge()

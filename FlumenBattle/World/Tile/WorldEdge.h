@@ -19,5 +19,7 @@ namespace world::tile
         int Discharge;
 
         WorldTile *Downstream;
+
+        WorldTile *GetUpstream() {return (Start == Downstream ? End : Start);}
     };
 }
