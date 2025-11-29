@@ -21,6 +21,8 @@ namespace world
 
         void GenerateSociety(pregame::NewWorldData);
 
+        void DefineRivers();
+
     public:
         int GenerateWorld(pregame::NewWorldData, const container::Grid <float> &, const container::Grid <float> &, const container::Grid <float> &, const container::Grid <float> &);
 

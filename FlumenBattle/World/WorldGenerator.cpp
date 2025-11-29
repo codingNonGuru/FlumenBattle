@@ -20,12 +20,14 @@
 #include "FlumenBattle/World/Polity/Polity.h"
 #include "FlumenBattle/PreGame/PartyLoader.h"
 #include "FlumenBattle/PreGame/Types.h"
+#include "FlumenBattle/World/Tile/River.h"
+#include "FlumenBattle/World/RiverGenerator.h"
 
 using namespace world;
 
 #define METAL_SPAWN_CHANCE 1
 
-static const auto MAXIMUM_TILE_ELEVATION = 100;
+static const auto MAXIMUM_TILE_ELEVATION = 1000;
 
 static const auto SIZE_TO_GIRTH_FACTOR = 12.0f;
 
@@ -72,6 +74,8 @@ int WorldGenerator::GenerateWorld(
 
             auto height = noiseFactor + (1.0f - noiseFactor) * baseHeight;
             height *= 0.4f + baseHeight * 0.6f;
+
+            height = height * 0.4f + height * noiseFactor * 0.6f;
             
             if(height < 0.5f)
             {
@@ -107,7 +111,7 @@ int WorldGenerator::GenerateWorld(
             auto noiseFactor = *perlinNoise.Get(tile->SquareCoordinates.x, tile->SquareCoordinates.y);
 
             auto height = noiseFactor + (1.0f - noiseFactor) * baseHeight;
-            height *= 0.3f + baseHeight * 0.7f;
+            height *= 0.4f + baseHeight * 0.6f;
 
             height *= height;
 
@@ -124,6 +128,8 @@ int WorldGenerator::GenerateWorld(
                     mountainChance = 0;
 
                 mountainChance /= 3;
+
+                mountainChance = 0;
 
                 if(utility::GetRandom(1, 100) <= mountainChance)
                 {
@@ -158,6 +164,9 @@ int WorldGenerator::GenerateWorld(
             auto nearbyTiles = tile->GetNearbyTiles();
             for(auto &nearbyTile : nearbyTiles)
             {
+                if(nearbyTile == nullptr)
+                    continue;
+
                 if(nearbyTile->HasRelief(WorldReliefs::MOUNTAINS))
                     mountainCount++;
             }
@@ -448,6 +457,8 @@ int WorldGenerator::GenerateWorld(
     generateBiomes();
 
     initializeTiles();
+
+    RiverGenerator::Get()->DefineRivers();
 
     GenerateSociety(data);
 

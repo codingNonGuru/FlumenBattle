@@ -13,6 +13,8 @@
 #include "FlumenEngine/Render/DataBuffer.hpp"
 #include "FlumenEngine/Core/Engine.hpp"
 #include "FlumenEngine/Render/Screen.hpp"
+#include "FlumenEngine/Render/HexRenderer.h"
+#include "FlumenEngine/Render/LineRenderer.h"
 
 #include "FlumenBattle/World/Render/WorldTileModel.h"
 #include "FlumenBattle/World/Render/BorderModel.h"
@@ -36,6 +38,7 @@
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Group/GroupSpotting.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
+#include "FlumenBattle/World/Render/RiverModel.h"
 #include "FlumenBattle/Config.h"
 
 #define WORLD_TILE_SIZE tile::WorldMap::WORLD_TILE_SIZE
@@ -362,6 +365,8 @@ DataBuffer *positionBuffer = nullptr;
 
 DataBuffer *colorBuffer = nullptr;
 
+DataBuffer *elevationBuffer = nullptr;
+
 DataBuffer *heatBuffer = nullptr;
 
 void WorldTileModel::RenderGlobalLight()
@@ -408,7 +413,10 @@ void WorldTileModel::RenderTilesAdvanced()
 
     positionBuffer->Bind(0);
 
-    colorBuffer->Bind(1);
+    if(WorldController::Get()->GetDisplayMode() == 0)
+        colorBuffer->Bind(1);
+    else
+        elevationBuffer->Bind(1);
 
     glDrawArrays(GL_TRIANGLES, 0, 18 * map->GetTileCount());
 
@@ -1035,6 +1043,8 @@ void WorldTileModel::Render()
 
         static auto colors = container::Array <Color> (map->GetTileCount());
 
+        static auto elevations = container::Array <Color> (map->GetTileCount());
+
         static auto temperatures = container::Array <Float> (map->GetTileCount());
 
         for(auto &tile : map->GetTiles())
@@ -1045,12 +1055,17 @@ void WorldTileModel::Render()
             //*colors.Add() = Color((float)tile->Elevation / 100.0f);
             *colors.Add() = tile.GetShade();
 
+            float factor = (float)tile.Elevation / 1000.0f;
+            *elevations.Add() = Color(factor, factor, factor, 1.0f);
+
             *temperatures.Add() = tile.Type == WorldTiles::LAND ? (float)tile.Heat / (float)tile::WorldTile::MAXIMUM_TILE_HEAT : 1.0f;
         }
 
         positionBuffer = new DataBuffer(positions.GetMemorySize(), positions.GetStart());
 
         colorBuffer = new DataBuffer(colors.GetMemorySize(), colors.GetStart());
+
+        elevationBuffer = new DataBuffer(elevations.GetMemorySize(), elevations.GetStart());
 
         heatBuffer = new DataBuffer(temperatures.GetMemorySize(), temperatures.GetStart());
     }
@@ -1060,6 +1075,8 @@ void WorldTileModel::Render()
     FarmModel::Get()->Render();
 
     RenderSnow();
+
+    RiverModel::Get()->Render();
 
     RenderPaths();
 
@@ -1132,6 +1149,39 @@ void WorldTileModel::Render()
     RenderImprovements();
 
     RenderBorderExpansionMap();
+
+    auto center = map->GetEdges().GetCenter();
+
+    auto get = [&]
+    {
+        auto theedges = std::array{
+            map->GetEdge(center->First, center->Start), 
+            map->GetEdge(center->First, center->End), 
+            map->GetEdge(center->Second, center->Start), 
+            map->GetEdge(center->Second, center->End)
+        };
+        return theedges;
+    };
+
+    auto ts = {center->First, center->Second, center->Start, center->End};
+    auto cs = std::array{Color::RED, Color::BLUE, Color::GREEN, Color::MAGENTA};
+    int i = 0;
+    for(auto &t : ts)
+    {
+        engine::render::HexRenderer::RenderHex(camera, t->Position, 20.0f, 1.0f, cs[i]);
+        i++;
+    }
+    auto edges = get();
+
+    for(auto &edge : edges)
+    {
+        auto position = edge->First->Position * 0.5f + edge->Second->Position * 0.5f;
+
+        auto to = edge->First->Position - edge->Second->Position;
+        auto rotation = atan2(to.y, to.x) + HALF_PI;
+
+        engine::render::LineRenderer::RenderLine(camera, position, 34.0f, 10.0f, rotation, Color::RED, 1.0f);
+    }
 
     RenderSettleModeMap();
 
