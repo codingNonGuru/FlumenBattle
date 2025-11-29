@@ -15,6 +15,8 @@ using namespace world::render;
 
 #define RIVER_THICKNESS_FACTOR 0.35f
 
+#define SEGMENT_LENGTH 38.0f
+
 void RiverModel::Render()
 {
     static auto camera = RenderManager::GetCamera(Cameras::WORLD);
@@ -34,6 +36,6 @@ void RiverModel::Render()
         auto thickness = (float)edge.Discharge * RIVER_THICKNESS_FACTOR;
         thickness += 5.0f;
 
-        engine::render::LineRenderer::RenderLine(camera, position, 34.0f, thickness, rotation, Color::BLUE, 0.5f, 0.1f);
+        engine::render::LineRenderer::RenderLine(camera, position, SEGMENT_LENGTH, thickness, rotation, Color::BLUE, 0.5f, 0.1f);
     }
 }

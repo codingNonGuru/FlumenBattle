@@ -1081,6 +1081,8 @@ void WorldTileModel::Render()
 
     RiverModel::Get()->Render();
 
+    TreeModel::Get()->RenderShadows();
+
     TreeModel::Get()->Render();
 
     RenderPaths();

@@ -9,6 +9,8 @@ namespace world::render
     public:
         void Initialize();
 
+        void RenderShadows();
+
         void Render();
     };
 }

@@ -61,11 +61,6 @@ void TreeModel::Initialize()
             auto treeIndex = 0;
             for(int i = 0; i < MAX_TREE_PER_TILE; ++i, ++treeIndex)
             {
-                /*if(treeIndex < treeCount)
-                {
-                    
-                }*/
-
                 Position2 position;
                 while(true)
                 {
@@ -133,6 +128,31 @@ void TreeModel::Render()
     colorBuffer->Bind(1);
 
     scaleBuffer->Bind(2);
+
+    glDrawArrays(GL_TRIANGLES, 0, 6 * map->GetTileCount() * MAX_TREE_PER_TILE);
+
+    shader->Unbind();
+}
+
+void TreeModel::RenderShadows()
+{
+    camera = RenderManager::GetCamera(Cameras::WORLD);
+
+    auto &scene = *WorldScene::Get();
+
+    auto map = scene.GetWorldMap();
+
+    auto shader = ShaderManager::GetShader("TreeShadow");
+
+    shader->Bind();
+
+    shader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	shader->SetConstant(0.15f, "depth");
+
+    positionBuffer->Bind(0);
+
+    scaleBuffer->Bind(1);
 
     glDrawArrays(GL_TRIANGLES, 0, 6 * map->GetTileCount() * MAX_TREE_PER_TILE);
 
