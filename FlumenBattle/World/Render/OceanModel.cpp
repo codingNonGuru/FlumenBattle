@@ -6,6 +6,7 @@
 #include "FlumenEngine/Render/LineRenderer.h"
 
 #include "OceanModel.h"
+#include "FoamSegmentData.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Tile/WorldMap.h"
 #include "FlumenBattle/World/Tile/WorldTile.h"
@@ -13,18 +14,15 @@
 
 using namespace world::render;
 
+#define SEGMENT_THICKNESS 15.0f
+
+#define FOAM_OPACITY 0.6f
+
 static world::WorldScene *scene = nullptr;
 
 static world::tile::WorldMap *map = nullptr;
 
-struct FoamSegment
-{
-    world::tile::WorldTile *First;
-
-    world::tile::WorldTile *Second;
-};
-
-container::Array foamSegments = container::Array <FoamSegment> (2048);
+static container::Array <FoamSegmentData> foamSegments;
 
 static engine::render::LineRenderer *lineRenderer = nullptr;
 
@@ -85,11 +83,6 @@ void OceanModel::Initialize()
         }
     }
 
-    if(lineRenderer == nullptr)
-    {
-        lineRenderer = new engine::render::LineRenderer(foamSegments.GetCapacity());
-    }
-
     auto &positions = lineRenderer->GetPositions();
     positions.Reset();
 
@@ -114,7 +107,7 @@ void OceanModel::Initialize()
 
         *lengths.Add() = tile::WorldMap::WORLD_TILE_SIZE * 2.0f;
 
-        *thicknesses.Add() = 12.0f;
+        *thicknesses.Add() = SEGMENT_THICKNESS;
 
         *colors.Add() = Color::WHITE;
     }
@@ -126,5 +119,20 @@ void OceanModel::Render()
 {
     static auto camera = RenderManager::GetCamera(Cameras::WORLD);
 
-    lineRenderer->Render(camera, 0.7f, 0.5f);
+    lineRenderer->Render(camera, FOAM_OPACITY, 0.5f);
+}
+
+engine::render::LineRenderer *OceanModel::GetFoamRenderer()
+{
+    return lineRenderer;
+}
+
+void OceanModel::SetFoamRenderer(engine::render::LineRenderer *renderer)
+{
+    lineRenderer = renderer;
+}
+
+container::Array <FoamSegmentData> &OceanModel::GetFoamSegments()
+{
+    return foamSegments;
 }

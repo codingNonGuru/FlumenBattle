@@ -7,6 +7,8 @@
 
 namespace world::render
 {
+    struct FoamSegmentData;
+
     class RendererAllocator : public core::Singleton <RendererAllocator>
     {
         friend class core::Singleton <RendererAllocator>;
@@ -18,6 +20,9 @@ namespace world::render
         container::Array <Float>::Memory farmRotationMemory;
 
         container::Grid <FarmData>::Memory farmDataMemory;
+
+
+        container::Array <FoamSegmentData>::Memory foamSegmentMemory;
 
         RendererAllocator();
 

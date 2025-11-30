@@ -1,6 +1,10 @@
+#include "FlumenEngine/Render/LineRenderer.h"
+
 #include "RendererAllocator.h"
 #include "FlumenBattle/World/Render/FarmModel.h"
 #include "FlumenBattle/Config.h"
+#include "FlumenBattle/World/Render/OceanModel.h"
+#include "FlumenBattle/World/Render/FoamSegmentData.h"
 
 using namespace world::render;
 
@@ -19,6 +23,13 @@ RendererAllocator::RendererAllocator()
     farmRotationMemory = container::Array <Float>::PreallocateMemory(width * height);
 
     farmDataMemory = container::Grid <FarmData>::PreallocateMemory(width * height);
+
+
+    auto maximumSegmentCount = width * height / 8;
+
+    foamSegmentMemory = container::Array <FoamSegmentData>::PreallocateMemory(maximumSegmentCount);
+
+    OceanModel::Get()->SetFoamRenderer(new engine::render::LineRenderer(maximumSegmentCount));
 }
 
 void RendererAllocator::Allocate(int size)
@@ -30,4 +41,6 @@ void RendererAllocator::Allocate(int size)
     FarmModel::Get()->rotations.Initialize(size * size, farmRotationMemory);
 
     FarmModel::Get()->farmData.Initialize(size, size, farmDataMemory);
+
+    OceanModel::Get()->GetFoamSegments().Initialize(size * size / 8, foamSegmentMemory);
 }
