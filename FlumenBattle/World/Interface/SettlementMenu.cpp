@@ -25,6 +25,8 @@ static const auto BORDER_INNER_OFFSET = Size(4, 4);
 
 static const auto TEXT_COLOR = Color::RED * 0.5f;
 
+static const auto HIGHLIGHT_COLOR = Color::RED * 0.9f;
+
 static constexpr auto DEFAULT_FONT_SIZE = "Medium";
 
 static constexpr auto OPTION_ITEM_SIZE = Size(280, 35);
@@ -43,7 +45,7 @@ void SettlementMenu::HandleConfigure()
     border->SetSpriteColor(BORDER_COLOR);
     border->Enable();
 
-    nameLabel = ElementFactory::BuildText
+    nameLabel = ElementFactory::BuildRichText
     (
         {
             drawOrder_ + 1, 
@@ -51,7 +53,8 @@ void SettlementMenu::HandleConfigure()
         },
         {
             {DEFAULT_FONT_SIZE}, 
-            TEXT_COLOR
+            TEXT_COLOR,
+            HIGHLIGHT_COLOR
         }
     );
     nameLabel->Enable();
@@ -131,7 +134,8 @@ void SettlementMenu::HandleConfigure()
 void SettlementMenu::HandleUpdate() 
 {
     Phrase text;
-    text << currentSettlement->GetName();
+    auto settlementName = currentSettlement->GetName();
+    text << "<2>" << settlementName.GetFirstCharacter() << "<1>" << settlementName.Get() + 1;
     nameLabel->Setup(text);
 
     text = currentSettlement->GetRace()->PluralName;

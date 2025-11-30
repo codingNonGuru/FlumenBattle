@@ -31,7 +31,8 @@ void CharacterDetailPanel::HandleConfigure()
     {
         auto data = labelData[i];
 
-        auto label = ElementFactory::BuildText<CharacterAbilityLabel>(
+        auto label = ElementFactory::BuildText <CharacterAbilityLabel>
+        (
             {Size(150, 150), drawOrder_ + 1, {position, this}},
             {{"Medium"}, textColor}
         );

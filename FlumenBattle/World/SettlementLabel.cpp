@@ -28,6 +28,8 @@ using namespace world::settlement;
 
 static const Color TEXT_COLOR = Color::RED * 0.5f;
 
+static const Color HIGHLIGHT_COLOR = Color::RED * 0.9f;
+
 auto borderColor = Color::RED * 0.25f;
 
 void HoverExtension::ResourceWidget::HandleConfigure()
@@ -95,9 +97,10 @@ void SettlementLabel::HandleConfigure()
     this->SetSpriteColor(borderColor);
 
     auto height = -float(size_.y) / 2.0f + 20.0f;
-    nameLabel = ElementFactory::BuildText(
-        {Size(100, 100), drawOrder_ + 1, {Position2(10.0f, 3.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}},
-        {{"Medium"}, TEXT_COLOR, "PathData"}
+    nameLabel = ElementFactory::BuildRichText
+    (
+        {Size(), drawOrder_ + 1, {Position2(10.0f, 3.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}},
+        {{"Medium"}, TEXT_COLOR, HIGHLIGHT_COLOR}
     );
     nameLabel->SetAlignment(Text::Alignments::LEFT);
     nameLabel->Enable();
@@ -392,7 +395,8 @@ void SettlementLabel::HandleUpdate()
     transform_->GetPosition().y = screenPosition.y + offset + 25.0f / camera->GetZoomFactor();
 
     Phrase text;
-    text << settlement->GetName().Get();
+    auto settlementName = settlement->GetName();
+    text << "<2>" << settlementName.GetFirstCharacter() << "<1>" << settlementName.Get() + 1;
     nameLabel->Setup(text);
 
     text = "";

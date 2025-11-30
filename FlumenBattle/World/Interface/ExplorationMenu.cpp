@@ -20,6 +20,8 @@ static const auto BORDER_COLOR = Color::RED * 0.25f;
 
 static const auto TEXT_COLOR = Color::RED * 0.5f;
 
+static const auto HIGHLIGHT_COLOR = Color::RED * 0.9f;
+
 static const auto BORDER_INNER_OFFSET = Size(4, 4);
 
 static const auto TOGGLE_MESSAGE = "Press [TAB] to toggle";
@@ -38,7 +40,7 @@ void ExplorationMenu::HandleConfigure()
     border->SetSpriteColor(BORDER_COLOR);
     border->Enable();
 
-    reliefLabel = ElementFactory::BuildText
+    reliefLabel = ElementFactory::BuildRichText
     (
         {
             drawOrder_ + 1, 
@@ -46,7 +48,8 @@ void ExplorationMenu::HandleConfigure()
         },
         {
             {"Medium"}, 
-            TEXT_COLOR
+            TEXT_COLOR,
+            HIGHLIGHT_COLOR
         }
     );
     reliefLabel->Enable();
@@ -106,14 +109,14 @@ void ExplorationMenu::HandleUpdate()
     auto string = LongWord() << [&]
     {
         if(playerLocation->HasRelief(WorldReliefs::MOUNTAINS))
-            return "Mountains";
+            return "<2>M<1>ountains";
         
         if(playerLocation->HasBiome(WorldBiomes::STEPPE))
-            return "Grasslands";
+            return "<2>G<1>rasslands";
         else if(playerLocation->HasBiome(WorldBiomes::WOODS))
-            return "Woods";
+            return "<2>W<1>oods";
         else if(playerLocation->HasBiome(WorldBiomes::DESERT))
-            return "Wasteland";
+            return "<2>W<1>asteland";
     } ();
 
     reliefLabel->Setup(string);

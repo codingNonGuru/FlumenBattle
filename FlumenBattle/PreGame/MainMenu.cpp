@@ -7,17 +7,21 @@
 
 using namespace pregame;
 
+static const auto TEXT_COLOR = Color::RED * 0.5f;
+
+static const auto HIGHLIGHT_COLOR = Color::RED * 0.9f;
+
 void MainMenu::HandleConfigure() 
 {
-    newGameLabel = ElementFactory::BuildText(
+    newGameLabel = ElementFactory::BuildRichText(
         {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, -20.0f), this}},
-        {{"Large"}, Color::RED * 0.5f, "[N]ew Game"}
+        {{"Large"}, TEXT_COLOR, HIGHLIGHT_COLOR, "<2>N<1>ew Game"}
     );
     newGameLabel->Enable();
 
-    quitGameLabel = ElementFactory::BuildText(
+    quitGameLabel = ElementFactory::BuildRichText(
         {Size(150, 150), drawOrder_ + 1, {Position2(0.0f, 20.0f), this}},
-        {{"Large"}, Color::RED * 0.5f, "[E]xit"}
+        {{"Large"}, TEXT_COLOR, HIGHLIGHT_COLOR, "<2>E<1>xit"}
     );
     quitGameLabel->Enable();
 }
