@@ -47,11 +47,15 @@ void RiverGenerator::DefineRivers()
     for(auto &tile : map->GetTiles())
     {
         tile.IsCoastline = false;
+
+        tile.IsBay = false;
     }
 
     for(auto &tile : map->GetTiles())
     {
         auto seaCount = 0;
+
+        auto landCount = 0;
 
         auto nearbyTiles = tile.GetNearbyTiles();
         for(auto &otherTile : nearbyTiles)
@@ -72,12 +76,20 @@ void RiverGenerator::DefineRivers()
 
             if(otherTile->Type == WorldTiles::SEA)
                 seaCount++;
+
+            if(otherTile->Type == WorldTiles::LAND)
+                landCount++;
         }
 
         if(tile.Type == WorldTiles::LAND && seaCount > 3)
             tile.IsPeninsula = true;
         else
             tile.IsPeninsula = false;
+
+        if(tile.Type == WorldTiles::SEA && landCount > 3)
+            tile.IsBay = true;
+        else
+            tile.IsBay = false;
     }
 
     for(auto &edge : map->GetEdges())

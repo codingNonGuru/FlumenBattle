@@ -26,8 +26,6 @@ namespace world::render
 
         WorldTileModel();
 
-        void RenderTiles();
-
         void RenderSnow();
 
         void RenderPaths();

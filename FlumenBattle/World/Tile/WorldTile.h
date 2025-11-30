@@ -88,6 +88,8 @@ namespace world::tile
 
         bool IsPeninsula;
 
+        bool IsBay;
+
         const WorldRelief *Relief;
 
         const WorldBiome *Biome;

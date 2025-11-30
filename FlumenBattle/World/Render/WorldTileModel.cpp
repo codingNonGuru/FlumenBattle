@@ -40,6 +40,7 @@
 #include "FlumenBattle/World/Polity/HumanMind.h"
 #include "FlumenBattle/World/Render/RiverModel.h"
 #include "FlumenBattle/World/Render/TreeModel.h"
+#include "FlumenBattle/World/Render/OceanModel.h"
 #include "FlumenBattle/Config.h"
 
 #define WORLD_TILE_SIZE tile::WorldMap::WORLD_TILE_SIZE
@@ -121,6 +122,8 @@ void WorldTileModel::Initialize()
     FarmModel::Get()->Initialize();
 
     TreeModel::Get()->Initialize();
+
+    OceanModel::Get()->Initialize();
 }
 
 void WorldTileModel::Enable()
@@ -203,31 +206,6 @@ Color WorldTileModel::GetGlobalLightColor()
     }
 
     return color;
-}
-
-void WorldTileModel::RenderTiles()
-{
-    shader->Bind();
-
-	shader->SetConstant(camera->GetMatrix(), "viewMatrix");
-
-	shader->SetConstant(WORLD_TILE_SIZE, "hexSize");
-
-	shader->SetConstant(1.0f, "opacity");
-
-	shader->SetConstant(0.0f, "depth");
-
-    auto map = worldScene->GetWorldMap();
-    for(auto tile = map->GetTiles().GetStart(); tile != map->GetTiles().GetEnd(); ++tile)
-    {
-        shader->SetConstant(tile->Position, "hexPosition");
-
-        shader->SetConstant(tile->GetShade(), "color");
-
-        glDrawArrays(GL_TRIANGLES, 0, 18);
-    }
-
-    shader->Unbind();
 }
 
 void WorldTileModel::RenderPaths()
@@ -1074,6 +1052,8 @@ void WorldTileModel::Render()
     }
 
     RenderTilesAdvanced();
+
+    OceanModel::Get()->Render();
 
     FarmModel::Get()->Render();
 

@@ -192,7 +192,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     for(int i = 0; i < pathLabels.GetCapacity(); i++)
     {
         auto label = ElementFactory::BuildElement<PathLabel>(
-            {Size(30, 30), DrawOrder(3), {Position2(), canvas}, {false}, Opacity(0.0f)}
+            {Size(40, 40), DrawOrder(3), {Position2(), canvas}, {false}, Opacity(0.0f)}
         );
         label->Disable();
         *pathLabels.Add() = label;
@@ -984,19 +984,38 @@ void WorldInterface::Update()
         index++;
     }*/
 
-    int index = 0;
+    /*int index = 0;
     auto hoveredTile = WorldController::Get()->GetHoveredTile();
     if(hoveredTile != nullptr)
     {
-        auto neighbours = hoveredTile->GetNearbyTiles(2);
+        auto neighbours = hoveredTile->GetNearbyTiles(3);
         for(auto &tile : neighbours)
         {
+            if(tile == nullptr)
+                continue;
+
+            auto nextTile = worldMap->GetTile(tile->Coordinates + Integer3(-1, 1, 0));
+
             auto label = *pathLabels.Get(index);
-            label->SetTile(worldMap->GetTile(tile->Coordinates), tile->Elevation);
+            label->SetTile(tile, nextTile, 0);
+            label->Enable();
+            index++;
+
+            nextTile = worldMap->GetTile(tile->Coordinates + Integer3(-1, 0, 1));
+
+            label = *pathLabels.Get(index);
+            label->SetTile(tile, nextTile, 0);
+            label->Enable();
+            index++;
+
+            nextTile = worldMap->GetTile(tile->Coordinates + Integer3(0, -1, 1));
+
+            label = *pathLabels.Get(index);
+            label->SetTile(tile, nextTile, 0);
             label->Enable();
             index++;
         }
-    }
+    }*/
 }
 
 void WorldInterface::RemoveActionPopup(interface::ActionPopup *popup)
