@@ -16,7 +16,7 @@ WorldMap::WorldMap(Length size)
 {
     WorldAllocator::Get()->AllocateMap(*this, size);
 
-    tiles.Bound();
+    //tiles.Bound();
 
     for(Integer i = 0; i < tiles.GetWidth(); ++i)
     {
