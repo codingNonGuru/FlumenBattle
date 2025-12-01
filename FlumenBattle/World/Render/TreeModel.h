@@ -6,6 +6,8 @@ namespace world::render
 {
     class TreeModel : public core::Singleton <TreeModel>
     {
+        void PrepareQueue();
+
     public:
         void Initialize();
 

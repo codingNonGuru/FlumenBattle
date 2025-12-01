@@ -9,10 +9,15 @@
 #include "FlumenBattle/World/Tile/WorldMap.h"
 #include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/Tile/WorldBiome.h"
+#include "FlumenBattle/World/Render/WorldTileModel.h"
 
 using namespace world::render;
 
 #define MAX_TREE_PER_TILE 10
+
+#define VERTICES_PER_TREE_MESH 6
+
+#define TREE_SIZE 15.0f
 
 static Camera* camera = nullptr;
 
@@ -21,6 +26,10 @@ static DataBuffer *positionBuffer = nullptr;
 static DataBuffer *colorBuffer = nullptr;
 
 static DataBuffer *scaleBuffer = nullptr;
+
+static DataBuffer *tileQueueBuffer = nullptr;
+
+static container::Array <unsigned int> tileQueue;
 
 void TreeModel::Initialize()
 {
@@ -34,11 +43,15 @@ void TreeModel::Initialize()
 
     static auto scales = container::Array <Float> (map->GetTileCount() * MAX_TREE_PER_TILE);
 
+    tileQueue = container::Array <unsigned int> (map->GetTileCount());
+
     positionBuffer = new DataBuffer(positions.GetMemoryCapacity(), positions.GetStart());
 
     colorBuffer = new DataBuffer(colors.GetMemoryCapacity(), colors.GetStart());
 
     scaleBuffer = new DataBuffer(scales.GetMemoryCapacity(), scales.GetStart());
+
+    tileQueueBuffer = new DataBuffer(tileQueue.GetMemoryCapacity(), tileQueue.GetStart());
 
     for(auto &tile : map->GetTiles())
     {
@@ -103,15 +116,35 @@ void TreeModel::Initialize()
     colorBuffer->UploadData(colors.GetStart(), colors.GetMemoryCapacity());
 
     scaleBuffer->UploadData(scales.GetStart(), scales.GetMemoryCapacity());
+
+    tileQueueBuffer->UploadData(tileQueue.GetStart(), tileQueue.GetMemoryCapacity());
+}
+
+void TreeModel::PrepareQueue()
+{
+    static const auto &scene = *WorldScene::Get();
+
+    auto map = scene.GetWorldMap();
+
+    tileQueue.Reset();
+
+    const auto frustum = WorldTileModel::Get()->GetFrustum();
+
+    for(auto &tile : map->GetTiles())
+    {
+        if(frustum.IsInside(tile.SquareCoordinates) == false)
+            continue;
+
+        auto index = &tile - map->GetTiles().GetStart();
+        *tileQueue.Add() = index;
+    }
+
+    tileQueueBuffer->UploadData(tileQueue.GetStart(), tileQueue.GetMemoryCapacity());
 }
 
 void TreeModel::Render()
 {
     camera = RenderManager::GetCamera(Cameras::WORLD);
-
-    auto &scene = *WorldScene::Get();
-
-    auto map = scene.GetWorldMap();
 
     auto shader = ShaderManager::GetShader("Tree");
 
@@ -119,9 +152,11 @@ void TreeModel::Render()
 
     shader->SetConstant(camera->GetMatrix(), "viewMatrix");
 
+    shader->SetConstant(MAX_TREE_PER_TILE, "maxTreeCount");
+
 	shader->SetConstant(0.2f, "depth");
 
-    shader->SetConstant(15.0f, "treeSize");
+    shader->SetConstant(TREE_SIZE, "treeSize");
 
     positionBuffer->Bind(0);
 
@@ -129,13 +164,17 @@ void TreeModel::Render()
 
     scaleBuffer->Bind(2);
 
-    glDrawArrays(GL_TRIANGLES, 0, 6 * map->GetTileCount() * MAX_TREE_PER_TILE);
+    tileQueueBuffer->Bind(3);
+
+    glDrawArrays(GL_TRIANGLES, 0, VERTICES_PER_TREE_MESH * tileQueue.GetSize() * MAX_TREE_PER_TILE);
 
     shader->Unbind();
 }
 
 void TreeModel::RenderShadows()
 {
+    PrepareQueue();
+
     camera = RenderManager::GetCamera(Cameras::WORLD);
 
     auto &scene = *WorldScene::Get();
@@ -148,13 +187,17 @@ void TreeModel::RenderShadows()
 
     shader->SetConstant(camera->GetMatrix(), "viewMatrix");
 
+    shader->SetConstant(MAX_TREE_PER_TILE, "maxTreeCount");
+
 	shader->SetConstant(0.15f, "depth");
 
     positionBuffer->Bind(0);
 
     scaleBuffer->Bind(1);
 
-    glDrawArrays(GL_TRIANGLES, 0, 6 * map->GetTileCount() * MAX_TREE_PER_TILE);
+    tileQueueBuffer->Bind(2);
+
+    glDrawArrays(GL_TRIANGLES, 0, VERTICES_PER_TREE_MESH * tileQueue.GetSize() * MAX_TREE_PER_TILE);
 
     shader->Unbind();
 }
