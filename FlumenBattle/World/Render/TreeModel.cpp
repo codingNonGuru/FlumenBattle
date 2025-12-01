@@ -3,6 +3,7 @@
 #include "FlumenEngine/Render/Camera.hpp"
 #include "FlumenEngine/Render/RenderManager.hpp"
 #include "FlumenEngine/Render/DataBuffer.hpp"
+#include "FlumenEngine/Core/Engine.hpp"
 
 #include "TreeModel.h"
 #include "FlumenBattle/World/WorldScene.h"
@@ -31,8 +32,15 @@ static DataBuffer *tileQueueBuffer = nullptr;
 
 static container::Array <unsigned int> tileQueue;
 
+static bool doesQueueNeedRefresh = true;
+
 void TreeModel::Initialize()
 {
+    Engine::OnLoopCycleStarted += [] 
+    {
+        doesQueueNeedRefresh = true;
+    };
+
     auto &scene = *WorldScene::Get();
 
     auto map = scene.GetWorldMap();
@@ -122,6 +130,13 @@ void TreeModel::Initialize()
 
 void TreeModel::PrepareQueue()
 {
+    if(doesQueueNeedRefresh == false)
+    {
+        return;
+    }
+
+    doesQueueNeedRefresh = false;
+
     static const auto &scene = *WorldScene::Get();
 
     auto map = scene.GetWorldMap();
@@ -144,6 +159,8 @@ void TreeModel::PrepareQueue()
 
 void TreeModel::Render()
 {
+    PrepareQueue();
+
     camera = RenderManager::GetCamera(Cameras::WORLD);
 
     auto shader = ShaderManager::GetShader("Tree");
