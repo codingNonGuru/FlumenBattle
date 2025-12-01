@@ -24,6 +24,15 @@ namespace world::render
 
         container::Array <FoamSegmentData>::Memory foamSegmentMemory;
 
+
+        container::Array <Position2>::Memory treePositionMemory;
+
+        container::Array <Float4>::Memory treeColorMemory;
+
+        container::Array <Float>::Memory treeScaleMemory;
+
+        container::Array <unsigned int>::Memory treeQueueMemory;
+
         RendererAllocator();
 
     public:

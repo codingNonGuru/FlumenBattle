@@ -22,16 +22,6 @@ using namespace world::render;
 
 static Camera* camera = nullptr;
 
-static DataBuffer *positionBuffer = nullptr;
-
-static DataBuffer *colorBuffer = nullptr;
-
-static DataBuffer *scaleBuffer = nullptr;
-
-static DataBuffer *tileQueueBuffer = nullptr;
-
-static container::Array <unsigned int> tileQueue;
-
 static bool doesQueueNeedRefresh = true;
 
 void TreeModel::Initialize()
@@ -44,22 +34,6 @@ void TreeModel::Initialize()
     auto &scene = *WorldScene::Get();
 
     auto map = scene.GetWorldMap();
-
-    static auto positions = container::Array <Position2> (map->GetTileCount() * MAX_TREE_PER_TILE);
-
-    static auto colors = container::Array <Float4> (map->GetTileCount() * MAX_TREE_PER_TILE);
-
-    static auto scales = container::Array <Float> (map->GetTileCount() * MAX_TREE_PER_TILE);
-
-    tileQueue = container::Array <unsigned int> (map->GetTileCount());
-
-    positionBuffer = new DataBuffer(positions.GetMemoryCapacity(), positions.GetStart());
-
-    colorBuffer = new DataBuffer(colors.GetMemoryCapacity(), colors.GetStart());
-
-    scaleBuffer = new DataBuffer(scales.GetMemoryCapacity(), scales.GetStart());
-
-    tileQueueBuffer = new DataBuffer(tileQueue.GetMemoryCapacity(), tileQueue.GetStart());
 
     for(auto &tile : map->GetTiles())
     {
@@ -217,4 +191,9 @@ void TreeModel::RenderShadows()
     glDrawArrays(GL_TRIANGLES, 0, VERTICES_PER_TREE_MESH * tileQueue.GetSize() * MAX_TREE_PER_TILE);
 
     shader->Unbind();
+}
+
+int TreeModel::GetMaximumTreesPerTile()
+{
+    return MAX_TREE_PER_TILE;
 }
