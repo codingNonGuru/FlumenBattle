@@ -119,13 +119,17 @@ void TreeModel::PrepareQueue()
 
     const auto frustum = WorldTileModel::Get()->GetFrustum();
 
-    for(auto &tile : map->GetTiles())
+    for(auto x = frustum.Position.x; x <= frustum.Position.x + frustum.Size.x; ++x)
     {
-        if(frustum.IsInside(tile.SquareCoordinates) == false)
-            continue;
+        for(auto y = frustum.Position.y - 5; y <= frustum.Position.y + frustum.Size.y + 6; ++y)
+        {
+            auto tile = map->GetTile(Integer2{x, y});
+            if(tile == nullptr)
+                continue;
 
-        auto index = &tile - map->GetTiles().GetStart();
-        *tileQueue.Add() = index;
+            auto index = tile - map->GetTiles().GetStart();
+            *tileQueue.Add() = index;
+        }   
     }
 
     tileQueueBuffer->UploadData(tileQueue.GetStart(), tileQueue.GetMemoryCapacity());
