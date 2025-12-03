@@ -38,32 +38,42 @@ layout (std430, binding = 3) buffer TILE_QUEUE
 
 out vec4 color;
 
-vec2 vertices[6] = vec2[6] (
-	vec2(-0.3f, -0.5f), 
-	vec2(0.3f, -0.5f), 
-	vec2(0.5f, 0.5f), 
-	vec2(-0.3f, -0.5f), 
-	vec2(0.5f, 0.5f), 
-	vec2(-0.5f, 0.5f)
-	);
+vec2 vertices[5] = vec2[5] 
+(
+	vec2(0.0f, -0.6f), 
+	vec2(-0.166f, -0.4f),
+	vec2(0.166f, -0.4f),
+	vec2(0.5f, 0.0f), 
+	vec2(-0.5f, 0.0f)
+);
+
+uint indices[9] = uint[9]
+(
+	0, 1, 2,
+	1, 2, 3,
+	1, 3, 4
+);
 
 void main()
 {
-	int verticesPerTile = 6 * int(maxMountainCount);
+	int indicesPerTile = 9 * int(maxMountainCount);
 
-	uint instanceIndex = uint(gl_VertexID / verticesPerTile);
+	uint instanceIndex = uint(gl_VertexID / indicesPerTile);
 
 	uint tileIndex = tileQueue[instanceIndex];
 
-	uint objectIndex = tileIndex * maxMountainCount + uint((gl_VertexID % verticesPerTile) / 6);
+	uint objectIndex = tileIndex * maxMountainCount + uint((gl_VertexID % indicesPerTile) / 9);
 	
-	uint vertexIndex = uint(gl_VertexID % 6);
+	uint vertexIndex = uint(gl_VertexID % 9);
 
     vec2 basePosition = positions[objectIndex];
 
-	vec2 position = vertices[vertexIndex] * defaultSize * scales[objectIndex] + basePosition;
+	vec2 position = vertices[indices[vertexIndex]] * defaultSize * scales[objectIndex] + basePosition;
 
 	gl_Position = viewMatrix * vec4(position.x, position.y, depth + basePosition.y * 0.00001f, 1.0f);
 
-	color = colors[objectIndex];
+	if(vertexIndex == uint(0) || vertexIndex == uint(1) || vertexIndex == uint(2))
+		color = vec4(1.0f);
+	else
+		color = colors[objectIndex];
 }

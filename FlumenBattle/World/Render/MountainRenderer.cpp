@@ -14,9 +14,9 @@
 
 using namespace world::render;
 
-#define MOUNTAINS_PER_TILE 3
+#define MOUNTAINS_PER_TILE 2
 
-#define VERTICES_PER_MOUNTAIN_MESH 6
+#define VERTICES_PER_MOUNTAIN_MESH 9
 
 static Camera* camera = nullptr;
 
@@ -50,14 +50,14 @@ void MountainRenderer::Initialize()
         {
             container::SmartBlock <Position2, MOUNTAINS_PER_TILE> tileMountains;
 
-            auto mountainCount = utility::GetRandom(2, MOUNTAINS_PER_TILE);
+            auto mountainCount = utility::GetRandom(0, MOUNTAINS_PER_TILE);
             auto mountainIndex = 0;
             for(int i = 0; i < MOUNTAINS_PER_TILE; ++i, ++mountainIndex)
             {
                 Position2 position;
                 while(true)
                 {
-                    position = utility::GetRandomPositionAround(tile::WorldMap::WORLD_TILE_SIZE * 0.8f, tile.Position);
+                    position = utility::GetRandomPositionAround(tile::WorldMap::WORLD_TILE_SIZE * 0.75f, tile.Position);
 
                     bool isTooClose = false;
                     for(auto &mountain : tileMountains)
@@ -117,7 +117,7 @@ void MountainRenderer::PrepareQueue()
     {
         for(auto y = frustum.Position.y - 5; y <= frustum.Position.y + frustum.Size.y + 6; ++y)
         {
-            auto tile = map->GetTile(Integer2{x, y});
+            auto tile = map->GetTileWithinBounds(Integer2{x, y});
             if(tile == nullptr)
                 continue;
 
@@ -145,7 +145,7 @@ void MountainRenderer::Render()
 
 	shader->SetConstant(0.2f, "depth");
 
-    shader->SetConstant(35.0f, "defaultSize");
+    shader->SetConstant(50.0f, "defaultSize");
 
     positionBuffer->Bind(0);
 

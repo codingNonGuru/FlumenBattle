@@ -123,7 +123,7 @@ void TreeModel::PrepareQueue()
     {
         for(auto y = frustum.Position.y - 5; y <= frustum.Position.y + frustum.Size.y + 6; ++y)
         {
-            auto tile = map->GetTile(Integer2{x, y});
+            auto tile = map->GetTileWithinBounds(Integer2{x, y});
             if(tile == nullptr)
                 continue;
 
