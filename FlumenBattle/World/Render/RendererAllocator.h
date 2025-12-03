@@ -33,6 +33,15 @@ namespace world::render
 
         container::Array <unsigned int>::Memory treeQueueMemory;
 
+
+        container::Array <Position2>::Memory mountainPositionMemory;
+
+        container::Array <Float4>::Memory mountainColorMemory;
+
+        container::Array <Float>::Memory mountainScaleMemory;
+
+        container::Array <unsigned int>::Memory mountainQueueMemory;
+
         RendererAllocator();
 
     public:

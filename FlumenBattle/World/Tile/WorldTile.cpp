@@ -54,7 +54,7 @@ void WorldTile::Initialize()
             return SEA_COLOR * (1.0f - depthFactor) + Color::CYAN * depthFactor;
         }
 
-        if(HasRelief(WorldReliefs::MOUNTAINS))
+        /*if(HasRelief(WorldReliefs::MOUNTAINS))
         {
             auto count = 0;
             auto nearbyTiles = map->GetNearbyTiles(this, 1);
@@ -65,7 +65,7 @@ void WorldTile::Initialize()
             }
 
             return PEAK_COLOR;
-        }
+        }*/
         
         switch(Biome->Type)
         {

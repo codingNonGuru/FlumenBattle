@@ -41,6 +41,7 @@
 #include "FlumenBattle/World/Render/RiverModel.h"
 #include "FlumenBattle/World/Render/TreeModel.h"
 #include "FlumenBattle/World/Render/OceanModel.h"
+#include "FlumenBattle/World/Render/MountainRenderer.h"
 #include "FlumenBattle/Config.h"
 
 #define WORLD_TILE_SIZE tile::WorldMap::WORLD_TILE_SIZE
@@ -124,6 +125,8 @@ void WorldTileModel::Initialize()
     TreeModel::Get()->Initialize();
 
     OceanModel::Get()->Initialize();
+
+    MountainRenderer::Get()->Initialize();
 }
 
 void WorldTileModel::Enable()
@@ -1064,6 +1067,8 @@ void WorldTileModel::Render()
     TreeModel::Get()->RenderShadows();
 
     TreeModel::Get()->Render();
+
+    MountainRenderer::Get()->Render();
 
     RenderPaths();
 

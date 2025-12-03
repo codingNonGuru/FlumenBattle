@@ -7,6 +7,7 @@
 #include "FlumenBattle/World/Render/OceanModel.h"
 #include "FlumenBattle/World/Render/FoamSegmentData.h"
 #include "FlumenBattle/World/Render/TreeModel.h"
+#include "FlumenBattle/World/Render/MountainRenderer.h"
 
 using namespace world::render;
 
@@ -43,6 +44,17 @@ RendererAllocator::RendererAllocator()
     treeScaleMemory = container::Array <Float>::PreallocateMemory(maximumTreeCount);
 
     treeQueueMemory = container::Array <unsigned int>::PreallocateMemory(width * height);
+
+
+    auto maximumMountainCount = MountainRenderer::GetMaximumMountainsPerTile() * width * height;
+
+    mountainPositionMemory = container::Array <Position2>::PreallocateMemory(maximumMountainCount);
+
+    mountainColorMemory = container::Array <Float4>::PreallocateMemory(maximumMountainCount);
+
+    mountainScaleMemory = container::Array <Float>::PreallocateMemory(maximumMountainCount);
+
+    mountainQueueMemory = container::Array <unsigned int>::PreallocateMemory(width * height);
 }
 
 void RendererAllocator::Allocate(int size)
@@ -76,4 +88,23 @@ void RendererAllocator::Allocate(int size)
     TreeModel::Get()->scaleBuffer = new DataBuffer(TreeModel::Get()->scales.GetMemoryCapacity());
 
     TreeModel::Get()->tileQueueBuffer = new DataBuffer(TreeModel::Get()->tileQueue.GetMemoryCapacity());
+
+
+    auto mountainCount = MountainRenderer::GetMaximumMountainsPerTile() * size * size;
+
+    MountainRenderer::Get()->positions.Initialize(mountainCount, mountainPositionMemory);
+
+    MountainRenderer::Get()->colors.Initialize(mountainCount, mountainColorMemory);
+
+    MountainRenderer::Get()->scales.Initialize(mountainCount, mountainScaleMemory);
+
+    MountainRenderer::Get()->tileQueue.Initialize(size * size, mountainQueueMemory);
+
+    MountainRenderer::Get()->positionBuffer = new DataBuffer(MountainRenderer::Get()->positions.GetMemoryCapacity());
+
+    MountainRenderer::Get()->colorBuffer = new DataBuffer(MountainRenderer::Get()->colors.GetMemoryCapacity());
+
+    MountainRenderer::Get()->scaleBuffer = new DataBuffer(MountainRenderer::Get()->scales.GetMemoryCapacity());
+
+    MountainRenderer::Get()->tileQueueBuffer = new DataBuffer(MountainRenderer::Get()->tileQueue.GetMemoryCapacity());
 }

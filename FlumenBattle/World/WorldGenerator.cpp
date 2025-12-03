@@ -129,7 +129,7 @@ int WorldGenerator::GenerateWorld(
 
                 mountainChance /= 3;
 
-                mountainChance = 0;
+                //mountainChance = 0;
 
                 if(utility::GetRandom(1, 100) <= mountainChance)
                 {
@@ -295,14 +295,8 @@ int WorldGenerator::GenerateWorld(
             {
                 tile->SetResource(settlement::ResourceTypes::METAL, (utility::RollD100Dice() > 100 - METAL_SPAWN_CHANCE) ? 1 : 0);
 
-                if(tile->HasRelief(WorldReliefs::MOUNTAINS))
-                {
-                    tile->Biome = tile::WorldBiomeFactory::BuildBiome(WorldBiomes::DESERT);
 
-                    tile->SetResource(settlement::ResourceTypes::FOOD, 0);
-                    tile->SetResource(settlement::ResourceTypes::TIMBER, utility::GetRandom(1, 100) < 50 ? 2 : 1);
-                }
-                else
+
                 {
                     auto forestValue = *forestNoise.Get(tile->SquareCoordinates.x, tile->SquareCoordinates.y);
 
@@ -379,6 +373,17 @@ int WorldGenerator::GenerateWorld(
                             tile->SetResource(settlement::ResourceTypes::TIMBER, utility::GetRandom(1, 100) < 50 ? 1 : 0);
                         }
                     }
+                }
+
+                if(tile->HasRelief(WorldReliefs::MOUNTAINS))
+                {
+                    if(tile->HasBiome(WorldBiomes::WOODS) == true)
+                    { 
+                        tile->Biome = tile::WorldBiomeFactory::BuildBiome(WorldBiomes::STEPPE);
+                    }
+
+                    tile->SetResource(settlement::ResourceTypes::FOOD, 0);
+                    tile->SetResource(settlement::ResourceTypes::TIMBER, utility::GetRandom(1, 100) < 50 ? 2 : 1);
                 }
             }
         }
