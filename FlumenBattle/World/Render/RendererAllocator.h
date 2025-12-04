@@ -42,6 +42,8 @@ namespace world::render
 
         container::Array <unsigned int>::Memory mountainQueueMemory;
 
+        container::Array <int>::Memory mountainTypeMemory;
+
         RendererAllocator();
 
     public:

@@ -7,7 +7,7 @@ namespace world::render
     class MountainRenderer : public core::Singleton <MountainRenderer>
     {
         friend class RendererAllocator;
-        
+
         DataBuffer *positionBuffer;
 
         DataBuffer *colorBuffer;
@@ -16,6 +16,8 @@ namespace world::render
 
         DataBuffer *tileQueueBuffer;
 
+        DataBuffer *typeBuffer;
+
         container::Array <Position2> positions;
 
         container::Array <Float4> colors;
@@ -23,6 +25,8 @@ namespace world::render
         container::Array <Float> scales;
 
         container::Array <unsigned int> tileQueue;
+
+        container::Array <int> types;
 
         void PrepareQueue();
 

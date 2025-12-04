@@ -37,6 +37,22 @@ settlement(nullptr), owner(nullptr), isBorderingOwnedTile(false)
 
 void WorldTile::Initialize()
 {
+    IsPeak = [&] 
+    {
+        if(HasRelief(WorldReliefs::MOUNTAINS) == true)
+        {
+            auto count = 0;
+            auto nearbyTiles = map->GetNearbyTiles(this, 1);
+            for(auto &tile : nearbyTiles)
+            {
+                if(tile->HasRelief(WorldReliefs::MOUNTAINS) == false)
+                    return false;
+            }
+
+            return true;
+        }
+    } ();
+
     auto const DESERT_COLOR = Color(0.9f, 0.5f, 0.2f, 1.0f);
     auto const DIRT_COLOR = Color(0.9f, 0.7f, 0.5f, 1.0f);
     auto const GRASS_COLOR = Color(0.4f, 0.6f, 0.05f, 1.0f);
@@ -53,19 +69,6 @@ void WorldTile::Initialize()
             depthFactor *= depthFactor * depthFactor;
             return SEA_COLOR * (1.0f - depthFactor) + Color::CYAN * depthFactor;
         }
-
-        /*if(HasRelief(WorldReliefs::MOUNTAINS))
-        {
-            auto count = 0;
-            auto nearbyTiles = map->GetNearbyTiles(this, 1);
-            for(auto &tile : nearbyTiles)
-            {
-                if(tile->HasRelief(WorldReliefs::MOUNTAINS) == false)
-                    return ROCK_COLOR;
-            }
-
-            return PEAK_COLOR;
-        }*/
         
         switch(Biome->Type)
         {

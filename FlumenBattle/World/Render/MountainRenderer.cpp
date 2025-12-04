@@ -14,7 +14,7 @@
 
 using namespace world::render;
 
-#define MOUNTAINS_PER_TILE 2
+#define MOUNTAINS_PER_TILE 3
 
 #define VERTICES_PER_MOUNTAIN_MESH 9
 
@@ -24,6 +24,17 @@ static bool doesQueueNeedRefresh = true;
 
 void MountainRenderer::Initialize()
 {
+    auto addEmptyInstance = [&]
+    {
+        *positions.Add() = Position2();
+
+        *colors.Add();
+
+        *scales.Add() = 0.0f;
+
+        *types.Add() = 0;
+    };
+
     Engine::OnLoopCycleStarted += [] 
     {
         doesQueueNeedRefresh = true;
@@ -39,25 +50,28 @@ void MountainRenderer::Initialize()
         {
             for(int i = 0; i < MOUNTAINS_PER_TILE; ++i)
             {
-                *positions.Add() = Position2();
-
-                *colors.Add();
-
-                *scales.Add() = 0.0f;
+                addEmptyInstance();        
             }
         }
         else
         {
             container::SmartBlock <Position2, MOUNTAINS_PER_TILE> tileMountains;
 
-            auto mountainCount = utility::GetRandom(0, MOUNTAINS_PER_TILE);
+            auto mountainCount = tile.IsPeak == true ? 1 : utility::GetRandom(2, MOUNTAINS_PER_TILE);
             auto mountainIndex = 0;
             for(int i = 0; i < MOUNTAINS_PER_TILE; ++i, ++mountainIndex)
             {
+                if(mountainIndex >= mountainCount)
+                {
+                    addEmptyInstance();
+                    continue;
+                }
+
                 Position2 position;
                 while(true)
                 {
-                    position = utility::GetRandomPositionAround(tile::WorldMap::WORLD_TILE_SIZE * 0.75f, tile.Position);
+                    auto radius = tile.IsPeak == true ? tile::WorldMap::WORLD_TILE_SIZE * 0.4f : tile::WorldMap::WORLD_TILE_SIZE * 0.75f;
+                    position = utility::GetRandomPositionAround(radius, tile.Position);
 
                     bool isTooClose = false;
                     for(auto &mountain : tileMountains)
@@ -74,13 +88,15 @@ void MountainRenderer::Initialize()
                         break;
                 }
 
-                *positions.Add() = position - Position2(0.0f, 10.0f);
+                *positions.Add() = position + Position2(0.0f, 10.0f);
 
                 auto color = Color::WHITE * utility::GetRandom(0.25f, 0.4f);
 
                 *colors.Add() = color;
 
-                *scales.Add() = utility::GetRandom(0.8f, 1.0f);
+                *scales.Add() = tile.IsPeak == true ? utility::GetRandom(1.25f, 1.35f) : utility::GetRandom(0.8f, 1.0f);
+
+                *types.Add() = tile.IsPeak == true ? 1 : 0;
 
                 *tileMountains.Add() = position;
             }
@@ -92,6 +108,8 @@ void MountainRenderer::Initialize()
     colorBuffer->UploadData(colors.GetStart(), colors.GetMemoryCapacity());
 
     scaleBuffer->UploadData(scales.GetStart(), scales.GetMemoryCapacity());
+
+    typeBuffer->UploadData(types.GetStart(), types.GetMemoryCapacity());
 
     tileQueueBuffer->UploadData(tileQueue.GetStart(), tileQueue.GetMemoryCapacity());
 }
@@ -154,6 +172,8 @@ void MountainRenderer::Render()
     scaleBuffer->Bind(2);
 
     tileQueueBuffer->Bind(3);
+
+    typeBuffer->Bind(4);
 
     glDrawArrays(GL_TRIANGLES, 0, VERTICES_PER_MOUNTAIN_MESH * tileQueue.GetSize() * MOUNTAINS_PER_TILE);
 

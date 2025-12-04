@@ -32,6 +32,11 @@ layout (std430, binding = 3) buffer TILE_QUEUE
 	uint tileQueue[];	
 };
 
+layout (std430, binding = 4) buffer TYPES
+{
+	int types[];	
+};
+
 // TEXTURES
 
 // OUTPUT
@@ -72,7 +77,12 @@ void main()
 
 	gl_Position = viewMatrix * vec4(position.x, position.y, depth + basePosition.y * 0.00001f, 1.0f);
 
-	if(vertexIndex == uint(0) || vertexIndex == uint(1) || vertexIndex == uint(2))
+	int typeIndex = types[objectIndex];
+
+	bool isPeak = vertexIndex == uint(0) || vertexIndex == uint(1) || vertexIndex == uint(2);
+	bool isHigh = typeIndex == 1;
+	
+	if(isHigh == true && isPeak == true)
 		color = vec4(1.0f);
 	else
 		color = colors[objectIndex];

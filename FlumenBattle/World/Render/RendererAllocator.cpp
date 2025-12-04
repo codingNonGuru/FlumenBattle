@@ -55,6 +55,8 @@ RendererAllocator::RendererAllocator()
     mountainScaleMemory = container::Array <Float>::PreallocateMemory(maximumMountainCount);
 
     mountainQueueMemory = container::Array <unsigned int>::PreallocateMemory(width * height);
+
+    mountainTypeMemory = container::Array <int>::PreallocateMemory(maximumMountainCount);
 }
 
 void RendererAllocator::Allocate(int size)
@@ -100,6 +102,8 @@ void RendererAllocator::Allocate(int size)
 
     MountainRenderer::Get()->tileQueue.Initialize(size * size, mountainQueueMemory);
 
+    MountainRenderer::Get()->types.Initialize(mountainCount, mountainTypeMemory);
+
     MountainRenderer::Get()->positionBuffer = new DataBuffer(MountainRenderer::Get()->positions.GetMemoryCapacity());
 
     MountainRenderer::Get()->colorBuffer = new DataBuffer(MountainRenderer::Get()->colors.GetMemoryCapacity());
@@ -107,4 +111,6 @@ void RendererAllocator::Allocate(int size)
     MountainRenderer::Get()->scaleBuffer = new DataBuffer(MountainRenderer::Get()->scales.GetMemoryCapacity());
 
     MountainRenderer::Get()->tileQueueBuffer = new DataBuffer(MountainRenderer::Get()->tileQueue.GetMemoryCapacity());
+
+    MountainRenderer::Get()->typeBuffer = new DataBuffer(MountainRenderer::Get()->types.GetMemoryCapacity());
 }

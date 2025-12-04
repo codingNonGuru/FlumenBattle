@@ -90,6 +90,8 @@ namespace world::tile
 
         bool IsBay;
 
+        bool IsPeak;
+
         const WorldRelief *Relief;
 
         const WorldBiome *Biome;
