@@ -28,21 +28,15 @@ namespace world::render
 
         void RenderSnow();
 
-        void RenderPaths();
-
         void RenderPoliticalOverlay();
 
         void RenderInterestMap();
-
-        void RenderSettlements();
 
         void RenderGlobalLight();
 
         void RenderTilesAdvanced();
 
         void RenderPlayerPath();
-
-        void RenderGroupSightings();
 
         void RenderImprovements();
 

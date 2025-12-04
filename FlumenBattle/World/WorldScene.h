@@ -147,6 +147,8 @@ namespace world
 
         Pool <settlement::Path> & GetPaths() {return *paths;}
 
+        Pool <settlement::PathSegment> & GetPathSegments() {return *pathSegments;}
+
         Pool <group::Encounter> & GetBattles() {return *battles;}
 
         Pool <group::GroupCore> & GetGroups() {return *groups;}
