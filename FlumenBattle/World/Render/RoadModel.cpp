@@ -40,15 +40,15 @@ void RoadModel::UpdateData()
 
     doesQueueNeedRefresh = false;
 
-    positions.Reset();
+    data.Reset();
 
-    colors.Reset();
+    /*colors.Reset();
 
     lengths.Reset();
 
     thicknesses.Reset();
 
-    rotations.Reset();
+    rotations.Reset();*/
 
     static auto &pathSegments = WorldScene::Get()->GetPathSegments();
     for(auto &segment : pathSegments)
@@ -62,34 +62,36 @@ void RoadModel::UpdateData()
         auto direction = toPosition - fromPosition;
 
         auto position = (toPosition + fromPosition) * 0.5f;
-        *positions.Add() = position;
+        //*positions.Add() = position;
 
         auto length = glm::length(direction);
-        *lengths.Add() = length;
+        //*lengths.Add() = length;
 
-        *thicknesses.Add() = ROAD_THICKNESS;
+        //*thicknesses.Add() = ROAD_THICKNESS;
 
         auto color = [&segment] () 
         {
             return segment.Type == settlement::RoadTypes::UNTRODDEN ?
-            Color(0.9f, 0.7f, 0.5f, 1.0f) * 0.6f :
+            Color(0.9f, 0.7f, 0.6f, 1.0f) * 0.6f :
             Color(0.7f, 0.7f, 0.7f, 1.0f) * 0.6f;
         } ();
-        *colors.Add() = color;
+        //*colors.Add() = color;
 
         auto rotation = atan2(direction.y, direction.x);
-        *rotations.Add() = rotation;
+        //*rotations.Add() = rotation;
+
+        *data.Add() = {color, position, rotation, length, ROAD_THICKNESS};
     }
 
-    positionBuffer->UploadData(positions.GetStart(), positions.GetMemoryCapacity());
+    buffer->UploadData(data.GetStart(), data.GetMemoryCapacity());
 
-    colorBuffer->UploadData(colors.GetStart(), colors.GetMemoryCapacity());
+    /*colorBuffer->UploadData(colors.GetStart(), colors.GetMemoryCapacity());
 
     lengthBuffer->UploadData(lengths.GetStart(), lengths.GetMemoryCapacity());
 
     thicknessBuffer->UploadData(thicknesses.GetStart(), thicknesses.GetMemoryCapacity());
 
-    rotationBuffer->UploadData(rotations.GetStart(), rotations.GetMemoryCapacity());
+    rotationBuffer->UploadData(rotations.GetStart(), rotations.GetMemoryCapacity());*/
 
     //tileQueueBuffer->UploadData(tileQueue.GetStart(), tileQueue.GetMemoryCapacity());
 }
@@ -131,15 +133,15 @@ void RoadModel::Render()
 
 	shader->SetConstant(0.2f, "depth");
 
-    positionBuffer->Bind(0);
+    buffer->Bind(0);
 
-    rotationBuffer->Bind(1);
+    /*rotationBuffer->Bind(1);
 
     thicknessBuffer->Bind(2);
 
     lengthBuffer->Bind(3);
 
-    colorBuffer->Bind(4);
+    colorBuffer->Bind(4);*/
 
     glDrawArrays(GL_TRIANGLES, 0, 6 * pathSegments.GetSize());
 

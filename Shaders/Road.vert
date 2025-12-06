@@ -4,46 +4,41 @@
 
 layout (location = 0) uniform mat4 viewMatrix;
 
-layout (location = 4) uniform float depth;  
+layout (location = 4) uniform float depth;
+
+// DATA STRUCTURES
+
+struct RoadData
+{
+    vec4 Color;
+
+	vec2 Position;
+
+    float Rotation;
+
+    float Length;
+
+    float Thickness;
+};
 
 // DATA BUFFERS
 
-layout (std430, binding = 0) buffer POSITIONS
+layout (std430, binding = 0) buffer ROAD_DATAS
 {
-	vec2 positions[];	
-};
-
-layout (std430, binding = 1) buffer ROTATIONS
-{
-	float rotations[];	
-};
-
-layout (std430, binding = 2) buffer THICKNESSES
-{
-	float thicknesses[];	
-};
-
-layout (std430, binding = 3) buffer LENGTHS
-{
-	float lengths[];	
-};
-
-layout (std430, binding = 4) buffer COLORS
-{
-	vec4 colors[];	
+	RoadData roadDatas[];	
 };
 
 // TEXTURES
 
 // OUTPUT
 
-out vec4 color;
+out vec3 color;
 
 void main()
 {	
     uint objectIndex = uint(gl_VertexID / 6);
 
-    float rotation = rotations[objectIndex];
+    float rotation = roadDatas[objectIndex].Rotation;
 
     vec2 vertices[6] = vec2[6] (
         vec2(-0.5f, -0.5f), 
@@ -59,14 +54,14 @@ void main()
 
     vec2 position = vertices[gl_VertexID % 6];
     
-    position = vec2(position.x * lengths[objectIndex], position.y * thicknesses[objectIndex]);
+    position = vec2(position.x * roadDatas[objectIndex].Length, position.y * roadDatas[objectIndex].Thickness);
 
     float xnew = position.x * c - position.y * s;
     float ynew = position.x * s + position.y * c;
 
-    position = vec2(xnew, ynew) + positions[objectIndex];
+    position = vec2(xnew, ynew) + roadDatas[objectIndex].Position;
 
 	gl_Position = viewMatrix * vec4(position.x, position.y, depth, 1.0f);
 
-    color = colors[objectIndex];
+    color = roadDatas[objectIndex].Color.rgb;
 }

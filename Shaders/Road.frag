@@ -8,11 +8,11 @@ layout (location = 3) uniform float opacity;
 
 layout (location = 0) out vec4 fragment;
 
-in vec4 color;
+in vec3 color;
 
 void main()
 {	
-	fragment = color;
+	fragment.rgb = color;
 	
-	fragment.a *= opacity;
+	fragment.a = opacity;
 }

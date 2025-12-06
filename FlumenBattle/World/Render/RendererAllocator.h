@@ -9,6 +9,8 @@ namespace world::render
 {
     struct FoamSegmentData;
 
+    struct RoadRenderData;
+
     class RendererAllocator : public core::Singleton <RendererAllocator>
     {
         friend class core::Singleton <RendererAllocator>;
@@ -45,15 +47,15 @@ namespace world::render
         container::Array <int>::Memory mountainTypeMemory;
 
 
-        container::Array <Position2>::Memory roadPositionMemory;
+        container::Array <RoadRenderData>::Memory roadDataMemory;
 
-        container::Array <Float4>::Memory roadColorMemory;
+        /*container::Array <Float4>::Memory roadColorMemory;
 
         container::Array <Float>::Memory roadRotationMemory;
 
         container::Array <Float>::Memory roadLengthMemory;
 
-        container::Array <Float>::Memory roadThicknessMemory;
+        container::Array <Float>::Memory roadThicknessMemory;*/
 
         container::Array <unsigned int>::Memory roadQueueMemory;
 
