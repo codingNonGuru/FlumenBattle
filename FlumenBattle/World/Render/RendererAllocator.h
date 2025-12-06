@@ -44,6 +44,19 @@ namespace world::render
 
         container::Array <int>::Memory mountainTypeMemory;
 
+
+        container::Array <Position2>::Memory roadPositionMemory;
+
+        container::Array <Float4>::Memory roadColorMemory;
+
+        container::Array <Float>::Memory roadRotationMemory;
+
+        container::Array <Float>::Memory roadLengthMemory;
+
+        container::Array <Float>::Memory roadThicknessMemory;
+
+        container::Array <unsigned int>::Memory roadQueueMemory;
+
         RendererAllocator();
 
     public:

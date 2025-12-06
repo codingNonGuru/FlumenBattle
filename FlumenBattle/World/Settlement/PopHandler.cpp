@@ -21,7 +21,7 @@ static const auto GROWTH_THRESHOLD = 10000;
 
 void PopHandler::Initialize()
 {
-    population = 1;
+    population = 5;
 
     highestPopulationEver = population;
 

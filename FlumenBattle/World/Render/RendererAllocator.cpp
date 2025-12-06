@@ -8,6 +8,7 @@
 #include "FlumenBattle/World/Render/FoamSegmentData.h"
 #include "FlumenBattle/World/Render/TreeModel.h"
 #include "FlumenBattle/World/Render/MountainRenderer.h"
+#include "FlumenBattle/World/Render/RoadModel.h"
 
 using namespace world::render;
 
@@ -57,6 +58,21 @@ RendererAllocator::RendererAllocator()
     mountainQueueMemory = container::Array <unsigned int>::PreallocateMemory(width * height);
 
     mountainTypeMemory = container::Array <int>::PreallocateMemory(maximumMountainCount);
+
+
+    auto maximumRoadCount = width * height;
+
+    roadPositionMemory = container::Array <Position2>::PreallocateMemory(maximumRoadCount);
+
+    roadColorMemory = container::Array <Float4>::PreallocateMemory(maximumRoadCount);
+
+    roadRotationMemory = container::Array <Float>::PreallocateMemory(maximumRoadCount);
+
+    roadLengthMemory = container::Array <Float>::PreallocateMemory(maximumRoadCount);
+
+    roadThicknessMemory = container::Array <Float>::PreallocateMemory(maximumRoadCount);
+
+    roadQueueMemory = container::Array <unsigned int>::PreallocateMemory(maximumRoadCount);
 }
 
 void RendererAllocator::Allocate(int size)
@@ -113,4 +129,31 @@ void RendererAllocator::Allocate(int size)
     MountainRenderer::Get()->tileQueueBuffer = new DataBuffer(MountainRenderer::Get()->tileQueue.GetMemoryCapacity());
 
     MountainRenderer::Get()->typeBuffer = new DataBuffer(MountainRenderer::Get()->types.GetMemoryCapacity());
+
+
+    auto roadCount = size * size;
+
+    RoadModel::Get()->positions.Initialize(roadCount, roadPositionMemory);
+
+    RoadModel::Get()->colors.Initialize(roadCount, roadColorMemory);
+
+    RoadModel::Get()->lengths.Initialize(roadCount, roadLengthMemory);
+
+    RoadModel::Get()->thicknesses.Initialize(roadCount, roadThicknessMemory);
+
+    RoadModel::Get()->rotations.Initialize(roadCount, roadRotationMemory);
+
+    RoadModel::Get()->tileQueue.Initialize(roadCount, roadQueueMemory);
+
+    RoadModel::Get()->positionBuffer = new DataBuffer(RoadModel::Get()->positions.GetMemoryCapacity());
+
+    RoadModel::Get()->colorBuffer = new DataBuffer(RoadModel::Get()->colors.GetMemoryCapacity());
+
+    RoadModel::Get()->lengthBuffer = new DataBuffer(RoadModel::Get()->lengths.GetMemoryCapacity());
+
+    RoadModel::Get()->thicknessBuffer = new DataBuffer(RoadModel::Get()->thicknesses.GetMemoryCapacity());
+
+    RoadModel::Get()->rotationBuffer = new DataBuffer(RoadModel::Get()->rotations.GetMemoryCapacity());
+
+    RoadModel::Get()->tileQueueBuffer = new DataBuffer(RoadModel::Get()->tileQueue.GetMemoryCapacity());
 }

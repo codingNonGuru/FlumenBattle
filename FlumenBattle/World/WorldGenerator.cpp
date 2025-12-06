@@ -520,6 +520,15 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
     {
         auto location = findSettleLocation();
         newSettlement = scene.FoundSettlement(location, RaceTypes::DWARF, nullptr);
+
+        for(auto &tile : location->GetTileRing(5).Tiles)
+        {
+            if(tile->Type == WorldTiles::LAND)
+            {
+                scene.FoundSettlement(tile, RaceTypes::DWARF, nullptr);
+                break;
+            }
+        }
     }
 
     auto groups = group::GroupAllocator::Get()->GetGroups();

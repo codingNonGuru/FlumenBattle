@@ -13,18 +13,28 @@
 
 using namespace world::render;
 
-void RoadModel::Render()
+static bool doesDataNeedRefresh = true;
+
+static bool doesQueueNeedRefresh = true;
+
+void RoadModel::UpdateData()
 {
-    static const auto camera = RenderManager::GetCamera(Cameras::WORLD);
+    if(doesQueueNeedRefresh == false)
+    {
+        return;
+    }
 
-    static auto squareShader = ShaderManager::GetShader("Square");
-    squareShader->Bind();
+    doesQueueNeedRefresh = false;
 
-    squareShader->SetConstant(camera->GetMatrix(), "viewMatrix");
+    positions.Reset();
 
-	squareShader->SetConstant(1.0f, "opacity");
+    colors.Reset();
 
-	squareShader->SetConstant(0.2f, "depth");
+    lengths.Reset();
+
+    thicknesses.Reset();
+
+    rotations.Reset();
 
     static auto &pathSegments = WorldScene::Get()->GetPathSegments();
     for(auto &segment : pathSegments)
@@ -33,10 +43,12 @@ void RoadModel::Render()
         auto nextTile = segment.From;
 
         auto position = (tile->Position + nextTile->Position) * 0.5f;
-        squareShader->SetConstant(position, "hexPosition");
+        *positions.Add() = position;
 
-        Scale2 scale = Scale2(tile::WorldMap::WORLD_TILE_SIZE * 1.732f, 5.0f);
-        squareShader->SetConstant(scale, "hexSize");
+        auto length = tile::WorldMap::WORLD_TILE_SIZE * 1.732f;
+        *lengths.Add() = length;
+
+        *thicknesses.Add() = 5.0f;
 
         auto color = [&segment] () 
         {
@@ -44,14 +56,59 @@ void RoadModel::Render()
             Color(0.9f, 0.7f, 0.5f, 1.0f) * 0.6f :
             Color(0.7f, 0.7f, 0.7f, 1.0f) * 0.6f;
         } ();
-        squareShader->SetConstant(color, "color");
+        *colors.Add() = color;
 
         auto orientation = tile->Position - nextTile->Position;
         auto rotation = atan2(orientation.y, orientation.x);
-        squareShader->SetConstant(rotation, "rotation");
-
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        *rotations.Add() = rotation;
     }
 
-    squareShader->Unbind();
+    positionBuffer->UploadData(positions.GetStart(), positions.GetMemoryCapacity());
+
+    colorBuffer->UploadData(colors.GetStart(), colors.GetMemoryCapacity());
+
+    lengthBuffer->UploadData(lengths.GetStart(), lengths.GetMemoryCapacity());
+
+    thicknessBuffer->UploadData(thicknesses.GetStart(), thicknesses.GetMemoryCapacity());
+
+    rotationBuffer->UploadData(rotations.GetStart(), rotations.GetMemoryCapacity());
+
+    //tileQueueBuffer->UploadData(tileQueue.GetStart(), tileQueue.GetMemoryCapacity());
+}
+
+void RoadModel::Initialize()
+{
+    UpdateData();
+}
+
+void RoadModel::Render()
+{
+    UpdateData();
+
+    static auto &pathSegments = WorldScene::Get()->GetPathSegments();
+
+    static const auto camera = RenderManager::GetCamera(Cameras::WORLD);
+
+    static auto shader = ShaderManager::GetShader("Road");
+    shader->Bind();
+
+    shader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	shader->SetConstant(1.0f, "opacity");
+
+	shader->SetConstant(0.2f, "depth");
+
+    positionBuffer->Bind(0);
+
+    rotationBuffer->Bind(1);
+
+    thicknessBuffer->Bind(2);
+
+    lengthBuffer->Bind(3);
+
+    colorBuffer->Bind(4);
+
+    glDrawArrays(GL_TRIANGLES, 0, 6 * pathSegments.GetSize());
+
+    shader->Unbind();
 }
