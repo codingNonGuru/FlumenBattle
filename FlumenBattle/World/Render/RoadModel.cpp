@@ -3,6 +3,7 @@
 #include "FlumenEngine/Render/Camera.hpp"
 #include "FlumenEngine/Render/RenderManager.hpp"
 #include "FlumenEngine/Render/DataBuffer.hpp"
+#include "FlumenEngine/Container/HexGrid.h"
 
 #include "RoadModel.h"
 #include "FlumenBattle/World/WorldScene.h"
@@ -13,9 +14,22 @@
 
 using namespace world::render;
 
+#define OFFSET_RANGE 15.0f
+
+#define ROAD_THICKNESS 5.0f
+
+struct PathTileData : core::hex::Tile
+{
+    world::tile::WorldTile *Tile;
+
+    Position2 Offset;    
+};
+
 static bool doesDataNeedRefresh = true;
 
 static bool doesQueueNeedRefresh = true;
+
+static container::HexGrid <PathTileData> roadTiles;
 
 void RoadModel::UpdateData()
 {
@@ -42,13 +56,18 @@ void RoadModel::UpdateData()
         auto tile = segment.To;
         auto nextTile = segment.From;
 
-        auto position = (tile->Position + nextTile->Position) * 0.5f;
+        auto toPosition = tile->Position + roadTiles.GetTile(segment.To->Coordinates)->Offset;
+        auto fromPosition = nextTile->Position + roadTiles.GetTile(segment.From->Coordinates)->Offset;
+
+        auto direction = toPosition - fromPosition;
+
+        auto position = (toPosition + fromPosition) * 0.5f;
         *positions.Add() = position;
 
-        auto length = tile::WorldMap::WORLD_TILE_SIZE * 1.732f;
+        auto length = glm::length(direction);
         *lengths.Add() = length;
 
-        *thicknesses.Add() = 5.0f;
+        *thicknesses.Add() = ROAD_THICKNESS;
 
         auto color = [&segment] () 
         {
@@ -58,8 +77,7 @@ void RoadModel::UpdateData()
         } ();
         *colors.Add() = color;
 
-        auto orientation = tile->Position - nextTile->Position;
-        auto rotation = atan2(orientation.y, orientation.x);
+        auto rotation = atan2(direction.y, direction.x);
         *rotations.Add() = rotation;
     }
 
@@ -78,6 +96,21 @@ void RoadModel::UpdateData()
 
 void RoadModel::Initialize()
 {
+    auto map = WorldScene::Get()->GetWorldMap();
+
+    roadTiles.Initialize(map->GetTiles().GetWidth(), map->GetTiles().GetHeight());
+
+    auto roadTile = roadTiles.Get(0, 0);
+    for(auto &tile : map->GetTiles())
+    {
+        auto offset = utility::GetRandomPositionAround(OFFSET_RANGE);
+
+        roadTile->Tile = &tile;
+        roadTile->Offset = offset;
+
+        roadTile++;
+    }
+
     UpdateData();
 }
 

@@ -126,6 +126,8 @@ void WorldTileModel::Initialize()
     OceanModel::Get()->Initialize();
 
     MountainRenderer::Get()->Initialize();
+
+    RoadModel::Get()->Initialize();
 }
 
 void WorldTileModel::Enable()
