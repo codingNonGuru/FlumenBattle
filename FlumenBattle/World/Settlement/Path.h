@@ -38,6 +38,11 @@ namespace world::settlement
         {
             return ((To == segment.To && From == segment.From) || (To == segment.From && From == segment.To));
         }
+
+        tile::WorldTile *GetOtherEnd(tile::WorldTile *thisEnd)
+        {
+            return thisEnd == To ? From : To;
+        }
     };
 
     struct Path

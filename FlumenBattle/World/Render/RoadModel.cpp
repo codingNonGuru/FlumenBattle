@@ -14,9 +14,13 @@
 
 using namespace world::render;
 
-#define OFFSET_RANGE 15.0f
+#define OFFSET_RANGE 25.0f
 
 #define ROAD_THICKNESS 5.0f
+
+#define SEGMENT_COUNT 6
+
+#define ROAD_COLOR Color(0.4f, 0.4f, 0.4f, 1.0f)
 
 struct PathTileData : core::hex::Tile
 {
@@ -42,56 +46,70 @@ void RoadModel::UpdateData()
 
     data.Reset();
 
-    /*colors.Reset();
-
-    lengths.Reset();
-
-    thicknesses.Reset();
-
-    rotations.Reset();*/
-
-    static auto &pathSegments = WorldScene::Get()->GetPathSegments();
-    for(auto &segment : pathSegments)
+    for(auto &tile : WorldScene::Get()->GetWorldMap()->GetTiles())
     {
-        auto tile = segment.To;
-        auto nextTile = segment.From;
-
-        auto toPosition = tile->Position + roadTiles.GetTile(segment.To->Coordinates)->Offset;
-        auto fromPosition = nextTile->Position + roadTiles.GetTile(segment.From->Coordinates)->Offset;
-
-        auto direction = toPosition - fromPosition;
-
-        auto position = (toPosition + fromPosition) * 0.5f;
-        //*positions.Add() = position;
-
-        auto length = glm::length(direction);
-        //*lengths.Add() = length;
-
-        //*thicknesses.Add() = ROAD_THICKNESS;
-
-        auto color = [&segment] () 
+        if(tile.GetLinks().GetSize() == 2)
         {
-            return segment.Type == settlement::RoadTypes::UNTRODDEN ?
-            Color(0.9f, 0.7f, 0.6f, 1.0f) * 0.6f :
-            Color(0.7f, 0.7f, 0.7f, 1.0f) * 0.6f;
-        } ();
-        //*colors.Add() = color;
+            tile::WorldTile *tiles[3];
 
-        auto rotation = atan2(direction.y, direction.x);
-        //*rotations.Add() = rotation;
+            tiles[0] = &tile;
 
-        *data.Add() = {color, position, rotation, length, ROAD_THICKNESS};
+            auto index = 1;
+            for(auto &link : tile.GetLinks())
+            {
+                auto other = link->GetOtherEnd(&tile);
+
+                tiles[index++] = other;
+            }
+
+            Position2 corners[3] =
+            {
+                tiles[0]->Position + roadTiles.GetTile(tiles[0]->Coordinates)->Offset,
+                tiles[1]->Position + roadTiles.GetTile(tiles[1]->Coordinates)->Offset,
+                tiles[2]->Position + roadTiles.GetTile(tiles[2]->Coordinates)->Offset
+            };
+
+            Position2 positions[3] =
+            {
+                corners[0] * 0.5f + corners[1] * 0.5f,
+                corners[0],
+                corners[0] * 0.5f + corners[2] * 0.5f,
+            };
+
+            /*auto color = [&segment] () 
+            {
+                return segment.Type == settlement::RoadTypes::UNTRODDEN ?
+                Color(0.9f, 0.7f, 0.6f, 1.0f) * 0.6f :
+                Color(0.7f, 0.7f, 0.7f, 1.0f) * 0.6f;
+            } ();*/
+
+            *data.Add() = {ROAD_COLOR, {positions[0], positions[1], positions[2]}, ROAD_THICKNESS};
+        }
+        else
+        {
+            for(auto &link : tile.GetLinks())
+            {
+                auto other = link->GetOtherEnd(&tile);
+
+                Position2 corners[2] =
+                {
+                    other->Position + roadTiles.GetTile(other->Coordinates)->Offset,
+                    tile.Position + roadTiles.GetTile(tile.Coordinates)->Offset,
+                };
+
+                Position2 positions[3] = 
+                {
+                    corners[1],
+                    corners[1] * 0.75f + corners[0] * 0.25f,
+                    corners[1] * 0.5f + corners[0] * 0.5f,
+                };
+
+                *data.Add() = {ROAD_COLOR, {positions[0], positions[1], positions[2]}, ROAD_THICKNESS};
+            }
+        }
     }
 
     buffer->UploadData(data.GetStart(), data.GetMemoryCapacity());
-
-    /*colorBuffer->UploadData(colors.GetStart(), colors.GetMemoryCapacity());
-
-    lengthBuffer->UploadData(lengths.GetStart(), lengths.GetMemoryCapacity());
-
-    thicknessBuffer->UploadData(thicknesses.GetStart(), thicknesses.GetMemoryCapacity());
-
-    rotationBuffer->UploadData(rotations.GetStart(), rotations.GetMemoryCapacity());*/
 
     //tileQueueBuffer->UploadData(tileQueue.GetStart(), tileQueue.GetMemoryCapacity());
 }
@@ -105,7 +123,8 @@ void RoadModel::Initialize()
     auto roadTile = roadTiles.Get(0, 0);
     for(auto &tile : map->GetTiles())
     {
-        auto offset = utility::GetRandomPositionAround(OFFSET_RANGE);
+        auto range = tile.GetSettlement() != nullptr ? OFFSET_RANGE * 0.3f : OFFSET_RANGE;
+        auto offset = utility::GetRandomPositionAround(range);
 
         roadTile->Tile = &tile;
         roadTile->Offset = offset;
@@ -135,15 +154,7 @@ void RoadModel::Render()
 
     buffer->Bind(0);
 
-    /*rotationBuffer->Bind(1);
-
-    thicknessBuffer->Bind(2);
-
-    lengthBuffer->Bind(3);
-
-    colorBuffer->Bind(4);*/
-
-    glDrawArrays(GL_TRIANGLES, 0, 6 * pathSegments.GetSize());
+    glDrawArrays(GL_TRIANGLES, 0, 6 * SEGMENT_COUNT * data.GetSize());
 
     shader->Unbind();
 }

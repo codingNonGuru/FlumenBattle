@@ -6,17 +6,13 @@ layout (location = 0) uniform mat4 viewMatrix;
 
 layout (location = 4) uniform float depth;
 
-// DATA STRUCTURES
+// DATA TYPES
 
 struct RoadData
 {
     vec4 Color;
 
-	vec2 Position;
-
-    float Rotation;
-
-    float Length;
+	vec2 Positions[3];
 
     float Thickness;
 };
@@ -34,32 +30,54 @@ layout (std430, binding = 0) buffer ROAD_DATAS
 
 out vec3 color;
 
+// DATA STRUCTURES
+
+const uint segmentCount = uint(6);
+
 void main()
 {	
-    uint objectIndex = uint(gl_VertexID / 6);
+    uint objectIndex = uint(gl_VertexID / (6 * int(segmentCount)));
 
-    float rotation = roadDatas[objectIndex].Rotation;
+    vec2 firstPosition = roadDatas[objectIndex].Positions[0];
+    vec2 secondPosition = roadDatas[objectIndex].Positions[1];
+    vec2 thirdPosition = roadDatas[objectIndex].Positions[2];
 
-    vec2 vertices[6] = vec2[6] (
-        vec2(-0.5f, -0.5f), 
-        vec2(0.5f, -0.5f), 
-        vec2(0.5f, 0.5f), 
-        vec2(-0.5f, -0.5f), 
-        vec2(0.5f, 0.5f), 
-        vec2(-0.5f, 0.5f)
-        );
+    uint segmentId = uint(gl_VertexID % (6 * int(segmentCount)));
+    segmentId = segmentId / uint(6);
 
-    float s = sin(rotation);
-    float c = cos(rotation);
+    uint vertexId = uint(gl_VertexID % 6);
 
-    vec2 position = vertices[gl_VertexID % 6];
-    
-    position = vec2(position.x * roadDatas[objectIndex].Length, position.y * roadDatas[objectIndex].Thickness);
+    vec2 positions[segmentCount + uint(1)];
+    vec2 directions[segmentCount + uint(1)];
 
-    float xnew = position.x * c - position.y * s;
-    float ynew = position.x * s + position.y * c;
+    for(int i = 0; i < int(segmentCount) + 1; ++i)
+    {
+        float t = float(i) / float(segmentCount);
 
-    position = vec2(xnew, ynew) + roadDatas[objectIndex].Position;
+        positions[i] = (1.0f - t) * (1.0f - t) * firstPosition + 2.0f * (1.0f - t) * t * secondPosition + t * t * thirdPosition;
+
+        directions[i] = 2.0f * (1.0f - t) * (secondPosition - firstPosition) + 2.0f * t * (thirdPosition - secondPosition);
+
+        directions[i] = directions[i] / length(directions[i]);
+        directions[i] = vec2(-directions[i].y, directions[i].x);
+    }
+
+    float thickness = roadDatas[objectIndex].Thickness;
+
+    vec2 corners[4] = vec2[4]
+    (
+        positions[segmentId] + directions[segmentId] * thickness,
+        positions[segmentId] - directions[segmentId] * thickness,
+        positions[segmentId + uint(1)] + directions[segmentId + uint(1)] * thickness,
+        positions[segmentId + uint(1)] - directions[segmentId + uint(1)] * thickness
+    );
+
+    uint indices[6] = uint[6]
+    (
+        0, 1, 2, 1, 2, 3
+    );
+
+    vec2 position = corners[indices[vertexId]];
 
 	gl_Position = viewMatrix * vec4(position.x, position.y, depth, 1.0f);
 

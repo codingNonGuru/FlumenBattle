@@ -129,7 +129,7 @@ int WorldGenerator::GenerateWorld(
 
                 mountainChance /= 3;
 
-                //mountainChance = 0;
+                mountainChance = 0;
 
                 if(utility::GetRandom(1, 100) <= mountainChance)
                 {

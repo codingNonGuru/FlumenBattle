@@ -167,6 +167,8 @@ namespace world::tile
 
         settlement::PathSegment * GetLinkTo(WorldTile *);
 
+        const container::SmartBlock <settlement::PathSegment *, 6> &GetLinks() const {return links;}
+
         //void SetPathData(int data) {pathData = data;}
 
         //int GetPathData() {return pathData;}

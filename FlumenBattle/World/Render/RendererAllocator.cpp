@@ -64,14 +64,6 @@ RendererAllocator::RendererAllocator()
 
     roadDataMemory = container::Array <RoadRenderData>::PreallocateMemory(maximumRoadCount);
 
-    /*roadColorMemory = container::Array <Float4>::PreallocateMemory(maximumRoadCount);
-
-    roadRotationMemory = container::Array <Float>::PreallocateMemory(maximumRoadCount);
-
-    roadLengthMemory = container::Array <Float>::PreallocateMemory(maximumRoadCount);
-
-    roadThicknessMemory = container::Array <Float>::PreallocateMemory(maximumRoadCount);*/
-
     roadQueueMemory = container::Array <unsigned int>::PreallocateMemory(maximumRoadCount);
 }
 
@@ -135,25 +127,9 @@ void RendererAllocator::Allocate(int size)
 
     RoadModel::Get()->data.Initialize(roadCount, roadDataMemory);
 
-    /*RoadModel::Get()->colors.Initialize(roadCount, roadColorMemory);
-
-    RoadModel::Get()->lengths.Initialize(roadCount, roadLengthMemory);
-
-    RoadModel::Get()->thicknesses.Initialize(roadCount, roadThicknessMemory);
-
-    RoadModel::Get()->rotations.Initialize(roadCount, roadRotationMemory);*/
-
     RoadModel::Get()->tileQueue.Initialize(roadCount, roadQueueMemory);
 
     RoadModel::Get()->buffer = new DataBuffer(RoadModel::Get()->data.GetMemoryCapacity());
-
-    /*RoadModel::Get()->colorBuffer = new DataBuffer(RoadModel::Get()->colors.GetMemoryCapacity());
-
-    RoadModel::Get()->lengthBuffer = new DataBuffer(RoadModel::Get()->lengths.GetMemoryCapacity());
-
-    RoadModel::Get()->thicknessBuffer = new DataBuffer(RoadModel::Get()->thicknesses.GetMemoryCapacity());
-
-    RoadModel::Get()->rotationBuffer = new DataBuffer(RoadModel::Get()->rotations.GetMemoryCapacity());*/
 
     RoadModel::Get()->tileQueueBuffer = new DataBuffer(RoadModel::Get()->tileQueue.GetMemoryCapacity());
 }
