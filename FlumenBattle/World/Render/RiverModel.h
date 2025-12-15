@@ -10,9 +10,9 @@ namespace world::render
 
         Float2 Positions[3];
 
-        float Thickness;
+        float Thicknesses[3];
 
-        float Padding[1];
+        float Padding[3];
     };
 
     class RiverModel : public core::Singleton <RiverModel>

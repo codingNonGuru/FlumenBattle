@@ -14,7 +14,7 @@
 
 using namespace world::render;
 
-#define RIVER_THICKNESS_FACTOR 0.35f
+#define RIVER_THICKNESS_FACTOR 0.25f
 
 #define SEGMENT_LENGTH 38.0f
 
@@ -36,10 +36,10 @@ void RiverModel::Initialize()
             auto first = twist.First->First->Position * 0.5f + twist.First->Second->Position * 0.5f;
             auto second = twist.Second->First->Position * 0.5f + twist.Second->Second->Position * 0.5f;
 
-            //auto thickness = (float)segment->Discharge * RIVER_THICKNESS_FACTOR;
-            //thickness += 5.0f;
-
-            *data.Add() = {Color::BLUE, {first, twist.Position, second}, 5.0f};
+            auto firstThickness = (float)twist.First->Discharge * RIVER_THICKNESS_FACTOR + 3.0f;
+            auto secondThickness = (float)twist.Second->Discharge * RIVER_THICKNESS_FACTOR + 3.0f;
+            
+            *data.Add() = {Color::BLUE, {first, twist.Position, second}, {firstThickness, 0.0f, secondThickness}};
         }
     }
 

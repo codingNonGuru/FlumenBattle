@@ -14,7 +14,7 @@ struct RiverData
 
 	vec2 Positions[3];
 
-    float Thickness;
+    float Thicknesses[3];
 };
 
 // DATA BUFFERS
@@ -49,6 +49,7 @@ void main()
 
     vec2 positions[segmentCount + uint(1)];
     vec2 directions[segmentCount + uint(1)];
+    float thicknesses[segmentCount + uint(1)];
 
     for(int i = 0; i < int(segmentCount) + 1; ++i)
     {
@@ -60,16 +61,18 @@ void main()
 
         directions[i] = directions[i] / length(directions[i]);
         directions[i] = vec2(-directions[i].y, directions[i].x);
+
+        thicknesses[i] = riverDatas[objectIndex].Thicknesses[0] * (1.0f - t) + riverDatas[objectIndex].Thicknesses[2] * t;
     }
 
-    float thickness = riverDatas[objectIndex].Thickness;
+    float thickness = riverDatas[objectIndex].Thicknesses[0];
 
     vec2 corners[4] = vec2[4]
     (
-        positions[segmentId] + directions[segmentId] * thickness,
-        positions[segmentId] - directions[segmentId] * thickness,
-        positions[segmentId + uint(1)] + directions[segmentId + uint(1)] * thickness,
-        positions[segmentId + uint(1)] - directions[segmentId + uint(1)] * thickness
+        positions[segmentId] + directions[segmentId] * thicknesses[segmentId],
+        positions[segmentId] - directions[segmentId] * thicknesses[segmentId],
+        positions[segmentId + uint(1)] + directions[segmentId + uint(1)] * thicknesses[segmentId + uint(1)],
+        positions[segmentId + uint(1)] - directions[segmentId + uint(1)] * thicknesses[segmentId + uint(1)]
     );
 
     uint indices[6] = uint[6]
