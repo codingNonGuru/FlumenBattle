@@ -136,8 +136,6 @@ void RoadModel::Render()
 {
     UpdateData();
 
-    static auto &pathSegments = WorldScene::Get()->GetPathSegments();
-
     static const auto camera = RenderManager::GetCamera(Cameras::WORLD);
 
     static auto shader = ShaderManager::GetShader("Road");

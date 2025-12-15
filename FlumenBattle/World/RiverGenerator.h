@@ -21,6 +21,8 @@ namespace world
 
         void ComputeDischarge();
 
+        void EstablishCorners();
+
     public:
         void DefineRivers();
     };

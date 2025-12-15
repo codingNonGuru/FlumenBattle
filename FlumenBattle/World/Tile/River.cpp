@@ -11,3 +11,8 @@ void River::AddSegment(WorldEdge *segment)
 {   
     *segments.Add() = segment;
 }
+
+RiverTwist *River::AddTwist()
+{
+    return twists.Add();
+}

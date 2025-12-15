@@ -128,6 +128,8 @@ void WorldTileModel::Initialize()
     MountainRenderer::Get()->Initialize();
 
     RoadModel::Get()->Initialize();
+
+    RiverModel::Get()->Initialize();
 }
 
 void WorldTileModel::Enable()

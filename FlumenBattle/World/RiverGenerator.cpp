@@ -128,6 +128,8 @@ void RiverGenerator::DefineRivers()
     CarveUpstream();
 
     ComputeDischarge();
+
+    EstablishCorners();
 }
 
 void RiverGenerator::ComputeSlopes()
@@ -395,6 +397,38 @@ void RiverGenerator::ComputeDischarge()
         {
             segment->Discharge = discharge;
             discharge--;
+        }
+    }
+}
+
+void RiverGenerator::EstablishCorners()
+{
+    auto map = WorldScene::Get()->GetWorldMap();
+
+    for(auto &river : map->GetRivers())
+    {
+        for(auto i = 0; i <= river.GetSegments().GetSize(); ++i)
+        {
+            auto segment = i == river.GetSegments().GetSize() ? nullptr : *river.GetSegments().Get(i);
+
+            auto previousSegment = i == 0 ? nullptr : *river.GetSegments().Get(i - 1);
+
+            auto twist = river.AddTwist();
+
+            twist->First = previousSegment;
+
+            twist->Second = segment;
+
+            if(twist->First == nullptr || twist->Second == nullptr)
+                continue;
+
+            tile::WorldTile *tiles[3] = {
+                twist->First->First, 
+                twist->First->Second, 
+                twist->Second->First != twist->First->First && twist->Second->First != twist->First->Second ? twist->Second->First : twist->Second->Second
+            };
+
+            twist->Position = (tiles[0]->Position + tiles[1]->Position + tiles[2]->Position) / 3.0f;
         }
     }
 }
