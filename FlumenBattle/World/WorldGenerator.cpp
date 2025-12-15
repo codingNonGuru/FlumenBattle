@@ -521,7 +521,7 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
         auto location = findSettleLocation();
         newSettlement = scene.FoundSettlement(location, RaceTypes::DWARF, nullptr);
 
-        for(auto &tile : location->GetTileRing(4).Tiles)
+        for(auto &tile : location->GetTileRing(5).Tiles)
         {
             if(tile->Type == WorldTiles::LAND)
             {

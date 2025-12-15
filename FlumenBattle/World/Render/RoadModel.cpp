@@ -22,12 +22,9 @@ using namespace world::render;
 
 #define ROAD_COLOR Color(0.4f, 0.4f, 0.4f, 1.0f)
 
-struct PathTileData : core::hex::Tile
-{
-    world::tile::WorldTile *Tile;
+#define RENDER_OPACITY 1.0f
 
-    Position2 Offset;    
-};
+#define RENDER_DEPTH 0.2f
 
 static bool doesDataNeedRefresh = true;
 
@@ -118,7 +115,7 @@ void RoadModel::Initialize()
 {
     auto map = WorldScene::Get()->GetWorldMap();
 
-    roadTiles.Initialize(map->GetTiles().GetWidth(), map->GetTiles().GetHeight());
+    //roadTiles.Initialize(map->GetTiles().GetWidth(), map->GetTiles().GetHeight());
 
     auto roadTile = roadTiles.Get(0, 0);
     for(auto &tile : map->GetTiles())
@@ -148,13 +145,18 @@ void RoadModel::Render()
 
     shader->SetConstant(camera->GetMatrix(), "viewMatrix");
 
-	shader->SetConstant(1.0f, "opacity");
+	shader->SetConstant(RENDER_OPACITY, "opacity");
 
-	shader->SetConstant(0.2f, "depth");
+	shader->SetConstant(RENDER_DEPTH, "depth");
 
     buffer->Bind(0);
 
     glDrawArrays(GL_TRIANGLES, 0, 6 * SEGMENT_COUNT * data.GetSize());
 
     shader->Unbind();
+}
+
+container::HexGrid <PathTileData> &RoadModel::GetRoadTiles()
+{
+    return roadTiles;
 }

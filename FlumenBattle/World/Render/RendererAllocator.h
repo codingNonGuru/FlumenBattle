@@ -11,6 +11,8 @@ namespace world::render
 
     struct RoadRenderData;
 
+    struct PathTileData;
+
     class RendererAllocator : public core::Singleton <RendererAllocator>
     {
         friend class core::Singleton <RendererAllocator>;
@@ -50,6 +52,8 @@ namespace world::render
         container::Array <RoadRenderData>::Memory roadDataMemory;
 
         container::Array <unsigned int>::Memory roadQueueMemory;
+
+        container::Grid <PathTileData>::Memory roadTileDataMemory;
 
         RendererAllocator();
 

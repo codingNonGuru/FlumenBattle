@@ -2,6 +2,13 @@
 
 #include "FlumenCore/Singleton.h"
 
+#include "FlumenEngine/Container/HexGrid.h"
+
+namespace world::tile
+{
+    struct WorldTile;
+}
+
 namespace world::render
 {
     struct RoadRenderData
@@ -13,6 +20,13 @@ namespace world::render
         float Thickness;
 
         float Padding[1];
+    };
+
+    struct PathTileData : core::hex::Tile
+    {
+        world::tile::WorldTile *Tile;
+
+        Position2 Offset;    
     };
 
     class RoadModel : public core::Singleton <RoadModel>
@@ -28,6 +42,8 @@ namespace world::render
         container::Array <unsigned int> tileQueue;
 
         void UpdateData();
+
+        container::HexGrid <PathTileData> &GetRoadTiles();
 
     public:
         void Initialize();

@@ -65,6 +65,8 @@ RendererAllocator::RendererAllocator()
     roadDataMemory = container::Array <RoadRenderData>::PreallocateMemory(maximumRoadCount);
 
     roadQueueMemory = container::Array <unsigned int>::PreallocateMemory(maximumRoadCount);
+
+    roadTileDataMemory = container::Grid <PathTileData>::PreallocateMemory(maximumRoadCount);
 }
 
 void RendererAllocator::Allocate(int size)
@@ -128,6 +130,8 @@ void RendererAllocator::Allocate(int size)
     RoadModel::Get()->data.Initialize(roadCount, roadDataMemory);
 
     RoadModel::Get()->tileQueue.Initialize(roadCount, roadQueueMemory);
+
+    RoadModel::Get()->GetRoadTiles().Initialize(size, size, roadTileDataMemory);
 
     RoadModel::Get()->buffer = new DataBuffer(RoadModel::Get()->data.GetMemoryCapacity());
 
