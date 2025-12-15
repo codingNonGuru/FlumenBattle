@@ -10,9 +10,9 @@ layout (location = 4) uniform float depth;
 
 struct RiverData
 {
-    vec4 Color;
+    vec2 Positions[3];
 
-	vec2 Positions[3];
+    float ColorFactors[2];
 
     float Thicknesses[3];
 };
@@ -50,6 +50,7 @@ void main()
     vec2 positions[segmentCount + uint(1)];
     vec2 directions[segmentCount + uint(1)];
     float thicknesses[segmentCount + uint(1)];
+    float colorFactors[segmentCount + uint(1)];
 
     for(int i = 0; i < int(segmentCount) + 1; ++i)
     {
@@ -63,6 +64,8 @@ void main()
         directions[i] = vec2(-directions[i].y, directions[i].x);
 
         thicknesses[i] = riverDatas[objectIndex].Thicknesses[0] * (1.0f - t) + riverDatas[objectIndex].Thicknesses[2] * t;
+
+        colorFactors[i] = riverDatas[objectIndex].ColorFactors[0] * (1.0f - t) + riverDatas[objectIndex].ColorFactors[1] * t;
     }
 
     float thickness = riverDatas[objectIndex].Thicknesses[0];
@@ -75,6 +78,14 @@ void main()
         positions[segmentId + uint(1)] - directions[segmentId + uint(1)] * thicknesses[segmentId + uint(1)]
     );
 
+    float cornerColorData[4] = float[4]
+    (
+        colorFactors[segmentId],
+        colorFactors[segmentId],
+        colorFactors[segmentId + uint(1)],
+        colorFactors[segmentId + uint(1)]
+    );
+
     uint indices[6] = uint[6]
     (
         0, 1, 2, 1, 2, 3
@@ -84,5 +95,6 @@ void main()
 
 	gl_Position = viewMatrix * vec4(position.x, position.y, depth, 1.0f);
 
-    color = riverDatas[objectIndex].Color.rgb;
+    float colorFactor = cornerColorData[indices[vertexId]];
+    color = vec3(0.0f, 1.0f, 1.0f) * colorFactor + (1.0f - colorFactor) * vec3(0.0f, 0.0f, 1.0f);
 }

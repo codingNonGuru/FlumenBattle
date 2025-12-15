@@ -36,10 +36,15 @@ void RiverModel::Initialize()
             auto first = twist.First->First->Position * 0.5f + twist.First->Second->Position * 0.5f;
             auto second = twist.Second->First->Position * 0.5f + twist.Second->Second->Position * 0.5f;
 
-            auto firstThickness = (float)twist.First->Discharge * RIVER_THICKNESS_FACTOR + 3.0f;
-            auto secondThickness = (float)twist.Second->Discharge * RIVER_THICKNESS_FACTOR + 3.0f;
+            auto firstThickness = (float)twist.First->Discharge * RIVER_THICKNESS_FACTOR + 1.0f;
+            auto secondThickness = (float)twist.Second->Discharge * RIVER_THICKNESS_FACTOR + 1.0f;
+
+            float firstDischarge = river.GetSegments().GetSize() - twist.First->Discharge;
+            float secondDischarge = river.GetSegments().GetSize() - twist.Second->Discharge;
+            auto firstColor = exp(-firstDischarge * firstDischarge / 40.0f);
+            auto secondColor = exp(-secondDischarge * secondDischarge / 40.0f);
             
-            *data.Add() = {Color::BLUE, {first, twist.Position, second}, {firstThickness, 0.0f, secondThickness}};
+            *data.Add() = {{first, twist.Position, second}, {firstColor, secondColor}, {firstThickness, 0.0f, secondThickness}};
         }
     }
 

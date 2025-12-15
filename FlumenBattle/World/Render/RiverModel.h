@@ -6,13 +6,13 @@ namespace world::render
 {
     struct RiverRenderData
     {
-        Float4 Color;
-
         Float2 Positions[3];
+
+        float ColorFactors[2];
 
         float Thicknesses[3];
 
-        float Padding[3];
+        float Padding[1];
     };
 
     class RiverModel : public core::Singleton <RiverModel>
