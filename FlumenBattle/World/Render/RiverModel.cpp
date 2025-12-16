@@ -20,6 +20,8 @@ using namespace world::render;
 
 #define SEGMENT_COUNT 6
 
+#define COLOR_SHIFT_FACTOR 20.0f
+
 void RiverModel::Initialize()
 {
     auto map = WorldScene::Get()->GetWorldMap();
@@ -31,20 +33,33 @@ void RiverModel::Initialize()
         for(auto &twist : river.GetTwists())
         {
             if(twist.First == nullptr || twist.Second == nullptr)
-                continue;
+            {
+                auto edge = twist.First != nullptr ? twist.First : twist.Second;
+                auto edgePosition = edge->First->Position * 0.5f + edge->Second->Position * 0.5f;
 
-            auto first = twist.First->First->Position * 0.5f + twist.First->Second->Position * 0.5f;
-            auto second = twist.Second->First->Position * 0.5f + twist.Second->Second->Position * 0.5f;
+                auto thickness = (float)edge->Discharge * RIVER_THICKNESS_FACTOR + 1.0f;
 
-            auto firstThickness = (float)twist.First->Discharge * RIVER_THICKNESS_FACTOR + 1.0f;
-            auto secondThickness = (float)twist.Second->Discharge * RIVER_THICKNESS_FACTOR + 1.0f;
+                float discharge = river.GetSegments().GetSize() - edge->Discharge;
+                auto colorFactor = exp(-discharge * discharge / COLOR_SHIFT_FACTOR);
 
-            float firstDischarge = river.GetSegments().GetSize() - twist.First->Discharge;
-            float secondDischarge = river.GetSegments().GetSize() - twist.Second->Discharge;
-            auto firstColor = exp(-firstDischarge * firstDischarge / 40.0f);
-            auto secondColor = exp(-secondDischarge * secondDischarge / 40.0f);
-            
-            *data.Add() = {{first, twist.Position, second}, {firstColor, secondColor}, {firstThickness, 0.0f, secondThickness}};
+                *data.Add() = {{edgePosition, twist.Position * 0.5f + edgePosition * 0.5f, twist.Position}, {colorFactor, colorFactor}, {thickness, 0.0f, thickness}};
+            }
+            else
+            {
+                auto first = twist.First->First->Position * 0.5f + twist.First->Second->Position * 0.5f;
+                auto second = twist.Second->First->Position * 0.5f + twist.Second->Second->Position * 0.5f;
+
+                auto firstThickness = (float)twist.First->Discharge * RIVER_THICKNESS_FACTOR + 1.0f;
+                auto secondThickness = (float)twist.Second->Discharge * RIVER_THICKNESS_FACTOR + 1.0f;
+
+                float firstDischarge = river.GetSegments().GetSize() - twist.First->Discharge;
+                float secondDischarge = river.GetSegments().GetSize() - twist.Second->Discharge;
+
+                auto firstColor = exp(-firstDischarge * firstDischarge / COLOR_SHIFT_FACTOR);
+                auto secondColor = exp(-secondDischarge * secondDischarge / COLOR_SHIFT_FACTOR);
+                
+                *data.Add() = {{first, twist.Position, second}, {firstColor, secondColor}, {firstThickness, 0.0f, secondThickness}};
+            }
         }
     }
 

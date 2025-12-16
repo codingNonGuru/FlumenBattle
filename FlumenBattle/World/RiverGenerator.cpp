@@ -421,8 +421,9 @@ void RiverGenerator::EstablishCorners()
 
             if(twist->First == nullptr || twist->Second == nullptr)
                 continue;
-
-            tile::WorldTile *tiles[3] = {
+            
+            tile::WorldTile *tiles[3] = 
+            {
                 twist->First->First, 
                 twist->First->Second, 
                 twist->Second->First != twist->First->First && twist->Second->First != twist->First->Second ? twist->Second->First : twist->Second->Second
@@ -430,6 +431,18 @@ void RiverGenerator::EstablishCorners()
 
             twist->Position = (tiles[0]->Position + tiles[1]->Position + tiles[2]->Position) / 3.0f;
         }
+
+        auto startTwist = river.GetTwists().Get(0);
+        auto edgePosition = (startTwist->Second->First->Position + startTwist->Second->Second->Position) / 2.0f;
+        auto nextTwistPosition = river.GetTwists().Get(1)->Position;
+
+        startTwist->Position = (edgePosition - nextTwistPosition) + edgePosition;
+
+        auto endTwist = river.GetTwists().GetLast() - 1;
+        edgePosition = (endTwist->First->First->Position + endTwist->First->Second->Position) / 2.0f;
+        auto previousTwistPosition = (river.GetTwists().GetLast() - 2)->Position;
+
+        endTwist->Position = (edgePosition - previousTwistPosition) + edgePosition;
     }
 }
 
