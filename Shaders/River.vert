@@ -14,7 +14,7 @@ struct RiverData
 
     float ColorFactors[2];
 
-    float Thicknesses[3];
+    float Thicknesses[2];
 };
 
 // DATA BUFFERS
@@ -63,12 +63,10 @@ void main()
         directions[i] = directions[i] / length(directions[i]);
         directions[i] = vec2(-directions[i].y, directions[i].x);
 
-        thicknesses[i] = riverDatas[objectIndex].Thicknesses[0] * (1.0f - t) + riverDatas[objectIndex].Thicknesses[2] * t;
+        thicknesses[i] = riverDatas[objectIndex].Thicknesses[0] * (1.0f - t) + riverDatas[objectIndex].Thicknesses[1] * t;
 
         colorFactors[i] = riverDatas[objectIndex].ColorFactors[0] * (1.0f - t) + riverDatas[objectIndex].ColorFactors[1] * t;
     }
-
-    float thickness = riverDatas[objectIndex].Thicknesses[0];
 
     vec2 corners[4] = vec2[4]
     (

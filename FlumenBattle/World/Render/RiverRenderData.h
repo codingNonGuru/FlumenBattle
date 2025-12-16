@@ -10,8 +10,6 @@ namespace world::render
 
         float ColorFactors[2];
 
-        float Thicknesses[3];
-
-        float Padding[1];
+        float Thicknesses[2];
     };
 }
