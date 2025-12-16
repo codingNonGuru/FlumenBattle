@@ -26,8 +26,6 @@ void RiverModel::Initialize()
 {
     auto map = WorldScene::Get()->GetWorldMap();
 
-    data.Initialize(map->GetTileCount());
-
     for(auto &river : map->GetRivers())
     {
         for(auto &twist : river.GetTwists())
@@ -63,7 +61,7 @@ void RiverModel::Initialize()
         }
     }
 
-    buffer = new DataBuffer(data.GetMemoryCapacity(), data.GetStart());
+    buffer->UploadData(data.GetStart(), data.GetMemorySize());
 }
 
 void RiverModel::Render()
@@ -75,7 +73,7 @@ void RiverModel::Render()
 
     shader->SetConstant(camera->GetMatrix(), "viewMatrix");
 
-	shader->SetConstant(0.7f, "opacity");
+	shader->SetConstant(0.8f, "opacity");
 
 	shader->SetConstant(0.1f, "depth");
 

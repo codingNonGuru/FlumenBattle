@@ -4,6 +4,7 @@
 #include "FlumenCore/Conventions.hpp"
 
 #include "FlumenBattle/World/Render/FarmData.h"
+#include "FlumenBattle/World/Render/RiverRenderData.h"
 
 namespace world::render
 {
@@ -54,6 +55,9 @@ namespace world::render
         container::Array <unsigned int>::Memory roadQueueMemory;
 
         container::Grid <PathTileData>::Memory roadTileDataMemory;
+
+
+        container::Array <RiverRenderData>::Memory riverDataMemory;
 
         RendererAllocator();
 

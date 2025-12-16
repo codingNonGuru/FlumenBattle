@@ -2,21 +2,14 @@
 
 #include "FlumenCore/Singleton.h"
 
+#include "FlumenBattle/World/Render/RiverRenderData.h"
+
 namespace world::render
-{
-    struct RiverRenderData
-    {
-        Float2 Positions[3];
-
-        float ColorFactors[2];
-
-        float Thicknesses[3];
-
-        float Padding[1];
-    };
-
+{ 
     class RiverModel : public core::Singleton <RiverModel>
     {
+        friend class RendererAllocator;
+
         DataBuffer *buffer;
 
         container::Array <RiverRenderData> data;

@@ -9,6 +9,7 @@
 #include "FlumenBattle/World/Render/TreeModel.h"
 #include "FlumenBattle/World/Render/MountainRenderer.h"
 #include "FlumenBattle/World/Render/RoadModel.h"
+#include "FlumenBattle/World/Render/RiverModel.h"
 
 using namespace world::render;
 
@@ -67,6 +68,9 @@ RendererAllocator::RendererAllocator()
     roadQueueMemory = container::Array <unsigned int>::PreallocateMemory(maximumRoadCount);
 
     roadTileDataMemory = container::Grid <PathTileData>::PreallocateMemory(maximumRoadCount);
+
+
+    riverDataMemory = container::Array <RiverRenderData>::PreallocateMemory(width * height);
 }
 
 void RendererAllocator::Allocate(int size)
@@ -136,4 +140,9 @@ void RendererAllocator::Allocate(int size)
     RoadModel::Get()->buffer = new DataBuffer(RoadModel::Get()->data.GetMemoryCapacity());
 
     RoadModel::Get()->tileQueueBuffer = new DataBuffer(RoadModel::Get()->tileQueue.GetMemoryCapacity());
+
+
+    RiverModel::Get()->data.Initialize(size * size, riverDataMemory);
+
+    RiverModel::Get()->buffer = new DataBuffer(RiverModel::Get()->data.GetMemoryCapacity());
 }
