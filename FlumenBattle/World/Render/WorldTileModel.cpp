@@ -130,6 +130,8 @@ void WorldTileModel::Initialize()
     RoadModel::Get()->Initialize();
 
     RiverModel::Get()->Initialize();
+
+    SettlementModel::Get()->Initialize();
 }
 
 void WorldTileModel::Enable()

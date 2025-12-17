@@ -14,52 +14,66 @@
 
 using namespace world::render;
 
+#define MAX_BUILDINGS_PER_SETTLEMENT 64
+
+#define SCATTER_RANGE 35.0f
+
+#define SIZE_RANGE 5.0f, 6.5f
+
+#define INDICES_PER_BUILDING 6
+
+#define BUILDING_SHADER_NAME "Shader"
+
+#define BUILDING_BUFFER_BIND_POINT 0
+
+#define RENDER_OPACITY 1.0f
+
+#define RENDER_DEPTH 0.3f
+
 void SettlementModel::Initialize()
 {
+    static auto &scene = *WorldScene::Get();
 
+    auto map = scene.GetWorldMap();
+
+    auto &settlements = scene.GetSettlements();
+
+    buildingData.Initialize(settlements.GetCapacity() * MAX_BUILDINGS_PER_SETTLEMENT);
+
+    for(auto& settlement : settlements)
+    {
+        for(int i = 0; i < MAX_BUILDINGS_PER_SETTLEMENT; ++i)
+        {
+            auto position = utility::GetRandomPositionAround(SCATTER_RANGE, settlement.GetLocation()->Position);
+
+            auto rotation = utility::GetRandom(0.0f, TWO_PI);
+
+            auto size = utility::GetRandom(SIZE_RANGE);
+
+            *buildingData.Add() = {Color::RED, position, rotation, size};
+        }
+    }
+
+    buildingDataBuffer = new DataBuffer(buildingData.GetMemoryCapacity(), buildingData.GetStart());
 }
 
 void SettlementModel::Render()
 {
-    static const auto shader = ShaderManager::GetShader("Hex");
+    static const auto shader = ShaderManager::GetShader(BUILDING_SHADER_NAME);
 
     static const auto camera = RenderManager::GetCamera(Cameras::WORLD);
-
-    static auto &scene = *WorldScene::Get();
-
-    auto map = scene.GetWorldMap();
 
     shader->Bind();
 
     shader->SetConstant(camera->GetMatrix(), "viewMatrix");
 
-	shader->SetConstant(0.3f, "depth");
+	shader->SetConstant(RENDER_DEPTH, "depth");
 
-    shader->SetConstant(1.0f, "opacity");
+    shader->SetConstant(RENDER_OPACITY, "opacity");
 
-    auto settlements = scene.GetSettlements();
-    for(auto& settlement : settlements)
-    {
-        if(settlement.IsValid() == false)
-            continue;
+    buildingDataBuffer->Bind(BUILDING_BUFFER_BIND_POINT);
 
-        auto tile = settlement.GetLocation();
-
-        shader->SetConstant(tile->Position, "hexPosition");
-
-        auto size = [&settlement]
-        {
-            auto factor = pow((float)settlement.GetPopulation() + 1.0f, 0.5f);
-            return factor * 0.15f * tile::WorldMap::WORLD_TILE_SIZE;
-        } ();
-
-        shader->SetConstant(size, "hexSize");
-
-        shader->SetConstant(settlement.GetRulerBanner(), "color");
-        //shader->SetConstant(settlement.GetBanner(), "color");
-
-        glDrawArrays(GL_TRIANGLES, 0, 18);
-    }
+    glDrawArrays(GL_TRIANGLES, 0, INDICES_PER_BUILDING * buildingData.GetSize());
 
     shader->Unbind();
 }
