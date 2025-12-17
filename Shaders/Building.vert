@@ -12,9 +12,9 @@ struct BuildingData
 
     vec2 Position;
 
-    float Rotation;
+    vec2 Size;
 
-    float Size;
+    float Rotation;
 };
 
 // DATA BUFFERS
@@ -49,14 +49,14 @@ void main()
 
     float rotation = buildingData[buildingIndex].Rotation;
 
-    float size = buildingData[buildingIndex].Size;
+    vec2 size = buildingData[buildingIndex].Size;
 
     float s = sin(rotation);
     float c = cos(rotation);
 
     vec2 position = vertices[vertexId];
     
-    position = vec2(position.x * size, position.y * size);
+    position = vec2(position.x * size.x, position.y * size.y);
 
     float xnew = position.x * c - position.y * s;
     float ynew = position.x * s + position.y * c;

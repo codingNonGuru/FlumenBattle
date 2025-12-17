@@ -20,7 +20,7 @@ using namespace world::render;
 
 #define MIN_DISTANCE_BETWEEN_BUILDINGS 9.0f
 
-#define SIZE_RANGE 8.0f, 9.0f
+#define SIZE_RANGE 7.0f, 9.0f
 
 #define INDICES_PER_BUILDING 6
 
@@ -72,9 +72,9 @@ void SettlementModel::Initialize()
 
             auto rotation = utility::GetRandom(0.0f, TWO_PI);
 
-            auto size = utility::GetRandom(SIZE_RANGE);
+            Float2 size = {utility::GetRandom(SIZE_RANGE), utility::GetRandom(SIZE_RANGE)};
 
-            *buildingData.Add() = {Color::RED, newPosition, rotation, size};
+            *buildingData.Add() = {Color::RED, newPosition, size, rotation};
         }
     }
 

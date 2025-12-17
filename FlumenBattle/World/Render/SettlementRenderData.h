@@ -10,8 +10,10 @@ namespace world::render
 
         Float2 Position;
 
+        Float2 Size;
+
         float Rotation;
 
-        float Size;
+        float Padding[3];
     };
 }
