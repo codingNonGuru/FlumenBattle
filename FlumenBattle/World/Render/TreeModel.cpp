@@ -184,7 +184,7 @@ void TreeModel::RenderShadows()
 
     shader->SetConstant(MAX_TREE_PER_TILE, "maxTreeCount");
 
-	shader->SetConstant(0.15f, "depth");
+	shader->SetConstant(0.2f, "depth");
 
     positionBuffer->Bind(0);
 

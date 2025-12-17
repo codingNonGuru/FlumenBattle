@@ -6,6 +6,8 @@ layout (location = 0) uniform mat4 viewMatrix;
 
 layout (location = 1) uniform float depth;
 
+layout (location = 2) uniform int mode;
+
 struct BuildingData
 {
     vec4 Color;
@@ -62,8 +64,17 @@ void main()
     float ynew = position.x * s + position.y * c;
 
     position = vec2(xnew, ynew) + buildingData[buildingIndex].Position;
+    if(mode == 1) 
+        position += vec2(3.0f, -1.0f);
 
 	gl_Position = viewMatrix * vec4(position.x, position.y, depth, 1.0f);
 
-    color = buildingData[buildingIndex].Color.rgb;
+    if(mode == 0)
+    {
+        color = buildingData[buildingIndex].Color.rgb;
+    }
+    else
+    {
+        color = vec3(0.0f);
+    }
 }

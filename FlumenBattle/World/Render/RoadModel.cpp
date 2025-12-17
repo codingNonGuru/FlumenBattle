@@ -24,7 +24,7 @@ using namespace world::render;
 
 #define RENDER_OPACITY 1.0f
 
-#define RENDER_DEPTH 0.2f
+#define RENDER_DEPTH 0.15f
 
 static bool doesDataNeedRefresh = true;
 

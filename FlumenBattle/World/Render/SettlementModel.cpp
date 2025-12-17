@@ -16,9 +16,9 @@ using namespace world::render;
 
 #define MAX_BUILDINGS_PER_SETTLEMENT 64
 
-#define SCATTER_RANGE 50.0f
+#define SCATTER_RANGE 55.0f
 
-#define MIN_DISTANCE_BETWEEN_BUILDINGS 9.0f
+#define MIN_DISTANCE_BETWEEN_BUILDINGS 10.0f
 
 #define SIZE_RANGE 7.0f, 9.0f
 
@@ -31,6 +31,8 @@ using namespace world::render;
 #define RENDER_OPACITY 1.0f
 
 #define RENDER_DEPTH 0.3f
+
+#define SHADOW_RENDER_DEPTH 0.2f
 
 void SettlementModel::Initialize()
 {
@@ -100,6 +102,31 @@ void SettlementModel::Render()
 	shader->SetConstant(RENDER_DEPTH, "depth");
 
     shader->SetConstant(RENDER_OPACITY, "opacity");
+
+    shader->SetConstant(0, "mode");
+
+    buildingDataBuffer->Bind(BUILDING_BUFFER_BIND_POINT);
+
+    glDrawArrays(GL_TRIANGLES, 0, INDICES_PER_BUILDING * buildingData.GetSize());
+
+    shader->Unbind();
+}
+
+void SettlementModel::RenderShadows()
+{
+    static const auto shader = ShaderManager::GetShader(BUILDING_SHADER_NAME);
+
+    static const auto camera = RenderManager::GetCamera(Cameras::WORLD);
+
+    shader->Bind();
+
+    shader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	shader->SetConstant(SHADOW_RENDER_DEPTH, "depth");
+
+    shader->SetConstant(0.2f, "opacity");
+
+    shader->SetConstant(1, "mode");
 
     buildingDataBuffer->Bind(BUILDING_BUFFER_BIND_POINT);
 

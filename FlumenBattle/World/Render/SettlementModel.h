@@ -16,5 +16,7 @@ namespace world::render
         void Initialize();
 
         void Render();
+
+        void RenderShadows();
     };
 }

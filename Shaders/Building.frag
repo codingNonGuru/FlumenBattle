@@ -2,7 +2,7 @@
 
 precision highp float;
 
-layout (location = 2) uniform float opacity;
+layout (location = 3) uniform float opacity;
 
 // TEXTURES
 

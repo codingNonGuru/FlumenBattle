@@ -855,13 +855,15 @@ void WorldTileModel::Render()
 
     RiverModel::Get()->Render();
 
+    RoadModel::Get()->Render();
+
     TreeModel::Get()->RenderShadows();
+
+    SettlementModel::Get()->RenderShadows();
 
     TreeModel::Get()->Render();
 
     MountainRenderer::Get()->Render();
-
-    RoadModel::Get()->Render();
 
     BorderModel::Get()->Render();
 
