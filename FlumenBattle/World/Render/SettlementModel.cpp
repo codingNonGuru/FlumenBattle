@@ -72,9 +72,15 @@ void SettlementModel::Initialize()
 
             auto rotation = utility::GetRandom(0.0f, TWO_PI);
 
-            Float2 size = {utility::GetRandom(SIZE_RANGE), utility::GetRandom(SIZE_RANGE)};
+            Float2 size = {utility::GetRandom(SIZE_RANGE), utility::GetRandom(SIZE_RANGE)};\
+            
+            auto mixFactor = utility::GetRandom(0.3f, 1.0f);
+            auto color = Color::RED * mixFactor + Color::YELLOW * (1.0f - mixFactor);
 
-            *buildingData.Add() = {Color::RED, newPosition, size, rotation};
+            color = Color::AddSaturation(color, utility::GetRandom(-0.5f, -0.1f));
+            color = Color::Lighten(color, utility::GetRandom(-0.05f, 0.05f));
+
+            *buildingData.Add() = {color, newPosition, size, rotation};
         }
     }
 
