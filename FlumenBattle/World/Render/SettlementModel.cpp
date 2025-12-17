@@ -16,13 +16,15 @@ using namespace world::render;
 
 #define MAX_BUILDINGS_PER_SETTLEMENT 64
 
-#define SCATTER_RANGE 35.0f
+#define SCATTER_RANGE 50.0f
 
-#define SIZE_RANGE 5.0f, 6.5f
+#define MIN_DISTANCE_BETWEEN_BUILDINGS 9.0f
+
+#define SIZE_RANGE 8.0f, 9.0f
 
 #define INDICES_PER_BUILDING 6
 
-#define BUILDING_SHADER_NAME "Shader"
+#define BUILDING_SHADER_NAME "Building"
 
 #define BUILDING_BUFFER_BIND_POINT 0
 
@@ -42,15 +44,37 @@ void SettlementModel::Initialize()
 
     for(auto& settlement : settlements)
     {
+        container::SmartBlock <Position2, MAX_BUILDINGS_PER_SETTLEMENT> buildingPositions;
+
         for(int i = 0; i < MAX_BUILDINGS_PER_SETTLEMENT; ++i)
         {
-            auto position = utility::GetRandomPositionAround(SCATTER_RANGE, settlement.GetLocation()->Position);
+            Position2 newPosition;
+            while(true)
+            {
+                newPosition = utility::GetRandomPositionAround(SCATTER_RANGE, settlement.GetLocation()->Position);
+
+                bool isTooClose = false;
+                for(auto &oldPosition : buildingPositions)
+                {
+                    if(glm::length(oldPosition - newPosition) < MIN_DISTANCE_BETWEEN_BUILDINGS)
+                    {
+                        isTooClose = true;
+                        break;
+                    }
+                }
+
+                if(isTooClose == false)
+                {
+                    *buildingPositions.Add() = newPosition;
+                    break;
+                }
+            }
 
             auto rotation = utility::GetRandom(0.0f, TWO_PI);
 
             auto size = utility::GetRandom(SIZE_RANGE);
 
-            *buildingData.Add() = {Color::RED, position, rotation, size};
+            *buildingData.Add() = {Color::RED, newPosition, rotation, size};
         }
     }
 

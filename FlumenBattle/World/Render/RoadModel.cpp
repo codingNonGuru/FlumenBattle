@@ -14,13 +14,13 @@
 
 using namespace world::render;
 
-#define OFFSET_RANGE 25.0f
+#define OFFSET_RANGE 20.0f
 
-#define ROAD_THICKNESS 5.0f
+#define ROAD_THICKNESS 3.0f
 
 #define SEGMENT_COUNT 6
 
-#define ROAD_COLOR Color(0.4f, 0.4f, 0.4f, 1.0f)
+#define ROAD_COLOR Color(0.5f, 0.5f, 0.5f, 1.0f)
 
 #define RENDER_OPACITY 1.0f
 
