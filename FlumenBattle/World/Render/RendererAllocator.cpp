@@ -10,6 +10,8 @@
 #include "FlumenBattle/World/Render/MountainRenderer.h"
 #include "FlumenBattle/World/Render/RoadModel.h"
 #include "FlumenBattle/World/Render/RiverModel.h"
+#include "FlumenBattle/World/Render/SettlementModel.h"
+#include "FlumenBattle/World/WorldGenerator.h"
 
 using namespace world::render;
 
@@ -71,6 +73,19 @@ RendererAllocator::RendererAllocator()
 
 
     riverDataMemory = container::Array <RiverRenderData>::PreallocateMemory(width * height);
+
+
+    auto maximumSettlementCount = world::WorldGenerator::Get()->GetMaximumSettlementCount(width);
+
+    buildingDataMemory = container::Array <BuildingRenderData>::PreallocateMemory(maximumSettlementCount * render::SettlementModel::MAX_BUILDINGS_PER_SETTLEMENT);
+
+    settlementIndexMemory = container::Array <unsigned int>::PreallocateMemory(maximumSettlementCount);
+
+    populationDataMemory = container::Pool <PopulationData>::PreallocateMemory(maximumSettlementCount);
+
+    render::SettlementModel::Get()->buildingDataBuffer = new DataBuffer(buildingDataMemory.GetMemorySize(), nullptr);
+
+    render::SettlementModel::Get()->indexBuffer = new DataBuffer(settlementIndexMemory.GetMemorySize(), nullptr);
 }
 
 void RendererAllocator::Allocate(int size)
@@ -145,4 +160,13 @@ void RendererAllocator::Allocate(int size)
     RiverModel::Get()->data.Initialize(size * size, riverDataMemory);
 
     RiverModel::Get()->buffer = new DataBuffer(RiverModel::Get()->data.GetMemoryCapacity());
+
+
+    auto settlementCount = world::WorldGenerator::Get()->GetMaximumSettlementCount(size);
+
+    SettlementModel::Get()->buildingData.Initialize(settlementCount * render::SettlementModel::MAX_BUILDINGS_PER_SETTLEMENT, buildingDataMemory);
+
+    SettlementModel::Get()->settlementIndices.Initialize(settlementCount, settlementIndexMemory);
+
+    SettlementModel::Get()->populationTracker.Initialize(settlementCount, populationDataMemory);
 }

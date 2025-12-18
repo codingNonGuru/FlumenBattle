@@ -5,6 +5,7 @@
 
 #include "FlumenBattle/World/Render/FarmData.h"
 #include "FlumenBattle/World/Render/RiverRenderData.h"
+#include "FlumenBattle/World/Render/SettlementRenderData.h"
 
 namespace world::render
 {
@@ -13,6 +14,8 @@ namespace world::render
     struct RoadRenderData;
 
     struct PathTileData;
+
+    struct PopulationData;
 
     class RendererAllocator : public core::Singleton <RendererAllocator>
     {
@@ -58,6 +61,13 @@ namespace world::render
 
 
         container::Array <RiverRenderData>::Memory riverDataMemory;
+
+
+        container::Array <BuildingRenderData>::Memory buildingDataMemory;
+
+        container::Array <unsigned int>::Memory settlementIndexMemory;
+
+        container::Pool <PopulationData>::Memory populationDataMemory;
 
         RendererAllocator();
 

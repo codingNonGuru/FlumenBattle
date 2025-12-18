@@ -16,8 +16,6 @@
 using namespace world;
 using namespace world::render;
 
-#define MAX_BUILDINGS_PER_SETTLEMENT 64
-
 #define BASE_SCATTER_RANGE 10.0f
 
 #define SCATTER_RANGE_INCREMENT 4.0f
@@ -50,31 +48,13 @@ using namespace world::render;
 
 static bool isRefreshedNeeded = true;
 
-struct SettlementData
-{
-    const settlement::Settlement *Settlement;
-
-    int Population;
-};
-
-container::Pool <SettlementData> populationTracker;
-
 void SettlementModel::Initialize()
 {
     static auto &scene = *WorldScene::Get();
 
-    scene.OnSettlementFounded += []
-    {
-        *populationTracker.Add() = {WorldScene::Get()->GetFoundedSettlement(), WorldScene::Get()->GetFoundedSettlement()->GetPopulation()};
-
-        isRefreshedNeeded = true;
-    };
-
     auto map = scene.GetWorldMap();
 
     auto &settlements = scene.GetSettlements();
-
-    buildingData.Initialize(settlements.GetCapacity() * MAX_BUILDINGS_PER_SETTLEMENT);
 
     for(auto& settlement : settlements)
     {
@@ -128,18 +108,16 @@ void SettlementModel::Initialize()
         }
     }
 
-    settlementIndices.Initialize(settlements.GetCapacity());
-
-    buildingDataBuffer = new DataBuffer(buildingData.GetMemoryCapacity(), buildingData.GetStart());
-
-    indexBuffer = new DataBuffer(settlementIndices.GetMemoryCapacity(), settlementIndices.GetStart());
+    buildingDataBuffer->UploadData(buildingData.GetStart(), buildingData.GetMemorySize());
 
     populationTracker.Initialize(settlements.GetCapacity());
 
     for(auto& settlement : settlements)
     {
-        *populationTracker.Add() = {&settlement, settlement.GetPopulation()};
+        *populationTracker.Add() = PopulationData{&settlement, settlement.GetPopulation()};
     }
+
+    scene.OnSettlementFounded += Event{this, &SettlementModel::HandleSettlementFounded};
 
     Engine::OnLoopCycleStarted += Event{this, &SettlementModel::CheckPopulation};
 }
@@ -237,4 +215,11 @@ void SettlementModel::RenderShadows()
     glDrawArrays(GL_TRIANGLES, 0, indexCount);
 
     shader->Unbind();
+}
+
+void SettlementModel::HandleSettlementFounded()
+{
+    *populationTracker.Add() = {WorldScene::Get()->GetFoundedSettlement(), WorldScene::Get()->GetFoundedSettlement()->GetPopulation()};
+
+    isRefreshedNeeded = true;
 }

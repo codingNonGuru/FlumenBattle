@@ -452,6 +452,9 @@ void RiverGenerator::EstablishCorners()
 
 void RiverGenerator::GenerateDistortionMaps()
 {
+    if(render::RiverModel::Get()->angleTexture != nullptr)
+        return;
+
     static container::Grid <float> noise(1024, 1024);
 
     Perlin::Generate(noise.GetSize(), 0.2f, ContrastThreshold(0.5f), ContrastStrength(2.0f));
