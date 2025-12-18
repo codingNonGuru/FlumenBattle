@@ -16,6 +16,10 @@ namespace world::render
 
         DataBuffer *indexBuffer;
 
+        void UpdateIndices();
+
+        void CheckPopulation();
+
     public:
         void Initialize();
 
