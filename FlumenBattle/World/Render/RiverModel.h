@@ -11,7 +11,7 @@ namespace world::render
         friend class RendererAllocator;
 
         DataBuffer *buffer;
-
+        
         container::Array <RiverRenderData> data;
 
     public:

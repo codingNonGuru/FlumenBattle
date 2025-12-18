@@ -10,7 +10,11 @@ namespace world::render
     {
         container::Array <BuildingRenderData> buildingData;
 
+        container::Array <unsigned int> settlementIndices;
+
         DataBuffer *buildingDataBuffer;
+
+        DataBuffer *indexBuffer;
 
     public:
         void Initialize();

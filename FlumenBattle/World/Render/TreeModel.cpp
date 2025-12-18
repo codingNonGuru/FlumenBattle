@@ -14,11 +14,11 @@
 
 using namespace world::render;
 
-#define MAX_TREE_PER_TILE 10
+#define MAX_TREE_PER_TILE 16
 
 #define VERTICES_PER_TREE_MESH 6
 
-#define TREE_SIZE 15.0f
+#define TREE_SIZE 11.0f
 
 static Camera* camera = nullptr;
 
@@ -52,7 +52,7 @@ void TreeModel::Initialize()
         {
             container::SmartBlock <Position2, MAX_TREE_PER_TILE> tileTrees;
 
-            auto treeCount = utility::GetRandom(8, MAX_TREE_PER_TILE);
+            auto treeCount = utility::GetRandom(12, MAX_TREE_PER_TILE);
             auto treeIndex = 0;
             for(int i = 0; i < MAX_TREE_PER_TILE; ++i, ++treeIndex)
             {
@@ -65,7 +65,7 @@ void TreeModel::Initialize()
                     for(auto &tree : tileTrees)
                     {
                         auto distance = glm::length(position - tree);
-                        if(distance < 13.0f)
+                        if(distance < 10.0f)
                         {
                             isTooClose = true;
                             break;

@@ -8,6 +8,8 @@ layout (location = 1) uniform float depth;
 
 layout (location = 2) uniform int mode;
 
+layout (location = 3) uniform int maxBuildings;
+
 struct BuildingData
 {
     vec4 Color;
@@ -24,6 +26,11 @@ struct BuildingData
 layout (std430, binding = 0) buffer BUILDING_DATA
 {
 	BuildingData buildingData[];	
+};
+
+layout (std430, binding = 1) buffer BUILDING_COUNT
+{
+	uint buildingCount[];	
 };
 
 // TEXTURES
@@ -43,15 +50,17 @@ vec2 vertices[6] = vec2[6] (
 
 void main()
 {
-    uint settlementIndex = uint(gl_VertexID / 64);
+    uint settlementIndex = uint(gl_VertexID / (maxBuildings * 6));
 
     uint buildingIndex = uint(gl_VertexID / 6);
+
+    uint relativeBuildingIndex = uint((gl_VertexID % (maxBuildings * 6) / 6));
 
     uint vertexId = uint(gl_VertexID % 6);
 
     float rotation = buildingData[buildingIndex].Rotation;
 
-    vec2 size = buildingData[buildingIndex].Size;
+    vec2 size = relativeBuildingIndex < buildingCount[settlementIndex] ? buildingData[buildingIndex].Size : vec2(0.0f);
 
     float s = sin(rotation);
     float c = cos(rotation);

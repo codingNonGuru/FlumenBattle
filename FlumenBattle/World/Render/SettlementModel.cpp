@@ -16,11 +16,17 @@ using namespace world::render;
 
 #define MAX_BUILDINGS_PER_SETTLEMENT 64
 
-#define SCATTER_RANGE 55.0f
+#define BASE_SCATTER_RANGE 10.0f
 
-#define MIN_DISTANCE_BETWEEN_BUILDINGS 10.0f
+#define SCATTER_RANGE_INCREMENT 4.0f
 
-#define SIZE_RANGE 7.0f, 9.0f
+#define MIN_DISTANCE_BETWEEN_BUILDINGS 12.0f
+
+#define SIZE_RANGE 8.0f, 10.0f
+
+#define RED_WEIGHT_RANGE 0.2f, 1.0f
+
+#define BUILDINGS_PER_POP 3
 
 #define INDICES_PER_BUILDING 6
 
@@ -51,9 +57,18 @@ void SettlementModel::Initialize()
         for(int i = 0; i < MAX_BUILDINGS_PER_SETTLEMENT; ++i)
         {
             Position2 newPosition;
+            auto scatterRange = BASE_SCATTER_RANGE;
+
+            auto fruitlessSearchCount = 0;
             while(true)
             {
-                newPosition = utility::GetRandomPositionAround(SCATTER_RANGE, settlement.GetLocation()->Position);
+                if(fruitlessSearchCount == 5)
+                {
+                    scatterRange += SCATTER_RANGE_INCREMENT;
+                    fruitlessSearchCount = 0;
+                }
+
+                newPosition = utility::GetRandomPositionAround(scatterRange, settlement.GetLocation()->Position);
 
                 bool isTooClose = false;
                 for(auto &oldPosition : buildingPositions)
@@ -61,6 +76,7 @@ void SettlementModel::Initialize()
                     if(glm::length(oldPosition - newPosition) < MIN_DISTANCE_BETWEEN_BUILDINGS)
                     {
                         isTooClose = true;
+                        fruitlessSearchCount++;
                         break;
                     }
                 }
@@ -74,19 +90,30 @@ void SettlementModel::Initialize()
 
             auto rotation = utility::GetRandom(0.0f, TWO_PI);
 
-            Float2 size = {utility::GetRandom(SIZE_RANGE), utility::GetRandom(SIZE_RANGE)};\
+            Float2 size = {utility::GetRandom(SIZE_RANGE), utility::GetRandom(SIZE_RANGE)};
             
-            auto mixFactor = utility::GetRandom(0.3f, 1.0f);
+            auto mixFactor = utility::GetRandom(RED_WEIGHT_RANGE);
             auto color = Color::RED * mixFactor + Color::YELLOW * (1.0f - mixFactor);
 
-            color = Color::AddSaturation(color, utility::GetRandom(-0.5f, -0.1f));
-            color = Color::Lighten(color, utility::GetRandom(-0.05f, 0.05f));
+            color = Color::AddSaturation(color, utility::GetRandom(-0.6f, -0.1f));
+            color = Color::Lighten(color, utility::GetRandom(-0.15f, 0.0f));
 
             *buildingData.Add() = {color, newPosition, size, rotation};
         }
     }
 
+    settlementIndices.Initialize(scene.GetSettlements().GetCapacity());
+
+    for(auto &settlement : scene.GetSettlements())
+    {
+        auto popCount = settlement.GetPopulation();
+
+        *settlementIndices.Add() = popCount * BUILDINGS_PER_POP;
+    }
+
     buildingDataBuffer = new DataBuffer(buildingData.GetMemoryCapacity(), buildingData.GetStart());
+
+    indexBuffer = new DataBuffer(settlementIndices.GetMemoryCapacity(), settlementIndices.GetStart());
 }
 
 void SettlementModel::Render()
@@ -105,9 +132,14 @@ void SettlementModel::Render()
 
     shader->SetConstant(0, "mode");
 
+    shader->SetConstant(MAX_BUILDINGS_PER_SETTLEMENT, "maxBuildings");
+
     buildingDataBuffer->Bind(BUILDING_BUFFER_BIND_POINT);
 
-    glDrawArrays(GL_TRIANGLES, 0, INDICES_PER_BUILDING * buildingData.GetSize());
+    indexBuffer->Bind(1);
+
+    auto indexCount = INDICES_PER_BUILDING * MAX_BUILDINGS_PER_SETTLEMENT * settlementIndices.GetSize();
+    glDrawArrays(GL_TRIANGLES, 0, indexCount);
 
     shader->Unbind();
 }
@@ -128,9 +160,14 @@ void SettlementModel::RenderShadows()
 
     shader->SetConstant(1, "mode");
 
+    shader->SetConstant(MAX_BUILDINGS_PER_SETTLEMENT, "maxBuildings");
+
     buildingDataBuffer->Bind(BUILDING_BUFFER_BIND_POINT);
 
-    glDrawArrays(GL_TRIANGLES, 0, INDICES_PER_BUILDING * buildingData.GetSize());
+    indexBuffer->Bind(1);
+
+    auto indexCount = INDICES_PER_BUILDING * MAX_BUILDINGS_PER_SETTLEMENT * settlementIndices.GetSize();
+    glDrawArrays(GL_TRIANGLES, 0, indexCount);
 
     shader->Unbind();
 }
