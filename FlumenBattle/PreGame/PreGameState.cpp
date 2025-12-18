@@ -122,6 +122,8 @@ namespace pregame
 
     void PreGameState::FinishWorldGeneration()
     {
+        world::WorldGenerator::Get()->FinishGeneration();
+
         generatorPopup->Disable();
 
         generatedWorldMenu->Enable();

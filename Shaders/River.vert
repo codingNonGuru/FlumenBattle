@@ -26,13 +26,17 @@ layout (std430, binding = 0) buffer RIVER_DATAS
 
 // TEXTURES
 
+uniform sampler2D distortAngle;
+
+uniform sampler2D distortRadius;
+
 // OUTPUT
 
 out vec3 color;
 
 // DATA STRUCTURES
 
-const uint segmentCount = uint(6);
+const uint segmentCount = uint(12);
 
 void main()
 {	
@@ -90,6 +94,13 @@ void main()
     );
 
     vec2 position = corners[indices[vertexId]];
+
+    vec2 coords = position * 0.0003f;
+
+    float angle = texture(distortAngle, coords).r * 6.2831f * 2.0f;
+    float radius = texture(distortRadius, coords).r * 15.0f;
+
+    position += vec2(cos(angle), sin(angle)) * radius;
 
 	gl_Position = viewMatrix * vec4(position.x, position.y, depth, 1.0f);
 

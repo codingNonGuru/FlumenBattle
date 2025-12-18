@@ -3,7 +3,7 @@
 #include "FlumenEngine/Render/Shader.hpp"
 #include "FlumenEngine/Render/RenderManager.hpp"
 #include "FlumenEngine/Render/Camera.hpp"
-#include "FlumenEngine/Render/LineRenderer.h"
+#include "FlumenEngine/Render/Texture.hpp"
 
 #include "RiverModel.h"
 #include "FlumenBattle/Types.hpp"
@@ -20,7 +20,7 @@ using namespace world::render;
 
 #define SEGMENT_LENGTH 38.0f
 
-#define SEGMENT_COUNT 6
+#define SEGMENT_COUNT 12
 
 #define COLOR_SHIFT_FACTOR 20.0f
 
@@ -90,6 +90,10 @@ void RiverModel::Render()
 	shader->SetConstant(RENDER_DEPTH, "depth");
 
     buffer->Bind(BUFFER_BIND_POINT);
+
+    angleTexture->Bind(0, shader, "distortAngle");
+
+    angleTexture->Bind(1, shader, "distortRadius");
 
     glDrawArrays(GL_TRIANGLES, 0, INDICES_PER_SEGMENT * SEGMENT_COUNT * data.GetSize());
 

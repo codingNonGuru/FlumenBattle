@@ -565,6 +565,11 @@ void WorldGenerator::GeneratePlayerGroup(const container::Array <pregame::Member
     }
 }
 
+void WorldGenerator::FinishGeneration()
+{
+    RiverGenerator::Get()->GenerateDistortionMaps();
+}
+
 int WorldGenerator::GetMaximumPolityCount(int worldSize) const
 {
     return worldSize;

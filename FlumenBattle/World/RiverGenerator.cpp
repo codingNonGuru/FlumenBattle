@@ -1,3 +1,6 @@
+#include "FlumenEngine/Utility/Perlin.hpp"
+#include "FlumenEngine/Render/Texture.hpp"
+
 #include "RiverGenerator.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Tile/WorldMap.h"
@@ -5,6 +8,7 @@
 #include "FlumenBattle/World/Tile/WorldBiome.h"
 #include "FlumenBattle/World/Tile/WorldRelief.h"
 #include "FlumenBattle/World/Tile/River.h"
+#include "FlumenBattle/World/Render/RiverModel.h"
 
 using namespace world;
 
@@ -436,7 +440,7 @@ void RiverGenerator::EstablishCorners()
         auto edgePosition = (startTwist->Second->First->Position + startTwist->Second->Second->Position) / 2.0f;
         auto nextTwistPosition = river.GetTwists().Get(1)->Position;
 
-        startTwist->Position = (edgePosition - nextTwistPosition) + edgePosition;
+        startTwist->Position = (edgePosition - nextTwistPosition) * 2.0f + edgePosition;
 
         auto endTwist = river.GetTwists().GetLast() - 1;
         edgePosition = (endTwist->First->First->Position + endTwist->First->Second->Position) / 2.0f;
@@ -444,6 +448,21 @@ void RiverGenerator::EstablishCorners()
 
         endTwist->Position = (edgePosition - previousTwistPosition) + edgePosition;
     }
+}
+
+void RiverGenerator::GenerateDistortionMaps()
+{
+    static container::Grid <float> noise(1024, 1024);
+
+    Perlin::Generate(noise.GetSize(), 0.2f, ContrastThreshold(0.5f), ContrastStrength(2.0f));
+    Perlin::Download(&noise);
+
+    render::RiverModel::Get()->angleTexture = new ::render::Texture(noise.GetSize(), TextureFormats::ONE_FLOAT, &noise);
+
+    Perlin::Generate(noise.GetSize(), 0.2f, ContrastThreshold(0.5f), ContrastStrength(2.0f));
+    Perlin::Download(&noise);
+
+    render::RiverModel::Get()->radiusTexture = new ::render::Texture(noise.GetSize(), TextureFormats::ONE_FLOAT, &noise);
 }
 
 int RiverGenerator::GetNeighbouringSeaTiles(tile::WorldEdge &edge)

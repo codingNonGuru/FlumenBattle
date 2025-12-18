@@ -25,5 +25,7 @@ namespace world
 
     public:
         void DefineRivers();
+
+        void GenerateDistortionMaps();
     };
 }

@@ -33,5 +33,7 @@ namespace world
         int GetMaximumGroupCount(int) const;
 
         void GeneratePlayerGroup(const container::Array <pregame::MemberData> &);
+
+        void FinishGeneration();
     };
 }
