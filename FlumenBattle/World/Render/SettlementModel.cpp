@@ -20,15 +20,17 @@ using namespace world::render;
 
 #define SCATTER_RANGE_INCREMENT 4.0f
 
-#define MIN_DISTANCE_BETWEEN_BUILDINGS 12.0f
+#define MIN_DISTANCE_BETWEEN_BUILDINGS 3.0f
 
-#define SIZE_RANGE 7.5f, 10.5f
+#define SIZE_RANGE 7.0f, 10.5f
+
+#define CASTLE_SIZE_RANGE 15.0f, 18.0f
 
 #define RED_WEIGHT_RANGE 0.2f, 1.0f
 
 #define BUILDINGS_PER_POP 3
 
-#define FRUITLESS_SEARCH_LIMIT 5
+#define FRUITLESS_SEARCH_LIMIT 6
 
 #define INDICES_PER_BUILDING 6
 
@@ -58,10 +60,19 @@ void SettlementModel::Initialize()
 
     for(auto& settlement : settlements)
     {
-        container::SmartBlock <Position2, MAX_BUILDINGS_PER_SETTLEMENT> buildingPositions;
+        struct BuildingData
+        {
+            Position2 Position;
+
+            float Size;
+        };
+
+        container::SmartBlock <BuildingData, MAX_BUILDINGS_PER_SETTLEMENT> buildingPositions;
 
         for(int i = 0; i < MAX_BUILDINGS_PER_SETTLEMENT; ++i)
         {
+            Float2 size = i < 1 ? Float2{utility::GetRandom(CASTLE_SIZE_RANGE), utility::GetRandom(CASTLE_SIZE_RANGE)} : Float2{utility::GetRandom(SIZE_RANGE), utility::GetRandom(SIZE_RANGE)};
+
             Position2 newPosition;
             auto scatterRange = BASE_SCATTER_RANGE;
 
@@ -77,9 +88,14 @@ void SettlementModel::Initialize()
                 newPosition = utility::GetRandomPositionAround(scatterRange, settlement.GetLocation()->Position);
 
                 bool isTooClose = false;
-                for(auto &oldPosition : buildingPositions)
+                for(auto &data : buildingPositions)
                 {
-                    if(glm::length(oldPosition - newPosition) < MIN_DISTANCE_BETWEEN_BUILDINGS)
+                    auto minimumDistance = (size.x + size.y) / 2.0f + data.Size;
+                    minimumDistance /= 2.0f;
+                    minimumDistance += MIN_DISTANCE_BETWEEN_BUILDINGS;
+
+                    auto actualDistance = glm::length(data.Position - newPosition);
+                    if(actualDistance < minimumDistance)
                     {
                         isTooClose = true;
                         fruitlessSearchCount++;
@@ -89,14 +105,12 @@ void SettlementModel::Initialize()
 
                 if(isTooClose == false)
                 {
-                    *buildingPositions.Add() = newPosition;
+                    *buildingPositions.Add() = {newPosition, (size.x + size.y) / 2.0f};
                     break;
                 }
             }
 
             auto rotation = utility::GetRandom(0.0f, TWO_PI);
-
-            Float2 size = {utility::GetRandom(SIZE_RANGE), utility::GetRandom(SIZE_RANGE)};
             
             auto mixFactor = utility::GetRandom(RED_WEIGHT_RANGE);
             auto color = Color::RED * mixFactor + Color::YELLOW * (1.0f - mixFactor);
@@ -151,7 +165,7 @@ void SettlementModel::UpdateIndices()
     {
         auto popCount = settlement.GetPopulation();
 
-        *settlementIndices.Add() = popCount * BUILDINGS_PER_POP;
+        *settlementIndices.Add() = 1 + popCount * BUILDINGS_PER_POP;
     }
 
     indexBuffer->UploadData(settlementIndices.GetStart(), settlementIndices.GetMemorySize());
