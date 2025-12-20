@@ -40,5 +40,6 @@ namespace game
         static constexpr auto MAXIMUM_CHARACTER_LEVEL = "MAXIMUM_CHARACTER_LEVEL";
         static constexpr auto NEIGHBORS_PER_POLITY = "NEIGHBORS_PER_POLITY";
         static constexpr auto PRODUCTION_QUEUE_SIZE = "PRODUCTION_QUEUE_SIZE";
+        static constexpr auto MAX_SETTLEMENT_POPULATION = "MAX_SETTLEMENT_POPULATION";
     };
 }

@@ -30,6 +30,7 @@
 #include "FlumenBattle/Race.h"
 #include "FlumenBattle/World/Settlement/ExplorationHandler.h"
 #include "FlumenBattle/World/WorldUpdateHandler.h"
+#include "FlumenBattle/World/Settlement/SettlementFactory.h"
 
 using namespace world::settlement;
 
@@ -58,7 +59,7 @@ void Settlement::Initialize(Word name, Color banner, tile::WorldTile *location, 
 
     this->resourceHandler.Initialize();
 
-    this->popHandler.Initialize();
+    this->popHandler.Initialize(this);
 
     this->tradeHandler.Initialize();
 
@@ -361,6 +362,11 @@ void Settlement::SetGroupProduction(ProductionOptions option)
     *groupProduction = SettlementProductionFactory::Get()->Create(option);
 }
 
+bool Settlement::IsDeepSettlement() const
+{
+    return popHandler.HasExtraData() == true;
+}
+
 Color Settlement::GetRulerBanner() const
 {
     return polity->GetRuler()->GetBanner();
@@ -537,6 +543,11 @@ float Settlement::GetCultureProgress() const
 Integer Settlement::GetPopulation() const 
 {
     return popHandler.GetPopulation();
+}
+
+const container::Pool <Cohort> &Settlement::GetPopCohorts() const
+{
+    return popHandler.GetCohorts();
 }
 
 Integer Settlement::GetWorkedTiles() const
@@ -719,6 +730,8 @@ void Settlement::SetupSimulation()
     simulationLevel = simulationDomain->Level;
 
     timeSinceSimulationChange = 0;
+
+    EnforceSimulationLevel();
 }
 
 void Settlement::RemoveGroup(const group::GroupCore &group)
@@ -836,6 +849,11 @@ bool Settlement::IsRuins() const
 bool Settlement::IsCompletelyGone() const
 {
     return popHandler.IsSettlementCompletelyGone();
+}
+
+void Settlement::Deepen()
+{
+    popHandler.Deepen();
 }
 
 void Settlement::Update()
@@ -961,10 +979,24 @@ void Settlement::Update()
 
                 simulationLevel = simulationDomain->Level;
 
-                hasUsedSimulationChange = false;
+                WorldUpdateHandler::Get()->LoadSettlementSimulationUpdate({this});
             }
         }
     }
+}
+
+void Settlement::EnforceSimulationLevel()
+{
+    if(simulationLevel == SimulationLevels::ADVANCED)
+    {
+        SettlementFactory::TransformIntoDeepSettlement(this);
+    }
+    else
+    {
+        SettlementFactory::TransformIntoShallowSettlement(this);
+    }
+
+    groupDynamics->UpdateSimulationLevel(*this);
 }
 
 void Settlement::PrepareTransport()

@@ -98,7 +98,7 @@ void main()
     vec2 coords = position * 0.0003f;
 
     float angle = texture(distortAngle, coords).r * 6.2831f * 2.0f;
-    float radius = texture(distortRadius, coords).r * 15.0f;
+    float radius = texture(distortRadius, coords).r * 20.0f;
 
     position += vec2(cos(angle), sin(angle)) * radius;
 

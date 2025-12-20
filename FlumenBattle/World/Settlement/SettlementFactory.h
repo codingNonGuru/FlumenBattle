@@ -24,6 +24,10 @@ namespace world::settlement
     class SettlementFactory
     {
     public:
-        static Settlement* Create(SettlementBuildData); 
+        static Settlement* Create(SettlementBuildData, bool); 
+
+        static void TransformIntoDeepSettlement(Settlement *);
+
+        static void TransformIntoShallowSettlement(Settlement *);
     };
 }

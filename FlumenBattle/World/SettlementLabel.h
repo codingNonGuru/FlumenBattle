@@ -83,6 +83,8 @@ namespace world::settlement
 
         Text * buildingLabel;
 
+        Text * popLabel;
+
         const Settlement *settlement;
 
         LayoutGroup *storageLayout;

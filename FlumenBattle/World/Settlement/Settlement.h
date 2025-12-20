@@ -93,6 +93,11 @@ namespace world::settlement
         TileImprovements ImprovementType;
     };
 
+    struct SimulationUpdateData
+    {
+        Settlement *Settlement;
+    };
+
     class Settlement
     {
         friend class polity::Polity;
@@ -121,6 +126,8 @@ namespace world::settlement
 
         bool isValid;
 
+        int uniqueId;
+
         int foundationDate;
 
         Word name;
@@ -136,8 +143,6 @@ namespace world::settlement
         SimulationLevels simulationLevel;
 
         int timeSinceSimulationChange;
-
-        bool hasUsedSimulationChange {true};
 
         group::GroupDynamics *groupDynamics;
 
@@ -212,6 +217,8 @@ namespace world::settlement
 
         bool ShouldBeDeleted() const {return isValid == false && turnsUntilDeletion == 0;}
 
+        bool IsDeepSettlement() const;
+
         int GetFoundationDate() const {return foundationDate;}
 
         Word GetName() const {return name;}
@@ -247,6 +254,8 @@ namespace world::settlement
         void IncreasePopulation();
 
         PopHandler &GetPopulationHandler() {return popHandler;}
+
+        const container::Pool <Cohort> &GetPopCohorts() const;
 
         int GetNeedSatisfaction(ResourceTypes resource) const {return popHandler.GetNeedSatisfaction(resource);}
 
@@ -326,6 +335,8 @@ namespace world::settlement
 
         int GetPillageDC() const;
 
+        void Deepen();
+
         int Loot(bool, int);
 
         void Pillage(int);
@@ -359,6 +370,8 @@ namespace world::settlement
         void ProcessEarthquake(const disaster::Earthquake &);
 
         void Update();
+
+        void EnforceSimulationLevel();
 
         void DecideProduction(ProductionClasses);
 
@@ -397,10 +410,6 @@ namespace world::settlement
         const Pool <Condition> &GetConditions() const;
 
         bool HasAvailableColonySpots() const {return hasAvailableColonySpots;}
-
-        bool HasUsedSimulationChange() const {return hasUsedSimulationChange;}
-
-        void UseSimulationChange() {hasUsedSimulationChange = true;}
 
         bool IsPlayerControlled() const;
 

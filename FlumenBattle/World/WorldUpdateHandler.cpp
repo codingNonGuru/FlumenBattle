@@ -10,11 +10,18 @@ using namespace world;
 WorldUpdateHandler::WorldUpdateHandler()
 {
     explorationRewardDatas.Initialize(MAXIMUM_DATA_PER_CONTAINER);
+
+    simulationUpdateData.Initialize(MAXIMUM_DATA_PER_CONTAINER);
 }
 
 void WorldUpdateHandler::ResetAllData()
 {
     explorationRewardDatas.Reset();
+}
+
+void WorldUpdateHandler::LoadSettlementSimulationUpdate(settlement::SimulationUpdateData data)
+{
+    *simulationUpdateData.Add() = data;
 }
 
 void WorldUpdateHandler::LoadExplorationRewardData(settlement::ExplorationRewardUpdateData data)
@@ -39,4 +46,14 @@ void WorldUpdateHandler::ProcessExplorationRewardData()
             data.Settlement->GetPolity()->AddTechnology(data.Reward.Content.Technology);
         }
     }
+}
+
+void WorldUpdateHandler::ProcessSimulationUpdateData()
+{
+    for(auto &data : simulationUpdateData)
+    {
+        data.Settlement->EnforceSimulationLevel();
+    }
+
+    simulationUpdateData.Reset();
 }

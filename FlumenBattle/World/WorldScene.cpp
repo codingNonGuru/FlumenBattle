@@ -276,6 +276,8 @@ namespace world
 
         refreshSettlements();
 
+        WorldUpdateHandler::Get()->ProcessSimulationUpdateData();
+
         WorldUpdateHandler::Get()->ProcessExplorationRewardData();
 
         polity::HumanMind::Get()->ProcessWorldUpdateData();
@@ -587,7 +589,7 @@ namespace world
 
     settlement::Settlement * WorldScene::FoundSettlement(tile::WorldTile *location, RaceTypes race, settlement::Settlement *mother)
     {
-        auto settlement = settlement::SettlementFactory::Create({location, race});
+        auto settlement = settlement::SettlementFactory::Create({location, race}, false);
 
         auto polity = mother != nullptr ? mother->GetPolity() : nullptr;
         if(polity == nullptr)

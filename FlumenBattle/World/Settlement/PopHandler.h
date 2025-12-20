@@ -1,12 +1,15 @@
 #pragma once
 
 #include "FlumenCore/Container/Array.hpp"
+#include "FlumenCore/Container/Pool.hpp"
 
 #include "FlumenBattle/World/Settlement/Types.h"
 
 namespace world::settlement
 {
     class Settlement;
+    class PopExtraData;
+    class Cohort;
 
     struct Need
     {
@@ -31,6 +34,8 @@ namespace world::settlement
     {
         friend class PopAllocator;
 
+        Settlement *settlement;
+
         int population;
 
         int highestPopulationEver;
@@ -47,6 +52,8 @@ namespace world::settlement
         
         int happiness;
 
+        PopExtraData *extraData;
+
         bool isContent;
 
         bool isHappy;
@@ -54,7 +61,9 @@ namespace world::settlement
         bool isEcstatic;
 
     public:
-        void Initialize();
+        void Initialize(Settlement *);
+
+        void Deepen();
 
         void PlaceOrders(Settlement &);
 
@@ -93,6 +102,12 @@ namespace world::settlement
         void CheckAbandonment(Settlement *);
 
         void UpdateGrowth(Settlement *);
+
+        bool HasExtraData() const {return extraData != nullptr;}
+
+        Settlement *GetSettlement() const {return settlement;}
+
+        const container::Pool <Cohort> &GetCohorts() const;
     };
 
     class PopAllocator
@@ -104,9 +119,13 @@ namespace world::settlement
             handler.needs.Initialize(allocator);
         }
 
+        static void AllocateExtraData(container::Pool <PopExtraData> &, container::PoolAllocator <Cohort> &, PopHandler &);
+
         static void Free(container::ArrayAllocator <Need> &allocator, PopHandler &handler) 
         {
             handler.needs.Terminate(allocator);
         }
+
+        static void FreeExtraData(container::Pool <PopExtraData> &, container::PoolAllocator <Cohort> &, PopHandler &);
     };
 }

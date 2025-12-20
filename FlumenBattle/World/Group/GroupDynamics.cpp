@@ -47,8 +47,6 @@ void GroupDynamics::Initialize(settlement::Settlement &settlement)
 
 void GroupDynamics::Update(settlement::Settlement &settlement)
 {
-    UpdateSimulationLevel(settlement);
-
     AddAdventurer(settlement);
 
     AddMerchant(settlement);
@@ -97,11 +95,6 @@ void GroupDynamics::UpdateEncounters(settlement::Settlement &settlement)
 
 void GroupDynamics::UpdateSimulationLevel(settlement::Settlement &settlement)
 {
-    if(settlement.HasUsedSimulationChange() == true)
-        return;
-
-    settlement.UseSimulationChange();
-
     const auto simulationLevel = settlement.GetSimulationLevel();
 
     for(auto &adventurer : adventurers)

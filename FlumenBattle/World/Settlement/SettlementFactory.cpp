@@ -40,9 +40,9 @@ Array <Color> banners = {
 
 Integer lastBannerIndex = 0;
 
-Settlement* SettlementFactory::Create(SettlementBuildData buildData)
+Settlement* SettlementFactory::Create(SettlementBuildData buildData, bool hasExtraData)
 {
-    auto settlement = SettlementAllocator::Get()->Allocate();
+    auto settlement = SettlementAllocator::Get()->Allocate(hasExtraData);
 
     auto banner = banners.Get(lastBannerIndex++);
 
@@ -60,4 +60,22 @@ Settlement* SettlementFactory::Create(SettlementBuildData buildData)
     buildData.Location->Settle(settlement);
 
     return settlement;
+}
+
+void SettlementFactory::TransformIntoDeepSettlement(Settlement *settlement)
+{
+    if(settlement->IsDeepSettlement() == true)
+        return;
+
+    SettlementAllocator::Get()->AllocateExtraData(settlement);
+
+    settlement->Deepen();//.Initialize(settlement->GetPopulationHandler());
+}
+
+void SettlementFactory::TransformIntoShallowSettlement(Settlement *settlement)
+{
+    if(settlement->IsDeepSettlement() == false)
+        return;
+
+    SettlementAllocator::Get()->FreeExtraData(settlement);
 }

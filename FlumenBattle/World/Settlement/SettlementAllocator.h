@@ -36,6 +36,8 @@ namespace world::settlement
     struct Resource;
     struct Need;
     struct ExploreResult;
+    class PopExtraData;
+    class Cohort;
 
     class SettlementAllocator : public core::Singleton <SettlementAllocator>
     {
@@ -95,6 +97,10 @@ namespace world::settlement
 
         container::PoolAllocator <ExploreResult>::Memory explorationMemory;
 
+        container::Pool <PopExtraData>::Memory extraDataMemory;
+
+        container::PoolAllocator <Cohort>::Memory cohortMemory;
+
 
 
         container::Pool <Settlement> settlements;
@@ -143,11 +149,14 @@ namespace world::settlement
 
         container::PoolAllocator <ExploreResult> explorationAllocator;
 
+        container::Pool <PopExtraData> extraDataAllocator;
+
+        container::PoolAllocator <Cohort> cohortAllocator;
 
 
         void PerformCleanup();
 
-        Settlement *Allocate();
+        Settlement *Allocate(bool = true);
 
         Path *AllocatePath(Settlement *, Settlement *);
 
@@ -158,6 +167,10 @@ namespace world::settlement
         void PreallocateMaximumMemory();
 
         void Free(Settlement *);
+
+        void AllocateExtraData(Settlement *);
+
+        void FreeExtraData(Settlement *);
 
     public:
         container::Pool <Settlement> *GetSettlements() {return &settlements;}

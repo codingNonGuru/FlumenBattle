@@ -4,6 +4,8 @@
 #include "FlumenBattle/Config.h"
 #include "FlumenBattle/Utility/Utility.h"
 #include "FlumenBattle/World/WorldTime.h"
+#include "FlumenBattle/World/Settlement/PopExtraData.h"
+#include "FlumenBattle/World/Settlement/Cohort.h"
 
 using namespace world::settlement;
 
@@ -19,8 +21,10 @@ static const auto COMPLETE_DISAPPEARENCE_TIME = world::WorldTime::GetTicksFromDa
 
 static const auto GROWTH_THRESHOLD = 10000;
 
-void PopHandler::Initialize()
+void PopHandler::Initialize(Settlement *settlement)
 {
+    this->settlement = settlement;
+
     population = 5;
 
     highestPopulationEver = population;
@@ -42,6 +46,13 @@ void PopHandler::Initialize()
     happiness = 0;
 
     isHappy = false;
+
+    extraData = nullptr;
+}
+
+void PopHandler::Deepen()
+{
+    extraData->Initialize(this);
 }
 
 void PopHandler::PlaceOrders(Settlement &settlement)
@@ -242,6 +253,13 @@ bool PopHandler::IsSettlementCompletelyGone() const
     return IsSettlementRuins() && timeSinceRuined >= COMPLETE_DISAPPEARENCE_TIME;
 }
 
+const container::Pool <Cohort> &PopHandler::GetCohorts() const
+{
+    static const container::Pool <Cohort> dummyCohorts;
+
+    return extraData != nullptr ? extraData->GetCohorts() : dummyCohorts;
+}
+
 void PopHandler::IncreasePopulation(Settlement *settlement)
 {
     population++;
@@ -387,4 +405,26 @@ void PopHandler::UpdateGrowth(Settlement *settlement)
     {
         growth = 0;
     }
+}
+
+void PopAllocator::AllocateExtraData(container::Pool <PopExtraData> &extraDataAllocator, container::PoolAllocator <Cohort> &cohortAllocator, PopHandler &handler) 
+{
+    if(handler.extraData != nullptr)
+        return;
+
+    handler.extraData = extraDataAllocator.Add();
+
+    handler.extraData->cohorts.Initialize(cohortAllocator);
+}
+
+void PopAllocator::FreeExtraData(container::Pool <PopExtraData> &extraDataAllocator, container::PoolAllocator <Cohort> &cohortAllocator, PopHandler &handler)
+{
+    if(handler.extraData == nullptr)
+        return;
+
+    handler.extraData->cohorts.Terminate(cohortAllocator);
+
+    extraDataAllocator.RemoveAt(handler.extraData);
+
+    handler.extraData = nullptr;
 }

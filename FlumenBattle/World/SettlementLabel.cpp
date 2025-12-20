@@ -23,6 +23,7 @@
 #include "FlumenBattle/World/Polity/Faction.h"
 #include "FlumenBattle/WorldInterface.h"
 #include "FlumenBattle/World/Interface/ResourceCounter.h"
+#include "FlumenBattle/World/Settlement/Cohort.h"
 
 using namespace world::settlement;
 
@@ -237,6 +238,14 @@ void HoverExtension::HandleConfigure()
     );
     buildingLabel->SetAlignment(Text::Alignments::LEFT);
     buildingLabel->Enable();
+    basePosition.y += 20.0f;
+
+    popLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {basePosition, ElementAnchors::UPPER_LEFT, ElementPivots::MIDDLE_LEFT, this}},
+        {{"Small"}, TEXT_COLOR, "Pops:"}
+    );
+    popLabel->SetAlignment(Text::Alignments::LEFT);
+    popLabel->Enable();
     basePosition.y += 20.0f;
 
     groupLabel = ElementFactory::BuildText(
@@ -459,6 +468,14 @@ void HoverExtension::HandleUpdate()
     text = "Tiles: ";
     text << settlement->GetWorkedTiles();
     tileLabel->Setup(text);
+
+    text = "Pops: ";
+    auto &popCohorts = settlement->GetPopCohorts();
+    for(auto &cohort : popCohorts)
+    {
+        text << cohort.Race->Name[0] << ' ';
+    }
+    popLabel->Setup(text);
 
     text = "Faction: ";
     if(settlement->GetFaction() != nullptr)

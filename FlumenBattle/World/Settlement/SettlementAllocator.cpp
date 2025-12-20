@@ -15,6 +15,8 @@
 #include "FlumenBattle/World/WorldGenerator.h"
 #include "FlumenBattle/World/Settlement/Resource.h"
 #include "FlumenBattle/World/Settlement/PopHandler.h"
+#include "FlumenBattle/World/Settlement/PopExtraData.h"
+#include "FlumenBattle/World/Settlement/Cohort.h"
 #include "FlumenBattle/Config.h"
 
 #define MAXIMUM_TILES_PER_SETTLEMENT 37
@@ -47,6 +49,8 @@
 
 using namespace world::settlement;
 
+static int lastUniqueId = 0;
+
 void SettlementAllocator::PreallocateMaximumMemory()
 {
     static const auto MAXIMUM_WORLD_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_WORLD_SIZE).Integer;
@@ -54,6 +58,9 @@ void SettlementAllocator::PreallocateMaximumMemory()
     static const auto MAXIMUM_PATHS_PER_SETTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_PATHS_PER_SETTLEMENT).Integer;
 
     static const auto EXPLORATIONS_PER_SETTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::EXPLORATIONS_PER_SETTLEMENT).Integer;
+
+    static const auto MAX_SETTLEMENT_POPULATION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAX_SETTLEMENT_POPULATION).Integer;
+    
 
     std::cout<<"Memory size of a Settlement is "<<sizeof(Settlement)<<"\n";
 
@@ -106,6 +113,10 @@ void SettlementAllocator::PreallocateMaximumMemory()
     needMemory = container::ArrayAllocator <Need>::PreallocateMemory (settlementCount, POPULATION_NEED_COUNT);
 
     explorationMemory = container::PoolAllocator <ExploreResult>::PreallocateMemory (settlementCount, EXPLORATIONS_PER_SETTLEMENT);
+
+    extraDataMemory = container::Pool <PopExtraData>::PreallocateMemory (settlementCount);
+
+    cohortMemory = container::PoolAllocator <Cohort>::PreallocateMemory (settlementCount, MAX_SETTLEMENT_POPULATION);
 }
 
 void SettlementAllocator::AllocateWorldMemory(int worldSize)
@@ -113,6 +124,8 @@ void SettlementAllocator::AllocateWorldMemory(int worldSize)
     static const auto MAXIMUM_PATHS_PER_SETTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_PATHS_PER_SETTLEMENT).Integer;
 
     static const auto EXPLORATIONS_PER_SETTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::EXPLORATIONS_PER_SETTLEMENT).Integer;
+
+    static const auto MAX_SETTLEMENT_POPULATION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAX_SETTLEMENT_POPULATION).Integer;
 
     static const auto worldGenerator = WorldGenerator::Get();
 
@@ -163,11 +176,18 @@ void SettlementAllocator::AllocateWorldMemory(int worldSize)
     needAllocator = container::ArrayAllocator <Need> (settlementCount, POPULATION_NEED_COUNT, needMemory);
 
     explorationAllocator = container::PoolAllocator <ExploreResult> (settlementCount, EXPLORATIONS_PER_SETTLEMENT, explorationMemory);
+
+    extraDataAllocator = container::Pool <PopExtraData> (settlementCount, extraDataMemory);
+
+    cohortAllocator = container::PoolAllocator <Cohort> (settlementCount, MAX_SETTLEMENT_POPULATION, cohortMemory);
 }
 
-Settlement * SettlementAllocator::Allocate()
+Settlement * SettlementAllocator::Allocate(bool hasExtraData)
 {
     auto settlement = settlements.Add();
+
+    settlement->uniqueId = lastUniqueId;
+    lastUniqueId++;
 
     settlement->groupDynamics = groupDynamics.Add();
 
@@ -210,7 +230,14 @@ Settlement * SettlementAllocator::Allocate()
 
     PopAllocator::Allocate(needAllocator, settlement->popHandler);
 
+    if(hasExtraData == true)
+    {
+        PopAllocator::AllocateExtraData(extraDataAllocator, cohortAllocator, settlement->popHandler);
+    }
+
     settlement->finishedExplorations.Initialize(explorationAllocator);
+
+    //group->travelActionData = travelDataAllocator.Add();
 
     return settlement;
 }
@@ -227,6 +254,16 @@ PathSegment * SettlementAllocator::AllocateSegment()
     auto segment = pathSegments.Add();
 
     return segment;
+}
+
+void SettlementAllocator::AllocateExtraData(Settlement *settlement)
+{
+    PopAllocator::AllocateExtraData(extraDataAllocator, cohortAllocator, settlement->popHandler);
+}
+
+void SettlementAllocator::FreeExtraData(Settlement *settlement)
+{
+    PopAllocator::FreeExtraData(extraDataAllocator, cohortAllocator, settlement->popHandler);
 }
 
 void SettlementAllocator::Free(Settlement *settlement)
@@ -271,6 +308,8 @@ void SettlementAllocator::Free(Settlement *settlement)
     ResourceAllocator::Free(resourceAllocator, settlement->resourceHandler);
 
     PopAllocator::Free(needAllocator, settlement->popHandler);
+
+    PopAllocator::FreeExtraData(extraDataAllocator, cohortAllocator, settlement->popHandler);
 
     settlement->finishedExplorations.Terminate(explorationAllocator);
 
