@@ -40,14 +40,6 @@ namespace world::render
 
         void RenderImprovements();
 
-        void RenderBorderExpansionMap();
-
-        void RenderSettleModeMap();
-
-        void RenderExploreMap();
-
-        void RenderTileDevelopMap();
-
         void RenderFogOfWar();
 
     public:
