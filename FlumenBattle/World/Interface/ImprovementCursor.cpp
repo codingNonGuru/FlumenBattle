@@ -79,14 +79,21 @@ void ImprovementCursor::HandleUpdate()
     }
 
     auto hoveredTile = WorldController::Get()->GetHoveredTile();
-    if(playerSettlement->CanImproveHere(hoveredTile, polity::HumanMind::Get()->GetProposedImprovement()) == false || 
-    playerSettlement->IsImprovingTile(hoveredTile, polity::HumanMind::Get()->GetProposedImprovement()) == true)
+    if(hoveredTile == nullptr)
     {
         SetTexture("X");
     }
     else
     {
-        SetTexture("Improve");
+        if(playerSettlement->CanImproveHere(hoveredTile, polity::HumanMind::Get()->GetProposedImprovement()) == false || 
+        playerSettlement->IsImprovingTile(hoveredTile, polity::HumanMind::Get()->GetProposedImprovement()) == true)
+        {
+            SetTexture("X");
+        }
+        else
+        {
+            SetTexture("Improve");
+        }
     }
 
     auto type = settlement::TileImprovementFactory::Get()->BuildImprovementType(polity::HumanMind::Get()->GetProposedImprovement());

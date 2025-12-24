@@ -272,7 +272,7 @@ void BorderModel::Render()
 
 	lineShader->SetConstant(0.5f, "opacity");
 
-	lineShader->SetConstant(0.0f, "depth");
+	lineShader->SetConstant(0.7f, "depth");
 
     (*buffers_.Get("Position"))->Bind(0);
 

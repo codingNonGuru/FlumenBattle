@@ -351,7 +351,7 @@ namespace world
                 *processedPolities.Add() = polity;
             }
 
-            for(auto &polity : *polities)
+            /*for(auto &polity : *polities)
             {
                 if(polity.IsValid() == false)
                     continue;
@@ -363,7 +363,7 @@ namespace world
                 }
                 std::cout<<"\n";
             }
-            std::cout<<"\n";
+            std::cout<<"\n";*/
 
             for(auto &polity : *polities)
             {

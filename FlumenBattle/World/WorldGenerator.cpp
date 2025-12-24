@@ -531,6 +531,14 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
         }
     }
 
+    for(auto &polity : *scene.polities)
+    {
+        if(polity.IsValid() == false)
+            continue;
+
+        polity.RecalculateLinks();
+    }
+
     auto groups = group::GroupAllocator::Get()->GetGroups();
     scene.groups = groups;
 

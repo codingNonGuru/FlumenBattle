@@ -476,11 +476,28 @@ void WorldTileModel::RenderBorderExpansionMap()
 
     shader->SetConstant(camera->GetMatrix(), "viewMatrix");
 
-	shader->SetConstant(0.0f, "depth");
+	shader->SetConstant(0.5f, "depth");
 
     shader->SetConstant(0.7f, "opacity");
 
     shader->SetConstant(WORLD_TILE_SIZE, "hexSize");
+
+    auto hasAtLeastOneNeighbour = [&] (tile::WorldTile *tile)
+    {
+        bool hasAtLeastOneNeighbour = false;
+
+        auto immediateNeighbours = tile->GetNearbyTiles();
+        for(auto &neighbour : immediateNeighbours)
+        {
+            if(neighbour->GetOwner() == playerSettlement)
+            {
+                hasAtLeastOneNeighbour = true;
+                break;
+            }
+        }
+
+        return hasAtLeastOneNeighbour;
+    };
 
     for(auto &tile : nearbyTiles.Tiles)
     {
@@ -489,19 +506,7 @@ void WorldTileModel::RenderBorderExpansionMap()
 
         auto color = [&]
         {
-            bool hasAtLeastOneNeighbour = false;
-
-            auto immediateNeighbours = tile->GetNearbyTiles();
-            for(auto &neighbour : immediateNeighbours)
-            {
-                if(neighbour->GetOwner() == playerSettlement)
-                {
-                    hasAtLeastOneNeighbour = true;
-                    break;
-                }
-            }
-
-            if(hasAtLeastOneNeighbour == true)
+            if(hasAtLeastOneNeighbour(tile) == true)
             {
                 bool canAffordToExpand = playerSettlement->CanAffordToExpandHere(tile);
                 bool hasExplored = playerSettlement->HasExplored(tile);
@@ -542,6 +547,12 @@ void WorldTileModel::RenderBorderExpansionMap()
 
         backpackSprite->Draw(camera, {currentExploration->Position, Scale2(0.7f), Opacity(1.0f), DrawOrder(-2)});
     }
+
+    auto hoveredTile = worldController->GetHoveredTile();
+    if(hoveredTile != nullptr && hasAtLeastOneNeighbour(hoveredTile) == true && playerSettlement->HasExplored(hoveredTile) == true && playerSettlement->CanAffordToExpandHere(hoveredTile) == true)
+    {
+        engine::render::HexRenderer::RenderEmptyHex(camera, hoveredTile->Position, WORLD_TILE_SIZE, 0.7f, Color::WHITE, 0.7f);
+    }
 }
 
 void WorldTileModel::RenderSettleModeMap()
@@ -558,7 +569,7 @@ void WorldTileModel::RenderSettleModeMap()
 
     shader->SetConstant(camera->GetMatrix(), "viewMatrix");
 
-	shader->SetConstant(0.0f, "depth");
+	shader->SetConstant(0.5f, "depth");
 
     shader->SetConstant(0.7f, "opacity");
 
@@ -569,7 +580,7 @@ void WorldTileModel::RenderSettleModeMap()
         auto tileRing = playerTile->GetTileRing(i);
         for(auto &tile : tileRing)
         {
-            if(tile->IsBorderingOwnedTile())
+            if(tile->IsBorderingOwnedTile() == true)
                 continue;
 
             if(tile->HasRelief(WorldReliefs::SEA) == true)
@@ -611,6 +622,12 @@ void WorldTileModel::RenderSettleModeMap()
     static const auto bannerFrameSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("BannerFrame"));
 
     bannerFrameSprite->Draw(camera, {settleTarget->Position + Position2(0.0f, -WORLD_TILE_SIZE * 0.5f), Scale2(1.0f), Opacity(1.0f), DrawOrder(-2)});
+
+    auto hoveredTile = worldController->GetHoveredTile();
+    if(hoveredTile != nullptr && hoveredTile->IsBorderingOwnedTile() == false && hoveredTile->HasRelief(WorldReliefs::SEA) == false && playerSettlement->HasAnySettlers() == true)
+    {
+        engine::render::HexRenderer::RenderEmptyHex(camera, hoveredTile->Position, WORLD_TILE_SIZE, 0.7f, Color::WHITE, 0.7f);
+    }
 }
 
 void WorldTileModel::RenderExploreMap()
@@ -628,7 +645,7 @@ void WorldTileModel::RenderExploreMap()
 
     shader->SetConstant(camera->GetMatrix(), "viewMatrix");
 
-	shader->SetConstant(0.0f, "depth");
+	shader->SetConstant(0.5f, "depth");
 
     shader->SetConstant(0.7f, "opacity");
 
@@ -682,6 +699,12 @@ void WorldTileModel::RenderExploreMap()
 
         backpackSprite->Draw(camera, {currentExploration->Position, Scale2(0.7f), Opacity(1.0f), DrawOrder(-2)});
     }
+
+    auto hoveredTile = worldController->GetHoveredTile();
+    if(hoveredTile != nullptr && playerSettlement->CanExploreHere(hoveredTile) == true && playerSettlement->IsExploring(hoveredTile) == false && playerSettlement->HasExplored(hoveredTile) == false)
+    {
+        engine::render::HexRenderer::RenderEmptyHex(camera, hoveredTile->Position, WORLD_TILE_SIZE, 0.7f, Color::WHITE, 0.7f);
+    }
 }
 
 void WorldTileModel::RenderTileDevelopMap()
@@ -698,7 +721,7 @@ void WorldTileModel::RenderTileDevelopMap()
 
     shader->SetConstant(camera->GetMatrix(), "viewMatrix");
 
-	shader->SetConstant(0.0f, "depth");
+	shader->SetConstant(0.5f, "depth");
 
     shader->SetConstant(0.7f, "opacity");
 
@@ -746,6 +769,12 @@ void WorldTileModel::RenderTileDevelopMap()
         improvementSprite->SetTexture(improvement->TextureName);
 
         improvementSprite->Draw(camera, {tile.Tile->Position, Scale2(1.0f), Opacity(1.0f), DrawOrder(-2)});
+    }
+
+    auto hoveredTile = worldController->GetHoveredTile();
+    if(hoveredTile != nullptr && playerSettlement->CanImproveHere(hoveredTile, improvement) == true && playerSettlement->IsImprovingTile(hoveredTile, improvement) == false)
+    {
+        engine::render::HexRenderer::RenderEmptyHex(camera, hoveredTile->Position, WORLD_TILE_SIZE, 0.7f, Color::WHITE, 0.7f);
     }
 }
 
