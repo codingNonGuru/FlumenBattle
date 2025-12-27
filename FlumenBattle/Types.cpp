@@ -1,6 +1,7 @@
 #include "FlumenBattle/Types.hpp"
 
 Word const FrameBuffers::DEFAULT = Word("Default");
+Word const FrameBuffers::STENCIL = Word("Stencil");
 
 Word const Elements::MAIN_MENU = Word("MainMenu");
 

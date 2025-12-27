@@ -14,6 +14,8 @@
 #include "FlumenEngine/Render/Screen.hpp"
 #include "FlumenEngine/Render/HexRenderer.h"
 #include "FlumenEngine/Render/LineRenderer.h"
+#include "FlumenEngine/Render/BufferManager.hpp"
+#include "FlumenEngine/Render/FrameBuffer.hpp"
 
 #include "FlumenBattle/World/Render/WorldTileModel.h"
 #include "FlumenBattle/World/Render/BorderModel.h"
@@ -555,6 +557,17 @@ void WorldTileModel::Render()
         heatBuffer = new DataBuffer(temperatures.GetMemorySize(), temperatures.GetStart());
     }
 
+    auto stencilBuffer = BufferManager::GetFrameBuffer(FrameBuffers::STENCIL);
+    stencilBuffer->BindBuffer();
+    glDrawBuffer(GL_COLOR_ATTACHMENT0);
+    stencilBuffer->Clear(Color::BLACK);
+
+    //RenderManager::EnableDepthTesting();
+
+    engine::render::HexRenderer::RenderHex(camera, Position2(0.0f, 0.0f), 70.0f, 1.0f, Color::WHITE);
+
+    BufferManager::BindFrameBuffer(FrameBuffers::DEFAULT);
+
     RenderTilesAdvanced();
 
     OceanModel::Get()->Render();
@@ -582,6 +595,30 @@ void WorldTileModel::Render()
     //RenderInterestMap();
 
     SettlementModel::Get()->Render();
+
+    {
+        auto position = camera->GetTarget();
+
+        static const auto testShader = ShaderManager::GetShader("TestShader");
+
+        testShader->Bind();
+
+        testShader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+        testShader->SetConstant(1.0f, "opacity");
+
+        testShader->SetConstant(0.9f, "depth");
+
+        testShader->SetConstant(position, "hexPosition");
+
+        testShader->SetConstant(Float2{1920.0f, 1080.0f} * camera->GetZoomFactor(), "hexSize");
+
+        stencilBuffer->BindTexture(testShader, "picture");
+
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        testShader->Unbind();
+    }
 
     RenderFogOfWar();
 
@@ -644,39 +681,6 @@ void WorldTileModel::Render()
     RenderImprovements();
 
     SettlementModeRenderer::Get()->RenderBorderExpansionMap();
-
-    auto center = map->GetEdges().GetCenter();
-
-    auto get = [&]
-    {
-        auto theedges = std::array{
-            map->GetEdge(center->First, center->Start), 
-            map->GetEdge(center->First, center->End), 
-            map->GetEdge(center->Second, center->Start), 
-            map->GetEdge(center->Second, center->End)
-        };
-        return theedges;
-    };
-
-    auto ts = {center->First, center->Second, center->Start, center->End};
-    auto cs = std::array{Color::RED, Color::BLUE, Color::GREEN, Color::MAGENTA};
-    int i = 0;
-    for(auto &t : ts)
-    {
-        engine::render::HexRenderer::RenderHex(camera, t->Position, 20.0f, 1.0f, cs[i]);
-        i++;
-    }
-    auto edges = get();
-
-    for(auto &edge : edges)
-    {
-        auto position = edge->First->Position * 0.5f + edge->Second->Position * 0.5f;
-
-        auto to = edge->First->Position - edge->Second->Position;
-        auto rotation = atan2(to.y, to.x) + HALF_PI;
-
-        engine::render::LineRenderer::RenderLine(camera, position, 34.0f, 10.0f, rotation, Color::RED, 1.0f);
-    }
 
     SettlementModeRenderer::Get()->RenderSettleModeMap();
 

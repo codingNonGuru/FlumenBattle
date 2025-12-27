@@ -32,6 +32,10 @@ void RenderBuilder::Initialize()
 		RenderManager::SetDefaultFrameBuffer(*frameBuffer);
 	}
 
+	frameBuffer = BufferManager::GetFrameBuffers().Add(FrameBuffers::STENCIL);
+	
+	*frameBuffer = new StencilFrameBuffer(screen->GetSize());
+
 	//auto screenTexture = new Texture(screen->GetSize(), TextureFormats::FOUR_BYTE);
 	//TextureManager::AddTexture(screenTexture, "Screen");
 }
