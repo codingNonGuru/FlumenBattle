@@ -80,6 +80,8 @@ namespace world
         group::HumanMind::Get()->OnSettlementExited += {this, &WorldController::HandleSettlementExited};
 
         WorldInterface::Get()->OnCanvasHovered += {this, &WorldController::HandleWorldCanvasHovered};
+
+        reliefDisplayMode = 0;
     }
 
     void WorldController::Enable()
@@ -234,7 +236,7 @@ namespace world
             hoveredTile = nullptr;
         }
 
-        auto zoomSpeed = CAMERA_ZOOM_SPEED * Time::GetDelta();
+        /*auto zoomSpeed = CAMERA_ZOOM_SPEED * Time::GetDelta();
 
         if(InputHandler::GetMouse().ScrollUp_)
         {
@@ -243,7 +245,7 @@ namespace world
         else if(InputHandler::GetMouse().ScrollDown_)
         {
             camera->ZoomDynamically(-zoomSpeed);
-        }
+        }*/
 
         if(isGrabbingScreen == true)
         {
@@ -270,6 +272,20 @@ namespace world
             return;
 
         plannedPath = utility::Pathfinder <tile::WorldTile>::Get()->FindPathAsGeneric(hoveredTile, playerLocation, PLANNED_PATH_MAXIMUM_SIZE - 4);
+    }
+
+    void WorldController::ZoomIn()
+    {
+        auto zoomSpeed = CAMERA_ZOOM_SPEED * Time::GetDelta();
+
+        camera->ZoomDynamically(zoomSpeed);
+    }
+
+    void WorldController::ZoomOut()
+    {
+        auto zoomSpeed = CAMERA_ZOOM_SPEED * Time::GetDelta();
+        
+        camera->ZoomDynamically(-zoomSpeed);
     }
 
     void WorldController::HandleBattleStarted()

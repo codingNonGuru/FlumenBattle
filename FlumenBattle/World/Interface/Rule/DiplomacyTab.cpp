@@ -36,7 +36,7 @@ void DiplomacyTab::HandleConfigure()
         NEIGHBORS_PER_POLITY,
         5.0f
     );
-    neighborItemLayout->MakeScrollable(8, neighborItems.GetCapacity());
+    neighborItemLayout->AddScroller(8, neighborItems.GetCapacity());
     neighborItemLayout->Enable();
 
     neighborItems.Initialize(NEIGHBORS_PER_POLITY);

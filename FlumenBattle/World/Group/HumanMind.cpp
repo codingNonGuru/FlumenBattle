@@ -13,6 +13,7 @@
 #include "FlumenBattle/World/Group/CharacterEssence.h"
 #include "FlumenBattle/Utility/Pathfinder.h"
 #include "FlumenBattle/WorldInterface.h"
+#include "FlumenBattle/World/Interface/WorldCanvas.h"
 #include "FlumenBattle/World/Character/Types.h"
 #include "FlumenBattle/World/Settlement/Path.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"

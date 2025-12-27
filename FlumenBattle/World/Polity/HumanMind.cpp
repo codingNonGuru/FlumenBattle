@@ -12,6 +12,7 @@
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/WorldInterface.h"
+#include "FlumenBattle/World/Interface/WorldCanvas.h"
 #include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/Science/Technology.h"

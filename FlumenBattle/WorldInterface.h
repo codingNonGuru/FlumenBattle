@@ -22,6 +22,7 @@ namespace world
 
     namespace interface
     {
+        class WorldCanvas;
         class InventoryMenu;
         class SettlementMenu;
         class VendorCursor;
@@ -60,7 +61,7 @@ namespace world
 
         friend class core::Singleton <WorldInterface>;
 
-        Element *canvas;
+        interface::WorldCanvas *canvas;
 
         WorldDecisionMenu *decisionMenu;
 
@@ -215,7 +216,7 @@ namespace world
 
         interface::rule::RuleMenu *GetRuleMenu() const {return ruleMenu;}
 
-        Element *GetCanvas() const {return canvas;}
+        interface::WorldCanvas *GetCanvas() const {return canvas;}
 
         bool IsInInventoryMode() const {return isInInventoryMode;}
 

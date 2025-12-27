@@ -156,7 +156,7 @@ void EconomyTab::HandleConfigure()
         ListOrientations::VERTICAL,
         5.0f
     );
-    itemLayout->MakeScrollable(8, resourceItems.GetCapacity());
+    itemLayout->AddScroller(8, resourceItems.GetCapacity());
     itemLayout->Enable();
 
     for(auto i = 0; i < resourceItems.GetCapacity(); ++i)

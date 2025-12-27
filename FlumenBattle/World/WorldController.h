@@ -173,6 +173,10 @@ namespace world
 
         void Disable();
 
+        void ZoomIn();
+
+        void ZoomOut();
+
         tile::WorldTile * GetHoveredTile() const {return hoveredTile;}
 
         group::Encounter * GetPlayerBattle() const;

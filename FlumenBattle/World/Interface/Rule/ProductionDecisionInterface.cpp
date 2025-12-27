@@ -106,7 +106,7 @@ void ProductionDecisionInterface::HandleConfigure(AdditionalElementData *additio
         ListOrientations::VERTICAL,
         5.0f
     );
-    optionLayout->MakeScrollable(6, maximumItemCount);
+    optionLayout->AddScroller(6, maximumItemCount);
     optionLayout->Enable();
 
     static const auto OPTION_ITEM_SIZE = Size(size_.x, 35);

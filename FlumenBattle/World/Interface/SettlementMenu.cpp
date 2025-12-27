@@ -110,7 +110,7 @@ void SettlementMenu::HandleConfigure()
         ListOrientations::VERTICAL, 
         5.0f
     );
-    optionLayout->MakeScrollable(5, options.size());
+    optionLayout->AddScroller(5, options.size());
     optionLayout->Enable();
 
     for(auto &option : options)

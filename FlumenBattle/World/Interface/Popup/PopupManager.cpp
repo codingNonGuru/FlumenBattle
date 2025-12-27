@@ -17,7 +17,7 @@ void PopupManager::Configure()
     {
         *exploreChestPopups.Add() = ElementFactory::BuildElement <ExplorationReward>
         (
-            {DrawOrder(10), {WorldInterface::Get()->GetCanvas()}}
+            {DrawOrder(10), {(Element *)WorldInterface::Get()->GetCanvas()}}
         );
     }
 
@@ -30,7 +30,7 @@ void PopupManager::Configure()
     {
         *battleStartPopups.Add() = ElementFactory::BuildElement <BattleStartPopup>
         (
-            {DrawOrder(10), {WorldInterface::Get()->GetCanvas()}}
+            {DrawOrder(10), {(Element *)WorldInterface::Get()->GetCanvas()}}
         );
     }
 

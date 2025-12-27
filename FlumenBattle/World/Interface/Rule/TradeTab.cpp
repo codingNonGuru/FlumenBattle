@@ -153,7 +153,7 @@ void TradeTab::HandleConfigure()
         0.0f
     );
     tradeItemList->SetSpriteColor(BORDER_COLOR);
-    tradeItemList->MakeScrollable(VISIBLE_ITEM_COUNT, MAXIMUM_ITEM_COUNT);
+    tradeItemList->AddScroller(VISIBLE_ITEM_COUNT, MAXIMUM_ITEM_COUNT);
     tradeItemList->Enable();
 
     tradeItems.Initialize(MAXIMUM_ITEM_COUNT);
@@ -188,7 +188,7 @@ void TradeTab::HandleConfigure()
         MAXIMUM_PATHS_PER_SETTLEMENT,
         5.0f
     );
-    linkItemList->MakeScrollable(VISIBLE_LINK_ITEM_COUNT, MAXIMUM_PATHS_PER_SETTLEMENT);
+    linkItemList->AddScroller(VISIBLE_LINK_ITEM_COUNT, MAXIMUM_PATHS_PER_SETTLEMENT);
     linkItemList->Enable();
 
     linkItems.Initialize(MAXIMUM_PATHS_PER_SETTLEMENT);

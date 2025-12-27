@@ -49,6 +49,7 @@
 #include "FlumenBattle/World/Interface/ImprovementInfo.h"
 #include "FlumenBattle/World/Interface/ImprovementCursor.h"
 #include "FlumenBattle/World/Interface/Popup/PopupManager.h"
+#include "FlumenBattle/World/Interface/WorldCanvas.h"
 
 using namespace world;
 
@@ -72,7 +73,7 @@ static auto majorCentralMenus = container::Array <Element *> (32);
 
 WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
 {
-    canvas = ElementFactory::BuildCanvas();
+    canvas = ElementFactory::BuildCanvas <interface::WorldCanvas>();
     canvas->SetInteractivity(true);
     canvas->GetHoverEvents() += {this, &WorldInterface::HandleCanvasHovered};
 
