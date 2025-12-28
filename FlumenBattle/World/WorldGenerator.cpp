@@ -23,7 +23,7 @@
 #include "FlumenBattle/PreGame/Types.h"
 #include "FlumenBattle/World/Tile/River.h"
 #include "FlumenBattle/World/RiverGenerator.h"
-#include "FlumenBattle/World/Render/WorldTileModel.h"
+#include "FlumenBattle/World/Render/TerrainRenderer.h"
 
 using namespace world;
 
@@ -579,7 +579,7 @@ void WorldGenerator::FinishGeneration()
 {
     RiverGenerator::Get()->GenerateDistortionMaps();
 
-    if(render::WorldTileModel::Get()->distortMap != nullptr)
+    if(render::TerrainRenderer::Get()->distortMap != nullptr)
         return;
 
     static container::Grid <float> noise(1024, 1024);
@@ -587,7 +587,7 @@ void WorldGenerator::FinishGeneration()
     Perlin::Generate(noise.GetSize(), 0.2f, ContrastThreshold(0.5f), ContrastStrength(4.0f));
     Perlin::Download(&noise);
 
-    render::WorldTileModel::Get()->distortMap = new ::render::Texture(noise.GetSize(), TextureFormats::ONE_FLOAT, &noise);
+    render::TerrainRenderer::Get()->distortMap = new ::render::Texture(noise.GetSize(), TextureFormats::ONE_FLOAT, &noise);
 }
 
 int WorldGenerator::GetMaximumPolityCount(int worldSize) const

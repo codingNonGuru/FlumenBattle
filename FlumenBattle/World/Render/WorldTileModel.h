@@ -31,19 +31,13 @@ namespace world::render
 
         world::WorldScene *worldScene;
 
-        ::render::Texture *distortMap;
-
         WorldTileModel();
-
-        void RenderSnow();
 
         void RenderPoliticalOverlay();
 
         void RenderInterestMap();
 
         void RenderGlobalLight();
-
-        void RenderTilesAdvanced();
 
         void RenderPlayerPath();
 
