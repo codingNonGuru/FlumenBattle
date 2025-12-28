@@ -18,6 +18,8 @@ layout (location = 4) uniform float depth;
 
 out vec2 coords;
 
+out vec2 pos;
+
 void main()
 {	
     vec2 vertices[4] = vec2[4] (
@@ -45,4 +47,6 @@ void main()
     coords = vertices[vertexIndex];
     coords.y *= -1.0f;
     coords += vec2(0.5f, 0.5f);
+    
+    pos = position;
 }

@@ -81,6 +81,8 @@ static world::WorldController * worldController = nullptr;
 
 WorldTileModel::WorldTileModel()
 {
+    distortMap = nullptr;
+
     auto hexMesh = MeshManager::GetMeshes().Add("Hex"); 
 	*hexMesh = Mesh::GenerateHex();
 
@@ -283,6 +285,8 @@ DataBuffer *colorBuffer = nullptr;
 DataBuffer *elevationBuffer = nullptr;
 
 DataBuffer *heatBuffer = nullptr;
+
+DataBuffer *reliefBuffer = nullptr;
 
 void WorldTileModel::RenderGlobalLight()
 {    
@@ -534,18 +538,35 @@ void WorldTileModel::Render()
 
         static auto temperatures = container::Array <Float> (map->GetTileCount());
 
+        static auto reliefs = container::Array <int> (map->GetTileCount());
+
         for(auto &tile : map->GetTiles())
         //for(auto tile = map->GetTiles().GetStart(); tile != map->GetTiles().GetEnd(); ++tile)
         {
             *positions.Add() = tile.Position;
 
             //*colors.Add() = Color((float)tile->Elevation / 100.0f);
-            *colors.Add() = tile.GetShade();
+            *colors.Add() = [&]
+            {
+                //return Color::WHITE;
+                static auto SEA_COLOR = Color(0.02f, 0.07f, 0.3f, 1.0f);
+
+                if(tile.Elevation > 480)
+                    return Color::CYAN;
+                else
+                {
+                    auto factor = tile.Elevation / 48;
+                    float mixFactor = float(factor) / 10.0f;
+                    return Color::CYAN * mixFactor + SEA_COLOR * (1.0f - mixFactor);
+                }
+            } ();
 
             float factor = (float)tile.Elevation / 1000.0f;
             *elevations.Add() = Color(factor, factor, factor, 1.0f);
 
             *temperatures.Add() = tile.Type == WorldTiles::LAND ? (float)tile.Heat / (float)tile::WorldTile::MAXIMUM_TILE_HEAT : 1.0f;
+
+            *reliefs.Add() = tile.Type == WorldTiles::LAND ? 1 : 0;
         }
 
         positionBuffer = new DataBuffer(positions.GetMemorySize(), positions.GetStart());
@@ -555,6 +576,8 @@ void WorldTileModel::Render()
         elevationBuffer = new DataBuffer(elevations.GetMemorySize(), elevations.GetStart());
 
         heatBuffer = new DataBuffer(temperatures.GetMemorySize(), temperatures.GetStart());
+
+        reliefBuffer = new DataBuffer(reliefs.GetMemorySize(), reliefs.GetStart());
     }
 
     auto stencilBuffer = BufferManager::GetFrameBuffer(FrameBuffers::STENCIL);
@@ -562,21 +585,71 @@ void WorldTileModel::Render()
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
     stencilBuffer->Clear(Color::BLACK);
 
-    //RenderManager::EnableDepthTesting();
+    RenderManager::EnableDepthTesting();
+    RenderManager::SetBlendMode();
 
-    engine::render::HexRenderer::RenderHex(camera, Position2(0.0f, 0.0f), 70.0f, 1.0f, Color::WHITE);
+    {
+        static const auto tileShader = ShaderManager::GetShader("Tile");
+
+        positionBuffer->Bind(0);
+
+        reliefBuffer->Bind(1);
+
+        tileShader->Bind();
+
+        tileShader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+        tileShader->SetConstant(1.0f, "opacity");
+
+        tileShader->SetConstant(0.5f, "depth");
+
+        tileShader->SetConstant(WORLD_TILE_SIZE * 5.0f, "hexSize");
+
+        glDrawArrays(GL_TRIANGLES, 0, 6 * map->GetTileCount());
+
+        tileShader->Unbind();
+    }
 
     BufferManager::BindFrameBuffer(FrameBuffers::DEFAULT);
 
+    /*RenderManager::EnableDepthTesting();
+    RenderManager::SetBlendMode();*/
+
     RenderTilesAdvanced();
 
-    OceanModel::Get()->Render();
+    {
+        auto position = camera->GetTarget();
+
+        static const auto testShader = ShaderManager::GetShader("TestShader");
+
+        testShader->Bind();
+
+        testShader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+        testShader->SetConstant(1.0f, "opacity");
+
+        testShader->SetConstant(0.1f, "depth");
+
+        testShader->SetConstant(position, "hexPosition");
+
+        testShader->SetConstant(Float2{1920.0f, 1080.0f} * camera->GetZoomFactor(), "hexSize");
+
+        stencilBuffer->BindTexture(testShader, "picture");
+
+        testShader->BindTexture(distortMap, "distort");
+
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        testShader->Unbind();
+    }
+
+    //OceanModel::Get()->Render();
 
     FarmModel::Get()->Render();
 
     RenderSnow();
 
-    RiverModel::Get()->Render();
+    //RiverModel::Get()->Render();
 
     RoadModel::Get()->Render();
 
@@ -595,30 +668,6 @@ void WorldTileModel::Render()
     //RenderInterestMap();
 
     SettlementModel::Get()->Render();
-
-    {
-        auto position = camera->GetTarget();
-
-        static const auto testShader = ShaderManager::GetShader("TestShader");
-
-        testShader->Bind();
-
-        testShader->SetConstant(camera->GetMatrix(), "viewMatrix");
-
-        testShader->SetConstant(1.0f, "opacity");
-
-        testShader->SetConstant(0.9f, "depth");
-
-        testShader->SetConstant(position, "hexPosition");
-
-        testShader->SetConstant(Float2{1920.0f, 1080.0f} * camera->GetZoomFactor(), "hexSize");
-
-        stencilBuffer->BindTexture(testShader, "picture");
-
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-
-        testShader->Unbind();
-    }
 
     RenderFogOfWar();
 

@@ -6,10 +6,15 @@
 #include "FlumenEngine/Utility/Color.hpp"
 
 class Shader;
+namespace render
+{
+    class Texture;
+}
 
 namespace world
 {
     class WorldScene;
+    class WorldGenerator;
 }
 
 namespace world::render 
@@ -18,11 +23,15 @@ namespace world::render
     {
         friend class Singleton;
 
+        friend class world::WorldGenerator;
+
         Shader *shader;
 
         Shader *groupShader;
 
         world::WorldScene *worldScene;
+
+        ::render::Texture *distortMap;
 
         WorldTileModel();
 

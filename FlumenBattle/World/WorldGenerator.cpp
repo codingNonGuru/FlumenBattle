@@ -1,4 +1,5 @@
 #include "FlumenEngine/Utility/Perlin.hpp"
+#include "FlumenEngine/Render/Texture.hpp"
 
 #include "WorldGenerator.h"
 #include "FlumenBattle/World/WorldScene.h"
@@ -22,6 +23,7 @@
 #include "FlumenBattle/PreGame/Types.h"
 #include "FlumenBattle/World/Tile/River.h"
 #include "FlumenBattle/World/RiverGenerator.h"
+#include "FlumenBattle/World/Render/WorldTileModel.h"
 
 using namespace world;
 
@@ -576,6 +578,16 @@ void WorldGenerator::GeneratePlayerGroup(const container::Array <pregame::Member
 void WorldGenerator::FinishGeneration()
 {
     RiverGenerator::Get()->GenerateDistortionMaps();
+
+    if(render::WorldTileModel::Get()->distortMap != nullptr)
+        return;
+
+    static container::Grid <float> noise(1024, 1024);
+
+    Perlin::Generate(noise.GetSize(), 0.2f, ContrastThreshold(0.5f), ContrastStrength(4.0f));
+    Perlin::Download(&noise);
+
+    render::WorldTileModel::Get()->distortMap = new ::render::Texture(noise.GetSize(), TextureFormats::ONE_FLOAT, &noise);
 }
 
 int WorldGenerator::GetMaximumPolityCount(int worldSize) const
