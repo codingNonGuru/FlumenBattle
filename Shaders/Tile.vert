@@ -20,6 +20,11 @@ layout (std430, binding = 1) buffer RELIEFS
 	int reliefs[];	
 };
 
+layout (std430, binding = 2) buffer TILE_INDICES
+{
+	int tileIndices[];	
+};
+
 // TEXTURES
 
 // OUTPUT
@@ -57,7 +62,8 @@ void main()
 	);
 	
 	uint vertexIndex = indices[gl_VertexID % 6];
-	uint objectIndex = uint(gl_VertexID / 6);
+	
+	uint objectIndex = uint(tileIndices[gl_VertexID / 6]);
 
 	vec2 position = vertices[vertexIndex] * hexSize + positions[objectIndex];
 

@@ -36,6 +36,10 @@ void RenderBuilder::Initialize()
 	
 	*frameBuffer = new StencilFrameBuffer(screen->GetSize());
 
+	frameBuffer = BufferManager::GetFrameBuffers().Add(FrameBuffers::FINAL_STENCIL);
+	
+	*frameBuffer = new StencilFrameBuffer(screen->GetSize());
+
 	//auto screenTexture = new Texture(screen->GetSize(), TextureFormats::FOUR_BYTE);
 	//TextureManager::AddTexture(screenTexture, "Screen");
 }

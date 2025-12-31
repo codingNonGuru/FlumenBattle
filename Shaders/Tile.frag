@@ -21,8 +21,8 @@ void main()
 	fragment.a = color;
 
     float distance = length(coords);
-    float falloff = exp(-distance * distance * 7.0f);
-    falloff = pow(falloff, pow(2.0f, 6.0f - 12.0f * falloff));
+    float falloff = exp(-distance * distance * 13.0f);
+    falloff = pow(falloff, pow(2.0f, 5.0f - 10.0f * falloff));
 
     falloff = clamp(falloff, 0.0f, 1.0f);
 

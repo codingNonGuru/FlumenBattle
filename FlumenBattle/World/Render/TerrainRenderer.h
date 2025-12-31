@@ -20,11 +20,17 @@ namespace world::render
 
         ::render::Texture *distortMap;
 
-        void RenderLandTilesToStencil();
+        void RenderLandTilesToDiffuseStencil();
 
-        void RenderSeaTiles();
+        void SharpenDiffuseStencil(Float3);
 
-        void RenderStencilToScreen();
+        void RenderSteppeTilesToDiffuseStencil();
+
+        void RenderSeaTilesToScreen();
+
+        void RenderLandTilesToScreen();
+
+        void RenderSteppeTilesToScreen();
 
     public:
         TerrainRenderer();

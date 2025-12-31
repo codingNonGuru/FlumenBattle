@@ -30,6 +30,10 @@ static DataBuffer *heatBuffer = nullptr;
 
 static DataBuffer *reliefBuffer = nullptr;
 
+static DataBuffer *tileQueueBuffer = nullptr;
+
+static container::Array <int> tileIndices;
+
 TerrainRenderer::TerrainRenderer()
 {
     distortMap = nullptr;
@@ -53,6 +57,8 @@ void TerrainRenderer::Initialize()
     static auto temperatures = container::Array <Float> (map->GetTileCount());
 
     static auto reliefs = container::Array <int> (map->GetTileCount());
+
+    tileIndices.Initialize(map->GetTileCount());
 
     for(auto &tile : map->GetTiles())
     //for(auto tile = map->GetTiles().GetStart(); tile != map->GetTiles().GetEnd(); ++tile)
@@ -92,18 +98,60 @@ void TerrainRenderer::Initialize()
     heatBuffer = new DataBuffer(temperatures.GetMemorySize(), temperatures.GetStart());
 
     reliefBuffer = new DataBuffer(reliefs.GetMemorySize(), reliefs.GetStart());
+
+    tileQueueBuffer = new DataBuffer(tileIndices.GetMemoryCapacity(), tileIndices.GetStart());
 }
 
 void TerrainRenderer::Render()
 {
-    RenderLandTilesToStencil();
+    static const auto map = WorldScene::Get()->GetWorldMap();
 
-    RenderSeaTiles();
+    tileIndices.Reset();
 
-    RenderStencilToScreen();
+    for(auto &tile : map->GetTiles())
+    {
+        if(tile.Type == WorldTiles::LAND)
+        {
+            auto index = &tile - map->GetTiles().GetStart();
+            *tileIndices.Add() = index;
+        }
+    }
+
+    tileQueueBuffer->UploadData(tileIndices.GetStart(), tileIndices.GetMemorySize());
+
+    RenderLandTilesToDiffuseStencil();
+
+    SharpenDiffuseStencil(Float3(0.95f, 0.85f, 0.7f));
+
+    RenderSeaTilesToScreen();
+
+    RenderLandTilesToScreen();
+
+    tileIndices.Reset();
+
+    for(auto &tile : map->GetTiles())
+    {
+        if(tile.Type == WorldTiles::LAND && (tile.HasBiome(world::WorldBiomes::STEPPE) || tile.HasBiome(world::WorldBiomes::WOODS)))
+        {
+            auto index = &tile - map->GetTiles().GetStart();
+            *tileIndices.Add() = index;
+        }
+    }
+
+    tileQueueBuffer->UploadData(tileIndices.GetStart(), tileIndices.GetMemorySize());
+
+    RenderLandTilesToDiffuseStencil();
+
+    SharpenDiffuseStencil(Float3(0.4f, 0.6f, 0.05f));
+
+    RenderLandTilesToScreen();
+
+    //RenderSteppeTilesToScreen();
+
+    BufferManager::BindFrameBuffer(FrameBuffers::DEFAULT);
 }
 
-void TerrainRenderer::RenderLandTilesToStencil()
+void TerrainRenderer::RenderLandTilesToDiffuseStencil()
 {
     static auto stencilBuffer = BufferManager::GetFrameBuffer(FrameBuffers::STENCIL);
     stencilBuffer->BindBuffer();
@@ -121,6 +169,8 @@ void TerrainRenderer::RenderLandTilesToStencil()
 
     reliefBuffer->Bind(1);
 
+    tileQueueBuffer->Bind(2);
+
     tileShader->Bind();
 
     tileShader->SetConstant(camera->GetMatrix(), "viewMatrix");
@@ -131,12 +181,12 @@ void TerrainRenderer::RenderLandTilesToStencil()
 
     tileShader->SetConstant(map->WORLD_TILE_SIZE * 5.0f, "hexSize");
 
-    glDrawArrays(GL_TRIANGLES, 0, 6 * map->GetTileCount());
+    glDrawArrays(GL_TRIANGLES, 0, 6 * tileIndices.GetSize());
 
     tileShader->Unbind();
 }
 
-void TerrainRenderer::RenderSeaTiles()
+void TerrainRenderer::RenderSeaTilesToScreen()
 {
     BufferManager::BindFrameBuffer(FrameBuffers::DEFAULT);
 
@@ -166,33 +216,74 @@ void TerrainRenderer::RenderSeaTiles()
     newHexShader->Unbind();
 }
 
-void TerrainRenderer::RenderStencilToScreen()
+void TerrainRenderer::SharpenDiffuseStencil(Float3 color)
 {
-    BufferManager::BindFrameBuffer(FrameBuffers::DEFAULT);
+    static auto finalStencilBuffer = BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL);
+
+    finalStencilBuffer->BindBuffer();
+    finalStencilBuffer->Clear(Color{0.0f, 0.0f, 0.0f, 0.0f});
 
     static auto stencilBuffer = BufferManager::GetFrameBuffer(FrameBuffers::STENCIL);
 
     auto position = camera->GetTarget();
 
-    static const auto testShader = ShaderManager::GetShader("TestShader");
+    static const auto shader = ShaderManager::GetShader("Sharpen");
 
-    testShader->Bind();
+    shader->Bind();
 
-    testShader->SetConstant(camera->GetMatrix(), "viewMatrix");
+    shader->SetConstant(camera->GetMatrix(), "viewMatrix");
 
-    testShader->SetConstant(1.0f, "opacity");
+    shader->SetConstant(1.0f, "opacity");
 
-    testShader->SetConstant(0.1f, "depth");
+    shader->SetConstant(0.1f, "depth");
 
-    testShader->SetConstant(position, "hexPosition");
+    shader->SetConstant(position, "hexPosition");
 
-    testShader->SetConstant(Float2{1920.0f, 1080.0f} * camera->GetZoomFactor(), "hexSize");
+    shader->SetConstant(Float2{1920.0f, 1080.0f} * camera->GetZoomFactor(), "hexSize");
 
-    stencilBuffer->BindTexture(testShader, "picture");
+    shader->SetConstant(color, "color");
 
-    testShader->BindTexture(distortMap, "distort");
+    stencilBuffer->BindTexture(shader, "picture");
+
+    shader->BindTexture(distortMap, "distort");
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    testShader->Unbind();
+    shader->Unbind();
+}
+
+void TerrainRenderer::RenderLandTilesToScreen()
+{
+    static auto finalStencilBuffer = BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL);
+
+    BufferManager::BindFrameBuffer(FrameBuffers::DEFAULT);
+
+    static const auto blitShader = ShaderManager::GetShader("Blit");
+
+    blitShader->Bind();
+
+    blitShader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+    blitShader->SetConstant(0.1f, "depth");
+
+    auto position = camera->GetTarget();
+    blitShader->SetConstant(position, "hexPosition");
+
+    blitShader->SetConstant(Float2{1920.0f, 1080.0f} * camera->GetZoomFactor(), "hexSize");
+
+    finalStencilBuffer->BindTexture(blitShader, "picture");
+
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    blitShader->Unbind();
+}
+
+void TerrainRenderer::RenderSteppeTilesToDiffuseStencil()
+{
+
+}
+
+void TerrainRenderer::RenderSteppeTilesToScreen()
+{
+
 }

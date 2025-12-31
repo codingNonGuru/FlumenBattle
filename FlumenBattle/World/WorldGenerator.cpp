@@ -584,7 +584,7 @@ void WorldGenerator::FinishGeneration()
 
     static container::Grid <float> noise(1024, 1024);
 
-    Perlin::Generate(noise.GetSize(), 0.2f, ContrastThreshold(0.5f), ContrastStrength(4.0f));
+    Perlin::Generate(noise.GetSize(), 0.4f, ContrastThreshold(0.5f), ContrastStrength(4.0f));
     Perlin::Download(&noise);
 
     render::TerrainRenderer::Get()->distortMap = new ::render::Texture(noise.GetSize(), TextureFormats::ONE_FLOAT, &noise);
