@@ -73,10 +73,10 @@ void WorldTile::Initialize()
         switch(Biome->Type)
         {
             case WorldBiomes::DESERT:
-                if(Heat < 86)
-                    return DIRT_COLOR;
-                else
+                if(IsArid() == true)
                     return DESERT_COLOR;
+                else
+                    return DIRT_COLOR;
             case WorldBiomes::STEPPE:
                 if(IsScrubland == true)
                 {
@@ -100,6 +100,11 @@ void WorldTile::Initialize()
     color = Color::Lighten(color, utility::GetRandom(-variationFactor, variationFactor));
 
     Shade = color;
+}
+
+bool WorldTile::IsArid() const
+{
+    return Biome->Type == WorldBiomes::DESERT && Heat >= 86;
 }
 
 const engine::thread::HexBuffer <WorldTile> WorldTile::GetNearbyTiles(Integer range)

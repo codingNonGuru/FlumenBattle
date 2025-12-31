@@ -137,6 +137,8 @@ namespace world::tile
 
         settlement::Settlement * GetOwner() {return owner;}
 
+        bool IsArid() const;
+
         Float4 GetShade() const;
 
         Integer GetPenalty() const;

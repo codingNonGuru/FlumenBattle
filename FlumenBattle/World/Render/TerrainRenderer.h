@@ -22,15 +22,13 @@ namespace world::render
 
         void RenderLandTilesToDiffuseStencil();
 
-        void SharpenDiffuseStencil(Float3);
+        void SharpenDiffuseStencil(Color);
 
         void RenderSteppeTilesToDiffuseStencil();
 
         void RenderSeaTilesToScreen();
 
-        void RenderLandTilesToScreen();
-
-        void RenderSteppeTilesToScreen();
+        void RenderLandTilesToScreen(float);
 
     public:
         TerrainRenderer();

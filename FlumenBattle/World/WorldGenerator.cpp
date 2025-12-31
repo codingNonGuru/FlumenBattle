@@ -31,9 +31,9 @@ using namespace world;
 
 static const auto MAXIMUM_TILE_ELEVATION = 1000;
 
-static const auto SIZE_TO_GIRTH_FACTOR = 12.0f;
+static const auto SIZE_TO_GIRTH_FACTOR = 15.0f;
 
-const auto SCRUBLAND_HEAT_THRESHOLD = 35;
+const auto SCRUBLAND_HEAT_THRESHOLD = 50;
 
 int WorldGenerator::GenerateWorld(
     pregame::NewWorldData data, 

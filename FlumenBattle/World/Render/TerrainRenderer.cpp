@@ -104,7 +104,13 @@ void TerrainRenderer::Initialize()
 
 void TerrainRenderer::Render()
 {
+    RenderSeaTilesToScreen();
+
     static const auto map = WorldScene::Get()->GetWorldMap();
+
+    auto const DESERT_COLOR = Color(0.9f, 0.5f, 0.2f, 1.0f);
+    auto const DIRT_COLOR = Color(0.9f, 0.7f, 0.5f, 1.0f);
+    auto const GRASS_COLOR = Color(0.4f, 0.6f, 0.05f, 1.0f);
 
     tileIndices.Reset();
 
@@ -121,17 +127,16 @@ void TerrainRenderer::Render()
 
     RenderLandTilesToDiffuseStencil();
 
-    SharpenDiffuseStencil(Float3(0.95f, 0.85f, 0.7f));
+    SharpenDiffuseStencil(DESERT_COLOR);
 
-    RenderSeaTilesToScreen();
+    RenderLandTilesToScreen(0.05f);
 
-    RenderLandTilesToScreen();
 
     tileIndices.Reset();
 
     for(auto &tile : map->GetTiles())
     {
-        if(tile.Type == WorldTiles::LAND && (tile.HasBiome(world::WorldBiomes::STEPPE) || tile.HasBiome(world::WorldBiomes::WOODS)))
+        if(tile.Type == WorldTiles::LAND && (tile.IsArid() == false))
         {
             auto index = &tile - map->GetTiles().GetStart();
             *tileIndices.Add() = index;
@@ -142,11 +147,50 @@ void TerrainRenderer::Render()
 
     RenderLandTilesToDiffuseStencil();
 
-    SharpenDiffuseStencil(Float3(0.4f, 0.6f, 0.05f));
+    SharpenDiffuseStencil(DIRT_COLOR * 0.9f + Color::WHITE * 0.1f);
 
-    RenderLandTilesToScreen();
+    RenderLandTilesToScreen(0.06f);
 
-    //RenderSteppeTilesToScreen();
+
+    tileIndices.Reset();
+
+    for(auto &tile : map->GetTiles())
+    {
+        if(tile.Type == WorldTiles::LAND && tile.HasBiome(WorldBiomes::DESERT) == false)
+        {
+            auto index = &tile - map->GetTiles().GetStart();
+            *tileIndices.Add() = index;
+        }
+    }
+
+    tileQueueBuffer->UploadData(tileIndices.GetStart(), tileIndices.GetMemorySize());
+
+    RenderLandTilesToDiffuseStencil();
+
+    SharpenDiffuseStencil(GRASS_COLOR * 0.7f + DIRT_COLOR * 0.3f);
+
+    RenderLandTilesToScreen(0.07f);
+
+
+    tileIndices.Reset();
+
+    for(auto &tile : map->GetTiles())
+    {
+        if(tile.Type == WorldTiles::LAND && tile.HasBiome(WorldBiomes::STEPPE) == true && tile.IsScrubland == true)
+        {
+            auto index = &tile - map->GetTiles().GetStart();
+            *tileIndices.Add() = index;
+        }
+    }
+
+    tileQueueBuffer->UploadData(tileIndices.GetStart(), tileIndices.GetMemorySize());
+
+    RenderLandTilesToDiffuseStencil();
+
+    SharpenDiffuseStencil(GRASS_COLOR * 0.3f + DIRT_COLOR * 0.7f);
+
+    RenderLandTilesToScreen(0.08f);
+
 
     BufferManager::BindFrameBuffer(FrameBuffers::DEFAULT);
 }
@@ -216,7 +260,7 @@ void TerrainRenderer::RenderSeaTilesToScreen()
     newHexShader->Unbind();
 }
 
-void TerrainRenderer::SharpenDiffuseStencil(Float3 color)
+void TerrainRenderer::SharpenDiffuseStencil(Color color)
 {
     static auto finalStencilBuffer = BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL);
 
@@ -241,7 +285,7 @@ void TerrainRenderer::SharpenDiffuseStencil(Float3 color)
 
     shader->SetConstant(Float2{1920.0f, 1080.0f} * camera->GetZoomFactor(), "hexSize");
 
-    shader->SetConstant(color, "color");
+    shader->SetConstant(color.GetRGB(), "color");
 
     stencilBuffer->BindTexture(shader, "picture");
 
@@ -252,7 +296,7 @@ void TerrainRenderer::SharpenDiffuseStencil(Float3 color)
     shader->Unbind();
 }
 
-void TerrainRenderer::RenderLandTilesToScreen()
+void TerrainRenderer::RenderLandTilesToScreen(float depth)
 {
     static auto finalStencilBuffer = BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL);
 
@@ -264,7 +308,7 @@ void TerrainRenderer::RenderLandTilesToScreen()
 
     blitShader->SetConstant(camera->GetMatrix(), "viewMatrix");
 
-    blitShader->SetConstant(0.1f, "depth");
+    blitShader->SetConstant(depth, "depth");
 
     auto position = camera->GetTarget();
     blitShader->SetConstant(position, "hexPosition");
@@ -279,11 +323,6 @@ void TerrainRenderer::RenderLandTilesToScreen()
 }
 
 void TerrainRenderer::RenderSteppeTilesToDiffuseStencil()
-{
-
-}
-
-void TerrainRenderer::RenderSteppeTilesToScreen()
 {
 
 }
