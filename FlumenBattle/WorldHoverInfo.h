@@ -11,6 +11,8 @@ namespace world
     {
         Text *infoLabel;
 
+        Text *fpsLabel;
+
         ProgressBar *scienceProgress;
 
         void HandleConfigure() override;

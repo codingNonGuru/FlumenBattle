@@ -513,6 +513,11 @@ void WorldTileModel::Render()
 
     RenderImprovements();
 
+    if(worldController->GetHoveredTile() != nullptr)
+    {
+        engine::render::HexRenderer::RenderEmptyHex(camera, worldController->GetHoveredTile()->Position, WORLD_TILE_SIZE, 0.5f, Color::WHITE, 0.5f);
+    }
+
     SettlementModeRenderer::Get()->RenderBorderExpansionMap();
 
     SettlementModeRenderer::Get()->RenderSettleModeMap();

@@ -2,6 +2,7 @@
 #include "FlumenEngine/Interface/Text.hpp"
 #include "FlumenEngine/Interface/Sprite.hpp"
 #include "FlumenEngine/Interface/ProgressBar.h"
+#include "FlumenEngine/Core/Engine.hpp"
 
 #include "WorldHoverInfo.h"
 #include "FlumenBattle/World/WorldController.h"
@@ -26,6 +27,13 @@ void WorldHoverInfo::HandleConfigure()
     infoLabel->LockWidth(size_.x - 10);
     infoLabel->Enable();
 
+    fpsLabel = ElementFactory::BuildText(
+        {Size(), drawOrder_ + 1, {Position2(0.0f, 0.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, this}},
+        {{"Small"}, color, "Pop 1"}
+    );
+    fpsLabel->SetAlignment(Text::Alignments::LEFT);
+    fpsLabel->Enable();
+
     scienceProgress = ElementFactory::BuildProgressBar <ProgressBar>(
         {Size(256, 16), drawOrder_ + 1, {ElementAnchors::LOWER_CENTER, ElementPivots::UPPER_CENTER, infoLabel}, {"Settings", true}},
         {"SettingsBar", {20.0f, 8.0f}}
@@ -35,6 +43,9 @@ void WorldHoverInfo::HandleConfigure()
 
 void WorldHoverInfo::HandleUpdate()
 {
+    int averageFps = Engine::GetAverageFPS();
+    fpsLabel->Setup(Word("FPS: ") << averageFps);
+
     auto tile = WorldController::Get()->GetHoveredTile();
     if(tile == nullptr)
     {
