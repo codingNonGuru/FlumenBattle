@@ -492,6 +492,40 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
     auto pathSegments = settlement::SettlementAllocator::Get()->GetPathSegments();
     scene.pathSegments = pathSegments;
 
+    for(auto &tile : worldMap->GetTiles())
+    {
+        RaceTypes *races[2] = {&tile.MajorRace, &tile.MinorRace};
+
+        for(int i = 0; i < 2; ++i)
+        {
+            auto factor = *raceDistributionMaps[i].Get(tile.SquareCoordinates);
+            if(factor < 0.16f)
+            {
+                *races[i] = RaceTypes::DWARF;
+            }
+            else if (factor < 0.33f)
+            {
+                *races[i] = RaceTypes::ORC;
+            }
+            else if (factor < 0.5f)
+            {
+                *races[i] = RaceTypes::GNOME;
+            }
+            else if (factor < 0.56f)
+            {
+                *races[i] = RaceTypes::GOBLIN;
+            }
+            else if (factor < 0.83f)
+            {
+                *races[i] = RaceTypes::ELF;
+            }
+            else
+            {
+                *races[i] = RaceTypes::HUMAN;
+            }
+        }
+    }
+
     auto findSettleLocation = [&]
     {
         while(true)
@@ -521,13 +555,13 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
     for(auto i = 0; i < 1; ++i)
     {
         auto location = findSettleLocation();
-        newSettlement = scene.FoundSettlement(location, RaceTypes::DWARF, nullptr);
+        newSettlement = scene.FoundSettlement(location, location->MajorRace, nullptr);
 
         for(auto &tile : location->GetTileRing(5).Tiles)
         {
             if(tile->Type == WorldTiles::LAND)
             {
-                scene.FoundSettlement(tile, RaceTypes::DWARF, nullptr);
+                scene.FoundSettlement(tile, tile->MajorRace, nullptr);
                 break;
             }
         }

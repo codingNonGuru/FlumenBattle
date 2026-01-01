@@ -5,6 +5,8 @@
 #include "FlumenCore/Singleton.h"
 #include "FlumenCore/Container/Grid.hpp"
 
+#define RACE_MAP_COUNT 2
+
 namespace pregame
 {
     struct NewWorldData;
@@ -19,6 +21,8 @@ namespace world
     {
         friend class WorldScene;
 
+        container::Grid <float> raceDistributionMaps[RACE_MAP_COUNT];
+
         void GenerateSociety(pregame::NewWorldData);
 
         void DefineRivers();
@@ -31,6 +35,8 @@ namespace world
         int GetMaximumSettlementCount(int) const;
 
         int GetMaximumGroupCount(int) const;
+
+        container::Grid <float> *GetRaceDistributionMaps() {return raceDistributionMaps;}
 
         void GeneratePlayerGroup(const container::Array <pregame::MemberData> &);
 

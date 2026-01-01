@@ -10,6 +10,8 @@
 #include "FlumenBattle/World/Types.h"
 #include "FlumenBattle/World/Settlement/Types.h"
 
+struct Race;
+
 namespace world
 {
     namespace group
@@ -97,6 +99,10 @@ namespace world::tile
         const WorldBiome *Biome;
 
         bool IsScrubland {false};
+
+        RaceTypes MajorRace {RaceTypes::NONE};
+
+        RaceTypes MinorRace {RaceTypes::NONE};
 
         WorldTile() {}
 

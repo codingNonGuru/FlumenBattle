@@ -114,6 +114,16 @@ namespace pregame
         
         Perlin::Download(&forestNoise);
 
+        auto raceMaps = world::WorldGenerator::Get()->GetRaceDistributionMaps();
+        for(int i = 0; i < RACE_MAP_COUNT; ++i)
+        {
+            raceMaps[i].Initialize(MAXIMUM_MAP_SIZE, MAXIMUM_MAP_SIZE);
+
+            Perlin::Generate(Size(raceMaps[i].GetWidth(), raceMaps[i].GetHeight()), 0.4f, ContrastThreshold(0.5f), ContrastStrength(4.0f));
+        
+            Perlin::Download(&raceMaps[i]);
+        }
+
         engine::ThreadManager::Get()->LaunchAsyncThread(
             {this, &PreGameState::FinishWorldGeneration}, 
             &world::WorldGenerator::GenerateWorld, world::WorldGenerator::Get(), 
