@@ -47,6 +47,8 @@
 
 #define POPULATION_NEED_COUNT 6
 
+#define RACE_GROUPS_PER_SETTTLEMENT 6
+
 using namespace world::settlement;
 
 static int lastUniqueId = 0;
@@ -112,6 +114,8 @@ void SettlementAllocator::PreallocateMaximumMemory()
 
     needMemory = container::ArrayAllocator <Need>::PreallocateMemory (settlementCount, POPULATION_NEED_COUNT);
 
+    raceGroupMemory = container::ArrayAllocator <RaceGroup>::PreallocateMemory (settlementCount, RACE_GROUPS_PER_SETTTLEMENT);
+
     explorationMemory = container::PoolAllocator <ExploreResult>::PreallocateMemory (settlementCount, EXPLORATIONS_PER_SETTLEMENT);
 
     extraDataMemory = container::Pool <PopExtraData>::PreallocateMemory (settlementCount);
@@ -175,6 +179,8 @@ void SettlementAllocator::AllocateWorldMemory(int worldSize)
 
     needAllocator = container::ArrayAllocator <Need> (settlementCount, POPULATION_NEED_COUNT, needMemory);
 
+    raceGroupAllocator = container::ArrayAllocator <RaceGroup> (settlementCount, RACE_GROUPS_PER_SETTTLEMENT, raceGroupMemory); 
+
     explorationAllocator = container::PoolAllocator <ExploreResult> (settlementCount, EXPLORATIONS_PER_SETTLEMENT, explorationMemory);
 
     extraDataAllocator = container::Pool <PopExtraData> (settlementCount, extraDataMemory);
@@ -228,7 +234,7 @@ Settlement * SettlementAllocator::Allocate(bool hasExtraData)
 
     ResourceAllocator::Allocate(resourceAllocator, settlement->resourceHandler);
 
-    PopAllocator::Allocate(needAllocator, settlement->popHandler);
+    PopAllocator::Allocate(needAllocator, raceGroupAllocator, settlement->popHandler);
 
     if(hasExtraData == true)
     {
@@ -307,7 +313,7 @@ void SettlementAllocator::Free(Settlement *settlement)
 
     ResourceAllocator::Free(resourceAllocator, settlement->resourceHandler);
 
-    PopAllocator::Free(needAllocator, settlement->popHandler);
+    PopAllocator::Free(needAllocator, raceGroupAllocator, settlement->popHandler);
 
     PopAllocator::FreeExtraData(extraDataAllocator, cohortAllocator, settlement->popHandler);
 

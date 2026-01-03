@@ -1,11 +1,13 @@
 #include "PopHandler.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/Polity/Polity.h"
 #include "FlumenBattle/Config.h"
 #include "FlumenBattle/Utility/Utility.h"
 #include "FlumenBattle/World/WorldTime.h"
 #include "FlumenBattle/World/Settlement/PopExtraData.h"
 #include "FlumenBattle/World/Settlement/Cohort.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 
 using namespace world::settlement;
 
@@ -21,13 +23,49 @@ static const auto COMPLETE_DISAPPEARENCE_TIME = world::WorldTime::GetTicksFromDa
 
 static const auto GROWTH_THRESHOLD = 10000;
 
+const container::Array <RaceGroup> &PopHandler::GetNeighbourRaces()
+{
+    static container::Array <RaceGroup> neighbourRaces(64);
+
+    neighbourRaces.Reset();
+
+    for(auto &tile : settlement->GetTiles())
+    {
+        auto group = neighbourRaces.Find(tile.Tile->MajorRace);
+        if(group != nullptr)
+        {
+            group->Size += 2;
+        }
+        else
+        {
+            *neighbourRaces.Add() = {tile.Tile->MajorRace, 2};
+        }
+
+        group = neighbourRaces.Find(tile.Tile->MinorRace);
+        if(group != nullptr)
+        {
+            group->Size += 1;
+        }
+        else
+        {
+            *neighbourRaces.Add() = {tile.Tile->MinorRace, 1};
+        }
+    }
+
+    return neighbourRaces;
+}
+
 void PopHandler::Initialize(Settlement *settlement)
 {
     this->settlement = settlement;
 
-    population = 5;
+    highestPopulationEver = 0;
 
-    highestPopulationEver = population;
+    auto &races = GetNeighbourRaces();
+    for(int i = 0; i < 5; ++i)
+    {
+        IncreasePopulation(settlement, &races);
+    }
 
     timeSinceAbandonment = 0;
 
@@ -260,8 +298,23 @@ const container::Pool <Cohort> &PopHandler::GetCohorts() const
     return extraData != nullptr ? extraData->GetCohorts() : dummyCohorts;
 }
 
-void PopHandler::IncreasePopulation(Settlement *settlement)
+void PopHandler::IncreasePopulation(Settlement *settlement, const container::Array <RaceGroup> *races)
 {
+    if(races == nullptr)
+        races = &GetNeighbourRaces();
+
+    auto chosenGroup = utility::GetWeightedRandom(*races);
+
+    auto existingGroup = raceGroups.Find(chosenGroup->Race);
+    if(existingGroup == nullptr)
+    {
+        *raceGroups.Add() = {chosenGroup->Race, 1};
+    }
+    else
+    {
+        existingGroup->Size += 1;
+    }
+
     population++;
 
     if(population > highestPopulationEver)

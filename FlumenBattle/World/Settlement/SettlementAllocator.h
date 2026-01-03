@@ -38,6 +38,7 @@ namespace world::settlement
     struct ExploreResult;
     class PopExtraData;
     class Cohort;
+    struct RaceGroup;
 
     class SettlementAllocator : public core::Singleton <SettlementAllocator>
     {
@@ -95,6 +96,8 @@ namespace world::settlement
 
         container::ArrayAllocator <Need>::Memory needMemory;
 
+        container::ArrayAllocator <RaceGroup>::Memory raceGroupMemory;
+
         container::PoolAllocator <ExploreResult>::Memory explorationMemory;
 
         container::Pool <PopExtraData>::Memory extraDataMemory;
@@ -146,6 +149,8 @@ namespace world::settlement
         container::PoolAllocator <group::GroupEssence> raiderAllocator;
 
         container::ArrayAllocator <Need> needAllocator;
+
+        container::ArrayAllocator <RaceGroup> raceGroupAllocator;
 
         container::PoolAllocator <ExploreResult> explorationAllocator;
 

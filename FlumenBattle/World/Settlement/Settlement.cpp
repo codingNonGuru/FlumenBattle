@@ -59,8 +59,6 @@ void Settlement::Initialize(Word name, Color banner, tile::WorldTile *location, 
 
     this->resourceHandler.Initialize();
 
-    this->popHandler.Initialize(this);
-
     this->tradeHandler.Initialize();
 
     this->name = name;
@@ -100,6 +98,8 @@ void Settlement::Initialize(Word name, Color banner, tile::WorldTile *location, 
     {
         tile.Tile->AssertOwnership(this);
     }
+
+    this->popHandler.Initialize(this);
 
     AddBuilding(BuildingTypes::HOUSING);
 

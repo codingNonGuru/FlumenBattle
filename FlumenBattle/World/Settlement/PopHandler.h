@@ -4,12 +4,24 @@
 #include "FlumenCore/Container/Pool.hpp"
 
 #include "FlumenBattle/World/Settlement/Types.h"
+#include "FlumenBattle/Types.hpp"
 
 namespace world::settlement
 {
     class Settlement;
     class PopExtraData;
     class Cohort;
+
+    struct RaceGroup
+    {
+        RaceTypes Race;
+
+        int Size;
+
+        bool operator == (const RaceTypes &other) {return this->Race == other;}
+
+        operator int() {return this->Size;}
+    };
 
     struct Need
     {
@@ -60,6 +72,10 @@ namespace world::settlement
 
         bool isEcstatic;
 
+        container::Array <RaceGroup> raceGroups;
+
+        const container::Array <RaceGroup> &GetNeighbourRaces();
+
     public:
         void Initialize(Settlement *);
 
@@ -95,7 +111,7 @@ namespace world::settlement
 
         int GetAbandonmentSeverity() const;
 
-        void IncreasePopulation(Settlement *);
+        void IncreasePopulation(Settlement *, const container::Array <RaceGroup> * = nullptr);
 
         void KillPopulation();
 
@@ -114,16 +130,20 @@ namespace world::settlement
     {
         friend class SettlementAllocator;
 
-        static void Allocate(container::ArrayAllocator <Need> &allocator, PopHandler &handler) 
+        static void Allocate(container::ArrayAllocator <Need> &allocator, container::ArrayAllocator <RaceGroup> &raceAllocator, PopHandler &handler) 
         {
             handler.needs.Initialize(allocator);
+
+            handler.raceGroups.Initialize(raceAllocator);
         }
 
         static void AllocateExtraData(container::Pool <PopExtraData> &, container::PoolAllocator <Cohort> &, PopHandler &);
 
-        static void Free(container::ArrayAllocator <Need> &allocator, PopHandler &handler) 
+        static void Free(container::ArrayAllocator <Need> &allocator, container::ArrayAllocator <RaceGroup> &raceAllocator, PopHandler &handler) 
         {
             handler.needs.Terminate(allocator);
+
+            handler.raceGroups.Terminate(raceAllocator);
         }
 
         static void FreeExtraData(container::Pool <PopExtraData> &, container::PoolAllocator <Cohort> &, PopHandler &);
