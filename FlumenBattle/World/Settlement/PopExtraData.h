@@ -2,6 +2,8 @@
 
 #include "FlumenCore/Conventions.hpp"
 
+enum class RaceTypes;
+
 namespace world::settlement
 {
     class Cohort;
@@ -17,6 +19,10 @@ namespace world::settlement
 
     public:
         void Initialize(PopHandler *);
+
+        void AddPopulation(RaceTypes);
+
+        RaceTypes KillRandomPopulation();
 
         const container::Pool <Cohort> &GetCohorts() const {return cohorts;}
     };

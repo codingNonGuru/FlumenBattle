@@ -55,7 +55,7 @@ Settlement* SettlementFactory::Create(SettlementBuildData buildData, bool hasExt
 
     auto race = RaceFactory::BuildRace(buildData.Race);
 
-    settlement->Initialize(name, *banner, buildData.Location, race);
+    settlement->Initialize(name, *banner, buildData.Location);
 
     buildData.Location->Settle(settlement);
 

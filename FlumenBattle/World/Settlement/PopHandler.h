@@ -6,6 +6,8 @@
 #include "FlumenBattle/World/Settlement/Types.h"
 #include "FlumenBattle/Types.hpp"
 
+struct Race;
+
 namespace world::settlement
 {
     class Settlement;
@@ -124,6 +126,10 @@ namespace world::settlement
         Settlement *GetSettlement() const {return settlement;}
 
         const container::Pool <Cohort> &GetCohorts() const;
+
+        const container::Array <RaceGroup> &GetRaces() const {return raceGroups;}
+
+        const Race *GetMostPopulousRace();
     };
 
     class PopAllocator

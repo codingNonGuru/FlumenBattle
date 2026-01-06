@@ -8,6 +8,7 @@
 #include "FlumenBattle/World/Settlement/PopExtraData.h"
 #include "FlumenBattle/World/Settlement/Cohort.h"
 #include "FlumenBattle/World/Tile/WorldTile.h"
+#include "FlumenBattle/RaceFactory.h"
 
 using namespace world::settlement;
 
@@ -58,6 +59,8 @@ const container::Array <RaceGroup> &PopHandler::GetNeighbourRaces()
 void PopHandler::Initialize(Settlement *settlement)
 {
     this->settlement = settlement;
+
+    population = 0;
 
     highestPopulationEver = 0;
 
@@ -298,6 +301,20 @@ const container::Pool <Cohort> &PopHandler::GetCohorts() const
     return extraData != nullptr ? extraData->GetCohorts() : dummyCohorts;
 }
 
+const Race *PopHandler::GetMostPopulousRace()
+{
+    auto largestGroup = raceGroups.GetStart();
+    for(auto &group : raceGroups)
+    {
+        if(group.Size > largestGroup->Size)
+        {
+            largestGroup = &group;
+        }
+    }
+
+    return RaceFactory::BuildRace(largestGroup->Race);
+}
+
 void PopHandler::IncreasePopulation(Settlement *settlement, const container::Array <RaceGroup> *races)
 {
     if(races == nullptr)
@@ -322,7 +339,15 @@ void PopHandler::IncreasePopulation(Settlement *settlement, const container::Arr
         highestPopulationEver = population;
     }
 
-    settlement->GetPolity()->RegisterPopIncrease(settlement);
+    if(extraData != nullptr)
+    {
+        extraData->AddPopulation(chosenGroup->Race);
+    }
+
+    if(settlement->GetPolity() != nullptr)
+    {
+        settlement->GetPolity()->RegisterPopIncrease(settlement);
+    }
 }
 
 void PopHandler::KillPopulation()
@@ -331,6 +356,30 @@ void PopHandler::KillPopulation()
     if(population < 0)
     {
         population = 0;
+    }
+
+    if(extraData != nullptr)
+    {
+        auto race = extraData->KillRandomPopulation();
+
+        auto group = raceGroups.Find(race);
+        group->Size--;
+
+        if(group->Size == 0)
+        {
+            //raceGroups
+        }
+    }
+    else
+    {
+        auto group = raceGroups.GetRandom();
+
+        group->Size--;
+
+        if(group->Size == 0)
+        {
+            
+        }
     }
 }
 

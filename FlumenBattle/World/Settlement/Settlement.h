@@ -136,8 +136,6 @@ namespace world::settlement
 
         tile::WorldTile *location;
 
-        const Race *race;
-
         world::SimulationDomain *simulationDomain;
 
         SimulationLevels simulationLevel;
@@ -208,7 +206,7 @@ namespace world::settlement
 
         int turnsUntilDeletion;
 
-        void Initialize(Word, Color, tile::WorldTile *, const Race *);
+        void Initialize(Word, Color, tile::WorldTile *);
 
         void GrowBorders();
 
@@ -413,7 +411,7 @@ namespace world::settlement
 
         bool IsPlayerControlled() const;
 
-        const Race *GetRace() const {return race;}
+        const Race *GetRace() const;
 
         const Shipment &GetLastOutgoingShipment() {return tradeHandler.lastOutgoingShipment;}
 

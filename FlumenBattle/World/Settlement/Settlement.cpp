@@ -41,15 +41,13 @@ bool Link::operator== (const settlement::Path &path) const
     return *Path == path;
 }
 
-void Settlement::Initialize(Word name, Color banner, tile::WorldTile *location, const Race *race)
+void Settlement::Initialize(Word name, Color banner, tile::WorldTile *location)
 {
     this->isValid = true;
 
     this->foundationDate = WorldScene::Get()->GetTime().GetTickCount();
 
     this->location = location;
-
-    this->race = race;
 
     SetupSimulation();
 
@@ -637,6 +635,11 @@ bool Settlement::IsPlayerControlled() const
     return polity->IsPlayerControlled();
 }
 
+const Race *Settlement::GetRace() const 
+{
+    return popHandler.GetMostPopulousRace();
+}
+
 int Settlement::GetStandingBuildingCount() const
 {
     return buildingManager->GetStandingBuildingCount();
@@ -889,7 +892,7 @@ void Settlement::Update()
 
         buildingManager->ApplyModifiers(*this);
 
-        race->ApplyModifiers(*this);
+        GetRace()->ApplyModifiers(*this);
     };
 
     updateModifiers();
