@@ -12,6 +12,7 @@
 #include "GroupTab.h"
 #include "DiplomacyTab.h"
 #include "RecruitmentTab.h"
+#include "PopulationTab.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Polity/Polity.h"
@@ -39,6 +40,8 @@ static const auto GROUPS_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_S
 static const auto DIPLOMACY_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_D, {InputHandler::SHIFT}};
 
 static const auto RECRUITMENT_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_C, {InputHandler::SHIFT}};
+
+static const auto POPULATION_DISPLAY_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_P, {InputHandler::SHIFT}};
 
 void TabButton::HandleConfigure()
 {
@@ -73,6 +76,8 @@ void TabButton::Setup(RuleMenuTabs tab)
             return "D";
         case RuleMenuTabs::RECRUITMENT:
             return "C";
+        case RuleMenuTabs::POPULATION:
+            return "P";
         }
     } ();
 
@@ -159,6 +164,8 @@ void RuleMenu::HandleEnable()
 
     InputHandler::RegisterEvent(RECRUITMENT_DISPLAY_KEY, {this, &RuleMenu::HandleRecruitmentPressed});
 
+    InputHandler::RegisterEvent(POPULATION_DISPLAY_KEY, {this, &RuleMenu::HandlePopulationPressed});
+
     const auto playerPolity = WorldScene::Get()->GetPlayerPolity();
 
     rulerLabel->Setup(LongWord() << "Realm of " << playerPolity->GetRuler()->GetName());
@@ -181,6 +188,8 @@ void RuleMenu::HandleDisable()
     InputHandler::UnregisterEvent(DIPLOMACY_DISPLAY_KEY);
 
     InputHandler::UnregisterEvent(RECRUITMENT_DISPLAY_KEY);
+
+    InputHandler::UnregisterEvent(POPULATION_DISPLAY_KEY);
 }
 
 void RuleMenu::HandleEconomyPressed()
@@ -221,6 +230,11 @@ void RuleMenu::HandleDiplomacyPressed()
 void RuleMenu::HandleRecruitmentPressed()
 {
     SetCurrentTab(RuleMenuTabs::RECRUITMENT);
+}
+
+void RuleMenu::HandlePopulationPressed()
+{
+    SetCurrentTab(RuleMenuTabs::POPULATION);
 }
 
 void RuleMenu::Setup()
@@ -321,6 +335,17 @@ void RuleMenu::Setup()
     );
 
     *tabs.Add(RuleMenuTabs::RECRUITMENT) = recruitmentTab;
+
+    auto populationTab = ElementFactory::BuildElement <PopulationTab>
+    (
+        {
+            size_, 
+            drawOrder_, 
+            {this}
+        }
+    );
+
+    *tabs.Add(RuleMenuTabs::POPULATION) = populationTab;
 
     currentTab = RuleMenuTabs::ECONOMY;
 

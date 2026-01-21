@@ -26,7 +26,7 @@ namespace world::interface::rule
 {
     enum class RuleMenuTabs
     {
-        REALM, ECONOMY, TECHNOLOGY, BUILDING, TRADE, GROUPS, DIPLOMACY, RECRUITMENT, //SETTLEMENT, POPULATION
+        REALM, ECONOMY, TECHNOLOGY, BUILDING, TRADE, GROUPS, DIPLOMACY, RECRUITMENT, POPULATION, //SETTLEMENT
         COUNT
     };
 
@@ -81,6 +81,8 @@ namespace world::interface::rule
         void HandleDiplomacyPressed();
 
         void HandleRecruitmentPressed();
+
+        void HandlePopulationPressed();
 
         void SetCurrentTab(RuleMenuTabs);
 
