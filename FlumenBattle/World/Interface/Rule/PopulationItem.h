@@ -2,6 +2,8 @@
 
 #include "FlumenEngine/Interface/Element.hpp"
 
+class ProgressBar;
+
 namespace world::settlement
 {
     class Cohort;
@@ -15,6 +17,8 @@ namespace world::interface::rule
     class PopulationItem : public Element
     {
         Text *raceLabel;
+
+        ProgressBar *healthBar;
 
         const settlement::Cohort *cohort;
 

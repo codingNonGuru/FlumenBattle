@@ -14,5 +14,7 @@ namespace world::settlement
 
     public:
         void Initialize(const struct Race *);
+
+        static const int MAXIMUM_HEALTH = 100;
     };
 }

@@ -6,7 +6,7 @@ void Cohort::Initialize(const struct Race *race)
 {
     Race = race;
 
-    Health = 100;
+    Health = MAXIMUM_HEALTH;
 
     Experience = 0;
 }

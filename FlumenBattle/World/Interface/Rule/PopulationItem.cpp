@@ -1,4 +1,5 @@
 #include "FlumenEngine/Interface/ElementFactory.h"
+#include "FlumenEngine/Interface/ProgressBar.h"
 
 #include "PopulationItem.h"
 #include "FlumenBattle/World/Settlement/Cohort.h"
@@ -14,11 +15,20 @@ void PopulationItem::HandleConfigure()
         {{"Large"}, TEXT_COLOR, "X"}
     );
     raceLabel->Enable();
+
+    healthBar = ElementFactory::BuildProgressBar <ProgressBar>
+    (
+        {Size(52, 24), drawOrder_ + 1, {Position2(0.0f, -4.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, this}, {"BaseBar", true}},
+        {"BaseFillerRed", {6.0f, 6.0f}}
+    );
+    healthBar->Enable();
 }
 
 void PopulationItem::HandleUpdate()
 {
+    auto ratio = (float)cohort->Health / (float)cohort->MAXIMUM_HEALTH;
 
+    healthBar->SetProgress(ratio);
 }
 
 void PopulationItem::Setup(const settlement::Cohort *cohort)
