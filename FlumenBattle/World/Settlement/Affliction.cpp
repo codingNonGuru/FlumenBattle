@@ -1,6 +1,8 @@
 #include "Affliction.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/Condition.h"
+#include "FlumenBattle/World/Settlement/Cohort.h"
+#include "FlumenBattle/Utility/Utility.h"
 
 using namespace world::settlement;
 
@@ -95,7 +97,49 @@ AfflictionResult AfflictionPerformer::PerformMalaria(Settlement &settlement, Aff
 
     if(affliction.Stage == affliction.Type->StageCount)
     {
-        settlement.KillPopulation();
+        if(settlement.IsDeepSettlement() == true)
+        {   
+            auto lostHealth = 0;
+
+            auto &cohorts = settlement.GetPopCohorts();
+            for (auto &cohort : cohorts)
+            {
+                auto diceRoll = utility::RollD20Dice(affliction.Type->Throw, rollBonus);
+                if(diceRoll.IsAnyFailure() == true)
+                {
+                    auto health = 4 + utility::RollD8Dice();
+                    cohort.Health -= health;
+
+                    lostHealth += health;
+                }
+            }
+
+            settlement.GetPopulationHandler().currentHealth -= lostHealth;
+            if(settlement.GetPopulationHandler().currentHealth < 0)
+            {
+                settlement.GetPopulationHandler().currentHealth = 0;
+            }
+        }
+        else
+        {
+            auto lostHealth = 0;
+
+            for(int i = 0; i < settlement.GetPopulation(); ++i)
+            {
+                auto diceRoll = utility::RollD20Dice(affliction.Type->Throw, rollBonus);
+                if(diceRoll.IsAnyFailure() == true)
+                {
+                    lostHealth += 8;
+                }
+            }
+
+            settlement.GetPopulationHandler().currentHealth -= lostHealth;
+            if(settlement.GetPopulationHandler().currentHealth < 0)
+            {
+                settlement.GetPopulationHandler().currentHealth = 0;
+            }
+        }
+        /*settlement.KillPopulation();
         if(settlement.GetPopulation() > 7)
         {
             settlement.KillPopulation();
@@ -103,7 +147,7 @@ AfflictionResult AfflictionPerformer::PerformMalaria(Settlement &settlement, Aff
             {
                 settlement.KillPopulation();
             }
-        }
+        }*/
 
         result = AfflictionResultTypes::DEATH;
     }

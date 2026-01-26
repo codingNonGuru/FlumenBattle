@@ -8,6 +8,7 @@
 #include "FlumenBattle/World/Settlement/PopExtraData.h"
 #include "FlumenBattle/World/Settlement/Cohort.h"
 #include "FlumenBattle/World/Tile/WorldTile.h"
+#include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/RaceFactory.h"
 
 using namespace world::settlement;
@@ -23,6 +24,8 @@ static const auto ABANDONMENT_RECOVERY_DC = 15;
 static const auto COMPLETE_DISAPPEARENCE_TIME = world::WorldTime::GetTicksFromDays(7);
 
 static const auto GROWTH_THRESHOLD = 10000;
+
+static const auto POP_REGENERATION_RATE = 1;
 
 const container::Array <RaceGroup> &PopHandler::GetNeighbourRaces()
 {
@@ -75,6 +78,8 @@ void PopHandler::Initialize(Settlement *settlement)
     abandonmentSeverity = 0;
 
     growth = 0;
+
+    currentHealth = population * Cohort::MAXIMUM_HEALTH;
 
     needs.Reset();
 
@@ -506,6 +511,39 @@ void PopHandler::UpdateGrowth(Settlement *settlement)
     else if(growth < 0)
     {
         growth = 0;
+    }
+
+    RegenerateHealth();
+}
+
+void PopHandler::RegenerateHealth()
+{
+    static const auto &worldTime = world::WorldScene::Get()->GetTime();
+    if(worldTime.IsNewDayQuarter == false)
+        return;
+
+    if(extraData == nullptr)
+    {
+        currentHealth += population * POP_REGENERATION_RATE;
+        if(currentHealth > population * Cohort::MAXIMUM_HEALTH)
+        {
+            currentHealth = population * Cohort::MAXIMUM_HEALTH;
+        }
+    }
+    else
+    {
+        currentHealth = 0;
+
+        for(auto &cohort : extraData->GetCohorts())
+        {
+            cohort.Health += POP_REGENERATION_RATE;
+            if(cohort.Health > Cohort::MAXIMUM_HEALTH)
+            {
+                cohort.Health = Cohort::MAXIMUM_HEALTH;
+            }
+
+            currentHealth += cohort.Health;
+        }
     }
 }
 

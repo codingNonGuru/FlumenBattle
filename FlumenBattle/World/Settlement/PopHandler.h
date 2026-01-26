@@ -13,6 +13,7 @@ namespace world::settlement
     class Settlement;
     class PopExtraData;
     class Cohort;
+    class AfflictionPerformer;
 
     struct RaceGroup
     {
@@ -48,6 +49,8 @@ namespace world::settlement
     {
         friend class PopAllocator;
 
+        friend class AfflictionPerformer;
+
         Settlement *settlement;
 
         int population;
@@ -55,6 +58,8 @@ namespace world::settlement
         int highestPopulationEver;
 
         int growth;
+
+        int currentHealth;
 
         int timeSinceAbandonment;
 
@@ -77,6 +82,8 @@ namespace world::settlement
         container::Array <RaceGroup> raceGroups;
 
         const container::Array <RaceGroup> &GetNeighbourRaces();
+
+        void RegenerateHealth();
 
     public:
         void Initialize(Settlement *);

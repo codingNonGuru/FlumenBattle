@@ -57,6 +57,8 @@ namespace world
 
         bool IsNewDay;
 
+        bool IsNewDayQuarter;
+
         bool IsNewYear;
 
         WorldTime() {}
@@ -114,6 +116,7 @@ namespace world
             IsNewHour = false;
             IsNewDay = false;
             IsNewYear = false;
+            IsNewDayQuarter = false;
 
             TickCount++;
 
@@ -141,6 +144,8 @@ namespace world
                     }
                 }
             }
+
+            IsNewDayQuarter = IsNewHour == true && HourCount % 6 == 0;
 
             if(IsStopDelayed == true)
             {

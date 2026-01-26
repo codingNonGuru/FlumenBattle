@@ -924,7 +924,7 @@ void Settlement::Update()
     if(worldTime.MinuteCount == 0 && GetPopulation() > 3)
     {
         auto difficultyBonus = GetModifier(Modifiers::MALARIA_EMERGENCE_DIFFICULTY);
-        if(utility::GetRandom(1, 100) > 98 + difficultyBonus)
+        if(utility::GetRandom(1, 100) > 90 + difficultyBonus)
         {
             if(afflictions.Find(AfflictionTypes::MALARIA) == nullptr)
             {
