@@ -178,7 +178,7 @@ namespace world::settlement
 
         PopHandler popHandler;
 
-        int storage {500};
+        int storage;
 
         //Shipment lastOutgoingShipment;
         TradeHandler tradeHandler;
@@ -228,6 +228,8 @@ namespace world::settlement
         tile::WorldTile *GetLocation() const;
 
         Pool <SettlementTile> & GetTiles();
+
+        int GetStorage() const {return storage;}
 
         Integer GetIndustrialProduction() const;
 

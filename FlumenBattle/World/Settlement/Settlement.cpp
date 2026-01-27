@@ -36,6 +36,8 @@ using namespace world::settlement;
 
 #define BORDER_GROWTH_THRESHOLD 1000
 
+#define BASE_STORAGE_CAPACITY 700
+
 bool Link::operator== (const settlement::Path &path) const 
 {
     return *Path == path;
@@ -106,6 +108,8 @@ void Settlement::Initialize(Word name, Color banner, tile::WorldTile *location)
     AddBuilding(BuildingTypes::KEEP);
 
     this->needsToReorganizeWork = true;
+
+    this->storage = BASE_STORAGE_CAPACITY;
 }
 
 void Settlement::AddPath(Path *path) 

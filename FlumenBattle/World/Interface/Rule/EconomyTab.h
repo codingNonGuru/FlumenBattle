@@ -40,6 +40,8 @@ namespace world::interface::rule
 
         Element *icon;
 
+        ProgressBar *storageBar;
+
         ProgressBar *needBar;
 
         Text *needLabel;

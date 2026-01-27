@@ -40,9 +40,15 @@ void ResourceItem::HandleConfigure()
     );
     nameLabel->Enable();
 
+    storageBar = ElementFactory::BuildProgressBar <ProgressBar>(
+        {Size(80, 28), drawOrder_ + 1, {Position2(190.0f, 0.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}, {"BaseBar", true}},
+        {"BaseFillerRed", {6.0f, 6.0f}}
+    );
+    storageBar->Enable();
+
     storedLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {Position2(200.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
-        {{"Small"}, TEXT_COLOR}
+        {drawOrder_ + 3, {Position2(0.0f, 0.0f), storageBar}}, 
+        {{"VerySmall"}, Color::WHITE}
     );
     storedLabel->Enable();
 
@@ -87,6 +93,9 @@ void ResourceItem::HandleUpdate()
 
         needLabel->Setup(ShortWord() << satisfaction);
     }
+
+    auto storageRatio = (float)resource->Storage / (float)settlement->GetStorage();
+    storageBar->SetProgress(storageRatio);
 }
 
 void ResourceItem::Setup(const settlement::Resource *resource, const settlement::Settlement *settlement)
