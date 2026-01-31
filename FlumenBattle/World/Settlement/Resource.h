@@ -5,15 +5,24 @@
 #include "FlumenCore/Singleton.h"
 
 #include "FlumenBattle/World/Settlement/Types.h"
+#include "JobSet.h"
 
 namespace world::settlement
 {
     class Settlement;
     enum class ResourceTypes;
     enum class AbundanceLevels;
+    class JobSet;
 
     struct ResourceType
     {
+        struct Throughput
+        {
+            ResourceTypes Resource;
+
+            int Amount;
+        };
+
         ResourceTypes Type;
 
         Word Name;
@@ -23,6 +32,12 @@ namespace world::settlement
         int Value;
 
         container::Array <Modifiers> RelatedModifiers;
+
+        container::Array <Throughput> InputResources {0};
+        
+        int OutputAmount {1};
+
+        //Throughput OutputResource {ResourceTypes::NONE, 0};
 
         int PopulationConsumption {0};
 
@@ -57,6 +72,8 @@ namespace world::settlement
 
         int ScarcityDegree;
 
+        bool CanFulfillOrders;
+
         int GetPotentialProduction(const Settlement &) const;
 
         int GetProductionFromTiles(const Settlement &) const;
@@ -67,7 +84,11 @@ namespace world::settlement
 
         void PlaceOrders(const Settlement &);
 
+        void CheckOrderFullfilment();
+
         void ExecuteOrders(const Settlement &);
+
+        void FinishProduction();
 
         void UpdateAbundance(Settlement &);
 
@@ -94,7 +115,7 @@ namespace world::settlement
 
         //int GetAmount(ResourceTypes);
 
-        void Initialize();
+        void Initialize(const Settlement *);
 
         void ResetOrders();
 
@@ -104,7 +125,14 @@ namespace world::settlement
 
         void Update(Settlement &);
 
+        JobSet jobSet;
+
+        const Settlement *parent;
+
+    public:
         Resource *Get(ResourceTypes) const;
+
+        const Settlement *GetParent() const {return parent;}
     };
 
     class ResourceFactory : public core::Singleton <ResourceFactory>
@@ -122,9 +150,13 @@ namespace world::settlement
             handler.resources.Initialize(allocator);
         }
 
+        static void AllocateExtraData(container::PoolAllocator <Job> &allocator, ResourceHandler &handler);
+
         static void Free(container::ArrayAllocator <Resource> &allocator, ResourceHandler &handler) 
         {
             handler.resources.Terminate(allocator);
         }
+
+        static void FreeExtraData(container::PoolAllocator <Job> &allocator, ResourceHandler &handler);
     };
 }

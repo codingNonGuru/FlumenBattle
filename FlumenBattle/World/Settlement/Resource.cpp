@@ -4,62 +4,116 @@
 #include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/Settlement/Building.h"
+#include "FlumenBattle/World/Settlement/Job.h"
 
 using namespace world::settlement;
 
 struct Food : public ResourceType
 {
-    Food() : ResourceType(ResourceTypes::FOOD, "Food", "Radish", 10) {PopulationConsumption = 1; IsProductionTileBased = true;}
+    Food() : ResourceType(ResourceTypes::FOOD, "Food", "Radish", 10) 
+    {
+        PopulationConsumption = 1; 
+        IsProductionTileBased = true;
+    }
 };
 
 struct Timber : public ResourceType
 {
-    Timber() : ResourceType(ResourceTypes::TIMBER, "Timber", "Timber", 10) {IsProductionTileBased = true;}
+    Timber() : ResourceType(ResourceTypes::TIMBER, "Timber", "Timber", 10) 
+    {
+        IsProductionTileBased = true;
+    }
 };
 
 struct Metal : public ResourceType
 {
-    Metal() : ResourceType(ResourceTypes::METAL, "Metal", "Metal", 10) {IsProductionTileBased = true;}
+    Metal() : ResourceType(ResourceTypes::METAL, "Metal", "Metal", 100) 
+    {
+        IsProductionTileBased = true; 
+        InputResources = {{ResourceTypes::TIMBER, 10}};
+        OutputAmount = 1;
+    }
 };
 
 struct Lumber : public ResourceType
 {
-    Lumber() : ResourceType(ResourceTypes::LUMBER, "Lumber", "Plank", 25) {IsProductionTileBased = false; RelatedModifiers = {Modifiers::WOOD_RELATED_RESOURCE_PRODUCTION};}
+    Lumber() : ResourceType(ResourceTypes::LUMBER, "Lumber", "Plank", 25) 
+    {
+        IsProductionTileBased = false; 
+        RelatedModifiers = {Modifiers::WOOD_RELATED_RESOURCE_PRODUCTION}; 
+        InputResources = {{ResourceTypes::TIMBER, 3}};
+        OutputAmount = 2;
+    }
 };
 
 struct Fiber : public ResourceType
 {
-    Fiber() : ResourceType(ResourceTypes::FIBER, "Fiber", "Wool", 10) {IsProductionTileBased = true;}
+    Fiber() : ResourceType(ResourceTypes::FIBER, "Fiber", "Wool", 10) 
+    {
+        IsProductionTileBased = true;
+    }
 };
 
 struct Furniture : public ResourceType
 {
-    Furniture() : ResourceType(ResourceTypes::FURNITURE, "Furniture", "Furniture_WildStyle32", 70) {IsProductionTileBased = false; RelatedModifiers = {Modifiers::WOOD_RELATED_RESOURCE_PRODUCTION};}
+    Furniture() : ResourceType(ResourceTypes::FURNITURE, "Furniture", "Furniture_WildStyle32", 70) 
+    {
+        IsProductionTileBased = false; 
+        RelatedModifiers = {Modifiers::WOOD_RELATED_RESOURCE_PRODUCTION};
+        InputResources = {{ResourceTypes::LUMBER, 3}};
+        OutputAmount = 2;
+    }
 };
 
 struct CookedFood : public ResourceType
 {
-    CookedFood() : ResourceType(ResourceTypes::COOKED_FOOD, "Cooked food", "Drumstick", 70) {PopulationConsumption = 1; IsProductionTileBased = false;}
+    CookedFood() : ResourceType(ResourceTypes::COOKED_FOOD, "Cooked food", "Drumstick", 70) 
+    {
+        PopulationConsumption = 1; 
+        IsProductionTileBased = false;
+        InputResources = {{ResourceTypes::FOOD, 3}, {ResourceTypes::TIMBER, 1}};
+        OutputAmount = 2;
+    }
 };
 
 struct Fabric : public ResourceType
 {
-    Fabric() : ResourceType(ResourceTypes::FABRIC, "Fabric", "Fabric", 40) {IsProductionTileBased = false;}
+    Fabric() : ResourceType(ResourceTypes::FABRIC, "Fabric", "Fabric", 40) 
+    {
+        IsProductionTileBased = false; 
+        InputResources = {{ResourceTypes::FIBER, 3}};
+        OutputAmount = 3;
+    }
 };
 
 struct Clothing : public ResourceType
 {
-    Clothing() : ResourceType(ResourceTypes::CLOTHING, "Clothing", "Clothing", 70) {PopulationConsumption = 2; IsProductionTileBased = false;}
+    Clothing() : ResourceType(ResourceTypes::CLOTHING, "Clothing", "Clothing", 70) 
+    {
+        PopulationConsumption = 2; 
+        IsProductionTileBased = false; 
+        InputResources = {{ResourceTypes::FABRIC, 3}};
+        OutputAmount = 2;
+    }
 };
 
 struct Clay : public ResourceType
 {
-    Clay() : ResourceType(ResourceTypes::CLAY, "Clay", "Clay", 10) {IsProductionTileBased = true;}
+    Clay() : ResourceType(ResourceTypes::CLAY, "Clay", "Clay", 10) 
+    {
+        IsProductionTileBased = true;
+    }
 };
 
 struct Pottery : public ResourceType
 {
-    Pottery() : ResourceType(ResourceTypes::POTTERY, "Pottery", "Pottery", 50) {PopulationConsumption = 2; IsProductionTileBased = false;}
+    Pottery() : ResourceType(ResourceTypes::POTTERY, "Pottery", "Pottery", 50) 
+    {
+        PopulationConsumption = 2; 
+        IsProductionTileBased = false; 
+        InputResources = {{ResourceTypes::TIMBER, 4}, {ResourceTypes::CLAY, 3}};
+        OutputAmount = 2;
+    }
 };
 
 int Resource::GetPotentialProduction(const Settlement &settlement) const
@@ -80,18 +134,18 @@ int Resource::GetProductionFromBuildings(const Settlement &settlement) const
         for(auto &inputResource : building->GetInputResources())
         {
             auto resource = settlement.GetResource(inputResource.Resource);
-            if(resource->Order > resource->Storage)
+            if(resource->CanFulfillOrders == false)
             {
                 canProduce = false;
             }
         }
     }
 
-    if(Storage >= settlement.storage)
+    if(Storage >= settlement.GetStorage())
         canProduce = false;
 
     auto production = 0;
-    if(canProduce == false)
+    /*if(canProduce == false)
     {
         for(auto &building : buildings)
         {
@@ -103,7 +157,8 @@ int Resource::GetProductionFromBuildings(const Settlement &settlement) const
             }
         }
     }
-    else
+    else*/
+    if(canProduce == true)
     {
         for(auto &building : buildings)
         {
@@ -174,6 +229,12 @@ void Resource::PlaceOrders(const Settlement &settlement)
     Order = consumption;
 }
 
+
+void Resource::CheckOrderFullfilment()
+{
+    CanFulfillOrders = Storage >= Order;
+}
+
 void Resource::ExecuteOrders(const Settlement &settlement)
 {
     Production = GetProductionFromTiles(settlement) + GetProductionFromBuildings(settlement);
@@ -239,15 +300,15 @@ void Resource::UpdateAbundance(Settlement &settlement)
         ShortTermAbundance = AbundanceLevels::SORELY_LACKING;
     }
 
-    if(Storage <= 300)
+    if(Storage <= 3 * settlement.GetStorage() / 5)
     {
         AbundanceDegree = 0;
     }
-    else if(Storage <= 400)
+    else if(Storage <= 4 * settlement.GetStorage() / 5)
     {
         AbundanceDegree = 1;
     }
-    else if(Storage <= 460)
+    else if(Storage <= 9 * settlement.GetStorage() / 10)
     {
         AbundanceDegree = 2;
     }
@@ -256,15 +317,15 @@ void Resource::UpdateAbundance(Settlement &settlement)
         AbundanceDegree = 3;
     }
 
-    if(Storage <= 40)
+    if(Storage <= settlement.GetStorage() / 12)
     {
         ScarcityDegree = 3;
     }
-    else if(Storage <= 100)
+    else if(Storage <= settlement.GetStorage() / 5)
     {
         ScarcityDegree = 2;
     }
-    else if(Storage <= 200)
+    else if(Storage <= 2 * settlement.GetStorage() / 5)
     {
         ScarcityDegree = 1;
     }
@@ -276,17 +337,20 @@ void Resource::UpdateAbundance(Settlement &settlement)
 
 void Resource::UpdateStorage(Settlement &settlement)
 {
-    Storage += Production;
-
     Storage -= Order;
 
-    if(Storage < 0)
+    /*if(Storage < 0)
     {
         Storage = 0;
-    }
+    }*/
 }
 
-void ResourceHandler::Initialize()
+void Resource::FinishProduction()
+{
+    Storage += Production;
+}
+
+void ResourceHandler::Initialize(const Settlement *parent)
 {
     static const auto food = Food();
     *resources.Add() = {&food};
@@ -320,6 +384,8 @@ void ResourceHandler::Initialize()
 
     static const auto pottery = Pottery();
     *resources.Add() = {&pottery};
+
+    this->parent = parent;
 }
 
 void ResourceHandler::ResetOrders()
@@ -332,9 +398,19 @@ void ResourceHandler::ResetOrders()
 
 void ResourceHandler::PlaceOrders(Settlement &settlement)
 {
-    for(auto &resource : resources)
+    if(settlement.IsDeepSettlement() == false)
     {
-        resource.PlaceOrders(settlement);
+        for(auto &resource : resources)
+        {
+            resource.PlaceOrders(settlement);
+        }
+    }
+    else
+    {
+        for(auto &job : jobSet.GetJobs())
+        {
+            job.PlaceOrders(*this);
+        }
     }
 }
 
@@ -342,7 +418,22 @@ void ResourceHandler::ExecuteOrders(Settlement &settlement)
 {
     for(auto &resource : resources)
     {
-        resource.ExecuteOrders(settlement);
+        resource.CheckOrderFullfilment();
+    }
+
+    if(settlement.IsDeepSettlement() == true)
+    {
+        for(auto &job : jobSet.GetJobs())
+        {
+            job.ExecuteOrders(*this);
+        }
+    }
+    else
+    {
+        for(auto &resource : resources)
+        {
+            resource.ExecuteOrders(settlement);
+        }
     }
 }
 
@@ -361,6 +452,21 @@ void ResourceHandler::Update(Settlement &settlement)
     for(auto &resource : resources)
     {
         resource.UpdateAbundance(settlement);
+    }
+
+    if(settlement.IsDeepSettlement() == true)
+    {
+        for(auto &job : jobSet.GetJobs())
+        {
+            job.FinishProduction(*this);
+        }
+    }
+    else
+    {
+        for(auto &resource : resources)
+        {
+            resource.FinishProduction();
+        }
     }
 
     for(auto &resource : resources)
@@ -414,4 +520,14 @@ const ResourceType *ResourceFactory::CreateType(ResourceTypes type)
         static const auto pottery = Pottery();
         return &pottery;
     }
+}
+
+void ResourceAllocator::AllocateExtraData(container::PoolAllocator <Job> &allocator, ResourceHandler &handler)
+{
+    handler.jobSet.GetJobs().Initialize(allocator);
+}
+
+void ResourceAllocator::FreeExtraData(container::PoolAllocator <Job> &allocator, ResourceHandler &handler)
+{
+    handler.jobSet.GetJobs().Terminate(allocator);
 }

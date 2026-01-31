@@ -39,6 +39,7 @@ namespace world::settlement
     class PopExtraData;
     class Cohort;
     struct RaceGroup;
+    class Job;
 
     class SettlementAllocator : public core::Singleton <SettlementAllocator>
     {
@@ -104,6 +105,8 @@ namespace world::settlement
 
         container::PoolAllocator <Cohort>::Memory cohortMemory;
 
+        container::PoolAllocator <Job>::Memory jobMemory;
+
 
 
         container::Pool <Settlement> settlements;
@@ -157,6 +160,8 @@ namespace world::settlement
         container::Pool <PopExtraData> extraDataAllocator;
 
         container::PoolAllocator <Cohort> cohortAllocator;
+
+        container::PoolAllocator <Job> jobAllocator;
 
 
         void PerformCleanup();

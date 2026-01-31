@@ -57,7 +57,7 @@ void Settlement::Initialize(Word name, Color banner, tile::WorldTile *location)
 
     this->buildingManager->Initialize(this);
 
-    this->resourceHandler.Initialize();
+    this->resourceHandler.Initialize(this);
 
     this->tradeHandler.Initialize();
 

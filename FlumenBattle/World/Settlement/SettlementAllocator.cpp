@@ -17,6 +17,7 @@
 #include "FlumenBattle/World/Settlement/PopHandler.h"
 #include "FlumenBattle/World/Settlement/PopExtraData.h"
 #include "FlumenBattle/World/Settlement/Cohort.h"
+#include "FlumenBattle/World/Settlement/Job.h"
 #include "FlumenBattle/Config.h"
 
 #define MAXIMUM_TILES_PER_SETTLEMENT 37
@@ -121,6 +122,8 @@ void SettlementAllocator::PreallocateMaximumMemory()
     extraDataMemory = container::Pool <PopExtraData>::PreallocateMemory (settlementCount);
 
     cohortMemory = container::PoolAllocator <Cohort>::PreallocateMemory (settlementCount, MAX_SETTLEMENT_POPULATION);
+
+    jobMemory = container::PoolAllocator <Job>::PreallocateMemory (settlementCount, MAX_SETTLEMENT_POPULATION);
 }
 
 void SettlementAllocator::AllocateWorldMemory(int worldSize)
@@ -186,6 +189,8 @@ void SettlementAllocator::AllocateWorldMemory(int worldSize)
     extraDataAllocator = container::Pool <PopExtraData> (settlementCount, extraDataMemory);
 
     cohortAllocator = container::PoolAllocator <Cohort> (settlementCount, MAX_SETTLEMENT_POPULATION, cohortMemory);
+
+    jobAllocator = container::PoolAllocator <Job> (settlementCount, MAX_SETTLEMENT_POPULATION, jobMemory);
 }
 
 Settlement * SettlementAllocator::Allocate(bool hasExtraData)
@@ -239,6 +244,8 @@ Settlement * SettlementAllocator::Allocate(bool hasExtraData)
     if(hasExtraData == true)
     {
         PopAllocator::AllocateExtraData(extraDataAllocator, cohortAllocator, settlement->popHandler);
+
+        ResourceAllocator::AllocateExtraData(jobAllocator, settlement->resourceHandler);
     }
 
     settlement->finishedExplorations.Initialize(explorationAllocator);
@@ -265,11 +272,15 @@ PathSegment * SettlementAllocator::AllocateSegment()
 void SettlementAllocator::AllocateExtraData(Settlement *settlement)
 {
     PopAllocator::AllocateExtraData(extraDataAllocator, cohortAllocator, settlement->popHandler);
+
+    ResourceAllocator::AllocateExtraData(jobAllocator, settlement->resourceHandler);
 }
 
 void SettlementAllocator::FreeExtraData(Settlement *settlement)
 {
     PopAllocator::FreeExtraData(extraDataAllocator, cohortAllocator, settlement->popHandler);
+
+    ResourceAllocator::FreeExtraData(jobAllocator, settlement->resourceHandler);
 }
 
 void SettlementAllocator::Free(Settlement *settlement)
@@ -315,7 +326,12 @@ void SettlementAllocator::Free(Settlement *settlement)
 
     PopAllocator::Free(needAllocator, raceGroupAllocator, settlement->popHandler);
 
-    PopAllocator::FreeExtraData(extraDataAllocator, cohortAllocator, settlement->popHandler);
+    if(settlement->IsDeepSettlement() == true)
+    {
+        PopAllocator::FreeExtraData(extraDataAllocator, cohortAllocator, settlement->popHandler);
+
+        ResourceAllocator::FreeExtraData(jobAllocator, settlement->resourceHandler);
+    }
 
     settlement->finishedExplorations.Terminate(explorationAllocator);
 
