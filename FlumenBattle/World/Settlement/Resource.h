@@ -13,6 +13,7 @@ namespace world::settlement
     enum class ResourceTypes;
     enum class AbundanceLevels;
     class JobSet;
+    class ResourceHandler;
 
     struct ResourceType
     {
@@ -82,6 +83,10 @@ namespace world::settlement
 
         int GetProductionFromBuildings(const Settlement &) const;
 
+        int GetPotentialMidtermOutput(const ResourceHandler &) const;
+
+        int GetPotentialMidtermInput(const ResourceHandler &) const;
+
         void ResetOrder() {Order = 0;}
 
         void PlaceOrders(const Settlement &);
@@ -138,6 +143,8 @@ namespace world::settlement
         int workforce;
 
     public:
+        static const int CYCLE_LENGTH = 12;
+
         Resource *Get(ResourceTypes) const;
 
         const Settlement *GetParent() const {return parent;}
@@ -145,6 +152,14 @@ namespace world::settlement
         int GetWorkforce() const {return workforce;}
 
         int GetWorkforce(ResourceTypes) const;
+
+        container::Pool <Job> &GetJobs() const {return jobSet.GetJobs();}
+
+        const container::Array <Resource> &GetResources() const {return resources;}
+
+        int GetPotentialMidtermOutput(ResourceTypes) const;
+
+        int GetPotentialMidtermInput(ResourceTypes) const;
     };
 
     class ResourceFactory : public core::Singleton <ResourceFactory>

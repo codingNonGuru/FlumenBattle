@@ -85,9 +85,9 @@ void PopHandler::Initialize(Settlement *settlement)
 
     *needs.Add() = {ResourceTypes::FOOD, false, true, 0};
     *needs.Add() = {ResourceTypes::COOKED_FOOD, true, true, 0};
-    *needs.Add() = {ResourceTypes::FURNITURE, true, false, 80};
-    *needs.Add() = {ResourceTypes::CLOTHING, true, false, 80};
-    *needs.Add() = {ResourceTypes::POTTERY, true, false, 80};
+    *needs.Add() = {ResourceTypes::FURNITURE, true, false, 800};
+    *needs.Add() = {ResourceTypes::CLOTHING, true, false, 800};
+    *needs.Add() = {ResourceTypes::POTTERY, true, false, 800};
 
     happiness = 0;
 
@@ -190,14 +190,14 @@ void PopHandler::UpdateNeeds(Settlement &settlement)
     {
         needs.Find(ResourceTypes::CLOTHING)->IsMet = true;
 
-        needs.Find(ResourceTypes::CLOTHING)->Satisfaction += 15;
+        needs.Find(ResourceTypes::CLOTHING)->Satisfaction += 150;
     }
 
     if(pottery->HasPopulationOrdered == true)
     {
         needs.Find(ResourceTypes::POTTERY)->IsMet = true;
 
-        needs.Find(ResourceTypes::POTTERY)->Satisfaction += 10;
+        needs.Find(ResourceTypes::POTTERY)->Satisfaction += 100;
     }
 
     static const auto TICKS_PER_NEED_SATISFACTION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::TICKS_PER_NEED_SATISFACTION).Integer;

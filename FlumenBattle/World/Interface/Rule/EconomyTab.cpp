@@ -20,6 +20,8 @@ static const auto BORDER_COLOR = Color::RED * 0.25f;
 
 static const auto TEXT_COLOR = Color::RED * 0.5f;
 
+static const auto HIGHLIGHT_COLOR = Color::RED * 0.8f;
+
 void ResourceItem::HandleConfigure()
 {
     SetSpriteColor(BORDER_COLOR);
@@ -34,9 +36,9 @@ void ResourceItem::HandleConfigure()
     );
     icon->Enable();
 
-    nameLabel = ElementFactory::BuildText(
+    nameLabel = ElementFactory::BuildRichText(
         {drawOrder_ + 1, {Position2(50.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
-        {{"Small"}, TEXT_COLOR, "Wool"}
+        {{"Small"}, TEXT_COLOR, HIGHLIGHT_COLOR, "<2>W<1>ool"}
     );
     nameLabel->Enable();
 
@@ -54,19 +56,19 @@ void ResourceItem::HandleConfigure()
 
     outputLabel = ElementFactory::BuildText(
         {drawOrder_ + 1, {Position2(320.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
-        {{"Small"}, TEXT_COLOR}
+        {{"VerySmall"}, TEXT_COLOR}
     );
     outputLabel->Enable();
 
     inputLabel = ElementFactory::BuildText(
         {drawOrder_ + 1, {Position2(400.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
-        {{"Small"}, TEXT_COLOR}
+        {{"VerySmall"}, TEXT_COLOR}
     );
     inputLabel->Enable();
 
     workerLabel = ElementFactory::BuildText(
         {drawOrder_ + 1, {Position2(480.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
-        {{"Small"}, TEXT_COLOR}
+        {{"VerySmall"}, TEXT_COLOR}
     );
     workerLabel->Enable();
 
@@ -79,11 +81,13 @@ void ResourceItem::HandleUpdate()
 
     storedLabel->Setup(text);
 
-    text = Word("+") << resource->Production;
+    auto midtermOutput = settlement->GetResourceHandler().GetPotentialMidtermOutput(resource->Type->Type);
+
+    text = Word("+") << midtermOutput;
 
     outputLabel->Setup(text);
 
-    text = Word() << resource->Order;
+    text = Word("-") << settlement->GetResourceHandler().GetPotentialMidtermInput(resource->Type->Type);;
 
     inputLabel->Setup(text);
 
@@ -123,7 +127,8 @@ void ResourceItem::Setup(const settlement::Resource *resource, const settlement:
 
     this->settlement = settlement;
 
-    nameLabel->Setup(resource->Type->Name);
+    auto name = Word("<2>") << resource->Type->Name.GetFirstCharacter() << "<1>" << resource->Type->Name.Get() + 1;
+    nameLabel->Setup(name);
 
     icon->SetTexture(resource->Type->TextureName);
 

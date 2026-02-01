@@ -255,6 +255,8 @@ namespace world::settlement
 
         PopHandler &GetPopulationHandler() {return popHandler;}
 
+        const ResourceHandler &GetResourceHandler() const {return resourceHandler;}
+
         const container::Pool <Cohort> &GetPopCohorts() const;
 
         int GetNeedSatisfaction(ResourceTypes resource) const {return popHandler.GetNeedSatisfaction(resource);}

@@ -4,8 +4,6 @@
 
 using namespace world::settlement;
 
-#define CYCLE_LENGTH 10
-
 void Job::Initialize(Cohort *cohort, ResourceTypes resource)
 {
     status = JobStatus::OBTAINING_MATERIALS;
@@ -55,7 +53,7 @@ void Job::ExecuteOrders(ResourceHandler &handler)
     {
         progress++;
 
-        if(progress == CYCLE_LENGTH)
+        if(progress == ResourceHandler::CYCLE_LENGTH)
         {
             status = JobStatus::DELIVERING_GOODS;
         }

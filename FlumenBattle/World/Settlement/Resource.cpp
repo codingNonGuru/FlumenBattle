@@ -6,6 +6,7 @@
 #include "FlumenBattle/World/Settlement/Building.h"
 #include "FlumenBattle/World/Settlement/Job.h"
 #include "FlumenBattle/World/Settlement/Cohort.h"
+#include "FlumenBattle/World/WorldScene.h"
 
 using namespace world::settlement;
 
@@ -120,6 +121,82 @@ struct Pottery : public ResourceType
 int Resource::GetPotentialProduction(const Settlement &settlement) const
 {
     return GetProductionFromBuildings(settlement) + GetProductionFromTiles(settlement);
+}
+
+int Resource::GetPotentialMidtermOutput(const ResourceHandler &handler) const
+{
+    static const auto &time = WorldScene::Get()->GetTime();
+    static const auto ticks = time.GetTicksFromDays(3);
+
+    if(handler.GetParent()->IsDeepSettlement() == true)
+    {
+        auto cycleCount = ticks / ResourceHandler::CYCLE_LENGTH;
+
+        auto outputPerCycle = this->Workforce * Type->OutputAmount;
+
+        return cycleCount * outputPerCycle;
+
+        /*auto jobCount = 0;
+        for(auto &job : handler.GetJobs())
+        {
+            if(job.GetResource() == this->Type->Type)
+            {
+
+            }
+        }*/
+    }
+    else
+    {
+        auto cycleCount = ticks / ResourceHandler::CYCLE_LENGTH;
+
+        auto outputPerCycle = this->Workforce * Type->OutputAmount;
+
+        return cycleCount * outputPerCycle;
+    }
+}
+
+int Resource::GetPotentialMidtermInput(const ResourceHandler &handler) const
+{
+    static const auto &time = WorldScene::Get()->GetTime();
+    static const auto ticks = time.GetTicksFromDays(3);
+
+    if(handler.GetParent()->IsDeepSettlement() == true)
+    {
+        auto cycleCount = ticks / ResourceHandler::CYCLE_LENGTH;
+
+        auto inputAmount = 0;
+
+        for(auto &resource : handler.GetResources())
+        {
+            if(resource.Workforce == 0)
+                continue;
+
+            for(auto &input : resource.Type->InputResources)
+            {
+                if(input.Resource == this->Type->Type)
+                    inputAmount += input.Amount * cycleCount * resource.Workforce;
+            }
+        }
+
+        return inputAmount;
+
+        /*auto jobCount = 0;
+        for(auto &job : handler.GetJobs())
+        {
+            if(job.GetResource() == this->Type->Type)
+            {
+
+            }
+        }*/
+    }
+    else
+    {
+        auto cycleCount = ticks / ResourceHandler::CYCLE_LENGTH;
+
+        auto outputPerCycle = this->Workforce * Type->OutputAmount;
+
+        return cycleCount * outputPerCycle;
+    }
 }
 
 int Resource::GetProductionFromBuildings(const Settlement &settlement) const
@@ -531,6 +608,16 @@ Resource *ResourceHandler::Get(ResourceTypes type) const
 int ResourceHandler::GetWorkforce(ResourceTypes type) const
 {
     return Get(type)->Workforce;
+}
+
+int ResourceHandler::GetPotentialMidtermOutput(ResourceTypes resource) const
+{
+    Get(resource)->GetPotentialMidtermOutput(*this);
+}
+
+int ResourceHandler::GetPotentialMidtermInput(ResourceTypes resource) const
+{
+    Get(resource)->GetPotentialMidtermInput(*this);
 }
 
 const ResourceType *ResourceFactory::CreateType(ResourceTypes type)
