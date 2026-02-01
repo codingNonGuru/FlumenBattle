@@ -361,6 +361,8 @@ namespace world::settlement
 
         bool HireWorker(Building *);
 
+        bool HireWorker(ResourceTypes);
+
         void FireAllWorkers();
 
         void StrengthenPatrol();

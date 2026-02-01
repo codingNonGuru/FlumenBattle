@@ -565,15 +565,22 @@ Integer Settlement::GetWorkedTiles() const
 
 Integer Settlement::GetFreeWorkerCount() const
 {
-    auto buildingPersonnelCount = 0;
-    for(auto &building : GetBuildings())
+    if(IsDeepSettlement() == false)
     {
-        buildingPersonnelCount += building.GetPersonnelCount();
+        auto buildingPersonnelCount = 0;
+        for(auto &building : GetBuildings())
+        {
+            buildingPersonnelCount += building.GetPersonnelCount();
+        }
+
+        auto populationWithoutTileWorkers = 1 + GetPopulation() - GetWorkedTiles();
+
+        return populationWithoutTileWorkers - buildingPersonnelCount;
     }
-
-    auto populationWithoutTileWorkers = 1 + GetPopulation() - GetWorkedTiles();
-
-    return populationWithoutTileWorkers - buildingPersonnelCount;
+    else
+    {
+        return GetPopulation() - resourceHandler.GetWorkforce();
+    }
 }
 
 bool Settlement::IsTileImproved(tile::WorldTile* tile) const
@@ -809,6 +816,16 @@ bool Settlement::HireWorker(Building *building)
         return false;
 
     building->AddPersonnel();
+
+    return true;
+}
+
+bool Settlement::HireWorker(ResourceTypes resource)
+{
+    if(GetFreeWorkerCount() == 0)
+        return false;
+
+    resourceHandler.HireRandomWorker(resource);
 
     return true;
 }

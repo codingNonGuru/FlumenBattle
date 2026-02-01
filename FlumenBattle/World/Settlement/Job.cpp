@@ -36,7 +36,17 @@ void Job::ExecuteOrders(ResourceHandler &handler)
     {
         auto resource = handler.Get(resourceType);
 
-        if(resource->CanFulfillOrders == true)
+        bool canProcureMaterials = true;
+        for(auto &input : resource->Type->InputResources)
+        {
+            if(handler.Get(input.Resource)->CanFulfillOrders == false)
+            {
+                canProcureMaterials = false;
+                break;
+            }
+        }
+
+        if(canProcureMaterials == true)
         {
             status = JobStatus::PRODUCING;
         }

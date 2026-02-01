@@ -12,6 +12,8 @@ namespace world::settlement
 
         int Experience;
 
+        bool IsHired;
+
     public:
         void Initialize(const struct Race *);
 

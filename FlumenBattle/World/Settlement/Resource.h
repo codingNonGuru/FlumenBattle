@@ -125,14 +125,20 @@ namespace world::settlement
 
         void Update(Settlement &);
 
+        void HireRandomWorker(ResourceTypes);
+
         JobSet jobSet;
 
         const Settlement *parent;
+
+        int workforce;
 
     public:
         Resource *Get(ResourceTypes) const;
 
         const Settlement *GetParent() const {return parent;}
+
+        int GetWorkforce() const {return workforce;}
     };
 
     class ResourceFactory : public core::Singleton <ResourceFactory>

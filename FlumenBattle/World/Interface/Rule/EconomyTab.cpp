@@ -129,6 +129,19 @@ void ResourceItem::Setup(const settlement::Resource *resource, const settlement:
         );
         needLabel->Enable();
     }
+
+    if(resource->Type->IsProductionTileBased == false)
+    {
+        SetInteractivity(true);
+    }
+}
+
+void ResourceItem::HandleLeftClick()
+{
+    if(settlement->GetFreeWorkerCount() == 0)
+        return;
+
+    settlement->HireWorker(resource->Type->Type);
 }
 
 void EconomyTab::HandleConfigure()

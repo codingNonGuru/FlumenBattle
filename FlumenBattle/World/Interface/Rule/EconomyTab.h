@@ -46,6 +46,8 @@ namespace world::interface::rule
 
         Text *needLabel;
 
+        Text *workerLabel;
+
         const settlement::Resource *resource;
 
         const settlement::Settlement *settlement;
@@ -55,6 +57,8 @@ namespace world::interface::rule
         void HandleConfigure() override;
 
         void HandleUpdate() override;
+
+        void HandleLeftClick() override;
     };
 
     class EconomyTab : public Element

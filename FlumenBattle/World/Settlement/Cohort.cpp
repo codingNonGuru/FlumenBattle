@@ -9,4 +9,6 @@ void Cohort::Initialize(const struct Race *race)
     Health = MAXIMUM_HEALTH;
 
     Experience = 0;
+
+    IsHired = false;
 }

@@ -5,6 +5,7 @@
 #include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/Settlement/Building.h"
 #include "FlumenBattle/World/Settlement/Job.h"
+#include "FlumenBattle/World/Settlement/Cohort.h"
 
 using namespace world::settlement;
 
@@ -337,6 +338,9 @@ void Resource::UpdateAbundance(Settlement &settlement)
 
 void Resource::UpdateStorage(Settlement &settlement)
 {
+    if(CanFulfillOrders == false)
+        return;
+        
     Storage -= Order;
 
     /*if(Storage < 0)
@@ -386,6 +390,8 @@ void ResourceHandler::Initialize(const Settlement *parent)
     *resources.Add() = {&pottery};
 
     this->parent = parent;
+
+    this->workforce = 0;
 }
 
 void ResourceHandler::ResetOrders()
@@ -475,6 +481,25 @@ void ResourceHandler::Update(Settlement &settlement)
     }
 
     popHandler.UpdateNeeds(settlement);
+}
+
+void ResourceHandler::HireRandomWorker(ResourceTypes type)
+{
+    for(auto &cohort : parent->GetPopCohorts())
+    {
+        if(cohort.IsHired == true)
+            continue;
+
+        auto job = jobSet.GetJobs().Add();
+
+        job->Initialize(&cohort, type);
+
+        cohort.IsHired = true;
+
+        break;
+    }
+
+    workforce++;
 }
 
 Resource *ResourceHandler::Get(ResourceTypes type) const
