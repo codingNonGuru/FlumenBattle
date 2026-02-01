@@ -53,16 +53,22 @@ void ResourceItem::HandleConfigure()
     storedLabel->Enable();
 
     outputLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {Position2(280.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
+        {drawOrder_ + 1, {Position2(320.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
         {{"Small"}, TEXT_COLOR}
     );
     outputLabel->Enable();
 
     inputLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {Position2(360.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
+        {drawOrder_ + 1, {Position2(400.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
         {{"Small"}, TEXT_COLOR}
     );
     inputLabel->Enable();
+
+    workerLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {Position2(480.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
+        {{"Small"}, TEXT_COLOR}
+    );
+    workerLabel->Enable();
 
     needBar = nullptr;
 }
@@ -81,6 +87,10 @@ void ResourceItem::HandleUpdate()
 
     inputLabel->Setup(text);
 
+    text = Word() << resource->Workforce;
+
+    workerLabel->Setup(text);
+
     if(needBar != nullptr)
     {
         static const auto TICKS_PER_NEED_SATISFACTION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::TICKS_PER_NEED_SATISFACTION).Integer;
@@ -96,6 +106,15 @@ void ResourceItem::HandleUpdate()
 
     auto storageRatio = (float)resource->Storage / (float)settlement->GetStorage();
     storageBar->SetProgress(storageRatio);
+
+    if(IsHovered() == true)
+    {
+        SetOpacity(0.8f);
+    }
+    else
+    {
+        SetOpacity(0.5f);
+    }
 }
 
 void ResourceItem::Setup(const settlement::Resource *resource, const settlement::Settlement *settlement)
@@ -144,6 +163,11 @@ void ResourceItem::HandleLeftClick()
     settlement->HireWorker(resource->Type->Type);
 }
 
+void ResourceItem::HandleRightClick()
+{
+    settlement->FireWorker(resource->Type->Type);
+}
+
 void EconomyTab::HandleConfigure()
 {
     nameLabel = ElementFactory::BuildText(
@@ -186,7 +210,7 @@ void EconomyTab::HandleConfigure()
         auto item = ElementFactory::BuildElement <ResourceItem>
         (
             {
-                Size(500, 35), 
+                Size(600, 35), 
                 drawOrder_ + 1, 
                 {itemLayout}, 
                 {"panel-border-001", true}

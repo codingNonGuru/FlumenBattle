@@ -59,6 +59,10 @@ namespace world::interface::rule
         void HandleUpdate() override;
 
         void HandleLeftClick() override;
+
+        void HandleRightClick() override;
+
+        //void HandleHover() override;
     };
 
     class EconomyTab : public Element

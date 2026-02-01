@@ -496,15 +496,41 @@ void ResourceHandler::HireRandomWorker(ResourceTypes type)
 
         cohort.IsHired = true;
 
+        workforce++;
+
+        Get(type)->Workforce++;
+
         break;
     }
+}
 
-    workforce++;
+void ResourceHandler::FireRandomWorker(ResourceTypes type)
+{
+    for(auto &job : jobSet.GetJobs())
+    {
+        if(job.GetResource() != type)
+            continue;
+
+        job.GetCohort()->IsHired = false;
+
+        jobSet.GetJobs().RemoveAt(&job);
+
+        workforce--;
+
+        Get(type)->Workforce--;
+
+        break;
+    }
 }
 
 Resource *ResourceHandler::Get(ResourceTypes type) const
 {
     return resources.Find(type);
+}
+
+int ResourceHandler::GetWorkforce(ResourceTypes type) const
+{
+    return Get(type)->Workforce;
 }
 
 const ResourceType *ResourceFactory::CreateType(ResourceTypes type)

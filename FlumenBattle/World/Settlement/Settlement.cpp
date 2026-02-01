@@ -583,6 +583,11 @@ Integer Settlement::GetFreeWorkerCount() const
     }
 }
 
+Integer Settlement::GetWorkerCount(ResourceTypes resource) const
+{
+    return resourceHandler.GetWorkforce(resource);
+}
+
 bool Settlement::IsTileImproved(tile::WorldTile* tile) const
 {
     for(auto &settlementTile : tiles)
@@ -828,6 +833,11 @@ bool Settlement::HireWorker(ResourceTypes resource)
     resourceHandler.HireRandomWorker(resource);
 
     return true;
+}
+
+void Settlement::FireWorker(ResourceTypes resource)
+{
+    resourceHandler.FireRandomWorker(resource);
 }
 
 void Settlement::FireAllWorkers()

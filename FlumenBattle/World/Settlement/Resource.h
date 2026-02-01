@@ -74,6 +74,8 @@ namespace world::settlement
 
         bool CanFulfillOrders;
 
+        int Workforce {0};
+
         int GetPotentialProduction(const Settlement &) const;
 
         int GetProductionFromTiles(const Settlement &) const;
@@ -127,6 +129,8 @@ namespace world::settlement
 
         void HireRandomWorker(ResourceTypes);
 
+        void FireRandomWorker(ResourceTypes);
+
         JobSet jobSet;
 
         const Settlement *parent;
@@ -139,6 +143,8 @@ namespace world::settlement
         const Settlement *GetParent() const {return parent;}
 
         int GetWorkforce() const {return workforce;}
+
+        int GetWorkforce(ResourceTypes) const;
     };
 
     class ResourceFactory : public core::Singleton <ResourceFactory>

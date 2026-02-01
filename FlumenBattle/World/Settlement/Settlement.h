@@ -279,6 +279,8 @@ namespace world::settlement
 
         Integer GetFreeWorkerCount() const;
 
+        Integer GetWorkerCount(ResourceTypes) const;
+
         const group::GroupDynamics &GetGroupDynamics() const {return *groupDynamics;}
 
         polity::Polity *GetPolity() const {return polity;}
@@ -362,6 +364,8 @@ namespace world::settlement
         bool HireWorker(Building *);
 
         bool HireWorker(ResourceTypes);
+
+        void FireWorker(ResourceTypes);
 
         void FireAllWorkers();
 

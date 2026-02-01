@@ -27,5 +27,9 @@ namespace world::settlement
         void ExecuteOrders(ResourceHandler &);
 
         void FinishProduction(ResourceHandler &);
+
+        ResourceTypes GetResource() const {return resourceType;}
+
+        Cohort *GetCohort() const {return cohort;}
     };
 }
