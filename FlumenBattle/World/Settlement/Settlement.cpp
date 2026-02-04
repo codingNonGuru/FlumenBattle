@@ -843,8 +843,6 @@ void Settlement::FireWorker(Job *job)
 
 void Settlement::FireAllWorkers()
 {
-    buildingManager->RemovePersonnel();
-
     for(auto &tile : tiles)
     {
         if(tile.Tile == GetLocation())
@@ -852,6 +850,8 @@ void Settlement::FireAllWorkers()
 
         tile.IsWorked = false;
     }
+
+    resourceHandler.FireAllWorkers();
 }
 
 void Settlement::ProcessEarthquake(const disaster::Earthquake &earthquake)

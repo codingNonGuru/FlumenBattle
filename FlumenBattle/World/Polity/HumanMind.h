@@ -15,6 +15,7 @@ namespace world::settlement
     class Building;
     struct SettlementTile;
     enum class TileImprovements;
+    struct Resource;
 }
 
 namespace world
@@ -83,13 +84,13 @@ namespace world::polity
 
         void UpdateSettlementWorkforce(settlement::Settlement *) const;
 
-        void HireWorker(settlement::Settlement *, settlement::SettlementTile *);
+        void AddWorkInstruction(settlement::Settlement *, settlement::SettlementTile *);
 
-        void HireWorker(settlement::Settlement *, settlement::Building *);
+        void AddWorkInstruction(settlement::Settlement *, settlement::Resource *);
 
-        void FireWorker(settlement::Settlement *, settlement::SettlementTile *);
+        void RemoveWorkInstruction(settlement::Settlement *, settlement::SettlementTile *);
 
-        void FireWorker(settlement::Settlement *, settlement::Building *);
+        void RemoveWorkInstruction(settlement::Settlement *, settlement::Resource *);
 
     public:
         Delegate OnProductionDecided;
@@ -116,7 +117,11 @@ namespace world::polity
 
         const settlement::Shipment &GetCurrentShipment();
 
+        void RemoveWorkInstruction(WorkInstruction *);
+
         void ChangeBuildingWorkforce(settlement::Building *, bool);
+
+        void ChangeResourceWorkforce(settlement::Resource *, bool);
 
         const container::Pool <WorkInstruction> *GetSettlementInstructions() const;
 

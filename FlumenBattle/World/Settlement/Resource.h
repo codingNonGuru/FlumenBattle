@@ -144,6 +144,8 @@ namespace world::settlement
 
         void FireWorker(Job *);
 
+        void FireAllWorkers();
+
         JobSet jobSet;
 
         const Settlement *parent;

@@ -7,6 +7,8 @@ namespace world::settlement
     class Settlement;
     class Building;
     struct SettlementTile;
+    class Job;
+    struct Resource;
 }
 
 namespace world::polity
@@ -15,26 +17,30 @@ namespace world::polity
     {
         union Place
         {
-            settlement::Building *Building;
+            settlement::Resource *Resource;
 
             settlement::SettlementTile *Tile;
 
             Place() {}
 
-            Place(settlement::Building *building) : Building(building) {}
+            Place(settlement::Resource *resource) : Resource(resource) {}
 
             Place(settlement::SettlementTile *tile) : Tile(tile) {}
         };
 
         int Priority;
 
-        enum {BUILDING, TILE} PlaceType;
+        enum {RESOURCE, TILE} PlaceType;
 
         Place Place;
 
-        bool operator ==(const settlement::Building *building) {return Place.Building == building;}
+        //settlement::Job *Job;
+
+        bool operator ==(const settlement::Resource *resource) {return Place.Resource == resource;}
 
         bool operator ==(const settlement::SettlementTile *tile) {return Place.Tile == tile;}
+
+        bool operator ==(const int priority) {return Priority == priority;}
     };
 
     struct InstructionSet

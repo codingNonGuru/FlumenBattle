@@ -642,6 +642,22 @@ void ResourceHandler::FireWorker(Job *job)
     jobSet.GetJobs().RemoveAt(job);
 }
 
+void ResourceHandler::FireAllWorkers()
+{
+    for(auto &job : jobSet.GetJobs())
+    {
+        job.GetCohort()->IsHired = false;
+
+        job.GetCohort()->Job = nullptr;
+
+        Get(job.GetResource())->Workforce--;    
+    }
+
+    workforce = 0;
+
+    jobSet.GetJobs().Reset();
+}
+
 Resource *ResourceHandler::Get(ResourceTypes type) const
 {
     return resources.Find(type);

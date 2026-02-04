@@ -74,7 +74,7 @@ void BuildingHoverInfo::HandleUpdate()
     auto text = LongWord() << building->GetName();
     nameLabel->Setup(text);
 
-    auto instructions = polity::HumanMind::Get()->GetSettlementInstructions();
+    /*auto instructions = polity::HumanMind::Get()->GetSettlementInstructions();
     if(instructions == nullptr)
     {
         workerLabel->Disable();
@@ -111,7 +111,7 @@ void BuildingHoverInfo::HandleUpdate()
         {
             workerLabel->Disable();
         }
-    }
+    }*/
 
     if(workerLabel->IsLocallyActive() == true)
     {

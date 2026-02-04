@@ -103,7 +103,7 @@ void BuildingItem::HandleLeftClick()
 
     //ruleMenu->GetCurrentSettlement()->HireWorker(building);
 
-    polity::HumanMind::Get()->ChangeBuildingWorkforce(building, true);
+    //polity::HumanMind::Get()->ChangeBuildingWorkforce(building, true);
 }
 
 void BuildingItem::HandleRightClick()
@@ -113,7 +113,7 @@ void BuildingItem::HandleRightClick()
 
     //ruleMenu->GetCurrentSettlement()->FireWorker(building);
 
-    polity::HumanMind::Get()->ChangeBuildingWorkforce(building, false);
+    //polity::HumanMind::Get()->ChangeBuildingWorkforce(building, false);
 }
 
 void BuildingItem::Setup(settlement::Building *building, BuildingTab *tab)

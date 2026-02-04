@@ -2,6 +2,7 @@
 #include "FlumenEngine/Interface/Text.hpp"
 #include "FlumenEngine/Interface/SimpleList.h"
 #include "FlumenEngine/Interface/ProgressBar.h"
+#include "FlumenEngine/Interface/LayoutGroup.h"
 
 #include "EconomyTab.h"
 #include "FlumenBattle/World/Interface/Rule/RuleMenu.h"
@@ -10,9 +11,12 @@
 #include "FlumenBattle/World/Settlement/Building.h"
 #include "FlumenBattle/World/Interface/Counter.h"
 #include "FlumenBattle/World/Interface/Rule/BuildingHoverInfo.h"
+#include "FlumenBattle/World/Interface/Rule/JobItem.h"
 #include "FlumenBattle/WorldInterface.h"
 #include "FlumenBattle/Race.h"
 #include "FlumenBattle/Config.h"
+#include "FlumenBattle/World/Polity/HumanMind.h"
+#include "FlumenBattle/World/Polity/WorkInstruction.h"
 
 using namespace world::interface::rule;
 
@@ -121,7 +125,7 @@ void ResourceItem::HandleUpdate()
     }
 }
 
-void ResourceItem::Setup(const settlement::Resource *resource, const settlement::Settlement *settlement)
+void ResourceItem::Setup(settlement::Resource *resource, const settlement::Settlement *settlement)
 {
     this->resource = resource;
 
@@ -162,15 +166,12 @@ void ResourceItem::Setup(const settlement::Resource *resource, const settlement:
 
 void ResourceItem::HandleLeftClick()
 {
-    if(settlement->GetFreeWorkerCount() == 0)
-        return;
-
-    settlement->HireWorker(resource->Type->Type);
+    polity::HumanMind::Get()->ChangeResourceWorkforce(resource, true);
 }
 
 void ResourceItem::HandleRightClick()
 {
-    settlement->FireWorker(resource->Type->Type);
+    polity::HumanMind::Get()->ChangeResourceWorkforce(resource, false);
 }
 
 void EconomyTab::HandleConfigure()
@@ -195,7 +196,7 @@ void EconomyTab::HandleConfigure()
 
     resourceItems.Initialize((int)settlement::ResourceTypes::NONE);
 
-    itemLayout = ElementFactory::BuildSimpleList
+    resourceItemLayout = ElementFactory::BuildSimpleList
     (
         { 
             drawOrder_, 
@@ -207,8 +208,8 @@ void EconomyTab::HandleConfigure()
         ListOrientations::VERTICAL,
         5.0f
     );
-    itemLayout->AddScroller(8, resourceItems.GetCapacity());
-    itemLayout->Enable();
+    resourceItemLayout->AddScroller(8, resourceItems.GetCapacity());
+    resourceItemLayout->Enable();
 
     for(auto i = 0; i < resourceItems.GetCapacity(); ++i)
     {
@@ -217,13 +218,45 @@ void EconomyTab::HandleConfigure()
             {
                 Size(600, 35), 
                 drawOrder_ + 1, 
-                {itemLayout}, 
+                {resourceItemLayout}, 
                 {"panel-border-001", true}
             }
         );
         item->Enable();
 
         *resourceItems.Allocate() = item;
+    }
+
+    static const auto MAX_SETTLEMENT_POPULATION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAX_SETTLEMENT_POPULATION).Integer;
+
+    jobItems.Initialize(MAX_SETTLEMENT_POPULATION);
+
+    jobItemLayout = ElementFactory::BuildElement <LayoutGroup>
+    (
+        { 
+            drawOrder_,
+            {Position2{0.0f, -15.0f}, ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, this}
+        }
+    );
+    jobItemLayout->SetDistancing(MAX_SETTLEMENT_POPULATION / 2, 4.0f);
+    jobItemLayout->AlignToCenter();
+    jobItemLayout->Enable();
+
+    for(auto i = 0; i < MAX_SETTLEMENT_POPULATION; ++i)
+    {
+        auto item = ElementFactory::BuildElement <JobItem>
+        (
+            {
+                Size(40, 48), 
+                drawOrder_ + 1, 
+                {jobItemLayout}, 
+                {"panel-border-015", true}
+            }
+        );
+        item->SetSpriteColor(BORDER_COLOR);
+        item->Enable();
+
+        *jobItems.Allocate() = item;
     }
 
     static const auto ruleMenu = WorldInterface::Get()->GetRuleMenu();
@@ -247,11 +280,12 @@ void EconomyTab::HandleUpdate()
 
     text = Phrase() << settlement->GetName() << " has " << settlement->GetFreeWorkerCount() << " free workers.";
     workerLabel->Setup(text);
+
+    SetupJobItems();
 }
 
 void EconomyTab::HandleEnable()
 {
-
 }
 
 void EconomyTab::HandleSettlementChanged() 
@@ -286,5 +320,35 @@ void EconomyTab::HandleSettlementChanged()
 
         item->Enable();
         item->Setup(resource, settlement);
+    }
+}
+
+void EconomyTab::SetupJobItems()
+{
+    /*for(auto &item : jobItems)
+    {
+        item->Disable();
+    }*/
+
+    static const auto ruleMenu = WorldInterface::Get()->GetRuleMenu();
+
+    const auto &instructions = polity::HumanMind::Get()->GetSettlementInstructions();
+
+    if(instructions == nullptr)
+        return;
+
+    auto workerCount = ruleMenu->GetCurrentSettlement()->GetPopulation();
+
+    auto item = jobItems.GetStart();
+    for(int i = 0; i < instructions->GetCapacity(); ++i)
+    {
+        auto instruction = instructions->Find(i);
+
+        auto isWorkerHired = i < workerCount;
+
+        (*item)->Setup(instruction, isWorkerHired);
+        //(*item)->Enable();
+
+        item++;
     }
 }

@@ -25,6 +25,7 @@ namespace world::interface::rule
     class RuleMenu;
     class EconomyTab;
     class BuildingHoverInfo;
+    class JobItem;
 
     struct ResourceItem : public Element
     {
@@ -48,11 +49,11 @@ namespace world::interface::rule
 
         Text *workerLabel;
 
-        const settlement::Resource *resource;
+        settlement::Resource *resource;
 
         const settlement::Settlement *settlement;
 
-        void Setup(const settlement::Resource *, const settlement::Settlement *);
+        void Setup(settlement::Resource *, const settlement::Settlement *);
 
         void HandleConfigure() override;
 
@@ -75,7 +76,13 @@ namespace world::interface::rule
 
         container::Array <ResourceItem *> resourceItems;
 
-        SimpleList *itemLayout;
+        container::Array <JobItem *> jobItems;
+
+        SimpleList *resourceItemLayout;
+
+        LayoutGroup *jobItemLayout;
+
+        void SetupJobItems();
 
         void HandleConfigure() override;
 

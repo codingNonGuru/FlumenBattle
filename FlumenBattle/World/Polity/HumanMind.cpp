@@ -37,8 +37,6 @@ struct Command
 
 #define MAXIMUM_COMMAND_COUNT 8
 
-#define INSTRUCTIONS_PER_SETTLEMENT 64
-
 #define INSTRUCTION_SETS_PER_POLITY 128
 
 static const auto IMPROVEMENT_SWIPE_LEFT_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_SEMICOLON};
@@ -104,11 +102,13 @@ static auto &productionQueues = [] -> container::Pool <ProductionQueueSet> &
 
 HumanMind::HumanMind()
 {
+    static const auto MAX_SETTLEMENT_POPULATION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAX_SETTLEMENT_POPULATION).Integer;
+
     for(int i = 0; i < workInstructionSets.GetCapacity(); ++i)
     {
         auto set = workInstructionSets.Add();
         set->settlement = nullptr;
-        set->instructions.Initialize(INSTRUCTIONS_PER_SETTLEMENT);
+        set->instructions.Initialize(MAX_SETTLEMENT_POPULATION);
     }
 
     workInstructionSets.Reset();
@@ -183,11 +183,13 @@ void HumanMind::UpdateSettlementWorkforce(settlement::Settlement *settlement) co
 
     settlement->FireAllWorkers();
 
-    static auto workQueue = container::Block <WorkInstruction *, INSTRUCTIONS_PER_SETTLEMENT> ();
+    static const auto MAX_SETTLEMENT_POPULATION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAX_SETTLEMENT_POPULATION).Integer;
+
+    static auto workQueue = container::Array <WorkInstruction *> (MAX_SETTLEMENT_POPULATION);
 
     for(auto &instruction : instructionSet->instructions)
     {
-        *workQueue[instruction.Priority] = &instruction;
+        *workQueue.Get(instruction.Priority) = &instruction;
     }
 
     auto freeWorkerCount = settlement->GetFreeWorkerCount();
@@ -198,11 +200,11 @@ void HumanMind::UpdateSettlementWorkforce(settlement::Settlement *settlement) co
             break;
         }
 
-        auto instruction = *workQueue[i];
+        auto instruction = workQueue[i];
 
-        if(instruction->PlaceType == WorkInstruction::BUILDING)
+        if(instruction->PlaceType == WorkInstruction::RESOURCE)
         {
-            auto hasHired = settlement->HireWorker(instruction->Place.Building);
+            auto hasHired = settlement->HireWorker(instruction->Place.Resource->Type->Type);
             if(hasHired == true)
             {
                 freeWorkerCount--;
@@ -298,7 +300,7 @@ void HumanMind::HandleWorkerPlacement()
         auto tile = playerSettlement->GetTiles().Find(hoveredTile);
         if(tile->Tile != playerSettlement->GetLocation())
         {
-            HireWorker(playerSettlement, tile);
+            AddWorkInstruction(playerSettlement, tile);
         }
     }
     else
@@ -309,11 +311,11 @@ void HumanMind::HandleWorkerPlacement()
             auto instruction = instructionSet->instructions.Find(tile);
             if(instruction == nullptr)
             {
-                HireWorker(playerSettlement, tile);    
+                AddWorkInstruction(playerSettlement, tile);    
             }
             else
             {
-                FireWorker(playerSettlement, tile);    
+                RemoveWorkInstruction(playerSettlement, tile);    
             }
         }
     }
@@ -561,7 +563,7 @@ const settlement::Shipment &HumanMind::GetCurrentShipment()
     return currentShipment;
 }
 
-void HumanMind::HireWorker(settlement::Settlement *settlement, settlement::SettlementTile *tile)
+void HumanMind::AddWorkInstruction(settlement::Settlement *settlement, settlement::SettlementTile *tile)
 {
     auto instructionSet = workInstructionSets.Find(settlement);
     if(instructionSet == nullptr)
@@ -577,7 +579,7 @@ void HumanMind::HireWorker(settlement::Settlement *settlement, settlement::Settl
     *instruction = {priority, WorkInstruction::TILE, {tile}};
 }
 
-void HumanMind::HireWorker(settlement::Settlement *settlement, settlement::Building *building)
+void HumanMind::AddWorkInstruction(settlement::Settlement *settlement, settlement::Resource *resource)
 {
     auto instructionSet = workInstructionSets.Find(settlement);
     if(instructionSet == nullptr)
@@ -587,13 +589,40 @@ void HumanMind::HireWorker(settlement::Settlement *settlement, settlement::Build
         instructionSet->instructions.Reset();
     }
 
+    if(instructionSet->instructions.IsFull() == true)
+        return;
+
     int priority = instructionSet->instructions.GetSize();
     auto instruction = instructionSet->instructions.Add();
 
-    *instruction = {priority, WorkInstruction::BUILDING, {building}};
+    *instruction = {priority, WorkInstruction::RESOURCE, {resource}};
 }
 
-void HumanMind::FireWorker(settlement::Settlement *settlement, settlement::SettlementTile *tile)
+void HumanMind::RemoveWorkInstruction(WorkInstruction *instruction)
+{
+    auto priority = instruction->Priority;
+
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    const auto playerSettlement = playerGroup->GetCurrentSettlement();
+
+    auto instructionSet = workInstructionSets.Find(playerSettlement);
+
+    auto &instructions = instructionSet->instructions;
+
+    for(auto &instruction : instructions)
+    {
+        if(instruction.Priority > priority)
+        {
+            instruction.Priority--;
+        }
+    }
+
+    instructions.RemoveAt(instruction);
+
+    UpdateSettlementWorkforce(playerSettlement);
+}
+
+void HumanMind::RemoveWorkInstruction(settlement::Settlement *settlement, settlement::SettlementTile *tile)
 {
     auto instructionSet = workInstructionSets.Find(settlement);
 
@@ -611,11 +640,11 @@ void HumanMind::FireWorker(settlement::Settlement *settlement, settlement::Settl
     instructionSet->instructions.RemoveAt(instruction);
 }
 
-void HumanMind::FireWorker(settlement::Settlement *settlement, settlement::Building *building)
+void HumanMind::RemoveWorkInstruction(settlement::Settlement *settlement, settlement::Resource *resource)
 {
     auto instructionSet = workInstructionSets.Find(settlement);
 
-    auto instruction = instructionSet->instructions.Find(building);
+    auto instruction = instructionSet->instructions.Find(resource);
     auto priority = instruction->Priority;
 
     for(auto &instruction : instructionSet->instructions)
@@ -629,9 +658,9 @@ void HumanMind::FireWorker(settlement::Settlement *settlement, settlement::Build
     instructionSet->instructions.RemoveAt(instruction);
 }
 
-void HumanMind::ChangeBuildingWorkforce(settlement::Building *building, bool isHiring)
+void HumanMind::ChangeResourceWorkforce(settlement::Resource *resource, bool isHiring)
 {
-    if(building->GetOutputResource() == world::settlement::ResourceTypes::NONE)
+    if(resource->Type->Type == world::settlement::ResourceTypes::NONE)
         return;
 
     auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
@@ -644,20 +673,20 @@ void HumanMind::ChangeBuildingWorkforce(settlement::Building *building, bool isH
         instructionSet->instructions.Reset();
     }
 
-    auto plannedEmployeeCount = instructionSet->instructions.GetCount(building);
+    auto plannedEmployeeCount = instructionSet->instructions.GetCount(resource);
 
     if(isHiring == true)
     {
-        if(plannedEmployeeCount < building->GetAmount())
-        {
-            HireWorker(playerSettlement, building);
-        }
+        //if(plannedEmployeeCount < resource->Workforce)
+        //{
+            AddWorkInstruction(playerSettlement, resource);
+        //}
     }
     else
     {
         if(plannedEmployeeCount > 0)
         {
-            FireWorker(playerSettlement, building);
+            RemoveWorkInstruction(playerSettlement, resource);
         }
     }
 
