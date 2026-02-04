@@ -83,11 +83,11 @@ void PopHandler::Initialize(Settlement *settlement)
 
     needs.Reset();
 
-    *needs.Add() = {ResourceTypes::FOOD, false, true, 0};
-    *needs.Add() = {ResourceTypes::COOKED_FOOD, true, true, 0};
-    *needs.Add() = {ResourceTypes::FURNITURE, true, false, 800};
-    *needs.Add() = {ResourceTypes::CLOTHING, true, false, 800};
-    *needs.Add() = {ResourceTypes::POTTERY, true, false, 800};
+    *needs.Add() = {ResourceTypes::FOOD, false, true, 500, 3};
+    *needs.Add() = {ResourceTypes::COOKED_FOOD, true, true, 500, 3};
+    *needs.Add() = {ResourceTypes::FURNITURE, true, false, 800, 250};
+    *needs.Add() = {ResourceTypes::CLOTHING, true, false, 800, 150};
+    *needs.Add() = {ResourceTypes::POTTERY, true, false, 800, 100};
 
     happiness = 0;
 
@@ -177,13 +177,13 @@ void PopHandler::UpdateNeeds(Settlement &settlement)
     {
         needs.Find(ResourceTypes::COOKED_FOOD)->IsMet = true;
 
-        needs.Find(ResourceTypes::COOKED_FOOD)->Satisfaction += 1;
+        needs.Find(ResourceTypes::COOKED_FOOD)->Satisfaction += 3;
     }
     else if(rawFood->HasPopulationOrdered == true)
     {
         needs.Find(ResourceTypes::FOOD)->IsMet = true;
 
-        needs.Find(ResourceTypes::FOOD)->Satisfaction += 1;
+        needs.Find(ResourceTypes::FOOD)->Satisfaction += 3;
     }
 
     if(clothing->HasPopulationOrdered == true)
@@ -318,6 +318,20 @@ const Race *PopHandler::GetMostPopulousRace()
     }
 
     return RaceFactory::BuildRace(largestGroup->Race);
+}
+
+int PopHandler::GetPotentialMidtermConsumption(ResourceTypes resource) const
+{
+    static const auto &time = WorldScene::Get()->GetTime();
+    static const auto ticks = time.GetTicksFromDays(3);
+
+    auto need = needs.Find(resource);
+    if(need == nullptr)
+        return 0;
+
+    auto consumption = (ticks * ResourceFactory::Get()->CreateType(resource)->PopulationConsumption * population) / need->SatisfactionBoostPerConsumption;
+
+    return consumption;
 }
 
 void PopHandler::IncreasePopulation(Settlement *settlement, const container::Array <RaceGroup> *races)

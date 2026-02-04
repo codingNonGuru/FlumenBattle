@@ -34,6 +34,8 @@ namespace world::settlement
 
         container::Array <Modifiers> RelatedModifiers;
 
+        BuildingTypes RelatedBuilding {BuildingTypes::NONE};
+
         container::Array <Throughput> InputResources {0};
         
         int OutputAmount {1};
@@ -53,6 +55,8 @@ namespace world::settlement
 
     struct Resource
     {
+        static const int PRODUCTION_BOOST_PER_BUILDING = 1;
+
         const ResourceType *Type;
 
         int Storage {100};
@@ -81,11 +85,13 @@ namespace world::settlement
 
         int GetProductionFromTiles(const Settlement &) const;
 
-        int GetProductionFromBuildings(const Settlement &) const;
+        int GetProductionFromCenter(const Settlement &) const;
 
         int GetPotentialMidtermOutput(const ResourceHandler &) const;
 
         int GetPotentialMidtermInput(const ResourceHandler &) const;
+
+        int GetInput(ResourceTypes) const;
 
         void ResetOrder() {Order = 0;}
 
@@ -135,6 +141,8 @@ namespace world::settlement
         void HireRandomWorker(ResourceTypes);
 
         void FireRandomWorker(ResourceTypes);
+
+        void FireWorker(Job *);
 
         JobSet jobSet;
 

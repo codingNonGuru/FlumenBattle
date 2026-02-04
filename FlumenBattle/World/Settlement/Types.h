@@ -48,7 +48,8 @@ namespace world::settlement
         WEAVING_MILL,
         TAILORY,
         KEEP,
-        POTTERY
+        POTTERY, 
+        NONE
     };
 
     enum class AbundanceLevels

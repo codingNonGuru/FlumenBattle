@@ -7,6 +7,7 @@ class ProgressBar;
 namespace world::settlement
 {
     class Cohort;
+    class Settlement;
 }
 
 namespace world::interface::rule
@@ -20,13 +21,19 @@ namespace world::interface::rule
 
         ProgressBar *healthBar;
 
+        Element *jobSprite;
+
         const settlement::Cohort *cohort;
+
+        const settlement::Settlement *settlement;
 
         void HandleConfigure() override;
 
         void HandleUpdate() override;
 
+        void HandleLeftClick() override;
+
     public:
-        void Setup(const settlement::Cohort *);
+        void Setup(const settlement::Cohort *, const settlement::Settlement *);
     };
 }

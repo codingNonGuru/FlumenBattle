@@ -369,6 +369,8 @@ namespace world::settlement
 
         void FireWorker(ResourceTypes);
 
+        void FireWorker(Job *);
+
         void FireAllWorkers();
 
         void StrengthenPatrol();

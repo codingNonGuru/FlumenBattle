@@ -74,7 +74,7 @@ void BuildingItem::HandleUpdate()
 
     workerCount = building->GetPersonnelCount();
 
-    if(building->GetOutputResource().Resource != world::settlement::ResourceTypes::NONE)
+    if(building->GetOutputResource() != world::settlement::ResourceTypes::NONE)
     {
         workerCounter->Enable();
     }

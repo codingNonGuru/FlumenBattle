@@ -60,7 +60,7 @@ void Job::ExecuteOrders(ResourceHandler &handler)
     }
 }
 
-void Job::FinishProduction(ResourceHandler &handler)
+void Job::FinishProduction(ResourceHandler &handler, bool doesHappenInBuilding)
 {
     if(status != JobStatus::DELIVERING_GOODS)
         return;
@@ -68,6 +68,10 @@ void Job::FinishProduction(ResourceHandler &handler)
     auto resource = handler.Get(resourceType);
 
     auto output = resource->Type->OutputAmount;
+    if(doesHappenInBuilding == true)
+    {
+        output += Resource::PRODUCTION_BOOST_PER_BUILDING;
+    }
 
     if(resource->Storage + output > handler.GetParent()->GetStorage())
         return;

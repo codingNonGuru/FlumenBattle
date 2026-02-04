@@ -26,7 +26,7 @@ namespace world::settlement
 
         void ExecuteOrders(ResourceHandler &);
 
-        void FinishProduction(ResourceHandler &);
+        void FinishProduction(ResourceHandler &, bool);
 
         ResourceTypes GetResource() const {return resourceType;}
 

@@ -4,6 +4,8 @@
 
 namespace world::settlement
 {
+    class Job;
+
     struct Cohort
     {
         const Race *Race;
@@ -13,6 +15,8 @@ namespace world::settlement
         int Experience;
 
         bool IsHired;
+
+        Job *Job;
 
     public:
         void Initialize(const struct Race *);

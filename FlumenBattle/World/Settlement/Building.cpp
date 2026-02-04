@@ -195,17 +195,17 @@ Building BuildingFactory::Create(BuildingTypes type)
     case BuildingTypes::LUMBER_MILL:
         return 
         {
-            [&] {static const auto buildingType = LumberMill(type, 200, true, "Lumber mill", "LumberMill", {ResourceTypes::LUMBER, 1}, {{ResourceTypes::TIMBER, 3}}); return &buildingType;} ()
+            [&] {static const auto buildingType = LumberMill(type, 200, true, "Lumber mill", "LumberMill", ResourceTypes::LUMBER); return &buildingType;} ()
         };
     case BuildingTypes::CARPENTER:
         return 
         {
-            [&] {static const auto buildingType = Carpenter(type, 200, true, "Carpenter", "LumberMill", {ResourceTypes::FURNITURE, 1}, {{ResourceTypes::LUMBER, 3}}); return &buildingType;} ()
+            [&] {static const auto buildingType = Carpenter(type, 200, true, "Carpenter", "LumberMill", ResourceTypes::FURNITURE); return &buildingType;} ()
         };
     case BuildingTypes::BAKERY:
         return 
         {
-            [&] {static const auto buildingType = Bakery(type, 200, true, "Bakery", "LumberMill", {ResourceTypes::COOKED_FOOD, 2}, {{ResourceTypes::FOOD, 3}, {ResourceTypes::TIMBER, 1}}); return &buildingType;} ()
+            [&] {static const auto buildingType = Bakery(type, 200, true, "Bakery", "LumberMill", ResourceTypes::COOKED_FOOD); return &buildingType;} ()
         };
     case BuildingTypes::MARKET:
         return 
@@ -215,12 +215,12 @@ Building BuildingFactory::Create(BuildingTypes type)
     case BuildingTypes::WEAVING_MILL:
         return 
         {
-            [&] {static const auto buildingType = WeavingMill(type, 200, true, "Weaving mill", "LumberMill", {ResourceTypes::FABRIC, 2}, {{ResourceTypes::FIBER, 3}}); return &buildingType;} ()
+            [&] {static const auto buildingType = WeavingMill(type, 200, true, "Weaving mill", "LumberMill", ResourceTypes::FABRIC); return &buildingType;} ()
         };
     case BuildingTypes::TAILORY:
         return 
         {
-            [&] {static const auto buildingType = Tailory(type, 200, true, "Tailory", "LumberMill", {ResourceTypes::CLOTHING, 2}, {{ResourceTypes::FABRIC, 3}}); return &buildingType;} ()
+            [&] {static const auto buildingType = Tailory(type, 200, true, "Tailory", "LumberMill", ResourceTypes::CLOTHING); return &buildingType;} ()
         };
     case BuildingTypes::KEEP:
         return 
@@ -230,12 +230,12 @@ Building BuildingFactory::Create(BuildingTypes type)
     case BuildingTypes::POTTERY:
         return 
         {
-            [&] {static const auto buildingType = Pottery(type, 200, true, "Pottery", "LumberMill", {ResourceTypes::POTTERY, 2}, {{ResourceTypes::CLAY, 3}, {ResourceTypes::TIMBER, 4}}); return &buildingType;} ()
+            [&] {static const auto buildingType = Pottery(type, 200, true, "Pottery", "LumberMill", ResourceTypes::POTTERY); return &buildingType;} ()
         };
     }
 }
 
-int Building::GetResourceConsumption(ResourceTypes resourceType) const
+/*int Building::GetResourceConsumption(ResourceTypes resourceType) const
 {
     for(auto &resource : type->InputResources)
     {
@@ -246,7 +246,7 @@ int Building::GetResourceConsumption(ResourceTypes resourceType) const
     }
 
     return 0;
-}
+}*/
 
 void BuildingManager::Initialize(Settlement *settlement)
 {

@@ -36,6 +36,8 @@ namespace world::settlement
 
         int SatisfactionThreshold;
 
+        int SatisfactionBoostPerConsumption;
+
         int Satisfaction {0};
 
         int GeneratedHappiness {0};
@@ -137,6 +139,8 @@ namespace world::settlement
         const container::Array <RaceGroup> &GetRaces() const {return raceGroups;}
 
         const Race *GetMostPopulousRace();
+
+        int GetPotentialMidtermConsumption(ResourceTypes) const;
     };
 
     class PopAllocator

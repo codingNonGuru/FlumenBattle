@@ -11,4 +11,6 @@ void Cohort::Initialize(const struct Race *race)
     Experience = 0;
 
     IsHired = false;
+
+    Job = nullptr;
 }

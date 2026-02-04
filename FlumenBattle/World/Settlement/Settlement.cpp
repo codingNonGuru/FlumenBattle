@@ -107,6 +107,8 @@ void Settlement::Initialize(Word name, Color banner, tile::WorldTile *location)
 
     AddBuilding(BuildingTypes::KEEP);
 
+    AddBuilding(BuildingTypes::POTTERY);
+
     this->needsToReorganizeWork = true;
 
     this->storage = BASE_STORAGE_CAPACITY;
@@ -567,15 +569,9 @@ Integer Settlement::GetFreeWorkerCount() const
 {
     if(IsDeepSettlement() == false)
     {
-        auto buildingPersonnelCount = 0;
-        for(auto &building : GetBuildings())
-        {
-            buildingPersonnelCount += building.GetPersonnelCount();
-        }
-
         auto populationWithoutTileWorkers = 1 + GetPopulation() - GetWorkedTiles();
 
-        return populationWithoutTileWorkers - buildingPersonnelCount;
+        return populationWithoutTileWorkers - resourceHandler.GetWorkforce();
     }
     else
     {
@@ -811,7 +807,7 @@ void Settlement::AddBuilding(BuildingTypes type)
 
 bool Settlement::HireWorker(Building *building)
 {
-    if(building->GetOutputResource().Resource == world::settlement::ResourceTypes::NONE)
+    if(building->GetOutputResource() == world::settlement::ResourceTypes::NONE)
         return false;
 
     if(building->GetAmount() == building->GetPersonnelCount())
@@ -838,6 +834,11 @@ bool Settlement::HireWorker(ResourceTypes resource)
 void Settlement::FireWorker(ResourceTypes resource)
 {
     resourceHandler.FireRandomWorker(resource);
+}
+
+void Settlement::FireWorker(Job *job)
+{
+    resourceHandler.FireWorker(job);
 }
 
 void Settlement::FireAllWorkers()

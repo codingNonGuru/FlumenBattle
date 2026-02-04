@@ -631,7 +631,7 @@ void HumanMind::FireWorker(settlement::Settlement *settlement, settlement::Build
 
 void HumanMind::ChangeBuildingWorkforce(settlement::Building *building, bool isHiring)
 {
-    if(building->GetOutputResource().Resource == world::settlement::ResourceTypes::NONE)
+    if(building->GetOutputResource() == world::settlement::ResourceTypes::NONE)
         return;
 
     auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();

@@ -100,7 +100,7 @@ void PopulationTab::UpdateItems()
     auto item = popItems.GetStart();
     for(auto &cohort : cohorts)
     {
-        (*item)->Setup(&cohort);
+        (*item)->Setup(&cohort, settlement);
         (*item)->Enable();
 
         item++;

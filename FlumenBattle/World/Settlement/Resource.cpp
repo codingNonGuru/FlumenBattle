@@ -64,6 +64,7 @@ struct Furniture : public ResourceType
         RelatedModifiers = {Modifiers::WOOD_RELATED_RESOURCE_PRODUCTION};
         InputResources = {{ResourceTypes::LUMBER, 3}};
         OutputAmount = 2;
+        RelatedBuilding = BuildingTypes::CARPENTER;
     }
 };
 
@@ -75,6 +76,7 @@ struct CookedFood : public ResourceType
         IsProductionTileBased = false;
         InputResources = {{ResourceTypes::FOOD, 3}, {ResourceTypes::TIMBER, 1}};
         OutputAmount = 2;
+        RelatedBuilding = BuildingTypes::BAKERY;
     }
 };
 
@@ -85,6 +87,7 @@ struct Fabric : public ResourceType
         IsProductionTileBased = false; 
         InputResources = {{ResourceTypes::FIBER, 3}};
         OutputAmount = 3;
+        RelatedBuilding = BuildingTypes::WEAVING_MILL;
     }
 };
 
@@ -96,6 +99,7 @@ struct Clothing : public ResourceType
         IsProductionTileBased = false; 
         InputResources = {{ResourceTypes::FABRIC, 3}};
         OutputAmount = 2;
+        RelatedBuilding = BuildingTypes::TAILORY;
     }
 };
 
@@ -115,12 +119,13 @@ struct Pottery : public ResourceType
         IsProductionTileBased = false; 
         InputResources = {{ResourceTypes::TIMBER, 4}, {ResourceTypes::CLAY, 3}};
         OutputAmount = 2;
+        RelatedBuilding = BuildingTypes::POTTERY;
     }
 };
 
 int Resource::GetPotentialProduction(const Settlement &settlement) const
 {
-    return GetProductionFromBuildings(settlement) + GetProductionFromTiles(settlement);
+    return GetProductionFromCenter(settlement) + GetProductionFromTiles(settlement);
 }
 
 int Resource::GetPotentialMidtermOutput(const ResourceHandler &handler) const
@@ -130,20 +135,29 @@ int Resource::GetPotentialMidtermOutput(const ResourceHandler &handler) const
 
     if(handler.GetParent()->IsDeepSettlement() == true)
     {
+        auto output = 0;
+
         auto cycleCount = ticks / ResourceHandler::CYCLE_LENGTH;
 
-        auto outputPerCycle = this->Workforce * Type->OutputAmount;
+        auto buildingIndex = 0;
 
-        return cycleCount * outputPerCycle;
-
-        /*auto jobCount = 0;
+        auto jobCount = 0;
         for(auto &job : handler.GetJobs())
         {
             if(job.GetResource() == this->Type->Type)
             {
+                auto outputPerCycle = Type->OutputAmount;
 
+                if(buildingIndex < handler.GetParent()->GetBuildingCount(Type->RelatedBuilding))
+                    outputPerCycle += PRODUCTION_BOOST_PER_BUILDING;
+
+                output += cycleCount * outputPerCycle;
+
+                buildingIndex++;
             }
-        }*/
+        }
+
+        return output;
     }
     else
     {
@@ -159,6 +173,8 @@ int Resource::GetPotentialMidtermInput(const ResourceHandler &handler) const
 {
     static const auto &time = WorldScene::Get()->GetTime();
     static const auto ticks = time.GetTicksFromDays(3);
+
+    auto popConsumption = handler.GetParent()->GetPopulationHandler().GetPotentialMidtermConsumption(this->Type->Type);
 
     if(handler.GetParent()->IsDeepSettlement() == true)
     {
@@ -178,7 +194,7 @@ int Resource::GetPotentialMidtermInput(const ResourceHandler &handler) const
             }
         }
 
-        return inputAmount;
+        return inputAmount + popConsumption;
 
         /*auto jobCount = 0;
         for(auto &job : handler.GetJobs())
@@ -195,24 +211,21 @@ int Resource::GetPotentialMidtermInput(const ResourceHandler &handler) const
 
         auto outputPerCycle = this->Workforce * Type->OutputAmount;
 
-        return cycleCount * outputPerCycle;
+        return cycleCount * outputPerCycle + popConsumption;
     }
 }
 
-int Resource::GetProductionFromBuildings(const Settlement &settlement) const
+int Resource::GetProductionFromCenter(const Settlement &settlement) const
 {
     if(Type->IsProductionTileBased == true)
         return 0;
 
-    auto &buildings = settlement.GetBuildingsThatProduce(Type->Type);
-
     bool canProduce = true;
-    for(auto &building : buildings)
+    for(auto &resource : settlement.GetResourceHandler().GetResources())
     {
-        for(auto &inputResource : building->GetInputResources())
+        for(auto &inputResource : resource.Type->InputResources)
         {
-            auto resource = settlement.GetResource(inputResource.Resource);
-            if(resource->CanFulfillOrders == false)
+            if(inputResource.Resource == resource.Type->Type && resource.CanFulfillOrders == false)
             {
                 canProduce = false;
             }
@@ -223,29 +236,21 @@ int Resource::GetProductionFromBuildings(const Settlement &settlement) const
         canProduce = false;
 
     auto production = 0;
-    /*if(canProduce == false)
-    {
-        for(auto &building : buildings)
-        {
-            for(auto &inputResource : building->GetInputResources())
-            {
-                auto resource = settlement.GetResource(inputResource.Resource);
-            
-                resource->Order -= inputResource.Amount * building->GetPersonnelCount();
-            }
-        }
-    }
-    else*/
     if(canProduce == true)
     {
-        for(auto &building : buildings)
-        {
-            production += building->GetOutputResource().Amount * building->GetPersonnelCount();
+        production = this->Type->OutputAmount * this->Workforce;
 
-            for(auto modifier : Type->RelatedModifiers) 
-            {
-                production += settlement.GetModifier(modifier);
-            }
+        auto buildingCount = settlement.GetBuildingCount(this->Type->RelatedBuilding);
+        if(buildingCount > this->Workforce)
+        {
+            buildingCount = this->Workforce;
+        }
+
+        production += buildingCount * PRODUCTION_BOOST_PER_BUILDING;
+
+        for(auto modifier : this->Type->RelatedModifiers) 
+        {
+            production += settlement.GetModifier(modifier) * this->Workforce;
         }
     }
 
@@ -295,13 +300,26 @@ int Resource::GetProductionFromTiles(const Settlement &settlement) const
     return production;
 }
 
+int Resource::GetInput(ResourceTypes type) const
+{
+    for(auto &input : Type->InputResources)
+    {
+        if(input.Resource == type)
+        {
+            return input.Amount * Workforce;
+        }
+    }
+
+    return 0;
+}
+
 void Resource::PlaceOrders(const Settlement &settlement)
 {
     auto consumption = 0;
 
-    for(const auto &building : settlement.GetBuildings())
+    for(auto &resource : settlement.GetResourceHandler().GetResources())
     {
-        consumption += building.GetResourceConsumption(Type->Type) * building.GetPersonnelCount();    
+        consumption += resource.GetInput(resource.Type->Type);
     }
 
     Order = consumption;
@@ -315,7 +333,7 @@ void Resource::CheckOrderFullfilment()
 
 void Resource::ExecuteOrders(const Settlement &settlement)
 {
-    Production = GetProductionFromTiles(settlement) + GetProductionFromBuildings(settlement);
+    Production = GetProductionFromTiles(settlement) + GetProductionFromCenter(settlement);
 }
 
 void Resource::UpdateAbundance(Settlement &settlement)
@@ -539,9 +557,16 @@ void ResourceHandler::Update(Settlement &settlement)
 
     if(settlement.IsDeepSettlement() == true)
     {
+        auto buildingIndex = 0;
         for(auto &job : jobSet.GetJobs())
         {
-            job.FinishProduction(*this);
+            auto buildingType = ResourceFactory::Get()->CreateType(job.GetResource())->RelatedBuilding;
+
+            bool doesJobHappenInBuilding = buildingIndex < settlement.GetBuildingCount(buildingType);
+
+            job.FinishProduction(*this, doesJobHappenInBuilding);
+
+            buildingIndex++;
         }
     }
     else
@@ -573,6 +598,8 @@ void ResourceHandler::HireRandomWorker(ResourceTypes type)
 
         cohort.IsHired = true;
 
+        cohort.Job = job;
+
         workforce++;
 
         Get(type)->Workforce++;
@@ -590,6 +617,8 @@ void ResourceHandler::FireRandomWorker(ResourceTypes type)
 
         job.GetCohort()->IsHired = false;
 
+        job.GetCohort()->Job = nullptr;
+
         jobSet.GetJobs().RemoveAt(&job);
 
         workforce--;
@@ -598,6 +627,19 @@ void ResourceHandler::FireRandomWorker(ResourceTypes type)
 
         break;
     }
+}
+
+void ResourceHandler::FireWorker(Job *job)
+{
+    Get(job->GetResource())->Workforce--;
+
+    job->GetCohort()->IsHired = false;
+
+    job->GetCohort()->Job = nullptr;
+
+    workforce--;
+
+    jobSet.GetJobs().RemoveAt(job);
 }
 
 Resource *ResourceHandler::Get(ResourceTypes type) const

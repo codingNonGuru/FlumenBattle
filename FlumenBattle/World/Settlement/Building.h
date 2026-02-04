@@ -28,25 +28,25 @@ namespace world::settlement
 
         Word TextureName;
 
-        struct Throughput
+        /*struct Throughput
         {
             ResourceTypes Resource;
 
             int Amount;
         };
 
-        container::Array <Throughput> InputResources; 
+        container::Array <Throughput> InputResources;*/ 
 
-        Throughput OutputResource {ResourceTypes::NONE, 0};
+        ResourceTypes OutputResource {ResourceTypes::NONE};
 
         explicit BuildingType(BuildingTypes type, int cost, bool isTall, Word name, Word textureName) : 
             Type(type), Cost(cost), IsTall(isTall), Name(name), TextureName(textureName) {}
 
-        explicit BuildingType(BuildingTypes type, int cost, bool isTall, Word name, Word textureName, Throughput output) : 
+        explicit BuildingType(BuildingTypes type, int cost, bool isTall, Word name, Word textureName, ResourceTypes output) : 
             Type(type), Cost(cost), IsTall(isTall), Name(name), TextureName(textureName), OutputResource(output) {}
 
-        explicit BuildingType(BuildingTypes type, int cost, bool isTall, Word name, Word textureName, Throughput output, std::initializer_list <Throughput> input) : 
-            Type(type), Cost(cost), IsTall(isTall), Name(name), TextureName(textureName), OutputResource(output), InputResources(input) {}
+        /*explicit BuildingType(BuildingTypes type, int cost, bool isTall, Word name, Word textureName, Throughput output, std::initializer_list <Throughput> input) : 
+            Type(type), Cost(cost), IsTall(isTall), Name(name), TextureName(textureName), OutputResource(output), InputResources(input) {}*/
 
         virtual void HandleApplyEffect(Settlement &) const = 0;
     };
@@ -84,13 +84,13 @@ namespace world::settlement
 
         BuildingTypes GetType() const {return type->Type;}
 
-        bool DoesProduce(ResourceTypes resource) const {return type->OutputResource.Resource == resource;}
+        bool DoesProduce(ResourceTypes resource) const {return type->OutputResource == resource;}
 
-        int GetResourceConsumption(ResourceTypes resource) const;
+        //int GetResourceConsumption(ResourceTypes resource) const;
 
-        container::Array <BuildingType::Throughput> GetInputResources() const {return type->InputResources;}
+        //container::Array <BuildingType::Throughput> GetInputResources() const {return type->InputResources;}
 
-        BuildingType::Throughput GetOutputResource() const {return type->OutputResource;}
+        ResourceTypes GetOutputResource() const {return type->OutputResource;}
 
         Word GetName() const {return type->Name;}
 
