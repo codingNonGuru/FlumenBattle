@@ -212,7 +212,11 @@ void HumanMind::UpdateSettlementWorkforce(settlement::Settlement *settlement) co
         }
         else if(instruction->PlaceType == WorkInstruction::TILE)
         {
-            instruction->Place.Tile->IsWorked = true;
+            auto hasHired = settlement->HireWorker(instruction->Place.Tile);
+            if(hasHired == true)
+            {
+                freeWorkerCount--;
+            }
 
             freeWorkerCount--;
         }

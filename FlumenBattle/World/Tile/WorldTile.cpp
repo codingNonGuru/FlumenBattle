@@ -195,6 +195,22 @@ bool WorldTile::HasRelief(WorldReliefs relief) const
     return relief == Relief->Type;
 }
 
+world::settlement::ResourceTypes WorldTile::GetMajorResource() const
+{
+    world::settlement::ResourceTypes resource = world::settlement::ResourceTypes::NONE;
+    auto biggestAmount = -1;
+    for(int i = 0; i < BASIC_RESOURCES_COUNT; ++i)
+    {
+        if(*resources[i] > biggestAmount)
+        {
+            biggestAmount = *resources[i];
+            resource = world::settlement::ResourceTypes(i);
+        }
+    }
+
+    return resource;
+}
+
 void WorldTile::Settle(settlement::Settlement *settlement)
 {
     this->settlement = settlement;

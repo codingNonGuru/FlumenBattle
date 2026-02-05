@@ -183,6 +183,8 @@ namespace world::tile
 
         ResourceAmount GetResource(settlement::ResourceTypes type) {return *resources[(int)type];}
 
+        settlement::ResourceTypes GetMajorResource() const;
+
         const WorldMap *GetMap() const {return map;}
 
         void SetResource(settlement::ResourceTypes type, ResourceAmount amount) {*resources[(int)type] = amount;}

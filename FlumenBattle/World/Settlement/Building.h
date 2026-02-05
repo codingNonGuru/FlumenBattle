@@ -61,12 +61,10 @@ namespace world::settlement
 
         int amount {1};
 
-        int activePersonnelCount {0};
-
     public:
         Building() : type(nullptr), damagedCount(0) {}
 
-        Building(const BuildingType *type) : type(type), amount(1), damagedCount(0), activePersonnelCount(0) {} 
+        Building(const BuildingType *type) : type(type), amount(1), damagedCount(0) {} 
 
         void ApplyEffect(Settlement &) const;
 
@@ -96,19 +94,9 @@ namespace world::settlement
 
         Word GetTextureName() const {return type->TextureName;}
 
-        int GetPersonnelCount() const {return activePersonnelCount;}
-
-        void AddPersonnel() {activePersonnelCount++;}
-
-        void RemovePersonnel() {activePersonnelCount--;}
-
         void Damage() {damagedCount++;}
 
         void Repair() {damagedCount--;}
-
-        bool DoesFullyEmploy() const {return activePersonnelCount == amount;}
-
-        bool DoesEmployAnyone() const {return activePersonnelCount != 0;}
     };
 
     class BuildingSet

@@ -4,7 +4,9 @@
 #include "FlumenBattle/World/Polity/HumanMind.h"
 #include "FlumenBattle/World/Polity/WorkInstruction.h"
 #include "FlumenBattle/World/Settlement/Resource.h"
+#include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/Interface/Counter.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 
 using namespace world::interface::rule;
 
@@ -14,14 +16,24 @@ void JobItem::Setup(polity::WorkInstruction *instruction, bool isWorkerHired)
 {
     this->instruction = instruction;
 
-    if(instruction != nullptr && instruction->PlaceType == polity::WorkInstruction::RESOURCE)
+    if(instruction != nullptr)
     {
         resourceIcon->Enable();
-        resourceIcon->SetTexture(instruction->Place.Resource->Type->TextureName);
+
+        if(instruction->PlaceType == polity::WorkInstruction::RESOURCE)
+        {
+            resourceIcon->SetTexture(instruction->Place.Resource->Type->TextureName);
+        }
+        else
+        {
+            auto majorResource = instruction->Place.Tile->Tile->GetMajorResource();
+            auto resourceType = settlement::ResourceFactory::Get()->CreateType(majorResource);
+            resourceIcon->SetTexture(resourceType->TextureName);
+        }
 
         resourceIcon->SetOpacity(isWorkerHired == true ? 1.0f : 0.5f);
 
-        priority = instruction->Priority;
+        priority = instruction->Priority + 1;
 
         SetInteractivity(true);
 

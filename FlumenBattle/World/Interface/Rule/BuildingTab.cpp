@@ -45,12 +45,6 @@ void BuildingItem::HandleConfigure()
         {drawOrder_ + 1, {Position2(-8.0f, -8.0f), ElementAnchors::LOWER_RIGHT, ElementPivots::LOWER_RIGHT, this}, {"WhiteDotBackdrop", false}}
     );
     counter->Setup(&buildingCount, Scale2(1.0f), "Medium");
-
-    workerCounter = ElementFactory::BuildElement <Counter>
-    (
-        {drawOrder_ + 1, {Position2(-8.0f, 8.0f), ElementAnchors::UPPER_RIGHT, ElementPivots::UPPER_RIGHT, this}, {"WhiteDotBackdrop", false}}
-    );
-    workerCounter->Setup(&workerCount, Scale2(0.8f), "Small");
 }
 
 void BuildingItem::HandleUpdate()
@@ -71,17 +65,6 @@ void BuildingItem::HandleUpdate()
     {
         counter->Enable();
     }
-
-    workerCount = building->GetPersonnelCount();
-
-    if(building->GetOutputResource() != world::settlement::ResourceTypes::NONE)
-    {
-        workerCounter->Enable();
-    }
-    else
-    {
-        workerCounter->Disable();
-    }
 }
 
 void BuildingItem::HandleHover()
@@ -100,20 +83,12 @@ void BuildingItem::HandleLeftClick()
 {
     if(building == nullptr)
         return;
-
-    //ruleMenu->GetCurrentSettlement()->HireWorker(building);
-
-    //polity::HumanMind::Get()->ChangeBuildingWorkforce(building, true);
 }
 
 void BuildingItem::HandleRightClick()
 {
     if(building == nullptr)
         return;
-
-    //ruleMenu->GetCurrentSettlement()->FireWorker(building);
-
-    //polity::HumanMind::Get()->ChangeBuildingWorkforce(building, false);
 }
 
 void BuildingItem::Setup(settlement::Building *building, BuildingTab *tab)

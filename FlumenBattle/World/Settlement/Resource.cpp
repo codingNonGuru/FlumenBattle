@@ -608,6 +608,29 @@ void ResourceHandler::HireRandomWorker(ResourceTypes type)
     }
 }
 
+void ResourceHandler::HireRandomWorker(SettlementTile *tile)
+{
+    for(auto &cohort : parent->GetPopCohorts())
+    {
+        if(cohort.IsHired == true)
+            continue;
+
+        tile->IsWorked = true;
+
+        auto job = jobSet.GetJobs().Add();
+
+        job->Initialize(&cohort, tile);
+
+        cohort.IsHired = true;
+
+        cohort.Job = job;
+
+        workforce++;
+
+        break;
+    }
+}
+
 void ResourceHandler::FireRandomWorker(ResourceTypes type)
 {
     for(auto &job : jobSet.GetJobs())
@@ -624,6 +647,25 @@ void ResourceHandler::FireRandomWorker(ResourceTypes type)
         workforce--;
 
         Get(type)->Workforce--;
+
+        break;
+    }
+}
+
+void ResourceHandler::FireRandomWorker(SettlementTile *tile)
+{
+    for(auto &job : jobSet.GetJobs())
+    {
+        if(job.GetTile() != tile)
+            continue;
+
+        job.GetCohort()->IsHired = false;
+
+        job.GetCohort()->Job = nullptr;
+
+        jobSet.GetJobs().RemoveAt(&job);
+
+        workforce--;
 
         break;
     }
@@ -650,7 +692,8 @@ void ResourceHandler::FireAllWorkers()
 
         job.GetCohort()->Job = nullptr;
 
-        Get(job.GetResource())->Workforce--;    
+        if(job.GetTile() == nullptr)
+            Get(job.GetResource())->Workforce = 0;    
     }
 
     workforce = 0;

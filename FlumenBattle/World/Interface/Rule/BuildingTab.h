@@ -38,8 +38,6 @@ namespace world::interface::rule
 
         Counter *counter;
 
-        Counter *workerCounter;
-
         int buildingCount;
 
         int workerCount;

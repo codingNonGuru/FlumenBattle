@@ -363,11 +363,13 @@ namespace world::settlement
 
         void AddBuilding(BuildingTypes);
 
-        bool HireWorker(Building *);
-
         bool HireWorker(ResourceTypes);
 
+        bool HireWorker(SettlementTile *);
+
         void FireWorker(ResourceTypes);
+
+        void FireWorker(SettlementTile *);
 
         void FireWorker(Job *);
 

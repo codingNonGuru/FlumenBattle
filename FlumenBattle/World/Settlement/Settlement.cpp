@@ -805,22 +805,6 @@ void Settlement::AddBuilding(BuildingTypes type)
     buildingManager->AddBuilding(type);
 }
 
-bool Settlement::HireWorker(Building *building)
-{
-    if(building->GetOutputResource() == world::settlement::ResourceTypes::NONE)
-        return false;
-
-    if(building->GetAmount() == building->GetPersonnelCount())
-        return false;
-
-    if(GetFreeWorkerCount() == 0)
-        return false;
-
-    building->AddPersonnel();
-
-    return true;
-}
-
 bool Settlement::HireWorker(ResourceTypes resource)
 {
     if(GetFreeWorkerCount() == 0)
@@ -831,9 +815,24 @@ bool Settlement::HireWorker(ResourceTypes resource)
     return true;
 }
 
+bool Settlement::HireWorker(SettlementTile *tile)
+{
+    if(GetFreeWorkerCount() == 0)
+        return false;
+
+    resourceHandler.HireRandomWorker(tile);
+
+    return true;
+}
+
 void Settlement::FireWorker(ResourceTypes resource)
 {
     resourceHandler.FireRandomWorker(resource);
+}
+
+void Settlement::FireWorker(SettlementTile *tile)
+{
+    resourceHandler.FireRandomWorker(tile);
 }
 
 void Settlement::FireWorker(Job *job)

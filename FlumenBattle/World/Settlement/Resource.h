@@ -14,6 +14,7 @@ namespace world::settlement
     enum class AbundanceLevels;
     class JobSet;
     class ResourceHandler;
+    struct SettlementTile;
 
     struct ResourceType
     {
@@ -140,7 +141,11 @@ namespace world::settlement
 
         void HireRandomWorker(ResourceTypes);
 
+        void HireRandomWorker(SettlementTile *);
+
         void FireRandomWorker(ResourceTypes);
+
+        void FireRandomWorker(SettlementTile *);
 
         void FireWorker(Job *);
 
