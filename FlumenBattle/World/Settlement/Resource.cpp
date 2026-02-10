@@ -60,6 +60,7 @@ struct Furniture : public ResourceType
 {
     Furniture() : ResourceType(ResourceTypes::FURNITURE, "Furniture", "Furniture_WildStyle32", 70) 
     {
+        PopulationConsumption = 1;
         IsProductionTileBased = false; 
         RelatedModifiers = {Modifiers::WOOD_RELATED_RESOURCE_PRODUCTION};
         InputResources = {{ResourceTypes::LUMBER, 3}};
@@ -659,6 +660,8 @@ void ResourceHandler::FireRandomWorker(SettlementTile *tile)
         if(job.GetTile() != tile)
             continue;
 
+        tile->IsWorked = false;
+
         job.GetCohort()->IsHired = false;
 
         job.GetCohort()->Job = nullptr;
@@ -713,12 +716,33 @@ int ResourceHandler::GetWorkforce(ResourceTypes type) const
 
 int ResourceHandler::GetPotentialMidtermOutput(ResourceTypes resource) const
 {
-    Get(resource)->GetPotentialMidtermOutput(*this);
+    if(ResourceFactory::Get()->CreateType(resource)->IsProductionTileBased == false)
+        return Get(resource)->GetPotentialMidtermOutput(*this);
+    else
+    {
+        static const auto &time = WorldScene::Get()->GetTime();
+        static const auto ticks = time.GetTicksFromDays(3);
+
+        auto output = 0;
+        for(auto &job : jobSet.GetJobs())
+        {
+            if(job.GetTile() == nullptr)
+                continue;
+                
+            output += job.GetTile()->Tile->GetResource(resource);
+        }
+
+        output += GetParent()->GetLocation()->GetResource(resource);
+
+        auto cycleCount = ticks / CYCLE_LENGTH;
+
+        return output * cycleCount;
+    }
 }
 
 int ResourceHandler::GetPotentialMidtermInput(ResourceTypes resource) const
 {
-    Get(resource)->GetPotentialMidtermInput(*this);
+    return Get(resource)->GetPotentialMidtermInput(*this);
 }
 
 const ResourceType *ResourceFactory::CreateType(ResourceTypes type)

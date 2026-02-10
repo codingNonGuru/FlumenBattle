@@ -168,7 +168,7 @@ namespace world::settlement
 
         int GetWorkforce(ResourceTypes) const;
 
-        container::Pool <Job> &GetJobs() const {return jobSet.GetJobs();}
+        const container::Pool <Job> &GetJobs() const {return jobSet.GetJobs();}
 
         const container::Array <Resource> &GetResources() const {return resources;}
 

@@ -83,9 +83,9 @@ void PopHandler::Initialize(Settlement *settlement)
 
     needs.Reset();
 
-    *needs.Add() = {ResourceTypes::FOOD, false, true, 500, 3};
-    *needs.Add() = {ResourceTypes::COOKED_FOOD, true, true, 500, 3};
-    *needs.Add() = {ResourceTypes::FURNITURE, true, false, 800, 250};
+    *needs.Add() = {ResourceTypes::FOOD, false, true, 500, 8};
+    *needs.Add() = {ResourceTypes::COOKED_FOOD, true, true, 500, 8};
+    *needs.Add() = {ResourceTypes::FURNITURE, true, false, 800, 200};
     *needs.Add() = {ResourceTypes::CLOTHING, true, false, 800, 150};
     *needs.Add() = {ResourceTypes::POTTERY, true, false, 800, 100};
 
@@ -101,63 +101,63 @@ void PopHandler::Deepen()
     extraData->Initialize(this);
 }
 
+auto needHierarchies = {container::Array <ResourceTypes> {ResourceTypes::COOKED_FOOD, ResourceTypes::FOOD}};
+
 void PopHandler::PlaceOrders(Settlement &settlement)
 {
-    auto cookedFood = settlement.GetResource(ResourceTypes::COOKED_FOOD);
-    auto rawFood = settlement.GetResource(ResourceTypes::FOOD);
-    auto clothing = settlement.GetResource(ResourceTypes::CLOTHING);
-    auto pottery = settlement.GetResource(ResourceTypes::POTTERY);
-
     for(auto &need : needs)
     {
         settlement.GetResource(need.Type)->HasPopulationOrdered = false;
+
+        need.IsMet = false;
+
+        //need.Order = 0;
     }
 
     if(GetPopulation() == 0)
-    {
         return;
-    }
 
-    auto consumption = GetPopulation() * cookedFood->Type->PopulationConsumption;
-    if(consumption <= cookedFood->Storage)
+    for(auto &need : needs)
     {
-        cookedFood->Order += consumption;
+        auto resource = settlement.GetResource(need.Type);
+        auto consumption = GetPopulation() * resource->Type->PopulationConsumption;
 
-        cookedFood->HasPopulationOrdered = true;
-        rawFood->HasPopulationOrdered = false;
-    }
-    else
-    {
-        consumption = GetPopulation() * rawFood->Type->PopulationConsumption;
-
-        if(consumption <= rawFood->Storage)
+        if(consumption <= resource->Storage && need.Satisfaction < need.SatisfactionThreshold)
         {
-            rawFood->Order += consumption;
+            need.Order = consumption;
 
-            cookedFood->HasPopulationOrdered = false;
-            rawFood->HasPopulationOrdered = true;
-        }
-        else
-        {
-            cookedFood->HasPopulationOrdered = false;
-            rawFood->HasPopulationOrdered = false;
+            resource->HasPopulationOrdered = true;
         }
     }
 
-    consumption = GetPopulation() * clothing->Type->PopulationConsumption;
-    if(consumption <= clothing->Storage && needs.Find(ResourceTypes::CLOTHING)->Satisfaction < needs.Find(ResourceTypes::CLOTHING)->SatisfactionThreshold)
-    {
-        clothing->Order += consumption;
 
-        clothing->HasPopulationOrdered = true;
+    for(auto &hierarchy : needHierarchies)
+    {
+        bool isOneNeedFulfilled = false;
+        for(auto &resourceType : hierarchy)
+        {
+            auto resource = settlement.GetResource(resourceType);
+            if(isOneNeedFulfilled == true)
+            {
+                resource->HasPopulationOrdered = false;
+                continue;
+            }
+
+            //auto need = needs.Find(resourceType);
+            if(resource->HasPopulationOrdered == true)
+            {
+                isOneNeedFulfilled = true;
+            }
+        }
     }
 
-    consumption = GetPopulation() * pottery->Type->PopulationConsumption;
-    if(consumption <= pottery->Storage && needs.Find(ResourceTypes::POTTERY)->Satisfaction < needs.Find(ResourceTypes::POTTERY)->SatisfactionThreshold)
+    for(auto &need : needs)
     {
-        pottery->Order += consumption;
+        auto resource = settlement.GetResource(need.Type);
+        if(resource->HasPopulationOrdered == false)
+            continue;
 
-        pottery->HasPopulationOrdered = true;
+        resource->Order += need.Order;
     }
 }
 
@@ -168,36 +168,15 @@ void PopHandler::UpdateNeeds(Settlement &settlement)
         need.IsMet = false;
     }
 
-    auto cookedFood = settlement.GetResource(ResourceTypes::COOKED_FOOD);
-    auto rawFood = settlement.GetResource(ResourceTypes::FOOD);
-    auto clothing = settlement.GetResource(ResourceTypes::CLOTHING);
-    auto pottery = settlement.GetResource(ResourceTypes::POTTERY);
-
-    if(cookedFood->HasPopulationOrdered == true)
+    for(auto &need : needs)
     {
-        needs.Find(ResourceTypes::COOKED_FOOD)->IsMet = true;
+        auto resource = settlement.GetResource(need.Type);
+        if(resource->HasPopulationOrdered == false)
+            continue;
 
-        needs.Find(ResourceTypes::COOKED_FOOD)->Satisfaction += 3;
-    }
-    else if(rawFood->HasPopulationOrdered == true)
-    {
-        needs.Find(ResourceTypes::FOOD)->IsMet = true;
+        need.IsMet = true;
 
-        needs.Find(ResourceTypes::FOOD)->Satisfaction += 3;
-    }
-
-    if(clothing->HasPopulationOrdered == true)
-    {
-        needs.Find(ResourceTypes::CLOTHING)->IsMet = true;
-
-        needs.Find(ResourceTypes::CLOTHING)->Satisfaction += 150;
-    }
-
-    if(pottery->HasPopulationOrdered == true)
-    {
-        needs.Find(ResourceTypes::POTTERY)->IsMet = true;
-
-        needs.Find(ResourceTypes::POTTERY)->Satisfaction += 100;
+        need.Satisfaction += need.SatisfactionBoostPerConsumption;
     }
 
     static const auto TICKS_PER_NEED_SATISFACTION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::TICKS_PER_NEED_SATISFACTION).Integer;

@@ -44,6 +44,8 @@ namespace world::settlement
 
         bool IsMet {false};
 
+        int Order {0};
+
         bool operator ==(const ResourceTypes otherType) {return otherType == Type;}
     };
 

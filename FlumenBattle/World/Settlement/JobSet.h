@@ -11,6 +11,8 @@ namespace world::settlement
     public:
         container::Pool <Job> &GetJobs() {return jobs;}
 
+        const container::Pool <Job> &GetJobs() const {return jobs;}
+
     protected:
         container::Pool <Job> jobs;
     };
