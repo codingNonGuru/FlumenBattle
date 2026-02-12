@@ -29,14 +29,16 @@ struct Race
 
     const char *PluralName;
 
+    const char *TextureName;
+
     Integer HitPointBonus;
 
     Integer Speed;
 
     AbilityBoost Boosts[ABILITY_COUNT];
 
-    Race(RaceTypes type, const char *name, const char *pluralName, Integer bonus, Integer speed, std::initializer_list <AbilityBoost> boosts) : 
-        Type(type), Name(name), PluralName(pluralName), HitPointBonus(bonus), Speed(speed) 
+    Race(RaceTypes type, const char *name, const char *pluralName, const char *textureName, Integer bonus, Integer speed, std::initializer_list <AbilityBoost> boosts) : 
+        Type(type), Name(name), PluralName(pluralName), TextureName(textureName), HitPointBonus(bonus), Speed(speed) 
         {
             auto i = 0;
             for(auto &boost : boosts)

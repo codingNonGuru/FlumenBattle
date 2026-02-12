@@ -10,13 +10,14 @@
 #include "FlumenBattle/World/Settlement/Resource.h"
 #include "FlumenBattle/World/Settlement/Building.h"
 #include "FlumenBattle/World/Interface/Counter.h"
-#include "FlumenBattle/World/Interface/Rule/BuildingHoverInfo.h"
+#include "FlumenBattle/World/Interface/Rule/ResourceHoverInfo.h"
 #include "FlumenBattle/World/Interface/Rule/JobItem.h"
 #include "FlumenBattle/WorldInterface.h"
 #include "FlumenBattle/Race.h"
 #include "FlumenBattle/Config.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
 #include "FlumenBattle/World/Polity/WorkInstruction.h"
+#include "FlumenBattle/World/WorldScene.h"
 
 using namespace world::interface::rule;
 
@@ -118,6 +119,8 @@ void ResourceItem::HandleUpdate()
     if(IsHovered() == true)
     {
         SetOpacity(0.8f);
+
+        HandleHover();
     }
     else
     {
@@ -125,11 +128,13 @@ void ResourceItem::HandleUpdate()
     }
 }
 
-void ResourceItem::Setup(settlement::Resource *resource, const settlement::Settlement *settlement)
+void ResourceItem::Setup(settlement::Resource *resource, const settlement::Settlement *settlement, EconomyTab *tab)
 {
     this->resource = resource;
 
     this->settlement = settlement;
+
+    this->parentTab = tab;
 
     auto name = Word("<2>") << resource->Type->Name.GetFirstCharacter() << "<1>" << resource->Type->Name.Get() + 1;
     nameLabel->Setup(name);
@@ -172,6 +177,25 @@ void ResourceItem::HandleLeftClick()
 void ResourceItem::HandleRightClick()
 {
     polity::HumanMind::Get()->ChangeResourceWorkforce(resource, false);
+}
+
+void ResourceItem::HandleHover()
+{
+    if(resource == nullptr)
+        return;
+
+    auto hoverInfo = parentTab->GetHoverDevice();
+
+    if(world::WorldScene::Get()->GetPlayerSettlement()->GetFreeWorkerCount() == 0)
+    {
+        hoverInfo->Disable();
+
+        return;
+    }
+
+    hoverInfo->Setup(this);
+
+    hoverInfo->Enable();
 }
 
 void EconomyTab::HandleConfigure()
@@ -259,6 +283,16 @@ void EconomyTab::HandleConfigure()
         *jobItems.Allocate() = item;
     }
 
+    resourceHoverInfo = ElementFactory::BuildElement <ResourceHoverInfo>
+    (
+        {
+            GetDrawOrder() + 5,
+            {ElementAnchors::MIDDLE_CENTER, ElementPivots::UPPER_CENTER, this},
+            {false}
+        }
+    );
+    resourceHoverInfo->Disable();
+
     static const auto ruleMenu = WorldInterface::Get()->GetRuleMenu();
 
     ruleMenu->OnSettlementChanged += {this, &EconomyTab::HandleSettlementChanged};
@@ -319,7 +353,7 @@ void EconomyTab::HandleSettlementChanged()
         }
 
         item->Enable();
-        item->Setup(resource, settlement);
+        item->Setup(resource, settlement, this);
     }
 }
 

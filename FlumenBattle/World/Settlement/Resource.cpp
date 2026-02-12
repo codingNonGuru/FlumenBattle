@@ -586,6 +586,21 @@ void ResourceHandler::Update(Settlement &settlement)
     popHandler.UpdateNeeds(settlement);
 }
 
+void ResourceHandler::HireWorker(ResourceTypes type, Cohort *cohort)
+{
+    auto job = jobSet.GetJobs().Add();
+
+    job->Initialize(cohort, type);
+
+    cohort->IsHired = true;
+
+    cohort->Job = job;
+
+    workforce++;
+
+    Get(type)->Workforce++;
+}
+
 void ResourceHandler::HireRandomWorker(ResourceTypes type)
 {
     for(auto &cohort : parent->GetPopCohorts())

@@ -7,6 +7,7 @@
 class Text;
 class SimpleList;
 class ProgressBar;
+class LayoutGroup;
 
 namespace world::settlement
 {
@@ -24,7 +25,7 @@ namespace world::interface::rule
 {
     class RuleMenu;
     class EconomyTab;
-    class BuildingHoverInfo;
+    class ResourceHoverInfo;
     class JobItem;
 
     struct ResourceItem : public Element
@@ -53,7 +54,9 @@ namespace world::interface::rule
 
         const settlement::Settlement *settlement;
 
-        void Setup(settlement::Resource *, const settlement::Settlement *);
+        EconomyTab *parentTab;
+
+        void Setup(settlement::Resource *, const settlement::Settlement *, EconomyTab *);
 
         void HandleConfigure() override;
 
@@ -63,7 +66,7 @@ namespace world::interface::rule
 
         void HandleRightClick() override;
 
-        //void HandleHover() override;
+        void HandleHover() override;
     };
 
     class EconomyTab : public Element
@@ -82,6 +85,8 @@ namespace world::interface::rule
 
         LayoutGroup *jobItemLayout;
 
+        ResourceHoverInfo *resourceHoverInfo;
+
         void SetupJobItems();
 
         void HandleConfigure() override;
@@ -91,5 +96,8 @@ namespace world::interface::rule
         void HandleEnable() override;
 
         void HandleSettlementChanged();
+
+    public:
+        ResourceHoverInfo *GetHoverDevice() {return resourceHoverInfo;}
     };
 }

@@ -48,8 +48,6 @@
 
 #define POPULATION_NEED_COUNT 6
 
-#define RACE_GROUPS_PER_SETTTLEMENT 6
-
 using namespace world::settlement;
 
 static int lastUniqueId = 0;
@@ -63,6 +61,8 @@ void SettlementAllocator::PreallocateMaximumMemory()
     static const auto EXPLORATIONS_PER_SETTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::EXPLORATIONS_PER_SETTLEMENT).Integer;
 
     static const auto MAX_SETTLEMENT_POPULATION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAX_SETTLEMENT_POPULATION).Integer;
+
+    static const auto RACE_GROUPS_PER_SETTTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::RACE_GROUPS_PER_SETTTLEMENT).Integer;
     
 
     std::cout<<"Memory size of a Settlement is "<<sizeof(Settlement)<<"\n";
@@ -133,6 +133,8 @@ void SettlementAllocator::AllocateWorldMemory(int worldSize)
     static const auto EXPLORATIONS_PER_SETTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::EXPLORATIONS_PER_SETTLEMENT).Integer;
 
     static const auto MAX_SETTLEMENT_POPULATION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAX_SETTLEMENT_POPULATION).Integer;
+
+    static const auto RACE_GROUPS_PER_SETTTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::RACE_GROUPS_PER_SETTTLEMENT).Integer;
 
     static const auto worldGenerator = WorldGenerator::Get();
 

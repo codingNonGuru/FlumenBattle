@@ -23,6 +23,8 @@ namespace world::interface::rule
     {
         Element *resourceIcon;
 
+        Element *cohortIcon;
+
         Counter *priorityLabel;
 
         polity::WorkInstruction *instruction;

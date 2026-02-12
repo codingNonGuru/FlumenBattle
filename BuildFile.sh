@@ -16,7 +16,7 @@ done
 
 export CXX=/usr/bin/g++
 
-#../../Utilities/cmake-3.28.0/bin/cmake . -DCMAKE_CXX_COMPILER=/home/andrei/Documents/Code/Utilities/clang+llvm-17.0.6/bin/clang++
+#../../Utilities/cmake-3.28.0/bin/cmake . -DCMAKE_CXX_COMPILER=/home/andrei/Documents/Code/Utilities/clang+llvm-17.0.6/bin/clang++ -Wno-const-qualifier
 ../../Utilities/cmake-3.28.0/bin/cmake . -DCMAKE_CXX_COMPILER=/usr/bin/g++
 
 make -j 4

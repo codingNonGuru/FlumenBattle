@@ -5,6 +5,8 @@
 
 #include "FlumenBattle/World/Polity/Mind.h"
 
+enum class RaceTypes;
+
 namespace world::settlement
 {
     enum class ProductionOptions;
@@ -16,6 +18,7 @@ namespace world::settlement
     struct SettlementTile;
     enum class TileImprovements;
     struct Resource;
+    struct RaceGroup;
 }
 
 namespace world
@@ -124,6 +127,12 @@ namespace world::polity
         void ChangeResourceWorkforce(settlement::Resource *, bool);
 
         const container::Pool <WorkInstruction> *GetSettlementInstructions() const;
+
+        const container::Array <settlement::RaceGroup> &GetUnemployedByRace() const;
+
+        const RaceTypes GetNextRaceToEmploy() const;
+
+        void ShiftNextRaceToEmploy();
 
         void RegisterPopIncrease(settlement::Settlement *) const override;
 

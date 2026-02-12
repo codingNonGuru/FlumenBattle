@@ -68,7 +68,7 @@ void PopHandler::Initialize(Settlement *settlement)
     highestPopulationEver = 0;
 
     auto &races = GetNeighbourRaces();
-    for(int i = 0; i < 5; ++i)
+    for(int i = 0; i < 12; ++i)
     {
         IncreasePopulation(settlement, &races);
     }

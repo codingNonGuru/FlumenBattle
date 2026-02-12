@@ -5,6 +5,7 @@
 #include "FlumenBattle/World/Polity/WorkInstruction.h"
 #include "FlumenBattle/World/Settlement/Resource.h"
 #include "FlumenBattle/World/Settlement/SettlementTile.h"
+#include "FlumenBattle/World/Settlement/Cohort.h"
 #include "FlumenBattle/World/Interface/Counter.h"
 #include "FlumenBattle/World/Tile/WorldTile.h"
 
@@ -19,6 +20,7 @@ void JobItem::Setup(polity::WorkInstruction *instruction, bool isWorkerHired)
     if(instruction != nullptr)
     {
         resourceIcon->Enable();
+        cohortIcon->Enable();
 
         if(instruction->PlaceType == polity::WorkInstruction::RESOURCE)
         {
@@ -30,6 +32,8 @@ void JobItem::Setup(polity::WorkInstruction *instruction, bool isWorkerHired)
             auto resourceType = settlement::ResourceFactory::Get()->CreateType(majorResource);
             resourceIcon->SetTexture(resourceType->TextureName);
         }
+
+        cohortIcon->SetTexture(instruction->Cohort->Race->TextureName);
 
         resourceIcon->SetOpacity(isWorkerHired == true ? 1.0f : 0.5f);
 
@@ -43,6 +47,8 @@ void JobItem::Setup(polity::WorkInstruction *instruction, bool isWorkerHired)
     {
         resourceIcon->Disable();
 
+        cohortIcon->Disable();
+
         SetInteractivity(false);
 
         priorityLabel->Disable();
@@ -54,12 +60,24 @@ void JobItem::HandleConfigure()
     resourceIcon = ElementFactory::BuildElement <Element>
     (
         { 
-            drawOrder_ + 1, 
-            {Position2(0.0f, 0.0f), ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, this}, 
+            drawOrder_ + 2, 
+            {Position2(8.0f, 8.0f), this}, 
             {"Radish", false}
         }
     );
+    resourceIcon->SetTextureScale(0.7f);
     resourceIcon->Disable();
+
+    cohortIcon = ElementFactory::BuildElement <Element>
+    (
+        { 
+            drawOrder_ + 1, 
+            {Position2(-6.0f, -8.0f), this}, 
+            {"Radish", false}
+        }
+    );
+    cohortIcon->SetTextureScale(0.7f);
+    cohortIcon->Disable();
 
     priorityLabel = ElementFactory::BuildElement <Counter>
     (

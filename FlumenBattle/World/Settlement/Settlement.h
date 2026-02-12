@@ -54,6 +54,7 @@ namespace world::settlement
     class Building;
     struct SettlementTile;
     struct ExplorationReward;
+    struct RaceGroup;
 
     struct Link
     {
@@ -363,6 +364,8 @@ namespace world::settlement
 
         void AddBuilding(BuildingTypes);
 
+        bool HireWorker(ResourceTypes, Cohort *);
+
         bool HireWorker(ResourceTypes);
 
         bool HireWorker(SettlementTile *);
@@ -426,6 +429,8 @@ namespace world::settlement
         bool IsPlayerControlled() const;
 
         const Race *GetRace() const;
+
+        const container::Array <RaceGroup> &GetRaces() const;
 
         const Shipment &GetLastOutgoingShipment() {return tradeHandler.lastOutgoingShipment;}
 

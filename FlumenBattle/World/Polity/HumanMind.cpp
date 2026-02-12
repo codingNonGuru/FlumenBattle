@@ -9,6 +9,7 @@
 #include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
 #include "FlumenBattle/World/Settlement/TileImprovement.h"
+#include "FlumenBattle/World/Settlement/Cohort.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/WorldInterface.h"
@@ -43,9 +44,13 @@ static const auto IMPROVEMENT_SWIPE_LEFT_KEY = InputHandler::Trigger{SDL_Scancod
 
 static const auto IMPROVEMENT_SWIPE_RIGHT_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_APOSTROPHE};
 
+static const auto EMPLOYMENT_SHIFT_KEY = InputHandler::Trigger{SDL_Scancode::SDL_SCANCODE_RSHIFT};
+
 static auto commands = container::Array <Command> (MAXIMUM_COMMAND_COUNT);
 
 static auto workInstructionSets = container::Array <InstructionSet> (INSTRUCTION_SETS_PER_POLITY);
+
+static auto nextRaceToEmploy = RaceTypes::NONE;
 
 struct SettleTarget
 {
@@ -131,6 +136,7 @@ void HumanMind::EnableInput()
 
     InputHandler::RegisterEvent(IMPROVEMENT_SWIPE_LEFT_KEY, {this, &HumanMind::HandleImproveSwipeLeft});
     InputHandler::RegisterEvent(IMPROVEMENT_SWIPE_RIGHT_KEY, {this, &HumanMind::HandleImproveSwipeRight});
+    InputHandler::RegisterEvent(EMPLOYMENT_SHIFT_KEY, {this, &HumanMind::ShiftNextRaceToEmploy});
 }
 
 void HumanMind::DisableInput()
@@ -148,6 +154,7 @@ void HumanMind::DisableInput()
 
     InputHandler::UnregisterEvent(IMPROVEMENT_SWIPE_LEFT_KEY);
     InputHandler::UnregisterEvent(IMPROVEMENT_SWIPE_RIGHT_KEY);
+    InputHandler::UnregisterEvent(EMPLOYMENT_SHIFT_KEY);
 }
 
 void HumanMind::MakeDecision(Polity &polity) const
@@ -204,7 +211,7 @@ void HumanMind::UpdateSettlementWorkforce(settlement::Settlement *settlement) co
 
         if(instruction->PlaceType == WorkInstruction::RESOURCE)
         {
-            auto hasHired = settlement->HireWorker(instruction->Place.Resource->Type->Type);
+            auto hasHired = settlement->HireWorker(instruction->Place.Resource->Type->Type, instruction->Cohort);
             if(hasHired == true)
             {
                 freeWorkerCount--;
@@ -585,6 +592,9 @@ void HumanMind::AddWorkInstruction(settlement::Settlement *settlement, settlemen
 
 void HumanMind::AddWorkInstruction(settlement::Settlement *settlement, settlement::Resource *resource)
 {
+    if(this->GetNextRaceToEmploy() == RaceTypes::NONE)
+        return;
+
     auto instructionSet = workInstructionSets.Find(settlement);
     if(instructionSet == nullptr)
     {
@@ -599,7 +609,20 @@ void HumanMind::AddWorkInstruction(settlement::Settlement *settlement, settlemen
     int priority = instructionSet->instructions.GetSize();
     auto instruction = instructionSet->instructions.Add();
 
-    *instruction = {priority, WorkInstruction::RESOURCE, {resource}};
+    settlement::Cohort *chosenPop = nullptr;
+    for(auto &pop : settlement->GetPopCohorts())
+    {
+        if(pop.Job != nullptr)
+            continue;
+
+        if(pop.Race->Type == nextRaceToEmploy)
+        {
+            chosenPop = &pop;
+            break;
+        }
+    }
+
+    *instruction = {priority, WorkInstruction::RESOURCE, {resource}, chosenPop};
 }
 
 void HumanMind::RemoveWorkInstruction(WorkInstruction *instruction)
@@ -709,6 +732,82 @@ const container::Pool <WorkInstruction> *HumanMind::GetSettlementInstructions() 
     else
     {
         return &set->instructions;
+    }
+}
+
+const container::Array <settlement::RaceGroup> &HumanMind::GetUnemployedByRace() const
+{
+    static const auto RACE_GROUPS_PER_SETTTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::RACE_GROUPS_PER_SETTTLEMENT).Integer;
+
+    static container::Array <settlement::RaceGroup> raceGroups(RACE_GROUPS_PER_SETTTLEMENT);
+
+    raceGroups.Reset();
+
+    auto &pops = WorldScene::Get()->GetPlayerSettlement()->GetPopCohorts();
+    for(auto &pop : pops)
+    {
+        if(pop.Job != nullptr)
+            continue;
+
+        auto group = raceGroups.Find(pop.Race->Type);
+        if(group == nullptr)
+        {
+            *raceGroups.Add() = {pop.Race->Type, 1};
+        }
+        else
+        {
+            group->Size++;
+        }
+    }
+
+    return raceGroups;
+}
+
+const RaceTypes HumanMind::GetNextRaceToEmploy() const
+{
+    auto &races = GetUnemployedByRace();
+
+    if(races.IsEmpty() == true)
+        return RaceTypes::NONE;
+
+    if(nextRaceToEmploy == RaceTypes::NONE)
+    {    
+        nextRaceToEmploy = races.GetStart()->Race;
+    }
+
+    if(races.Find(nextRaceToEmploy) == nullptr)
+    {
+        nextRaceToEmploy = races.GetStart()->Race;
+    }
+
+    return nextRaceToEmploy;
+}
+
+void HumanMind::ShiftNextRaceToEmploy()
+{
+    auto &races = GetUnemployedByRace();
+
+    if(races.IsEmpty() == true)
+        return;
+
+    if(races.GetSize() == 1)
+        return;
+
+    for(auto &race : races)
+    {
+        if(race.Race == nextRaceToEmploy)
+        {
+            if(&race == races.GetEnd() - 1)
+            {
+                nextRaceToEmploy = races.GetStart()->Race;
+            }
+            else
+            {
+                nextRaceToEmploy = (&race + 1)->Race;
+            }
+
+            return;
+        }
     }
 }
 

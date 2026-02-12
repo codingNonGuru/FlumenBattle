@@ -54,7 +54,7 @@ public:
 
     static const Race * BuildDwarfRace()
     {
-        static Dwarf race = {RaceTypes::DWARF, "Dwarf", "Dwarves", 10, 4,
+        static Dwarf race = {RaceTypes::DWARF, "Dwarf", "Dwarves", "RaceDwarfHead", 10, 4,
             {
                 {world::character::AbilityTypes::STRENGTH, 1}, 
                 {world::character::AbilityTypes::DEXTERITY, -1}, 
@@ -68,7 +68,7 @@ public:
 
     static const Race * BuildElfRace()
     {
-        static Elf race = {RaceTypes::ELF, "Elf", "Elves", 6, 6,
+        static Elf race = {RaceTypes::ELF, "Elf", "Elves", "RaceElfHead", 6, 6,
             {
                 {world::character::AbilityTypes::DEXTERITY, 2}, 
                 {world::character::AbilityTypes::INTELLIGENCE, 1}, 
@@ -81,7 +81,7 @@ public:
 
     static const Race * BuildHumanRace()
     {
-        static Human race = {RaceTypes::HUMAN, "Human", "Humans", 8, 5,
+        static Human race = {RaceTypes::HUMAN, "Human", "Humans", "RaceHumanHead", 8, 5,
             {
                 {world::character::AbilityTypes::DEXTERITY, 1}, 
                 {world::character::AbilityTypes::INTELLIGENCE, 1}, 
@@ -93,7 +93,7 @@ public:
 
     static const Race * BuildGnomeRace()
     {
-        static Race race = {RaceTypes::GNOME, "Gnome", "Gnomes", 8, 5,
+        static Race race = {RaceTypes::GNOME, "Gnome", "Gnomes", "RaceGnomeHead", 8, 5,
             {
                 {world::character::AbilityTypes::STRENGTH, -1}, 
                 {world::character::AbilityTypes::CONSTITUTION, 1}, 
@@ -106,7 +106,7 @@ public:
 
     static const Race * BuildHalflingRace()
     {
-        static Race race = {RaceTypes::HALFLING, "Halfling", "Halflings", 6, 5,
+        static Race race = {RaceTypes::HALFLING, "Halfling", "Halflings", "RaceHalflingHead", 6, 5,
             {
                 {world::character::AbilityTypes::STRENGTH, -1}, 
                 {world::character::AbilityTypes::DEXTERITY, 2}, 
@@ -119,7 +119,7 @@ public:
 
     static const Race * BuildGoblinRace()
     {
-        static Goblin race = {RaceTypes::GOBLIN, "Goblin", "Goblins", 6, 5,
+        static Goblin race = {RaceTypes::GOBLIN, "Goblin", "Goblins", "RaceGoblinHead", 6, 5,
             {
                 {world::character::AbilityTypes::STRENGTH, -1}, 
                 {world::character::AbilityTypes::DEXTERITY, 2},
@@ -133,7 +133,7 @@ public:
 
     static const Race * BuildOrcRace()
     {
-        static Orc race = {RaceTypes::ORC, "Orc", "Orcs", 10, 5,
+        static Orc race = {RaceTypes::ORC, "Orc", "Orcs", "RaceOrcHead", 10, 5,
             {
                 {world::character::AbilityTypes::STRENGTH, 2}, 
                 {world::character::AbilityTypes::CONSTITUTION, 2},

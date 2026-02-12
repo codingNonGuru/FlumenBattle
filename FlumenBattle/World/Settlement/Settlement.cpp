@@ -652,6 +652,11 @@ const Race *Settlement::GetRace() const
     return popHandler.GetMostPopulousRace();
 }
 
+const container::Array <RaceGroup> &Settlement::GetRaces() const
+{   
+    popHandler.GetRaces();
+}
+
 int Settlement::GetStandingBuildingCount() const
 {
     return buildingManager->GetStandingBuildingCount();
@@ -811,6 +816,16 @@ bool Settlement::HireWorker(ResourceTypes resource)
         return false;
 
     resourceHandler.HireRandomWorker(resource);
+
+    return true;
+}
+
+bool Settlement::HireWorker(ResourceTypes resource, Cohort *cohort)
+{
+    if(GetFreeWorkerCount() == 0)
+        return false;
+
+    resourceHandler.HireWorker(resource, cohort);
 
     return true;
 }

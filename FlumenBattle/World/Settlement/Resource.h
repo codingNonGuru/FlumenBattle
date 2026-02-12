@@ -15,6 +15,7 @@ namespace world::settlement
     class JobSet;
     class ResourceHandler;
     struct SettlementTile;
+    class Cohort;
 
     struct ResourceType
     {
@@ -138,6 +139,8 @@ namespace world::settlement
         void ExecuteOrders(Settlement &);
 
         void Update(Settlement &);
+
+        void HireWorker(ResourceTypes, Cohort *);
 
         void HireRandomWorker(ResourceTypes);
 

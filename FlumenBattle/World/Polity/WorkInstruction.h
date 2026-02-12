@@ -9,6 +9,7 @@ namespace world::settlement
     struct SettlementTile;
     class Job;
     struct Resource;
+    class Cohort;
 }
 
 namespace world::polity
@@ -34,7 +35,7 @@ namespace world::polity
 
         Place Place;
 
-        //settlement::Job *Job;
+        settlement::Cohort *Cohort;
 
         bool operator ==(const settlement::Resource *resource) {return Place.Resource == resource;}
 
