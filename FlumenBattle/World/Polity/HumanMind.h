@@ -19,6 +19,7 @@ namespace world::settlement
     enum class TileImprovements;
     struct Resource;
     struct RaceGroup;
+    class Cohort;
 }
 
 namespace world
@@ -121,6 +122,8 @@ namespace world::polity
         const settlement::Shipment &GetCurrentShipment();
 
         void RemoveWorkInstruction(WorkInstruction *);
+
+        void RemoveWorkInstruction(settlement::Cohort *);
 
         void ChangeBuildingWorkforce(settlement::Building *, bool);
 

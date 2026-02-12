@@ -19,6 +19,8 @@ namespace world::interface::rule
     {
         Text *raceLabel;
 
+        Element *raceIcon;
+
         ProgressBar *healthBar;
 
         Element *jobSprite;

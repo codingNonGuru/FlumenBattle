@@ -6,6 +6,7 @@
 #include "FlumenBattle/World/Settlement/Job.h"
 #include "FlumenBattle/World/Settlement/Resource.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Polity/HumanMind.h"
 
 using namespace world::interface::rule;
 
@@ -13,11 +14,22 @@ static const auto TEXT_COLOR = Color::RED * 0.5f;
 
 void PopulationItem::HandleConfigure()
 {
-    raceLabel = ElementFactory::BuildText(
+    /*raceLabel = ElementFactory::BuildText(
         {drawOrder_ + 1, {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}}, 
         {{"Large"}, TEXT_COLOR, "X"}
     );
-    raceLabel->Enable();
+    raceLabel->Disable();*/
+
+    raceIcon = ElementFactory::BuildElement <Element>
+    (
+        { 
+            drawOrder_ + 1, 
+            {Position2(0.0f, 0.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}, 
+            {"Radish", false}
+        }
+    );
+    //raceIcon->SetTextureScale(0.7f);
+    raceIcon->Enable();
 
     healthBar = ElementFactory::BuildProgressBar <ProgressBar>
     (
@@ -28,7 +40,7 @@ void PopulationItem::HandleConfigure()
 
     jobSprite = ElementFactory::BuildElement <Element>
     (
-        {drawOrder_ + 1, {Position2(10.0f, 0.0f), this}, {"Plank", false}}
+        {drawOrder_ + 1, {Position2(15.0f, 10.0f), this}, {"Plank", false}}
     );
     jobSprite->SetTextureScale(0.8f);
     jobSprite->Enable();
@@ -58,7 +70,7 @@ void PopulationItem::HandleLeftClick()
     if(cohort->Job == nullptr)
         return;
 
-    settlement->FireWorker(cohort->Job);
+    polity::HumanMind::Get()->RemoveWorkInstruction(this->cohort);
 }
 
 void PopulationItem::Setup(const settlement::Cohort *cohort, const settlement::Settlement *settlement)
@@ -67,5 +79,7 @@ void PopulationItem::Setup(const settlement::Cohort *cohort, const settlement::S
 
     this->cohort = cohort;
 
-    raceLabel->Setup(Word() << cohort->Race->Name[0]);
+    //raceLabel->Setup(Word() << cohort->Race->Name[0]);
+
+    raceIcon->SetTexture(cohort->Race->TextureName);
 }

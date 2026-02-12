@@ -649,6 +649,29 @@ void HumanMind::RemoveWorkInstruction(WorkInstruction *instruction)
     UpdateSettlementWorkforce(playerSettlement);
 }
 
+void HumanMind::RemoveWorkInstruction(settlement::Cohort *cohort)
+{
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    const auto playerSettlement = playerGroup->GetCurrentSettlement();
+
+    auto instructionSet = workInstructionSets.Find(playerSettlement);
+
+    auto instruction = instructionSet->instructions.Find(cohort);
+    auto priority = instruction->Priority;
+
+    for(auto &instruction : instructionSet->instructions)
+    {
+        if(instruction.Priority > priority)
+        {
+            instruction.Priority--;
+        }
+    }
+
+    instructionSet->instructions.RemoveAt(instruction);
+
+    UpdateSettlementWorkforce(playerSettlement);
+}
+
 void HumanMind::RemoveWorkInstruction(settlement::Settlement *settlement, settlement::SettlementTile *tile)
 {
     auto instructionSet = workInstructionSets.Find(settlement);

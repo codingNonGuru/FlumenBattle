@@ -45,7 +45,7 @@ void PopulationTab::HandleConfigure()
         auto item = ElementFactory::BuildElement <PopulationItem>
         (
             {
-                Size(60, 85), 
+                Size(60, 90), 
                 drawOrder_ + 1, 
                 {popItemLayout}, 
                 {"panel-border-015", true}

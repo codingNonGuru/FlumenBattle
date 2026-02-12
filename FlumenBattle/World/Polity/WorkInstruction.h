@@ -41,6 +41,8 @@ namespace world::polity
 
         bool operator ==(const settlement::SettlementTile *tile) {return Place.Tile == tile;}
 
+        bool operator ==(const settlement::Cohort *cohort) {return Cohort == cohort;}
+
         bool operator ==(const int priority) {return Priority == priority;}
     };
 
