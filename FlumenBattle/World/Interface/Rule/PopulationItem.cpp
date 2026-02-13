@@ -6,6 +6,8 @@
 #include "FlumenBattle/World/Settlement/Job.h"
 #include "FlumenBattle/World/Settlement/Resource.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/Settlement/SettlementTile.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
 
 using namespace world::interface::rule;
@@ -42,7 +44,7 @@ void PopulationItem::HandleConfigure()
     (
         {drawOrder_ + 1, {Position2(15.0f, 10.0f), this}, {"Plank", false}}
     );
-    jobSprite->SetTextureScale(0.8f);
+    jobSprite->SetTextureScale(0.9f);
     jobSprite->Enable();
 
     SetInteractivity(true);
@@ -58,7 +60,17 @@ void PopulationItem::HandleUpdate()
         jobSprite->Disable();
     else
     {
-        auto resource = settlement::ResourceFactory::Get()->CreateType(cohort->Job->GetResource());
+        
+        auto resource = [&] 
+        {
+            if(cohort->Job->GetTile() == nullptr)
+                return settlement::ResourceFactory::Get()->CreateType(cohort->Job->GetResource());
+            else
+            {
+                auto type = cohort->Job->GetTile()->Tile->GetMajorResource();
+                return settlement::ResourceFactory::Get()->CreateType(type);
+            }
+        } ();
         
         jobSprite->SetTexture(resource->TextureName);
         jobSprite->Enable();

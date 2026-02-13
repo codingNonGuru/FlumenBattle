@@ -2,10 +2,12 @@
 
 #include "ResourceHoverInfo.h"
 #include "EconomyTab.h"
+#include "ResourceItem.h"
 #include "RaceItem.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
+#include "FlumenBattle/World/WorldController.h"
 #include "FlumenBattle/Config.h"
 
 using namespace world::interface::rule;
@@ -73,29 +75,58 @@ void ResourceHoverInfo::HandleConfigure()
 
         *raceItems.Add() = item;
     }
+
+    polity::HumanMind::Get()->OnRaceToEmployShifted += Event{this, &ResourceHoverInfo::HandleRaceShifted};
 }
 
 void ResourceHoverInfo::HandleUpdate()
 {
-    if(hoveredItem == nullptr)
-        return;
-
-    if(hoveredItem->IsHovered() == false)
+    if(isTileBased == false)
     {
-        hoveredItem = nullptr;
-        Disable();
-        return;
+        if(hoveredItem == nullptr)
+            return;
+
+        if(hoveredItem->IsHovered() == false)
+        {
+            hoveredItem = nullptr;
+            Disable();
+            return;
+        }
     }
 }
 
 void ResourceHoverInfo::Setup(ResourceItem *item)
 {
+    hoveredItem = item;
+
+    isTileBased = false;
+
+    RefreshItems();
+}
+
+void ResourceHoverInfo::Setup()
+{
+    hoveredItem = nullptr;
+
+    isTileBased = true;
+
+    RefreshItems();
+}
+
+void ResourceHoverInfo::HandleRaceShifted()
+{
+    if(this->IsGloballyActive() == false)
+        return;
+
+    RefreshItems();
+}
+
+void ResourceHoverInfo::RefreshItems()
+{
     for(auto &raceItem : raceItems)
     {
         raceItem->Disable();
     }
-
-    hoveredItem = item;
 
     auto raceItem = raceItems.GetStart();
 
@@ -110,6 +141,7 @@ void ResourceHoverInfo::Setup(ResourceItem *item)
         raceItem++;
     }
 
+    raceItemGroup->UpdateSize();
     size_.x = raceItemGroup->GetSize().x + 10;
 
     border->GetSize() = size_;

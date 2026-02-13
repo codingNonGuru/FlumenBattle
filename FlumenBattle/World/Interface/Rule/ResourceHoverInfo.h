@@ -24,11 +24,19 @@ namespace world::interface::rule
 
         container::Array <RaceItem *> raceItems;
 
+        bool isTileBased;
+
         void HandleConfigure() override;
 
         void HandleUpdate() override;
 
+        void HandleRaceShifted();
+
+        void RefreshItems();
+
     public:
         void Setup(ResourceItem *);
+
+        void Setup();
     };
 }

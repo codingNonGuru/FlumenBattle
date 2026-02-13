@@ -10,10 +10,20 @@ namespace world
     {
         class SettlementTile;
     }
+
+    namespace polity
+    {
+        class WorkInstruction;
+    }
 }
 
 namespace world::interface
 {
+    namespace rule
+    {
+        class ResourceHoverInfo;
+    }
+
     class Counter;
 
     class InstructionInfo : public Element
@@ -27,14 +37,20 @@ namespace world::interface
         void HandleUpdate() override;
 
     public:
-        void Setup(settlement::SettlementTile *, int);
+        void Setup(const polity::WorkInstruction *);
     };
 
     class InstructionInfoSet : public Element
     {
         container::Array <InstructionInfo *> infos;
 
+        rule::ResourceHoverInfo *resourceHoverInfo;
+
         void HandleConfigure() override;
+
+        void HandleEnable() override;
+
+        void HandleDisable() override;
 
         void HandlePlaceModeEntered();
     };

@@ -587,7 +587,20 @@ void HumanMind::AddWorkInstruction(settlement::Settlement *settlement, settlemen
     int priority = instructionSet->instructions.GetSize();
     auto instruction = instructionSet->instructions.Add();
 
-    *instruction = {priority, WorkInstruction::TILE, {tile}};
+    settlement::Cohort *chosenPop = nullptr;
+    for(auto &pop : settlement->GetPopCohorts())
+    {
+        if(pop.Job != nullptr)
+            continue;
+
+        if(pop.Race->Type == nextRaceToEmploy)
+        {
+            chosenPop = &pop;
+            break;
+        }
+    }
+
+    *instruction = {priority, WorkInstruction::TILE, {tile}, chosenPop};
 }
 
 void HumanMind::AddWorkInstruction(settlement::Settlement *settlement, settlement::Resource *resource)
@@ -829,9 +842,11 @@ void HumanMind::ShiftNextRaceToEmploy()
                 nextRaceToEmploy = (&race + 1)->Race;
             }
 
-            return;
+            break;
         }
     }
+
+    OnRaceToEmployShifted.Invoke();
 }
 
 const tile::WorldTile *HumanMind::GetSettleTarget(settlement::Settlement *settlement) const

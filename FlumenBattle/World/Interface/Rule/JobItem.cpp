@@ -61,7 +61,7 @@ void JobItem::HandleConfigure()
     (
         { 
             drawOrder_ + 2, 
-            {Position2(8.0f, 8.0f), this}, 
+            {Position2(8.0f, 12.0f), this}, 
             {"Radish", false}
         }
     );
@@ -72,7 +72,7 @@ void JobItem::HandleConfigure()
     (
         { 
             drawOrder_ + 1, 
-            {Position2(-6.0f, -8.0f), this}, 
+            {Position2(-2.0f, -4.0f), this}, 
             {"Radish", false}
         }
     );
@@ -83,7 +83,7 @@ void JobItem::HandleConfigure()
     (
         {drawOrder_ + 1, {Position2(5.0f, -5.0f), ElementAnchors::LOWER_LEFT, ElementPivots::LOWER_LEFT, this}, {"WhiteDotBackdrop", false}}
     );
-    priorityLabel->Setup(&priority, Scale2(0.6f), "Small");
+    priorityLabel->Setup(&priority, Scale2(0.7f), "Medium");
     priorityLabel->Disable();
 }
 

@@ -8,15 +8,20 @@
 #include "FlumenBattle/World/Polity/WorkInstruction.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/SettlementTile.h"
+#include "FlumenBattle/World/Settlement/Cohort.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/Interface/Counter.h"
+#include "FlumenBattle/World/Interface/Rule/ResourceHoverInfo.h"
+#include "FlumenBattle/Config.h"
 
 using namespace world::interface;
 
 void InstructionInfoSet::HandleConfigure()
 {
-    infos.Initialize(64);
+    static const auto MAX_SETTLEMENT_POPULATION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAX_SETTLEMENT_POPULATION).Integer;
+
+    infos.Initialize(MAX_SETTLEMENT_POPULATION);
 
     for(int i = 0; i < infos.GetCapacity(); ++i)
     {
@@ -25,11 +30,20 @@ void InstructionInfoSet::HandleConfigure()
             {drawOrder_, {this}, {"WorkHammer", false}, Opacity(1.0f)},
             1
         );
-        info->AdjustSizeToTexture();
         info->Disable();
 
         *infos.Add() = info;
     }
+
+    resourceHoverInfo = ElementFactory::BuildElement <rule::ResourceHoverInfo>
+    (
+        {
+            GetDrawOrder() + 5,
+            {ElementAnchors::MIDDLE_CENTER, ElementPivots::UPPER_CENTER, this},
+            {false}
+        }
+    );
+    resourceHoverInfo->Disable();
 
     WorldController::Get()->OnWorkerPlaceModeToggled += {this, &InstructionInfoSet::HandlePlaceModeEntered};
 
@@ -58,7 +72,7 @@ void InstructionInfoSet::HandlePlaceModeEntered()
             if(instruction.PlaceType != polity::WorkInstruction::TILE)
                 continue;
 
-            (*info)->Setup(instruction.Place.Tile, instruction.Priority);
+            (*info)->Setup(&instruction);
             (*info)->Enable();
 
             info++;
@@ -68,6 +82,17 @@ void InstructionInfoSet::HandlePlaceModeEntered()
     {
         Disable();
     }
+}
+
+void InstructionInfoSet::HandleEnable()
+{
+    resourceHoverInfo->Enable();
+    resourceHoverInfo->Setup();
+}
+
+void InstructionInfoSet::HandleDisable()
+{
+    resourceHoverInfo->Disable();
 }
 
 void InstructionInfo::HandleConfigure()
@@ -83,7 +108,7 @@ void InstructionInfo::HandleUpdate()
 {
     auto zoomFactor = RenderManager::GetCamera(Cameras::WORLD)->GetZoomFactor();
 
-    SetTextureScale(Scale2(0.7f / zoomFactor));
+    SetTextureScale(Scale2(0.5f / zoomFactor));
 
     if(tile->IsWorked)
     {
@@ -97,13 +122,16 @@ void InstructionInfo::HandleUpdate()
     }
 
     counter->Setup(Scale2(0.35f / zoomFactor), "Large");
+    counter->SetBasePosition(Position2{7.0f, 10.0f} / zoomFactor);
 }
 
-void InstructionInfo::Setup(settlement::SettlementTile *tile, int priority)
+void InstructionInfo::Setup(const polity::WorkInstruction *instruction)
 {
-    this->tile = tile;
+    this->tile = instruction->Place.Tile;
 
     FollowWorldPosition(&tile->Tile->Position, Cameras::WORLD, Scale2(0.0f));
 
-    counter->Setup(priority + 1);
+    counter->Setup(instruction->Priority + 1);
+
+    SetTexture(instruction->Cohort->Race->TextureName);
 }

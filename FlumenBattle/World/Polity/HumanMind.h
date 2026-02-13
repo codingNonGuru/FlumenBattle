@@ -115,6 +115,8 @@ namespace world::polity
 
         Delegate OnPlayerPolityDeleted;
 
+        Delegate OnRaceToEmployShifted;
+
         void ProcessProductionInput(settlement::ProductionOptions, settlement::ProductionClasses, settlement::Settlement *);
 
         void SetResearchTarget(science::Technologies);

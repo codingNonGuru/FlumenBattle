@@ -166,7 +166,7 @@ WorldInterface::WorldInterface() : popupQueue(ROLL_POPUP_CAPACITY * 4)
     {
         auto settlementLabel = ElementFactory::BuildElement <settlement::SettlementLabel>
         (
-            {Size(220, 40), DrawOrder(3), {canvas}, {"panel-border-005", true}, Opacity(0.7f)}
+            {Size(220, 40), DrawOrder(10), {canvas}, {"panel-border-005", true}, Opacity(0.7f)}
         );
         settlementLabel->Disable();
         *settlementLabels.Add() = settlementLabel;
