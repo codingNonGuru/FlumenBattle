@@ -83,8 +83,8 @@ void PopHandler::Initialize(Settlement *settlement)
 
     needs.Reset();
 
-    *needs.Add() = {ResourceTypes::FOOD, false, true, 500, 8};
-    *needs.Add() = {ResourceTypes::COOKED_FOOD, true, true, 500, 8};
+    *needs.Add() = {ResourceTypes::FOOD, false, true, 500, 15};
+    *needs.Add() = {ResourceTypes::COOKED_FOOD, true, true, 500, 15};
     *needs.Add() = {ResourceTypes::FURNITURE, true, false, 800, 200};
     *needs.Add() = {ResourceTypes::CLOTHING, true, false, 800, 150};
     *needs.Add() = {ResourceTypes::POTTERY, true, false, 800, 100};

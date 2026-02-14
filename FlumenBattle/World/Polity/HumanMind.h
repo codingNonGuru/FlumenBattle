@@ -20,6 +20,7 @@ namespace world::settlement
     struct Resource;
     struct RaceGroup;
     class Cohort;
+    class Job;
 }
 
 namespace world
@@ -164,5 +165,7 @@ namespace world::polity
         const container::Pool <ProductionQueueSlot> &GetBuildingQueue() const;
 
         const container::Pool <ProductionQueueSlot> &GetRecruitmentQueue() const;
+
+        settlement::Job *GetJobFromInstruction(const WorkInstruction *) const;
     };
 }

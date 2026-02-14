@@ -142,6 +142,8 @@ namespace world::settlement
 
         void HireWorker(ResourceTypes, Cohort *);
 
+        void HireWorker(SettlementTile *, Cohort *);
+
         void HireRandomWorker(ResourceTypes);
 
         void HireRandomWorker(SettlementTile *);

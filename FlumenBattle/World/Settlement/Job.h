@@ -8,10 +8,10 @@ namespace world::settlement
     class ResourceHandler;
     struct SettlementTile;
 
+    enum class JobStatus {OBTAINING_MATERIALS, PRODUCING, DELIVERING_GOODS};
+
     class Job
     {
-        enum class JobStatus {OBTAINING_MATERIALS, PRODUCING, DELIVERING_GOODS};
-
         ResourceTypes resourceType;
 
         SettlementTile *tile;
@@ -38,5 +38,11 @@ namespace world::settlement
         Cohort *GetCohort() const {return cohort;}
 
         SettlementTile *GetTile() const {return tile;}
+
+        int GetProgress() const {return progress;}
+
+        JobStatus GetStatus() const {return status;}
+
+        bool operator == (const Cohort *cohort) {return this->cohort == cohort;}
     };
 }

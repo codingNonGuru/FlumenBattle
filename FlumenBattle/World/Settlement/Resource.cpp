@@ -561,9 +561,15 @@ void ResourceHandler::Update(Settlement &settlement)
         auto buildingIndex = 0;
         for(auto &job : jobSet.GetJobs())
         {
-            auto buildingType = ResourceFactory::Get()->CreateType(job.GetResource())->RelatedBuilding;
+            bool doesJobHappenInBuilding = [&] ()
+            {
+                if(job.GetTile() != nullptr)
+                    return false;
 
-            bool doesJobHappenInBuilding = buildingIndex < settlement.GetBuildingCount(buildingType);
+                auto buildingType = ResourceFactory::Get()->CreateType(job.GetResource())->RelatedBuilding;
+
+                return buildingIndex < settlement.GetBuildingCount(buildingType);
+            } ();
 
             job.FinishProduction(*this, doesJobHappenInBuilding);
 
@@ -599,6 +605,23 @@ void ResourceHandler::HireWorker(ResourceTypes type, Cohort *cohort)
     workforce++;
 
     Get(type)->Workforce++;
+}
+
+void ResourceHandler::HireWorker(SettlementTile *tile, Cohort *cohort)
+{
+    auto job = jobSet.GetJobs().Add();
+
+    job->Initialize(cohort, tile);
+
+    cohort->IsHired = true;
+
+    cohort->Job = job;
+
+    tile->IsWorked = true;
+
+    workforce++;
+
+    //Get(type)->Workforce++;
 }
 
 void ResourceHandler::HireRandomWorker(ResourceTypes type)
@@ -696,6 +719,11 @@ void ResourceHandler::FireWorker(Job *job)
     job->GetCohort()->IsHired = false;
 
     job->GetCohort()->Job = nullptr;
+
+    if(job->GetTile() != nullptr)
+    {
+        job->GetTile()->IsWorked = false;
+    }
 
     workforce--;
 

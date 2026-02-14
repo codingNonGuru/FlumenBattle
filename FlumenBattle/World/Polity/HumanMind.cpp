@@ -10,6 +10,7 @@
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
 #include "FlumenBattle/World/Settlement/TileImprovement.h"
 #include "FlumenBattle/World/Settlement/Cohort.h"
+#include "FlumenBattle/World/Settlement/Job.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/WorldInterface.h"
@@ -188,7 +189,7 @@ void HumanMind::UpdateSettlementWorkforce(settlement::Settlement *settlement) co
         return;
     }
 
-    settlement->FireAllWorkers();
+    /*settlement->FireAllWorkers();
 
     static const auto MAX_SETTLEMENT_POPULATION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAX_SETTLEMENT_POPULATION).Integer;
 
@@ -226,6 +227,44 @@ void HumanMind::UpdateSettlementWorkforce(settlement::Settlement *settlement) co
             }
 
             freeWorkerCount--;
+        }
+    }*/
+
+    static const auto MAX_SETTLEMENT_POPULATION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAX_SETTLEMENT_POPULATION).Integer;
+
+    static container::Array <settlement::Job *> removalQueue(MAX_SETTLEMENT_POPULATION);
+
+    removalQueue.Reset();
+
+    auto &jobs = settlement->GetResourceHandler().GetJobs();
+
+    for(auto &job : jobs)
+    {
+        auto instruction = instructionSet->instructions.Find(job.GetCohort());
+        if(instruction == nullptr)
+        {
+            *removalQueue.Add() = &job;
+        }
+    }
+
+    for(auto &job : removalQueue)
+    {
+        settlement->FireWorker(job);
+    }
+
+    for(auto &instruction : instructionSet->instructions)
+    {
+        auto job = jobs.Find(instruction.Cohort);
+        if(job == nullptr)
+        {
+            if(instruction.PlaceType == WorkInstruction::RESOURCE)
+            {
+                settlement->HireWorker(instruction.Place.Resource->Type->Type, instruction.Cohort);
+            }
+            else if(instruction.PlaceType == WorkInstruction::TILE)
+            {
+                settlement->HireWorker(instruction.Place.Tile, instruction.Cohort);
+            }   
         }
     }
 }
@@ -1061,4 +1100,12 @@ const container::Pool <ProductionQueueSlot> &HumanMind::GetRecruitmentQueue() co
     }
 
     return queueSet->RecruitmentQueue;
+}
+
+settlement::Job *HumanMind::GetJobFromInstruction(const WorkInstruction *instruction) const
+{
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    const auto playerSettlement = playerGroup->GetCurrentSettlement();
+
+    return playerSettlement->GetResourceHandler().GetJobs().Find(instruction->Cohort);
 }

@@ -368,6 +368,8 @@ namespace world::settlement
 
         bool HireWorker(ResourceTypes);
 
+        bool HireWorker(SettlementTile *, Cohort *);
+
         bool HireWorker(SettlementTile *);
 
         void FireWorker(ResourceTypes);

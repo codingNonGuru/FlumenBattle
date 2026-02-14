@@ -840,6 +840,16 @@ bool Settlement::HireWorker(SettlementTile *tile)
     return true;
 }
 
+bool Settlement::HireWorker(SettlementTile *tile, Cohort *cohort)
+{
+    if(GetFreeWorkerCount() == 0)
+        return false;
+
+    resourceHandler.HireWorker(tile, cohort);
+
+    return true;
+}
+
 void Settlement::FireWorker(ResourceTypes resource)
 {
     resourceHandler.FireRandomWorker(resource);
