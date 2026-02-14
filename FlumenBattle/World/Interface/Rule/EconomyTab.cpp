@@ -4,21 +4,23 @@
 #include "FlumenEngine/Interface/ProgressBar.h"
 #include "FlumenEngine/Interface/LayoutGroup.h"
 
-#include "EconomyTab.h"
-#include "ResourceItem.h"
-#include "FlumenBattle/World/Interface/Rule/RuleMenu.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/Resource.h"
 #include "FlumenBattle/World/Settlement/Building.h"
 #include "FlumenBattle/World/Interface/Counter.h"
-#include "FlumenBattle/World/Interface/Rule/ResourceHoverInfo.h"
-#include "FlumenBattle/World/Interface/Rule/JobItem.h"
 #include "FlumenBattle/WorldInterface.h"
 #include "FlumenBattle/Race.h"
 #include "FlumenBattle/Config.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
 #include "FlumenBattle/World/Polity/WorkInstruction.h"
 #include "FlumenBattle/World/WorldScene.h"
+
+#include "EconomyTab.h"
+#include "ResourceItem.h"
+#include "JobHoverInfo.h"
+#include "ResourceHoverInfo.h"
+#include "JobItem.h"
+#include "RuleMenu.h"
 
 using namespace world::interface::rule;
 
@@ -123,6 +125,16 @@ void EconomyTab::HandleConfigure()
     );
     resourceHoverInfo->Disable();
 
+    jobHoverInfo = ElementFactory::BuildElement <JobHoverInfo>
+    (
+        {
+            GetDrawOrder() + 5,
+            {ElementAnchors::MIDDLE_CENTER, ElementPivots::UPPER_CENTER, this},
+            {false}
+        }
+    );
+    jobHoverInfo->Disable();
+
     static const auto ruleMenu = WorldInterface::Get()->GetRuleMenu();
 
     ruleMenu->OnSettlementChanged += {this, &EconomyTab::HandleSettlementChanged};
@@ -210,7 +222,7 @@ void EconomyTab::SetupJobItems()
 
         auto isWorkerHired = i < workerCount;
 
-        (*item)->Setup(instruction, isWorkerHired);
+        (*item)->Setup(instruction, this, isWorkerHired);
         //(*item)->Enable();
 
         item++;

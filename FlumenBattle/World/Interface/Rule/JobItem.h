@@ -31,13 +31,17 @@ namespace world::interface::rule
 
         int priority;
 
+        EconomyTab *parentTab;
+
         void HandleConfigure() override;
 
         void HandleUpdate() override;
 
         void HandleLeftClick() override;
 
+        void HandleHover() override;
+
     public:
-        void Setup(polity::WorkInstruction *, bool);
+        void Setup(polity::WorkInstruction *, EconomyTab *, bool);
     };
 }

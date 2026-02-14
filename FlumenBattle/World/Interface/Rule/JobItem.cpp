@@ -1,6 +1,8 @@
 #include "FlumenEngine/Interface/ElementFactory.h"
 
 #include "JobItem.h"
+#include "EconomyTab.h"
+#include "JobHoverInfo.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
 #include "FlumenBattle/World/Polity/WorkInstruction.h"
 #include "FlumenBattle/World/Settlement/Resource.h"
@@ -13,9 +15,11 @@ using namespace world::interface::rule;
 
 static const auto TEXT_COLOR = Color::RED * 0.5f;
 
-void JobItem::Setup(polity::WorkInstruction *instruction, bool isWorkerHired) 
+void JobItem::Setup(polity::WorkInstruction *instruction, EconomyTab *parentTab, bool isWorkerHired) 
 {
     this->instruction = instruction;
+    
+    this->parentTab = parentTab;
 
     if(instruction != nullptr)
     {
@@ -108,4 +112,16 @@ void JobItem::HandleUpdate()
 void JobItem::HandleLeftClick() 
 {
     polity::HumanMind::Get()->RemoveWorkInstruction(instruction);
+}
+
+void JobItem::HandleHover()
+{
+    if(this->instruction == nullptr)
+        return;
+
+    auto hoverInfo = parentTab->GetJobHoverDevice();
+
+    hoverInfo->Setup(this->instruction);
+
+    hoverInfo->Enable();
 }

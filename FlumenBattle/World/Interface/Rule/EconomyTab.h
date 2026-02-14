@@ -26,6 +26,7 @@ namespace world::interface::rule
     class RuleMenu;
     class EconomyTab;
     class ResourceHoverInfo;
+    class JobHoverInfo;
     class JobItem;
     class ResourceItem;
 
@@ -47,6 +48,8 @@ namespace world::interface::rule
 
         ResourceHoverInfo *resourceHoverInfo;
 
+        JobHoverInfo *jobHoverInfo;
+
         void SetupJobItems();
 
         void HandleConfigure() override;
@@ -59,5 +62,7 @@ namespace world::interface::rule
 
     public:
         ResourceHoverInfo *GetHoverDevice() {return resourceHoverInfo;}
+
+        JobHoverInfo *GetJobHoverDevice() {return jobHoverInfo;}
     };
 }
