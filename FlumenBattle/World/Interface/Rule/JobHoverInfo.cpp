@@ -53,6 +53,16 @@ void JobHoverInfo::HandleConfigure()
 
 void JobHoverInfo::HandleUpdate()
 {
+    if(hoveredItem == nullptr)
+        return;
+
+    if(hoveredItem->IsHovered() == false)
+    {
+        hoveredItem = nullptr;
+        Disable();
+        return;
+    }
+
     auto job = polity::HumanMind::Get()->GetJobFromInstruction(this->hoveredJob);
 
     auto progress = (float)job->GetProgress() / (float)settlement::ResourceHandler::CYCLE_LENGTH;
@@ -70,16 +80,6 @@ void JobHoverInfo::HandleUpdate()
     else if(status == settlement::JobStatus::DELIVERING_GOODS)
     {
         progressLabel->Setup("<2>D<1>elivering");   
-    }
-
-    if(hoveredItem == nullptr)
-        return;
-
-    if(hoveredItem->IsHovered() == false)
-    {
-        hoveredItem = nullptr;
-        Disable();
-        return;
     }
 }
 

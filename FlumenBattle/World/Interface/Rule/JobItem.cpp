@@ -111,7 +111,16 @@ void JobItem::HandleUpdate()
 
 void JobItem::HandleLeftClick() 
 {
+    if(instruction == nullptr)
+        return;
+
+    auto hoverInfo = parentTab->GetJobHoverDevice();
+
+    hoverInfo->Disable();
+
     polity::HumanMind::Get()->RemoveWorkInstruction(instruction);
+
+    instruction = nullptr;
 }
 
 void JobItem::HandleHover()
@@ -121,7 +130,7 @@ void JobItem::HandleHover()
 
     auto hoverInfo = parentTab->GetJobHoverDevice();
 
-    hoverInfo->Setup(this->instruction);
+    hoverInfo->Setup(this, instruction);
 
     hoverInfo->Enable();
 }
