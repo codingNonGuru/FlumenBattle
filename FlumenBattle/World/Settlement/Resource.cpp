@@ -147,12 +147,9 @@ int Resource::GetPotentialMidtermOutput(const ResourceHandler &handler) const
         {
             if(job.GetResource() == this->Type->Type)
             {
-                auto outputPerCycle = Type->OutputAmount;
+                bool isHappeningInBuilding = buildingIndex < handler.GetParent()->GetBuildingCount(Type->RelatedBuilding);
 
-                if(buildingIndex < handler.GetParent()->GetBuildingCount(Type->RelatedBuilding))
-                    outputPerCycle += PRODUCTION_BOOST_PER_BUILDING;
-
-                output += cycleCount * outputPerCycle;
+                output += cycleCount * job.GetOutput(isHappeningInBuilding);
 
                 buildingIndex++;
             }

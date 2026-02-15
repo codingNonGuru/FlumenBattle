@@ -5,6 +5,7 @@
 #include "FlumenBattle/Race.h"
 #include "FlumenBattle/RaceBehavior.h"
 #include "FlumenBattle/World/Character/Types.h"
+#include "FlumenBattle/World/Settlement/Types.h"
 
 class RaceFactory
 {
@@ -61,7 +62,8 @@ public:
                 {world::character::AbilityTypes::CONSTITUTION, 2}, 
                 {world::character::AbilityTypes::WISDOM, 1},
                 {world::character::AbilityTypes::CHARISMA, -1}
-            }
+            },
+            {world::settlement::ResourceTypes::METAL, world::settlement::ResourceTypes::POTTERY}
         };
         return &race;
     }
@@ -74,7 +76,8 @@ public:
                 {world::character::AbilityTypes::INTELLIGENCE, 1}, 
                 {world::character::AbilityTypes::CONSTITUTION, -1}, 
                 {world::character::AbilityTypes::CHARISMA, 1}
-            }
+            },
+            {world::settlement::ResourceTypes::LUMBER, world::settlement::ResourceTypes::FURNITURE, world::settlement::ResourceTypes::CLOTHING}
         };
         return &race;
     }
@@ -86,7 +89,8 @@ public:
                 {world::character::AbilityTypes::DEXTERITY, 1}, 
                 {world::character::AbilityTypes::INTELLIGENCE, 1}, 
                 {world::character::AbilityTypes::CHARISMA, 1}
-            }
+            },
+            {world::settlement::ResourceTypes::FOOD, world::settlement::ResourceTypes::FIBER, world::settlement::ResourceTypes::POTTERY}
         };
         return &race;
     }
@@ -99,7 +103,8 @@ public:
                 {world::character::AbilityTypes::CONSTITUTION, 1}, 
                 {world::character::AbilityTypes::INTELLIGENCE, 1}, 
                 {world::character::AbilityTypes::CHARISMA, 1}
-            }
+            },
+            {world::settlement::ResourceTypes::CLOTHING, world::settlement::ResourceTypes::FURNITURE}
         };
         return &race;
     }
@@ -112,7 +117,8 @@ public:
                 {world::character::AbilityTypes::DEXTERITY, 2}, 
                 {world::character::AbilityTypes::WISDOM, 1}, 
                 {world::character::AbilityTypes::CHARISMA, 1}
-            }
+            },
+            {world::settlement::ResourceTypes::FABRIC}
         };
         return &race;
     }
@@ -126,7 +132,8 @@ public:
                 {world::character::AbilityTypes::WISDOM, 1}, 
                 {world::character::AbilityTypes::INTELLIGENCE, -1}, 
                 {world::character::AbilityTypes::CHARISMA, 1}
-            }
+            },
+            {world::settlement::ResourceTypes::COOKED_FOOD}
         };
         return &race;
     }
@@ -140,7 +147,8 @@ public:
                 {world::character::AbilityTypes::WISDOM, 1}, 
                 {world::character::AbilityTypes::INTELLIGENCE, -1}, 
                 {world::character::AbilityTypes::CHARISMA, -1}
-            }
+            },
+            {world::settlement::ResourceTypes::METAL, world::settlement::ResourceTypes::CLAY, world::settlement::ResourceTypes::TIMBER}
         };
         return &race;
     }

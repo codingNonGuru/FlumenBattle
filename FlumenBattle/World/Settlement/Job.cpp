@@ -2,6 +2,7 @@
 #include "Resource.h"
 #include "Settlement.h"
 #include "SettlementTile.h"
+#include "Cohort.h"
 #include "FlumenBattle/World/Tile/WorldTile.h"
 
 using namespace world::settlement;
@@ -100,11 +101,7 @@ void Job::FinishProduction(ResourceHandler &handler, bool doesHappenInBuilding)
     {
         auto resource = handler.Get(resourceType);
 
-        auto output = resource->Type->OutputAmount;
-        if(doesHappenInBuilding == true)
-        {
-            output += Resource::PRODUCTION_BOOST_PER_BUILDING;
-        }
+        auto output = GetOutput(doesHappenInBuilding);
 
         if(resource->Storage + output > handler.GetParent()->GetStorage())
             return;
@@ -121,12 +118,12 @@ void Job::FinishProduction(ResourceHandler &handler, bool doesHappenInBuilding)
 
         for(auto resourceType : resources)
         {
-            auto output = this->tile->Tile->GetResource(resourceType);
+            auto output = GetOutput(resourceType);
 
             auto resource = handler.Get(resourceType);
 
             if(resource->Storage + output > handler.GetParent()->GetStorage())
-            return;
+                return;
 
             resource->Storage += output;
         }
@@ -135,4 +132,33 @@ void Job::FinishProduction(ResourceHandler &handler, bool doesHappenInBuilding)
 
         progress = 0;
     }
+}
+
+int Job::GetOutput(bool isHappeningInBuilding) const
+{
+    if(tile != nullptr)
+        return 0;
+    
+    auto output = ResourceFactory::Get()->CreateType(resourceType)->OutputAmount;
+
+    if(isHappeningInBuilding == true)
+        output += Resource::PRODUCTION_BOOST_PER_BUILDING;
+
+    if(cohort->Race->HasAffinityFor(resourceType) == true)
+        output += Resource::PRODUCTION_BOOST_FROM_RACE;
+
+    return output;
+}
+
+int Job::GetOutput(ResourceTypes type) const
+{
+    if(tile == nullptr)
+        return 0;
+
+    auto output = tile->Tile->GetResource(type);
+
+    if(cohort->Race->HasAffinityFor(type) == true)
+        output += Resource::PRODUCTION_BOOST_FROM_RACE;
+
+    return output;
 }

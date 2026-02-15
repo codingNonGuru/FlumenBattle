@@ -43,6 +43,10 @@ namespace world::settlement
 
         JobStatus GetStatus() const {return status;}
 
+        int GetOutput(bool) const;
+
+        int GetOutput(ResourceTypes) const;
+
         bool operator == (const Cohort *cohort) {return this->cohort == cohort;}
     };
 }

@@ -59,6 +59,8 @@ namespace world::settlement
     {
         static const int PRODUCTION_BOOST_PER_BUILDING = 1;
 
+        static const int PRODUCTION_BOOST_FROM_RACE = 1;
+
         const ResourceType *Type;
 
         int Storage {100};
