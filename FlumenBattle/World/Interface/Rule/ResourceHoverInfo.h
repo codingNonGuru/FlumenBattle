@@ -3,6 +3,7 @@
 #include "FlumenEngine/Interface/Element.hpp"
 
 class SimpleList;
+class Text;
 
 namespace world::settlement
 {
@@ -17,6 +18,8 @@ namespace world::interface::rule
     class ResourceHoverInfo : public Element
     {
         Element *border;
+
+        Text *raceLabel;
 
         ResourceItem *hoveredItem;
 

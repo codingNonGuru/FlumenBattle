@@ -8,6 +8,7 @@
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/WorldController.h"
+#include "FlumenBattle/RaceFactory.h"
 #include "FlumenBattle/Config.h"
 
 using namespace world::interface::rule;
@@ -15,6 +16,8 @@ using namespace world::interface::rule;
 static const auto BORDER_COLOR = Color::RED * 0.25f;
 
 static const auto TEXT_COLOR = Color::RED * 0.5f;
+
+static const auto HIGHLIGHT_COLOR = Color::RED * 0.8f;
 
 static const SpriteDescriptor BORDER_SPRITE = {"panel-border-007", true};
 
@@ -42,13 +45,19 @@ void ResourceHoverInfo::HandleConfigure()
 
     SetOpacity(OPACITY);
 
+    raceLabel = ElementFactory::BuildRichText(
+        {drawOrder_ + 1, {Position2(0.0f, -25.0f), ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, this}}, 
+        {{"Small"}, TEXT_COLOR, HIGHLIGHT_COLOR, "<2>G<1>oblin"}
+    );
+    raceLabel->Enable();
+
     static const auto RACE_GROUPS_PER_SETTTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::RACE_GROUPS_PER_SETTTLEMENT).Integer;
 
     raceItemGroup = ElementFactory::BuildSimpleList
     (
         { 
             drawOrder_, 
-            {Position2{0.0f, 0.0f}, ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, this}, 
+            {Position2{0.0f, 15.0f}, ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, this}, 
             {false},
             Opacity(0.0f)
         },
@@ -145,4 +154,7 @@ void ResourceHoverInfo::RefreshItems()
     size_.x = raceItemGroup->GetSize().x + 10;
 
     border->GetSize() = size_;
+
+    auto text = Word() << RaceFactory::BuildRace(nextRaceToEmploy)->Name;
+    raceLabel->Setup(Word() << "<2>" << text.GetFirstCharacter() << "<1>" << (text.Get() + 1));
 }
