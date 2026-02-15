@@ -65,7 +65,7 @@ void JobHoverInfo::HandleUpdate()
 
     auto job = polity::HumanMind::Get()->GetJobFromInstruction(this->hoveredJob);
 
-    auto progress = (float)job->GetProgress() / (float)settlement::ResourceHandler::CYCLE_LENGTH;
+    auto progress = (float)job->GetProgress() / (float)settlement::ResourceHandler::PRODUCTION_DURATION;
     progressBar->SetProgress(progress);
 
     auto status = job->GetStatus();

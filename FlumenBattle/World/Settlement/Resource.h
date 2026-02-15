@@ -163,7 +163,11 @@ namespace world::settlement
         int workforce;
 
     public:
-        static const int CYCLE_LENGTH = 12;
+        static const int PRODUCTION_DURATION = 12;
+
+        static const int OBTAINING_MATERIALS_CYCLE_DURATION = 1;
+
+        static const int DELIVERING_GOODS_DURATION = 1;
 
         Resource *Get(ResourceTypes) const;
 
@@ -180,6 +184,11 @@ namespace world::settlement
         int GetPotentialMidtermOutput(ResourceTypes) const;
 
         int GetPotentialMidtermInput(ResourceTypes) const;
+
+        static const int GetTotalCycleLength() 
+        {
+            return PRODUCTION_DURATION + OBTAINING_MATERIALS_CYCLE_DURATION + DELIVERING_GOODS_DURATION;
+        }
     };
 
     class ResourceFactory : public core::Singleton <ResourceFactory>

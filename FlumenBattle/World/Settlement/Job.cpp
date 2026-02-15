@@ -84,7 +84,7 @@ void Job::ExecuteOrders(ResourceHandler &handler)
     {
         progress++;
 
-        if(progress == ResourceHandler::CYCLE_LENGTH)
+        if(progress == ResourceHandler::PRODUCTION_DURATION)
         {
             status = JobStatus::DELIVERING_GOODS;
         }

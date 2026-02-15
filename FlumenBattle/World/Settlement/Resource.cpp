@@ -138,7 +138,7 @@ int Resource::GetPotentialMidtermOutput(const ResourceHandler &handler) const
     {
         auto output = 0;
 
-        auto cycleCount = ticks / ResourceHandler::CYCLE_LENGTH;
+        auto cycleCount = ticks / ResourceHandler::GetTotalCycleLength();
 
         auto buildingIndex = 0;
 
@@ -162,7 +162,7 @@ int Resource::GetPotentialMidtermOutput(const ResourceHandler &handler) const
     }
     else
     {
-        auto cycleCount = ticks / ResourceHandler::CYCLE_LENGTH;
+        auto cycleCount = ticks / ResourceHandler::GetTotalCycleLength();
 
         auto outputPerCycle = this->Workforce * Type->OutputAmount;
 
@@ -179,7 +179,7 @@ int Resource::GetPotentialMidtermInput(const ResourceHandler &handler) const
 
     if(handler.GetParent()->IsDeepSettlement() == true)
     {
-        auto cycleCount = ticks / ResourceHandler::CYCLE_LENGTH;
+        auto cycleCount = ticks / ResourceHandler::GetTotalCycleLength();
 
         auto inputAmount = 0;
 
@@ -208,7 +208,7 @@ int Resource::GetPotentialMidtermInput(const ResourceHandler &handler) const
     }
     else
     {
-        auto cycleCount = ticks / ResourceHandler::CYCLE_LENGTH;
+        auto cycleCount = ticks / ResourceHandler::GetTotalCycleLength();
 
         auto outputPerCycle = this->Workforce * Type->OutputAmount;
 
@@ -777,7 +777,7 @@ int ResourceHandler::GetPotentialMidtermOutput(ResourceTypes resource) const
 
         output += GetParent()->GetLocation()->GetResource(resource);
 
-        auto cycleCount = ticks / CYCLE_LENGTH;
+        auto cycleCount = ticks / GetTotalCycleLength();
 
         return output * cycleCount;
     }
