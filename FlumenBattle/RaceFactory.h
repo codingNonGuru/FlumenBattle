@@ -63,7 +63,7 @@ public:
                 {world::character::AbilityTypes::WISDOM, 1},
                 {world::character::AbilityTypes::CHARISMA, -1}
             },
-            {world::settlement::ResourceTypes::METAL, world::settlement::ResourceTypes::POTTERY}
+            {world::settlement::ResourceTypes::ORE, world::settlement::ResourceTypes::POTTERY}
         };
         return &race;
     }
@@ -148,7 +148,7 @@ public:
                 {world::character::AbilityTypes::INTELLIGENCE, -1}, 
                 {world::character::AbilityTypes::CHARISMA, -1}
             },
-            {world::settlement::ResourceTypes::METAL, world::settlement::ResourceTypes::CLAY, world::settlement::ResourceTypes::TIMBER}
+            {world::settlement::ResourceTypes::ORE, world::settlement::ResourceTypes::CLAY, world::settlement::ResourceTypes::TIMBER}
         };
         return &race;
     }

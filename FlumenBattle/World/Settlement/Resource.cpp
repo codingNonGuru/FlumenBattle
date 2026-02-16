@@ -27,19 +27,27 @@ struct Timber : public ResourceType
     }
 };
 
-struct Metal : public ResourceType
+struct Ore : public ResourceType
 {
-    Metal() : ResourceType(ResourceTypes::METAL, "Metal", "Metal", 100) 
+    Ore() : ResourceType(ResourceTypes::ORE, "Ore", "MetalOre", 10) 
     {
         IsProductionTileBased = true; 
-        InputResources = {{ResourceTypes::TIMBER, 10}};
-        OutputAmount = 1;
+    }
+};
+
+struct Metal : public ResourceType
+{
+    Metal() : ResourceType(ResourceTypes::METAL, "Metal", "Metal", 140) 
+    {
+        IsProductionTileBased = false; 
+        InputResources = {{ResourceTypes::TIMBER, 20}, {ResourceTypes::ORE, 7}};
+        OutputAmount = 2;
     }
 };
 
 struct Lumber : public ResourceType
 {
-    Lumber() : ResourceType(ResourceTypes::LUMBER, "Lumber", "Plank", 25) 
+    Lumber() : ResourceType(ResourceTypes::LUMBER, "Lumber", "Lumber", 25) 
     {
         IsProductionTileBased = false; 
         RelatedModifiers = {Modifiers::WOOD_RELATED_RESOURCE_PRODUCTION}; 
@@ -266,7 +274,7 @@ int Resource::GetProductionFromTiles(const Settlement &settlement) const
     auto production = 0;
     for(auto &tile : settlement.tiles)
     {
-        if(Type->Type != ResourceTypes::METAL)
+        if(Type->Type != ResourceTypes::ORE)
             if(tile.IsWorked == false)
                 continue;
 
@@ -461,11 +469,14 @@ void ResourceHandler::Initialize(const Settlement *parent)
     static const auto clay = Clay();
     *resources.Add() = {&clay};
 
-    static const auto metal = Metal();
-    *resources.Add() = {&metal};
+    static const auto ore = Ore();
+    *resources.Add() = {&ore};
 
     static const auto lumber = Lumber();
     *resources.Add() = {&lumber};
+
+    static const auto metal = Metal();
+    *resources.Add() = {&metal};
 
     static const auto furniture = Furniture();
     *resources.Add() = {&furniture};
@@ -795,12 +806,15 @@ const ResourceType *ResourceFactory::CreateType(ResourceTypes type)
     case ResourceTypes::TIMBER:
         static const auto timber = Timber();
         return &timber;
-    case ResourceTypes::METAL:
-        static const auto metal = Metal();
-        return &metal;
+    case ResourceTypes::ORE:
+        static const auto ore = Ore();
+        return &ore;
     case ResourceTypes::LUMBER:
         static const auto lumber = Lumber();
         return &lumber;
+    case ResourceTypes::METAL:
+        static const auto metal = Metal();
+        return &metal;
     case ResourceTypes::FIBER:
         static const auto fiber = Fiber();
         return &fiber;

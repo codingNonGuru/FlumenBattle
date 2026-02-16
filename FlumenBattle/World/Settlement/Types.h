@@ -104,9 +104,10 @@ namespace world::settlement
     {
         FOOD, //MEAT, GRAIN, FRUIT, MUSHROOM, SEAFOOD, HERBS
         TIMBER,
-        METAL,
+        ORE,
         FIBER,
         CLAY,
+        METAL,
         LUMBER,
         FURNITURE,
         COOKED_FOOD,

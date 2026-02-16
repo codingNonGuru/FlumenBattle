@@ -291,11 +291,11 @@ int WorldGenerator::GenerateWorld(
 
                 tile->SetResource(settlement::ResourceTypes::FOOD, 1);
                 tile->SetResource(settlement::ResourceTypes::TIMBER, 0);
-                tile->SetResource(settlement::ResourceTypes::METAL, 0);
+                tile->SetResource(settlement::ResourceTypes::ORE, 0);
             }
             else
             {
-                tile->SetResource(settlement::ResourceTypes::METAL, (utility::RollD100Dice() > 100 - METAL_SPAWN_CHANCE) ? 1 : 0);
+                tile->SetResource(settlement::ResourceTypes::ORE, (utility::RollD100Dice() > 100 - METAL_SPAWN_CHANCE) ? 1 : 0);
 
 
 

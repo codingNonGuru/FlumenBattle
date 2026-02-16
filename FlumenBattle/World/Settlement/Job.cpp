@@ -114,7 +114,7 @@ void Job::FinishProduction(ResourceHandler &handler, bool doesHappenInBuilding)
     }
     else
     {
-        static const auto resources = {ResourceTypes::FOOD, ResourceTypes::CLAY, ResourceTypes::TIMBER, ResourceTypes::FIBER, ResourceTypes::METAL};
+        static const auto resources = {ResourceTypes::FOOD, ResourceTypes::CLAY, ResourceTypes::TIMBER, ResourceTypes::FIBER, ResourceTypes::ORE};
 
         for(auto resourceType : resources)
         {

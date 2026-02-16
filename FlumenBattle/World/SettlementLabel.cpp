@@ -268,21 +268,22 @@ void HoverExtension::HandleConfigure()
 
         ResourceTypes Type;
 
-        Word Texture;
-
         bool IsTrackingProduction {false};
     };
 
     Data resources[] = {
-        {&foodWidget, ResourceTypes::FOOD, "Radish"}, {&timberWidget, ResourceTypes::TIMBER, "Timber"}, {&metalWidget, ResourceTypes::METAL, "Metal"},
-        {&foodProduction, ResourceTypes::FOOD, "Radish", true}, {&timberProduction, ResourceTypes::TIMBER, "Timber", true}, {&metalProduction, ResourceTypes::METAL, "Metal", true}
+        {&foodWidget, ResourceTypes::FOOD}, {&timberWidget, ResourceTypes::TIMBER}, {&metalWidget, ResourceTypes::ORE},
+        {&foodProduction, ResourceTypes::FOOD, true}, {&timberProduction, ResourceTypes::TIMBER, true}, {&metalProduction, ResourceTypes::ORE, true}
         };
 
     for(auto resource : resources)
     {
+        auto textureName = ResourceFactory::Get()->CreateType(resource.Type)->TextureName;
+
         *resource.Widget = ElementFactory::BuildElement <ResourceWidget>(
-            {Size(32, 32), drawOrder_ + 1, {storageLayout}, {resource.Texture, false}}
+            {Size(32, 32), drawOrder_ + 1, {storageLayout}, {textureName, false}}
         );
+
         (*resource.Widget)->Resource = resource.Type;
         (*resource.Widget)->Parent = this;
         (*resource.Widget)->IsTrackingProduction = resource.IsTrackingProduction;

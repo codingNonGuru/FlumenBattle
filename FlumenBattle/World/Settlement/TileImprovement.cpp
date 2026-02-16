@@ -43,7 +43,7 @@ const TileImprovementType *TileImprovementFactory::BuildImprovementType(TileImpr
         }
     case TileImprovements::MINE:
         {
-            static const TileImprovementType improvement = {TileImprovements::MINE, ResourceTypes::METAL, "Mine", "MineImprovement", 100};
+            static const TileImprovementType improvement = {TileImprovements::MINE, ResourceTypes::ORE, "Mine", "MineImprovement", 100};
             return &improvement;
         }
     }

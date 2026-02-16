@@ -91,7 +91,7 @@ WorldTileModel::WorldTileModel()
 
     bootSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("TravelBoot")); 
 
-    metalSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("Metal"));
+    metalSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("MetalOre"));
 
     foodSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("Radish"));
 
@@ -460,10 +460,10 @@ void WorldTileModel::Render()
         auto map = worldScene->GetWorldMap();
         for(auto tile = map->GetTiles().GetStart(); tile != map->GetTiles().GetEnd(); ++tile)
         {
-            if(tile->GetResource(settlement::ResourceTypes::METAL) == 0)
+            if(tile->GetResource(settlement::ResourceTypes::ORE) == 0)
                 continue;
 
-            metalSprite->Draw(camera, {tile->Position, Scale2(1.0f, 1.0f) * 1.5f, Opacity(1.0f), DrawOrder(-2)});
+            metalSprite->DrawStandalone(camera, {tile->Position, Scale2(1.0f), Opacity(1.0f), DrawOrder(10)});
         }
     }
 
