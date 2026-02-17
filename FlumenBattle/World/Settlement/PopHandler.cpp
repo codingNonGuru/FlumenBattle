@@ -509,6 +509,14 @@ void PopHandler::UpdateGrowth(Settlement *settlement)
     RegenerateHealth();
 }
 
+void PopHandler::UpdatePops()
+{
+    for(auto &cohort : GetCohorts())
+    {
+        cohort.Update();
+    }
+}
+
 void PopHandler::RegenerateHealth()
 {
     static const auto &worldTime = world::WorldScene::Get()->GetTime();

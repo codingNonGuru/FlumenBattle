@@ -132,6 +132,8 @@ namespace world::settlement
 
         void UpdateGrowth(Settlement *);
 
+        void UpdatePops();
+
         bool HasExtraData() const {return extraData != nullptr;}
 
         Settlement *GetSettlement() const {return settlement;}

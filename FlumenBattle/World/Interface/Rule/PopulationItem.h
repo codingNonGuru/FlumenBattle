@@ -10,6 +10,11 @@ namespace world::settlement
     class Settlement;
 }
 
+namespace world::interface
+{
+    class Counter;
+}
+
 namespace world::interface::rule
 {
     //class ProductionDecisionInterface;
@@ -23,11 +28,17 @@ namespace world::interface::rule
 
         ProgressBar *healthBar;
 
+        ProgressBar *experienceBar;
+
         Element *jobSprite;
+
+        Counter *levelCounter;
 
         const settlement::Cohort *cohort;
 
         const settlement::Settlement *settlement;
+
+        int level;
 
         void HandleConfigure() override;
 

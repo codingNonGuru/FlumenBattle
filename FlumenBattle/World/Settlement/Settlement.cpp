@@ -962,6 +962,8 @@ void Settlement::Update()
 
     popHandler.UpdateGrowth(this);
 
+    popHandler.UpdatePops();
+
     cultureGrowth++;
     if(cultureGrowth >= BORDER_GROWTH_THRESHOLD)
     {

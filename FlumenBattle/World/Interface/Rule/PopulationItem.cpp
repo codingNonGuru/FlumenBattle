@@ -9,6 +9,7 @@
 #include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
+#include "FlumenBattle/World/Interface/Counter.h"
 
 using namespace world::interface::rule;
 
@@ -35,17 +36,31 @@ void PopulationItem::HandleConfigure()
 
     healthBar = ElementFactory::BuildProgressBar <ProgressBar>
     (
-        {Size(52, 24), drawOrder_ + 1, {Position2(0.0f, -4.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, this}, {"BaseBar", true}},
+        {Size(52, 20), drawOrder_, {Position2(0.0f, -4.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, this}, {"BaseBar", true}},
         {"BaseFillerRed", {6.0f, 6.0f}}
     );
     healthBar->Enable();
 
+    experienceBar = ElementFactory::BuildProgressBar <ProgressBar>
+    (
+        {Size(52, 16), drawOrder_, {Position2(0.0f, -24.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, this}, {"BaseBar", true}},
+        {"BaseFillerCyan", {6.0f, 6.0f}}
+    );
+    experienceBar->Enable();
+
     jobSprite = ElementFactory::BuildElement <Element>
     (
-        {drawOrder_ + 1, {Position2(15.0f, 10.0f), this}, {"Plank", false}}
+        {drawOrder_ + 2, {Position2(15.0f, 10.0f), this}, {"Plank", false}}
     );
     jobSprite->SetTextureScale(0.9f);
     jobSprite->Enable();
+
+    levelCounter = ElementFactory::BuildElement <Counter>
+    (
+        {drawOrder_ + 1, {Position2(-5.0f, 5.0f), ElementAnchors::UPPER_RIGHT, ElementPivots::UPPER_RIGHT, this}, {"WhiteDotBackdrop", false}}
+    );
+    levelCounter->Setup(&level, Scale2(0.85f), "Medium");
+    levelCounter->Enable();
 
     SetInteractivity(true);
 }
@@ -55,6 +70,8 @@ void PopulationItem::HandleUpdate()
     auto ratio = (float)cohort->Health / (float)cohort->MAXIMUM_HEALTH;
 
     healthBar->SetProgress(ratio);
+
+    experienceBar->SetProgress(cohort->GetExperienceRatio());
 
     if(cohort->Job == nullptr)
         jobSprite->Disable();
@@ -75,6 +92,8 @@ void PopulationItem::HandleUpdate()
         jobSprite->SetTexture(resource->TextureName);
         jobSprite->Enable();
     }
+
+    level = cohort->GetLevel();
 }
 
 void PopulationItem::HandleLeftClick()
