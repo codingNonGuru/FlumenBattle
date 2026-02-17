@@ -142,6 +142,8 @@ namespace world::settlement
 
         void ExecuteOrders(Settlement &);
 
+        void FinishCentralTileProduction();
+
         void Update(Settlement &);
 
         void HireWorker(ResourceTypes, Cohort *);
@@ -165,6 +167,8 @@ namespace world::settlement
         const Settlement *parent;
 
         int workforce;
+
+        int centralTileProgress;
 
     public:
         static const int PRODUCTION_DURATION = 12;

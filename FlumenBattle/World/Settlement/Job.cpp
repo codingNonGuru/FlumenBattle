@@ -123,7 +123,7 @@ void Job::FinishProduction(ResourceHandler &handler, bool doesHappenInBuilding)
             auto resource = handler.Get(resourceType);
 
             if(resource->Storage + output > handler.GetParent()->GetStorage())
-                return;
+                continue;
 
             resource->Storage += output;
         }

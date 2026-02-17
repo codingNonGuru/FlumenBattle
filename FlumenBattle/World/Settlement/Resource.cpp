@@ -496,6 +496,8 @@ void ResourceHandler::Initialize(const Settlement *parent)
     this->parent = parent;
 
     this->workforce = 0;
+
+    this->centralTileProgress = 0;
 }
 
 void ResourceHandler::ResetOrders()
@@ -547,6 +549,35 @@ void ResourceHandler::ExecuteOrders(Settlement &settlement)
     }
 }
 
+void ResourceHandler::FinishCentralTileProduction()
+{
+    if(parent->GetPopulation() == 0)
+        return;
+
+    if(centralTileProgress == ResourceHandler::GetTotalCycleLength())
+    {
+        static const auto resources = {ResourceTypes::FOOD, ResourceTypes::CLAY, ResourceTypes::TIMBER, ResourceTypes::FIBER, ResourceTypes::ORE};
+
+        for(auto resourceType : resources)
+        {
+            auto output = parent->GetLocation()->GetResource(resourceType);
+
+            auto resource = Get(resourceType);
+
+            if(resource->Storage + output > GetParent()->GetStorage())
+                continue;
+
+            resource->Storage += output;
+        }
+
+        centralTileProgress = 0;
+    }
+    else
+    {
+        centralTileProgress++;
+    }
+}
+
 void ResourceHandler::Update(Settlement &settlement)
 {
     ResetOrders();
@@ -583,6 +614,8 @@ void ResourceHandler::Update(Settlement &settlement)
 
             buildingIndex++;
         }
+
+        FinishCentralTileProduction();
     }
     else
     {
