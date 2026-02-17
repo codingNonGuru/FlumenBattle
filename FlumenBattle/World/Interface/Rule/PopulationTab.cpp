@@ -7,6 +7,7 @@
 #include "FlumenBattle/WorldInterface.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/Cohort.h"
+#include "FlumenBattle/World/Interface/CounterSet.h"
 #include "FlumenBattle/Config.h"
 
 using namespace world::interface::rule;
@@ -56,6 +57,18 @@ void PopulationTab::HandleConfigure()
 
         *popItems.Allocate() = item;
     }
+
+    counterSet = ElementFactory::BuildElement <CounterSet>
+    (
+        {
+            Size(), 
+            drawOrder_, 
+            {Position2(0.0f, -5.0f), ElementAnchors::LOWER_CENTER, ElementPivots::LOWER_CENTER, this}, 
+            {false},
+            Opacity(0.0f)
+        }
+    );
+    counterSet->Enable();
 
     static const auto ruleMenu = WorldInterface::Get()->GetRuleMenu();
 
@@ -108,4 +121,6 @@ void PopulationTab::UpdateItems()
 
     auto name = settlement->GetName();
     nameLabel->Setup(Word("<2>") << name.GetFirstCharacter() << "<1>" << (name.Get() + 1));
+
+    counterSet->Setup(settlement->GetRaces());
 }

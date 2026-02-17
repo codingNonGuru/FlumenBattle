@@ -18,6 +18,7 @@ namespace world::settlement
 namespace world::interface
 {
     class Counter;
+    class CounterSet;
 }
 
 namespace world::interface::rule
@@ -35,6 +36,8 @@ namespace world::interface::rule
         container::Array <PopulationItem *> popItems;
 
         LayoutGroup *popItemLayout;
+
+        CounterSet *counterSet;
 
         void UpdateItems();
 

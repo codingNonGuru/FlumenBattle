@@ -32,9 +32,9 @@ static const auto HIGHLIGHT_COLOR = Color::RED * 0.8f;
 
 void EconomyTab::HandleConfigure()
 {
-    nameLabel = ElementFactory::BuildText(
+    nameLabel = ElementFactory::BuildRichText(
         {drawOrder_ + 1, {Position2(0.0f, 10.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}}, 
-        {{"Large"}, TEXT_COLOR}
+        {{"Large"}, TEXT_COLOR, HIGHLIGHT_COLOR}
     );
     nameLabel->Enable();
 
@@ -149,7 +149,7 @@ void EconomyTab::HandleUpdate()
     if(settlement == nullptr)
         return;
 
-    nameLabel->Setup(settlement->GetName());
+    nameLabel->Setup(Word("<2>") << settlement->GetName().GetFirstCharacter() << "<1>" << (settlement->GetName().Get() + 1));
 
     auto text = Phrase() << settlement->GetPopulation() << " " << settlement->GetRace()->PluralName << " live in this jolly settlement, part of the realm of " << settlement->GetRuler()->GetName() << ".";
     populationLabel->Setup(text);
