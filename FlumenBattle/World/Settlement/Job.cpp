@@ -147,6 +147,15 @@ int Job::GetOutput(bool isHappeningInBuilding) const
     if(cohort->Race->HasAffinityFor(resourceType) == true)
         output += Resource::PRODUCTION_BOOST_FROM_RACE;
 
+    if(cohort->GetLevel() == 5)
+    {
+        output += Resource::PRODUCTION_BOOST_FROM_EXPERIENCE * 2;
+    }
+    else if(cohort->GetLevel() > 1)
+    {
+        output += Resource::PRODUCTION_BOOST_FROM_EXPERIENCE;
+    }
+
     return output;
 }
 
@@ -159,6 +168,15 @@ int Job::GetOutput(ResourceTypes type) const
 
     if(cohort->Race->HasAffinityFor(type) == true)
         output += Resource::PRODUCTION_BOOST_FROM_RACE;
+
+    if(cohort->GetLevel() == 5)
+    {
+        output += Resource::PRODUCTION_BOOST_FROM_EXPERIENCE * 2;
+    }
+    else if(cohort->GetLevel() > 1)
+    {
+        output += Resource::PRODUCTION_BOOST_FROM_EXPERIENCE;
+    }
 
     return output;
 }

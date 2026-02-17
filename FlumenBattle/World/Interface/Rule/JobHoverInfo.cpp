@@ -5,7 +5,9 @@
 #include "JobItem.h"
 #include "FlumenBattle/World/Settlement/Job.h"
 #include "FlumenBattle/World/Settlement/Resource.h"
+#include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
+#include "FlumenBattle/World/Tile/WorldTile.h"
 
 using namespace world::interface::rule;
 
@@ -39,16 +41,32 @@ void JobHoverInfo::HandleConfigure()
 
     progressBar = ElementFactory::BuildProgressBar <ProgressBar>
     (
-        {Size(60, 24), drawOrder_ + 1, {Position2(0.0f, 10.0f), ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, this}, {"BaseBar", true}},
+        {Size(60, 24), drawOrder_ + 1, {Position2(0.0f, 0.0f), this}, {"BaseBar", true}},
         {"BaseFillerRed", {6.0f, 6.0f}}
     );
     progressBar->Enable();
 
     progressLabel = ElementFactory::BuildRichText(
-        {drawOrder_ + 1, {Position2(0.0f, -20.0f), ElementAnchors::MIDDLE_CENTER, ElementPivots::MIDDLE_CENTER, this}}, 
+        {drawOrder_ + 1, {Position2(0.0f, -30.0f), this}}, 
         {{"Small"}, TEXT_COLOR, HIGHLIGHT_COLOR, "<2>W<1>ool"}
     );
     progressLabel->Enable();
+
+    outputLabel = ElementFactory::BuildText(
+        {drawOrder_ + 1, {Position2(-15.0f, 30.0f), this}}, 
+        {{"Medium"}, TEXT_COLOR, "+5"}
+    );
+    outputLabel->Enable();
+
+    outputIcon = ElementFactory::BuildElement <Element>
+    (
+        { 
+            drawOrder_ + 1, 
+            {Position2(15.0f, 30.0f), this}, 
+            {"Radish", false}
+        }
+    );
+    outputIcon->Enable();
 }
 
 void JobHoverInfo::HandleUpdate()
@@ -80,6 +98,22 @@ void JobHoverInfo::HandleUpdate()
     else if(status == settlement::JobStatus::DELIVERING_GOODS)
     {
         progressLabel->Setup("<2>D<1>elivering");   
+    }
+
+    if(job->GetTile() == nullptr)
+    {
+        outputLabel->Setup(Word("+") << job->GetOutput(false));
+
+        auto resource = settlement::ResourceFactory::Get()->CreateType(job->GetResource());
+        outputIcon->SetTexture(resource->TextureName);
+    }
+    else
+    {
+        auto resourceType = job->GetTile()->Tile->GetMajorResource();
+        outputLabel->Setup(Word("+") << job->GetOutput(resourceType));
+
+        auto resource = settlement::ResourceFactory::Get()->CreateType(resourceType);
+        outputIcon->SetTexture(resource->TextureName);
     }
 }
 

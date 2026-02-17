@@ -28,6 +28,10 @@ namespace world::interface::rule
 
         Text *progressLabel;
 
+        Text *outputLabel;
+
+        Element *outputIcon;
+
         polity::WorkInstruction *hoveredJob;
 
         JobItem *hoveredItem;
