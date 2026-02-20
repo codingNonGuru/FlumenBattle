@@ -314,6 +314,8 @@ namespace world::settlement
 
         const container::Array <Building *> &GetBuildingsThatProduce(ResourceTypes) const;
 
+        Building &GetBuilding(BuildingTypes);
+
         const Building &GetBuilding(BuildingTypes) const;
 
         polity::Faction *GetFaction() const {return faction;}

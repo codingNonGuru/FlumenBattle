@@ -12,6 +12,11 @@ namespace world::settlement
     struct Building;
 }
 
+namespace world::interface
+{
+    class ResourceCounter;
+}
+
 namespace world::interface::rule
 {
     class RuleMenu;
@@ -41,11 +46,15 @@ namespace world::interface::rule
 
         Text *workerLabel;
 
+        ResourceCounter *buildingCounter;
+
         settlement::Resource *resource;
 
         const settlement::Settlement *settlement;
 
         EconomyTab *parentTab;
+
+        int buildingCount;
 
         void Setup(settlement::Resource *, const settlement::Settlement *, EconomyTab *);
 

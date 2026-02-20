@@ -22,6 +22,8 @@ namespace world::settlement
 
         JobStatus status;
 
+        bool isUsingBuilding;
+
     public:
         void Initialize(Cohort *, ResourceTypes);
 
@@ -31,7 +33,11 @@ namespace world::settlement
 
         void ExecuteOrders(ResourceHandler &);
 
-        void FinishProduction(ResourceHandler &, bool);
+        void FinishProduction(ResourceHandler &);
+
+        void UseBuilding() {isUsingBuilding = true;}
+
+        void QuitBuilding() {isUsingBuilding = false;}
 
         ResourceTypes GetResource() const {return resourceType;}
 
@@ -43,9 +49,11 @@ namespace world::settlement
 
         JobStatus GetStatus() const {return status;}
 
-        int GetOutput(bool) const;
+        int GetOutput() const;
 
         int GetOutput(ResourceTypes) const;
+
+        bool IsUsingBuilding() const {return isUsingBuilding;}
 
         bool operator == (const Cohort *cohort) {return this->cohort == cohort;}
     };

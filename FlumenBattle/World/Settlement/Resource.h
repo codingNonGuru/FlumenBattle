@@ -134,7 +134,7 @@ namespace world::settlement
 
         //int GetAmount(ResourceTypes);
 
-        void Initialize(const Settlement *);
+        void Initialize(Settlement *);
 
         void ResetOrders();
 
@@ -164,7 +164,7 @@ namespace world::settlement
 
         JobSet jobSet;
 
-        const Settlement *parent;
+        Settlement *parent;
 
         int workforce;
 
@@ -179,7 +179,7 @@ namespace world::settlement
 
         Resource *Get(ResourceTypes) const;
 
-        const Settlement *GetParent() const {return parent;}
+        Settlement *GetParent() const {return parent;}
 
         int GetWorkforce() const {return workforce;}
 

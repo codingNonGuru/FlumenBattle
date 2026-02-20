@@ -61,10 +61,12 @@ namespace world::settlement
 
         int amount {1};
 
-    public:
-        Building() : type(nullptr), damagedCount(0) {}
+        int usedCount {0};
 
-        Building(const BuildingType *type) : type(type), amount(1), damagedCount(0) {} 
+    public:
+        Building() : type(nullptr), damagedCount(0), usedCount(0) {}
+
+        Building(const BuildingType *type) : type(type), amount(1), damagedCount(0), usedCount(0) {} 
 
         void ApplyEffect(Settlement &) const;
 
@@ -94,9 +96,21 @@ namespace world::settlement
 
         Word GetTextureName() const {return type->TextureName;}
 
+        int GetWorkerCount() const {return usedCount;}
+
         void Damage() {damagedCount++;}
 
         void Repair() {damagedCount--;}
+
+        void AddWorker() {usedCount++;}
+
+        void RemoveWorker() {usedCount--;}
+
+        void RemoveAllWorkers() {usedCount = 0;}
+
+        bool AreAllUsedByWorkers() const {return usedCount == amount;}
+
+        bool HasAnyFreeBuilding() const {return usedCount < amount;}
     };
 
     class BuildingSet
@@ -151,6 +165,8 @@ namespace world::settlement
         int GetStandingBuildingCount() const;
 
         const container::Pool <Building> &GetBuildings() const {return buildingSet.Get();}
+
+        Building &GetBuilding(BuildingTypes type) {return *buildingSet.buildings.Find(type);}
 
         const Building &GetBuilding(BuildingTypes type) const {return *buildingSet.buildings.Find(type);}
 

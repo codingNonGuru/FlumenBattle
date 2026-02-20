@@ -147,19 +147,13 @@ int Resource::GetPotentialMidtermOutput(const ResourceHandler &handler) const
         auto output = 0;
 
         auto cycleCount = ticks / ResourceHandler::GetTotalCycleLength();
-
-        auto buildingIndex = 0;
-
+        
         auto jobCount = 0;
         for(auto &job : handler.GetJobs())
         {
             if(job.GetResource() == this->Type->Type)
             {
-                bool isHappeningInBuilding = buildingIndex < handler.GetParent()->GetBuildingCount(Type->RelatedBuilding);
-
-                output += cycleCount * job.GetOutput(isHappeningInBuilding);
-
-                buildingIndex++;
+                output += cycleCount * job.GetOutput();
             }
         }
 
@@ -455,7 +449,7 @@ void Resource::FinishProduction()
     Storage += Production;
 }
 
-void ResourceHandler::Initialize(const Settlement *parent)
+void ResourceHandler::Initialize(Settlement *parent)
 {
     static const auto food = Food();
     *resources.Add() = {&food};
@@ -597,22 +591,9 @@ void ResourceHandler::Update(Settlement &settlement)
 
     if(settlement.IsDeepSettlement() == true)
     {
-        auto buildingIndex = 0;
         for(auto &job : jobSet.GetJobs())
         {
-            bool doesJobHappenInBuilding = [&] ()
-            {
-                if(job.GetTile() != nullptr)
-                    return false;
-
-                auto buildingType = ResourceFactory::Get()->CreateType(job.GetResource())->RelatedBuilding;
-
-                return buildingIndex < settlement.GetBuildingCount(buildingType);
-            } ();
-
-            job.FinishProduction(*this, doesJobHappenInBuilding);
-
-            buildingIndex++;
+            job.FinishProduction(*this);
         }
 
         FinishCentralTileProduction();
@@ -646,6 +627,14 @@ void ResourceHandler::HireWorker(ResourceTypes type, Cohort *cohort)
     workforce++;
 
     Get(type)->Workforce++;
+
+    auto &building = parent->GetBuilding(ResourceFactory::Get()->CreateType(type)->RelatedBuilding);
+    if(&building != nullptr && building.HasAnyFreeBuilding() == true)
+    {
+        building.AddWorker();
+
+        job->UseBuilding();
+    }
 }
 
 void ResourceHandler::HireWorker(SettlementTile *tile, Cohort *cohort)
@@ -683,6 +672,14 @@ void ResourceHandler::HireRandomWorker(ResourceTypes type)
         workforce++;
 
         Get(type)->Workforce++;
+
+        auto &building = parent->GetBuilding(ResourceFactory::Get()->CreateType(type)->RelatedBuilding);
+        if(&building != nullptr && building.HasAnyFreeBuilding() == true)
+        {
+            building.AddWorker();
+
+            job->UseBuilding();
+        }
 
         break;
     }
@@ -728,6 +725,14 @@ void ResourceHandler::FireRandomWorker(ResourceTypes type)
 
         Get(type)->Workforce--;
 
+        if(job.IsUsingBuilding() == true)
+        {
+            auto &building = parent->GetBuilding(ResourceFactory::Get()->CreateType(type)->RelatedBuilding);
+            building.RemoveWorker();
+
+            job.QuitBuilding();
+        }
+
         break;
     }
 }
@@ -765,6 +770,16 @@ void ResourceHandler::FireWorker(Job *job)
     {
         job->GetTile()->IsWorked = false;
     }
+    else
+    {
+        if(job->IsUsingBuilding() == true)
+        {
+            auto &building = parent->GetBuilding(ResourceFactory::Get()->CreateType(job->GetResource())->RelatedBuilding);
+            building.RemoveWorker();
+
+            job->QuitBuilding();
+        }
+    }
 
     workforce--;
 
@@ -786,6 +801,11 @@ void ResourceHandler::FireAllWorkers()
     workforce = 0;
 
     jobSet.GetJobs().Reset();
+
+    for(auto &building : parent->GetBuildings())
+    {
+        building.RemoveAllWorkers();
+    }
 }
 
 Resource *ResourceHandler::Get(ResourceTypes type) const

@@ -18,6 +18,8 @@ void Job::Initialize(Cohort *cohort, ResourceTypes resource)
     this->resourceType = resource;
 
     this->tile = nullptr;
+
+    this->isUsingBuilding = false;
 }
 
 void Job::Initialize(Cohort *cohort, SettlementTile *tile)
@@ -31,6 +33,8 @@ void Job::Initialize(Cohort *cohort, SettlementTile *tile)
     this->resourceType = ResourceTypes::NONE;
 
     this->tile = tile;
+
+    this->isUsingBuilding = false;
 }
 
 void Job::PlaceOrders(ResourceHandler &handler)
@@ -92,7 +96,7 @@ void Job::ExecuteOrders(ResourceHandler &handler)
     }
 }
 
-void Job::FinishProduction(ResourceHandler &handler, bool doesHappenInBuilding)
+void Job::FinishProduction(ResourceHandler &handler)
 {
     if(status != JobStatus::DELIVERING_GOODS)
         return;
@@ -101,7 +105,7 @@ void Job::FinishProduction(ResourceHandler &handler, bool doesHappenInBuilding)
     {
         auto resource = handler.Get(resourceType);
 
-        auto output = GetOutput(doesHappenInBuilding);
+        auto output = GetOutput();
 
         if(resource->Storage + output > handler.GetParent()->GetStorage())
             return;
@@ -134,14 +138,14 @@ void Job::FinishProduction(ResourceHandler &handler, bool doesHappenInBuilding)
     }
 }
 
-int Job::GetOutput(bool isHappeningInBuilding) const
+int Job::GetOutput() const
 {
     if(tile != nullptr)
         return 0;
     
     auto output = ResourceFactory::Get()->CreateType(resourceType)->OutputAmount;
 
-    if(isHappeningInBuilding == true)
+    if(isUsingBuilding == true)
         output += Resource::PRODUCTION_BOOST_PER_BUILDING;
 
     if(cohort->Race->HasAffinityFor(resourceType) == true)

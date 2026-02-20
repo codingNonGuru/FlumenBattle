@@ -21,7 +21,7 @@ static const SpriteDescriptor BORDER_SPRITE = {"panel-border-007", true};
 
 static const auto MOUSE_FOLLOW_OFFSET = Position2(0.0f, 10.0f);
 
-static const auto BASE_SIZE = Size(100, 100);
+static const auto BASE_SIZE = Size(160, 100);
 
 static const auto OPACITY = Opacity(0.7f);
 
@@ -67,6 +67,17 @@ void JobHoverInfo::HandleConfigure()
         }
     );
     outputIcon->Enable();
+
+    buildingIcon = ElementFactory::BuildElement <Element>
+    (
+        { 
+            drawOrder_ + 2, 
+            {Position2(20.0f, 0.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}, 
+            {"Houses64", false}
+        }
+    );
+    buildingIcon->SetTextureScale(0.5f);
+    buildingIcon->Disable();
 }
 
 void JobHoverInfo::HandleUpdate()
@@ -102,10 +113,19 @@ void JobHoverInfo::HandleUpdate()
 
     if(job->GetTile() == nullptr)
     {
-        outputLabel->Setup(Word("+") << job->GetOutput(false));
+        outputLabel->Setup(Word("+") << job->GetOutput());
 
         auto resource = settlement::ResourceFactory::Get()->CreateType(job->GetResource());
         outputIcon->SetTexture(resource->TextureName);
+
+        if(job->IsUsingBuilding() == true)
+        {
+            buildingIcon->Enable();
+        }
+        else
+        {
+            buildingIcon->Disable();
+        }
     }
     else
     {
@@ -114,6 +134,8 @@ void JobHoverInfo::HandleUpdate()
 
         auto resource = settlement::ResourceFactory::Get()->CreateType(resourceType);
         outputIcon->SetTexture(resource->TextureName);
+
+        buildingIcon->Disable();
     }
 }
 

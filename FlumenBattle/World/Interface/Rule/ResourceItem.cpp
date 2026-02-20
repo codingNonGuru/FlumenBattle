@@ -9,6 +9,8 @@
 #include "FlumenBattle/World/Settlement/Resource.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
 #include "FlumenBattle/World/WorldScene.h"
+#include "FlumenBattle/World/Interface/ResourceCounter.h"
+#include "FlumenBattle/World/Settlement/Building.h"
 #include "FlumenBattle/Config.h"
 
 using namespace world::interface::rule;
@@ -52,13 +54,13 @@ void ResourceItem::HandleConfigure()
     storedLabel->Enable();
 
     outputLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {Position2(320.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
+        {drawOrder_ + 1, {Position2(360.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
         {{"VerySmall"}, TEXT_COLOR}
     );
     outputLabel->Enable();
 
     inputLabel = ElementFactory::BuildText(
-        {drawOrder_ + 1, {Position2(400.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
+        {drawOrder_ + 1, {Position2(420.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
         {{"VerySmall"}, TEXT_COLOR}
     );
     inputLabel->Enable();
@@ -68,6 +70,10 @@ void ResourceItem::HandleConfigure()
         {{"VerySmall"}, TEXT_COLOR}
     );
     workerLabel->Enable();
+
+    buildingCounter = nullptr;
+
+    buildingCount = 0;
 
     needBar = nullptr;
 }
@@ -118,6 +124,19 @@ void ResourceItem::HandleUpdate()
     {
         SetOpacity(0.5f);
     }
+
+    if(buildingCounter != nullptr)
+    {
+        const auto &building = settlement->GetBuilding(resource->Type->RelatedBuilding);
+        if(&building != nullptr)
+        {
+            buildingCount = building.GetAmount();
+        }
+        else
+        {
+            buildingCount = 0;
+        }
+    }
 }
 
 void ResourceItem::Setup(settlement::Resource *resource, const settlement::Settlement *settlement, EconomyTab *tab)
@@ -155,9 +174,21 @@ void ResourceItem::Setup(settlement::Resource *resource, const settlement::Settl
         needLabel->Enable();
     }
 
-    if(resource->Type->IsProductionTileBased == false)
+    if(resource->Type->IsProductionTileBased == false && resource->Type->RelatedBuilding != settlement::BuildingTypes::NONE)
     {
         SetInteractivity(true);
+
+        buildingCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
+            {drawOrder_ + 1, {Position2(300.0f, -3.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}
+        );
+        buildingCounter->Setup(
+            "Houses64", 
+            &buildingCount,
+            "VerySmall",
+            Scale2(0.4f)
+        );
+        buildingCounter->SetOffset({-15.0f, 5.0f});
+        buildingCounter->Enable();
     }
 }
 

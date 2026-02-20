@@ -32,6 +32,8 @@ namespace world::interface::rule
 
         Element *outputIcon;
 
+        Element *buildingIcon;
+
         polity::WorkInstruction *hoveredJob;
 
         JobItem *hoveredItem;

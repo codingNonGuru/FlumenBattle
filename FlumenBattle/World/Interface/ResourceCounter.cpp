@@ -123,9 +123,16 @@ void ResourceCounter::Setup(Word name, std::function <Word(void)> newFetcher, Wo
 
 void ResourceCounter::SetOffset(float newOffset) 
 {
+    offset = {newOffset, 0.0f};
+
+    label->SetBasePosition(offset);
+}
+
+void ResourceCounter::SetOffset(Position2 newOffset) 
+{
     offset = newOffset;
 
-    label->SetBasePosition({offset, 0.0f});
+    label->SetBasePosition(offset);
 }
 
 void ResourceCounter::SetIconScale(float scale)

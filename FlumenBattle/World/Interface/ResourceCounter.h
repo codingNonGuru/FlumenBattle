@@ -32,7 +32,7 @@ namespace world::interface
 
         bool isSignSensitive {false};
 
-        float offset {0.0f};
+        Position2 offset {0.0f, 0.0f};
 
         void HandleConfigure() override;    
 
@@ -48,6 +48,8 @@ namespace world::interface
         void Setup(Word, std::function <Word(void)>, Word = DEFAULT_FONT_SIZE, Scale2 = Scale2(1.0f));
 
         void SetOffset(float);
+
+        void SetOffset(Position2);
 
         void SetIconScale(float);
 

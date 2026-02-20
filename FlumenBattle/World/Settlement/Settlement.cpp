@@ -396,6 +396,11 @@ bool Settlement::HasBuilding(BuildingTypes type) const
     return buildingManager->HasBuilding(type);
 }
 
+Building &Settlement::GetBuilding(BuildingTypes type)
+{
+    return buildingManager->GetBuilding(type);
+}
+
 const Building &Settlement::GetBuilding(BuildingTypes type) const
 {
     return buildingManager->GetBuilding(type);
