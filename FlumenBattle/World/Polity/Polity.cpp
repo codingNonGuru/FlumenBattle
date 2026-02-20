@@ -458,6 +458,11 @@ void Polity::RegisterPopIncrease(settlement::Settlement *settlement)
     controller->RegisterPopIncrease(settlement);
 }
 
+void Polity::RegisterPopDecrease(settlement::Settlement *settlement)
+{
+    controller->RegisterPopDecrease(settlement);
+}
+
 void Polity::RegisterTileExplored(settlement::Settlement *settlement, tile::WorldTile *tile)
 {
     controller->RegisterTileExplored(settlement, tile);

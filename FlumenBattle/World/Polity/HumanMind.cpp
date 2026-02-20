@@ -905,6 +905,14 @@ void HumanMind::RegisterPopIncrease(settlement::Settlement *settlement) const
     OnPlayerSettlementPopIncrease.Invoke();
 }
 
+void HumanMind::RegisterPopDecrease(settlement::Settlement *settlement) const 
+{
+    if(WorldScene::Get()->GetPlayerSettlement() != settlement)
+        return;
+
+    OnPlayerSettlementPopDecrease.Invoke();
+}
+
 tile::WorldTile *lastExploredTile = nullptr;
 
 settlement::Settlement *lastExplorerSettlement = nullptr;

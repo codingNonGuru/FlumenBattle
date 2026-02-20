@@ -30,6 +30,8 @@ namespace world::polity
 
         virtual void RegisterPopIncrease(settlement::Settlement *) const = 0;
 
+        virtual void RegisterPopDecrease(settlement::Settlement *) const = 0;
+
         virtual void RegisterTileExplored(settlement::Settlement *, tile::WorldTile *) const = 0;
 
         virtual void RegisterProductionFinished(settlement::Settlement *, settlement::ProductionOptions) const = 0;

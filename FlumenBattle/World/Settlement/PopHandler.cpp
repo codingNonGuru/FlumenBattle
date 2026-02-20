@@ -379,6 +379,11 @@ void PopHandler::KillPopulation()
             
         }
     }
+
+    if(settlement->GetPolity() != nullptr)
+    {
+        settlement->GetPolity()->RegisterPopDecrease(settlement);
+    }
 }
 
 void PopHandler::CheckAbandonment(Settlement *settlement)

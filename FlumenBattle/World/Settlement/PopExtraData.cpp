@@ -2,6 +2,7 @@
 #include "FlumenBattle/World/Settlement/PopHandler.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/Cohort.h"
+#include "FlumenBattle/World/Settlement/Job.h"
 #include "FlumenBattle/Race.h"
 #include "FlumenBattle/RaceFactory.h"
 
@@ -36,6 +37,8 @@ void PopExtraData::AddPopulation(RaceTypes raceType)
 RaceTypes PopExtraData::KillRandomPopulation()
 {
     auto cohort = cohorts.GetRandom();
+
+    popHandler->GetSettlement()->FireWorker(cohort->Job);
 
     auto race = cohort->Race;
 

@@ -862,6 +862,9 @@ void Settlement::FireWorker(SettlementTile *tile)
 
 void Settlement::FireWorker(Job *job)
 {
+    if(job == nullptr)
+        return;
+        
     resourceHandler.FireWorker(job);
 }
 

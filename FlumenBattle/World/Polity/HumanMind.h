@@ -106,6 +106,8 @@ namespace world::polity
 
         Delegate OnPlayerSettlementPopIncrease;
 
+        Delegate OnPlayerSettlementPopDecrease;
+
         Delegate OnPlayerSettlementBorderExpanded;
 
         Delegate OnPlayerSettlementColonized;
@@ -141,6 +143,8 @@ namespace world::polity
         void ShiftNextRaceToEmploy();
 
         void RegisterPopIncrease(settlement::Settlement *) const override;
+
+        void RegisterPopDecrease(settlement::Settlement *) const override;
 
         void RegisterTileExplored(settlement::Settlement *, tile::WorldTile *) const override;
 

@@ -8,6 +8,7 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/Cohort.h"
 #include "FlumenBattle/World/Interface/CounterSet.h"
+#include "FlumenBattle/World/Polity/HumanMind.h"
 #include "FlumenBattle/Config.h"
 
 using namespace world::interface::rule;
@@ -73,6 +74,10 @@ void PopulationTab::HandleConfigure()
     static const auto ruleMenu = WorldInterface::Get()->GetRuleMenu();
 
     ruleMenu->OnSettlementChanged += {this, &PopulationTab::HandleSettlementChanged};
+
+    polity::HumanMind::Get()->OnPlayerSettlementPopIncrease += {this, &PopulationTab::UpdateItems};
+
+    polity::HumanMind::Get()->OnPlayerSettlementPopDecrease += {this, &PopulationTab::UpdateItems};
 }
 
 void PopulationTab::HandleEnable() 

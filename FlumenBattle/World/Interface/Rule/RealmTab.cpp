@@ -50,8 +50,8 @@ void DomainItem::HandleConfigure()
         {drawOrder_ + 1, {Position2(280.0f, 0.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_CENTER, this}}
     );
 
-    housingCounter->Setup("Houses", &housing, "Medium", Scale2(0.25f));
-    housingCounter->SetOffset(5.0f);
+    housingCounter->Setup("Houses64", &housing, "Medium", Scale2(0.5f));
+    housingCounter->SetOffset(-5.0f);
     housingCounter->Enable();
 
     distanceCounter = ElementFactory::BuildElement <ResourceCounter>

@@ -31,6 +31,8 @@ namespace world::polity
 
         void RegisterPopIncrease(settlement::Settlement *) const override {}
 
+        void RegisterPopDecrease(settlement::Settlement *) const override {}
+
         void RegisterTileExplored(settlement::Settlement *, tile::WorldTile *) const override {}
 
         void RegisterProductionFinished(settlement::Settlement *, settlement::ProductionOptions) const override {}

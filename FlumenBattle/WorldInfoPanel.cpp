@@ -306,7 +306,7 @@ void WorldInfoPanel::HandleConfigure()
     playerDomainInfo->Enable();
 
     subjectCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
-        {drawOrder_ + 2, {Position2(-80.0f, -25.0f), ElementAnchors::LOWER_CENTER, ElementPivots::MIDDLE_CENTER, playerDomainInfoBox}}
+        {drawOrder_ + 2, {Position2(-100.0f, -25.0f), ElementAnchors::LOWER_CENTER, ElementPivots::MIDDLE_CENTER, playerDomainInfoBox}}
     );
     subjectCounter->Setup(
         "Castle", 
@@ -320,14 +320,14 @@ void WorldInfoPanel::HandleConfigure()
         "Medium",
         Scale2(0.55f)
     );
-    subjectCounter->SetOffset(5.0f);
+    subjectCounter->SetOffset(-10.0f);
     subjectCounter->Enable();
 
     populationCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
         {drawOrder_ + 2, {Position2(0.0f, -25.0f), ElementAnchors::LOWER_CENTER, ElementPivots::MIDDLE_CENTER, playerDomainInfoBox}}
     );
     populationCounter->Setup(
-        "Houses", 
+        "Houses64", 
         std::function <int(void)> (
             [] -> int 
             {
@@ -336,13 +336,13 @@ void WorldInfoPanel::HandleConfigure()
             }
         ),
         "Medium",
-        Scale2(0.3f)
+        Scale2(0.6f)
     );
-    populationCounter->SetOffset(5.0f);
+    populationCounter->SetOffset(-10.0f);
     populationCounter->Enable();
 
     industryCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
-        {drawOrder_ + 2, {Position2(80.0f, -25.0f), ElementAnchors::LOWER_CENTER, ElementPivots::MIDDLE_CENTER, playerDomainInfoBox}}
+        {drawOrder_ + 2, {Position2(100.0f, -25.0f), ElementAnchors::LOWER_CENTER, ElementPivots::MIDDLE_CENTER, playerDomainInfoBox}}
     );
     industryCounter->Setup(
         "WorkHammer", 
@@ -355,7 +355,7 @@ void WorldInfoPanel::HandleConfigure()
         ),
         "Medium"
     );
-    industryCounter->SetOffset(5.0f);
+    industryCounter->SetOffset(0.0f);
     industryCounter->Enable();
 
     world::WorldScene::Get()->OnPlayerBecameRuler += {this, &WorldInfoPanel::HandlePlayerBecameRuler};

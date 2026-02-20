@@ -503,7 +503,7 @@ void WorldTileModel::Render()
                     } (); 
 
                     auto positionOffset = ((float)i + 0.5f - (float)resourceAmount * 0.5f) * Position2(-10.0f, 0.0f);
-                    sprite->Draw(camera, {tile->Position + positionOffset, Scale2(0.75f, 0.75f), Opacity(1.0f), DrawOrder(-2)});
+                    sprite->DrawStandalone(camera, {tile->Position + positionOffset, Scale2(0.75f), Opacity(1.0f), DrawOrder(10)});
                 }
             }
         }

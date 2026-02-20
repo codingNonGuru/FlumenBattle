@@ -50,14 +50,14 @@ void PopulationItem::HandleConfigure()
 
     jobSprite = ElementFactory::BuildElement <Element>
     (
-        {drawOrder_ + 2, {Position2(15.0f, 10.0f), this}, {"Plank", false}}
+        {drawOrder_ + 2, {Position2(15.0f, 5.0f), this}, {"Plank", false}}
     );
     jobSprite->SetTextureScale(0.9f);
     jobSprite->Enable();
 
     levelCounter = ElementFactory::BuildElement <Counter>
     (
-        {drawOrder_ + 1, {Position2(-5.0f, 5.0f), ElementAnchors::UPPER_RIGHT, ElementPivots::UPPER_RIGHT, this}, {"WhiteDotBackdrop", false}}
+        {drawOrder_ + 1, {Position2(-8.0f, 8.0f), ElementAnchors::UPPER_RIGHT, ElementPivots::UPPER_RIGHT, this}, {"WhiteDotBackdrop", false}}
     );
     levelCounter->Setup(&level, Scale2(0.85f), "Medium");
     levelCounter->Enable();

@@ -167,6 +167,8 @@ namespace world::polity
 
         void RegisterPopIncrease(settlement::Settlement *);
 
+        void RegisterPopDecrease(settlement::Settlement *);
+
         void RegisterTileExplored(settlement::Settlement *, tile::WorldTile *);
 
         void RegisterProductionFinished(settlement::Settlement *, settlement::ProductionOptions);
