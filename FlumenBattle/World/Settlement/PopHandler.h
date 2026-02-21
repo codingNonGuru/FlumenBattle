@@ -116,6 +116,10 @@ namespace world::settlement
 
         float GetGrowthRatio() const;
 
+        int GetGrowthRate() const;
+
+        int GetTicksLeftUntilPopIncrease() const;
+
         bool IsSettlementAbandoned() const;
 
         bool IsSettlementRuins() const;

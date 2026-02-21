@@ -21,17 +21,23 @@ void Counter::HandleConfigure()
 
 void Counter::HandleUpdate()
 {
-    if(valueSource == nullptr)
+    auto finalValue = [&]
+    {   
+        if(valueSource == nullptr)
+            return value;
+        else
+            return *valueSource;
+    } ();
+
+    auto text = ShortWord();
+    if(isSigned == true && finalValue > 0)
     {
-        label->Setup(ShortWord() << value, backdropScale.x * textScale);
-    }
-    else
-    {
-        Phrase text(*valueSource);
-        label->Setup(text, backdropScale.x * textScale);
+        text = text << "+";
     }
 
-    auto finalValue = valueSource != nullptr ? *valueSource : value;
+    label->Setup(text << finalValue, backdropScale.x * textScale);
+
+    //auto finalValue = valueSource != nullptr ? *valueSource : value;
 
     if(finalValue > 9)
     {

@@ -24,6 +24,8 @@ namespace world::interface
 
         float textScale {1.0f};
 
+        bool isSigned {false};
+
         void HandleConfigure() override;    
 
         void HandleUpdate() override;  
@@ -38,5 +40,7 @@ namespace world::interface
         void SetTextScale(float scale) {textScale = scale;}
 
         void SetTextColor(Color);
+
+        void MakeSigned() {isSigned = true;}
     };
 }

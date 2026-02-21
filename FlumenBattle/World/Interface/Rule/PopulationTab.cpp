@@ -1,5 +1,6 @@
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/LayoutGroup.h"
+#include "FlumenEngine/Interface/ProgressBar.h"
 
 #include "PopulationTab.h"
 #include "PopulationItem.h"
@@ -8,7 +9,9 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/Cohort.h"
 #include "FlumenBattle/World/Interface/CounterSet.h"
+#include "FlumenBattle/World/Interface/Counter.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
+#include "FlumenBattle/World/WorldTime.h"
 #include "FlumenBattle/Config.h"
 
 using namespace world::interface::rule;
@@ -71,6 +74,27 @@ void PopulationTab::HandleConfigure()
     );
     counterSet->Enable();
 
+    growthBar = ElementFactory::BuildProgressBar <ProgressBar>
+    (
+        {Size(240, 28), drawOrder_ + 1, {Position2(0.0f, -5.0f), ElementAnchors::UPPER_CENTER, ElementPivots::LOWER_CENTER, counterSet}, {"BaseBar", true}},
+        {"BaseFillerRed", {6.0f, 6.0f}}
+    );
+    growthBar->Enable();
+
+    growthDurationLabel = ElementFactory::BuildText(
+        {drawOrder_ + 3, {growthBar}}, 
+        {{"Small"}, Color::WHITE, "+5"}
+    );
+    growthDurationLabel->Enable();
+
+    growthRateCounter = ElementFactory::BuildElement <Counter>
+    (
+        {drawOrder_ + 1, {Position2(20.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, growthBar}, {"WhiteDotBackdrop", false}}
+    );
+    growthRateCounter->Setup(&growthRate, Scale2(1.0f), "Medium");
+    growthRateCounter->MakeSigned();
+    growthRateCounter->Enable();
+
     static const auto ruleMenu = WorldInterface::Get()->GetRuleMenu();
 
     ruleMenu->OnSettlementChanged += {this, &PopulationTab::HandleSettlementChanged};
@@ -83,6 +107,46 @@ void PopulationTab::HandleConfigure()
 void PopulationTab::HandleEnable() 
 {
     UpdateItems();
+}
+
+void PopulationTab::HandleUpdate()
+{
+    static const auto ruleMenu = WorldInterface::Get()->GetRuleMenu();
+    
+    auto settlement = ruleMenu->GetCurrentSettlement();
+
+    growthBar->SetProgress(settlement->GetGrowthRatio());
+
+    auto rate = settlement->GetPopulationHandler().GetGrowthRate();
+
+    /*auto text = Word();
+    if(rate > 0)
+    {
+        text = text << "+";
+    }
+    text = text << rate;
+
+    growthDurationLabel->Setup(text);*/
+
+    growthRate = rate;
+
+    if(rate == 0)
+    {
+        growthDurationLabel->Setup(Word() << "-");
+    }
+    else
+    {
+        auto tickCount = settlement->GetPopulationHandler().GetTicksLeftUntilPopIncrease();
+        tickCount /= WorldTime::HOUR_SIZE;
+
+        if(tickCount <= 48)
+            growthDurationLabel->Setup(Word() << tickCount << " hrs");
+        else
+        {
+            tickCount /= 24;
+            growthDurationLabel->Setup(Word() << tickCount << " days");
+        }
+    }
 }
 
 void PopulationTab::HandleSettlementChanged()

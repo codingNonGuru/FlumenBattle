@@ -258,6 +258,72 @@ float PopHandler::GetGrowthRatio() const
     return float(growth) / float(GROWTH_THRESHOLD);
 }
 
+int PopHandler::GetGrowthRate() const
+{
+    auto foodSecurity = settlement->GetResource(ResourceTypes::FOOD)->ShortTermAbundance;
+    auto housingAdequacy = settlement->GetHousingAdequacy();
+
+    auto addedGrowth = [&]
+    {
+        auto growthFromFood = [&]
+        {
+            switch(foodSecurity)
+            {
+            case AbundanceLevels::CORNUCOPIA:
+                return 5;
+            case AbundanceLevels::ABUNDANT:
+                return 4;
+            case AbundanceLevels::ENOUGH:
+                return 3;
+            case AbundanceLevels::BARELY_AVAILABLE:
+                return 0;
+            case AbundanceLevels::LACKING:
+                return -5;
+            case AbundanceLevels::SORELY_LACKING:
+                return -7;
+            }
+        } ();
+
+        auto growthFromHousing = [&]
+        {
+            switch(housingAdequacy)
+            {
+            case AbundanceLevels::ENOUGH:
+                return 1;
+            case AbundanceLevels::BARELY_AVAILABLE:
+                return 0;
+            case AbundanceLevels::LACKING:
+                return -1;
+            case AbundanceLevels::SORELY_LACKING:
+                return -3;
+            }
+        } ();
+
+        auto modifier = settlement->GetModifier(Modifiers::POPULATION_GROWTH_RATE);
+
+        return growthFromFood + growthFromHousing + modifier;
+    } ();
+
+    return addedGrowth;
+}
+
+int PopHandler::GetTicksLeftUntilPopIncrease() const
+{
+    auto addedGrowth = GetGrowthRate();
+    if(addedGrowth > 0)
+    {
+        return (GROWTH_THRESHOLD - growth) / addedGrowth;
+    }
+    else if(addedGrowth < 0)
+    {
+        return growth / -addedGrowth;
+    }
+    else
+    {
+        return 99999999;
+    }
+}
+
 bool PopHandler::IsSettlementAbandoned() const
 {
     return GetPopulation() == 0;
@@ -453,51 +519,7 @@ void PopHandler::CheckAbandonment(Settlement *settlement)
 
 void PopHandler::UpdateGrowth(Settlement *settlement)
 {
-    auto foodSecurity = settlement->GetResource(ResourceTypes::FOOD)->ShortTermAbundance;
-    auto housingAdequacy = settlement->GetHousingAdequacy();
-
-    auto addedGrowth = [&]
-    {
-        auto growthFromFood = [&]
-        {
-            switch(foodSecurity)
-            {
-            case AbundanceLevels::CORNUCOPIA:
-                return 5;
-            case AbundanceLevels::ABUNDANT:
-                return 4;
-            case AbundanceLevels::ENOUGH:
-                return 3;
-            case AbundanceLevels::BARELY_AVAILABLE:
-                return 0;
-            case AbundanceLevels::LACKING:
-                return -5;
-            case AbundanceLevels::SORELY_LACKING:
-                return -7;
-            }
-        } ();
-
-        auto growthFromHousing = [&]
-        {
-            switch(housingAdequacy)
-            {
-            case AbundanceLevels::ENOUGH:
-                return 1;
-            case AbundanceLevels::BARELY_AVAILABLE:
-                return 0;
-            case AbundanceLevels::LACKING:
-                return -1;
-            case AbundanceLevels::SORELY_LACKING:
-                return -3;
-            }
-        } ();
-
-        auto modifier = settlement->GetModifier(Modifiers::POPULATION_GROWTH_RATE);
-
-        return growthFromFood + growthFromHousing + modifier;
-    } ();
-
-    growth += addedGrowth;
+    growth += GetGrowthRate();
     if(growth >= GROWTH_THRESHOLD)
     {
         growth = 0;

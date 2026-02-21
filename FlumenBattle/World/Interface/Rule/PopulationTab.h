@@ -39,11 +39,19 @@ namespace world::interface::rule
 
         CounterSet *counterSet;
 
+        ProgressBar *growthBar;
+
+        Text *growthDurationLabel;
+
+        Counter *growthRateCounter;
+
+        int growthRate;
+
         void UpdateItems();
 
         void HandleConfigure() override;
 
-        //void HandleUpdate() override;
+        void HandleUpdate() override;
 
         void HandleEnable() override;
 
