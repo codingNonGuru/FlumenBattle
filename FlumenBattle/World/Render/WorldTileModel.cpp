@@ -70,11 +70,13 @@ static Sprite *fiberSprite = nullptr;
 
 static Sprite *farmSprite = nullptr;
 
-static Sprite *dotSprite = nullptr;
+static Sprite *redFlagSprite = nullptr;
 
 static Sprite *xSprite = nullptr;
 
 static Sprite *hammerSprite = nullptr;
+
+static Sprite *greenFlagSprite = nullptr;
 
 using namespace world::render;
 
@@ -89,7 +91,7 @@ WorldTileModel::WorldTileModel()
 
     groupShader = ShaderManager::GetShader("Sprite");
 
-    bootSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("TravelBoot")); 
+    bootSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("Boot32")); 
 
     metalSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("MetalOre"));
 
@@ -101,7 +103,9 @@ WorldTileModel::WorldTileModel()
 
     farmSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("FarmImprovement"));
 
-    dotSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("Dot")); 
+    redFlagSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("RedFlag16")); 
+
+    greenFlagSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("GreenFlag16")); 
 
     xSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("X")); 
 
@@ -315,29 +319,31 @@ void WorldTileModel::RenderPlayerPath()
         {
             if(&tile == pathData.Tiles.GetLast() - 1)
                 break;
+                
+            greenFlagSprite->DrawStandalone(camera, {tile->Position, Scale2(1.0f), Opacity(1.0f), DrawOrder(23)});
+        }
 
-            auto nextTile = &tile + 1;
-
-            float factor = 0.0f;
-            for(int i = 0; i <= 5; i++, factor += 0.2f)
-            {
-                auto position = tile->Position * factor + (*nextTile)->Position * (1.0f - factor);
-                dotSprite->Draw(camera, {position, Scale2(0.3f, 0.3f), Opacity(0.6f), DrawOrder(-2)});
-            }
+        auto hoveredTile = WorldController::Get()->GetHoveredTile();
+        if(hoveredTile != nullptr)
+        {
+            bootSprite->DrawStandalone(camera, {hoveredTile->Position, Scale2(1.0f, 1.0f), Opacity(1.0f), DrawOrder(25)});
         }
     }
 
     const auto fullPathData = group::HumanMind::Get()->GetFullPathData();
     for(auto &tile : fullPathData.Tiles)
     {
-        dotSprite->Draw(camera, {tile->Position, Scale2(0.75f, 0.75f), Opacity(0.6f), DrawOrder(-2)});
+        if(&tile == fullPathData.Tiles.GetLast() - 1)
+            break;
+
+        redFlagSprite->DrawStandalone(camera, {tile->Position, Scale2(1.0f), Opacity(1.0f), DrawOrder(24)});
     }
 
     auto finalDestination = group::HumanMind::Get()->GetFinalDestination();
     if(finalDestination != nullptr)
     {
         auto position = finalDestination->Position;
-        xSprite->Draw(camera, {position, Scale2(1.0f, 1.0f), Opacity(1.0f), DrawOrder(-2)});
+        xSprite->DrawStandalone(camera, {position, Scale2(1.0f, 1.0f), Opacity(1.0f), DrawOrder(26)});
     }
 }
 
@@ -513,11 +519,6 @@ void WorldTileModel::Render()
 
     RenderImprovements();
 
-    if(worldController->GetHoveredTile() != nullptr)
-    {
-        engine::render::HexRenderer::RenderEmptyHex(camera, worldController->GetHoveredTile()->Position, WORLD_TILE_SIZE, 0.5f, Color::WHITE, 0.5f);
-    }
-
     SettlementModeRenderer::Get()->RenderBorderExpansionMap();
 
     SettlementModeRenderer::Get()->RenderSettleModeMap();
@@ -529,6 +530,11 @@ void WorldTileModel::Render()
     GroupModel::Get()->Render();
 
     //RenderGlobalLight();
+
+    if(worldController->GetHoveredTile() != nullptr)
+    {
+        engine::render::HexRenderer::RenderEmptyHex(camera, worldController->GetHoveredTile()->Position, WORLD_TILE_SIZE, 0.5f, Color::WHITE, 0.5f);
+    }
 
     RenderPlayerPath();
 
