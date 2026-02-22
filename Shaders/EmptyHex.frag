@@ -6,6 +6,8 @@ layout (location = 3) uniform float opacity;
 
 layout (location = 5) uniform vec4 color;
 
+layout (location = 6) uniform float innerSize;
+
 // TEXTURES
 
 layout (location = 0) out vec4 fragment;
@@ -18,5 +20,5 @@ void main()
 {	
 	fragment = color;//texture(diffuse, textureCoordinates).rgba;
 
-	fragment.a *= opacity * (weight > 0.7f ? 1.0f : 0.0f);
+	fragment.a *= opacity * (weight > innerSize ? 1.0f : 0.0f);
 }

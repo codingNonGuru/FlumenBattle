@@ -287,9 +287,6 @@ void SettlementModeRenderer::RenderExploreMap()
 
 void SettlementModeRenderer::RenderTileDevelopMap()
 {
-    if(WorldController::Get()->IsTileDevelopModeActive() == false)
-        return;
-
     static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     const auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
 
@@ -305,44 +302,56 @@ void SettlementModeRenderer::RenderTileDevelopMap()
 
     shader->SetConstant(WORLD_TILE_SIZE, "hexSize");
 
-    auto improvement = polity::HumanMind::Get()->GetProposedImprovement();
+    shader->SetConstant(Color::GREEN, "color");
 
-    for(auto &tile : playerSettlement->GetTiles())
+    if(WorldController::Get()->IsTileDevelopModeActive() == false)
     {
-        if(playerSettlement->CanImproveHere(tile.Tile, improvement) == false)
-            continue;
+        auto data = polity::HumanMind::Get()->GetHoveredBuildingQueueItem();
 
-        if(polity::HumanMind::Get()->IsTileQueuedForImprovement(tile.Tile) == true)
-            continue;
+        if(data.Tile != nullptr)
+        {
+            shader->SetConstant(data.Tile->Position, "hexPosition");
 
-        //if(playerSettlement->IsImprovingTile(tile.Tile, improvement) == true)
-        //    continue;
+            glDrawArrays(GL_TRIANGLES, 0, 18);
+        
+            static const auto improvementSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("FarmImprovement"));
 
-        shader->SetConstant(tile.Tile->Position, "hexPosition");
+            auto improvement = settlement::TileImprovements(data.Index);
+            auto type = settlement::TileImprovementFactory::Get()->BuildImprovementType(improvement);
 
-        shader->SetConstant(Color::GREEN, "color");
+            improvementSprite->SetTexture(type->TextureName);
 
-        glDrawArrays(GL_TRIANGLES, 0, 18);
+            improvementSprite->DrawStandalone(camera, {data.Tile->Position, Scale2(1.0f), Opacity(1.0f), DrawOrder(15)});
+        }
+    }
+    else
+    {
+        auto improvement = polity::HumanMind::Get()->GetProposedImprovement();
+
+        for(auto &tile : playerSettlement->GetTiles())
+        {
+            if(playerSettlement->CanImproveHere(tile.Tile, improvement) == false)
+                continue;
+
+            if(polity::HumanMind::Get()->IsTileQueuedForImprovement(tile.Tile) == true)
+                continue;
+
+            shader->SetConstant(tile.Tile->Position, "hexPosition");
+
+            glDrawArrays(GL_TRIANGLES, 0, 18);
+        }
     }
 
     shader->Unbind();
 
-    static const auto improvementSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("FarmImprovement"));
-
-    /*for(auto &tile : playerSettlement->GetTiles())
+    if(WorldController::Get()->IsTileDevelopModeActive() == true)
     {
-        auto improvement = tile.GetImprovementType();
-        if(improvement == nullptr)
-            continue;
+        auto improvement = polity::HumanMind::Get()->GetProposedImprovement();
 
-        improvementSprite->SetTexture(improvement->TextureName);
-
-        improvementSprite->Draw(camera, {tile.Tile->Position, Scale2(1.0f), Opacity(1.0f), DrawOrder(-2)});
-    }*/
-
-    /*auto hoveredTile = WorldController::Get()->GetHoveredTile();
-    if(hoveredTile != nullptr && playerSettlement->CanImproveHere(hoveredTile, improvement) == true && playerSettlement->IsImprovingTile(hoveredTile, improvement) == false)
-    {
-        engine::render::HexRenderer::RenderEmptyHex(camera, hoveredTile->Position, WORLD_TILE_SIZE, 0.7f, Color::WHITE, 0.7f);
-    }*/
+        auto hoveredTile = WorldController::Get()->GetHoveredTile();
+        if(hoveredTile != nullptr && playerSettlement->CanImproveHere(hoveredTile, improvement) == true && polity::HumanMind::Get()->IsTileQueuedForImprovement(hoveredTile) == false)
+        {
+            engine::render::HexRenderer::RenderEmptyHex(camera, hoveredTile->Position, {WORLD_TILE_SIZE * 1.1f, 0.5f}, 0.7f, Color::WHITE, 0.7f);
+        }
+    }
 }

@@ -3,6 +3,7 @@
 
 #include "ProductionQueueItem.h"
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
+#include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
 
 using namespace world::interface::rule;
@@ -25,16 +26,31 @@ void ProductionQueueItem::HandleUpdate()
     if(this->IsHovered() == true)
     {
         SetOpacity(1.0f);
+
+        if(queueSlot->Tile != nullptr)
+        {
+            polity::HumanMind::Get()->SetHoveredBuildingQueueItem({queueSlot->Tile, queueSlot->ImprovementIndex});
+        }
     }
     else
     {
         SetOpacity(0.5f);
+
+        if(queueSlot->Tile == polity::HumanMind::Get()->GetHoveredBuildingQueueItem().Tile)
+        {
+            polity::HumanMind::Get()->SetHoveredBuildingQueueItem({nullptr});
+        }
     }
 }
 
 void ProductionQueueItem::HandleLeftClick() 
 {
     polity::HumanMind::Get()->CancelProduction(queueSlot);
+
+    if(queueSlot->Tile == polity::HumanMind::Get()->GetHoveredBuildingQueueItem().Tile)
+    {
+        polity::HumanMind::Get()->SetHoveredBuildingQueueItem({nullptr});
+    }
 }
 
 void ProductionQueueItem::Setup(polity::ProductionQueueSlot *queueSlot)

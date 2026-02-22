@@ -21,6 +21,7 @@ namespace world::settlement
     struct RaceGroup;
     class Cohort;
     class Job;
+    struct ImprovementTarget;
 }
 
 namespace world
@@ -44,13 +45,20 @@ namespace world::polity
 
         int Priority;
 
-        tile::WorldTile *Tile;
+        tile::WorldTile *Tile {nullptr};
 
         int ImprovementIndex;
 
         bool operator == (int priority) {return priority == Priority;}
 
         bool operator == (const tile::WorldTile *tile) {return Tile == tile;}
+    };
+
+    struct ImprovementData
+    {
+        tile::WorldTile *Tile;
+
+        int Index;
     };
 
     class HumanMind : public Mind, public core::Singleton <HumanMind>
@@ -185,5 +193,9 @@ namespace world::polity
         bool IsTileQueuedForImprovement(tile::WorldTile *) const;
 
         settlement::TileImprovements GetQueuedImprovementType(tile::WorldTile *) const;
+
+        ImprovementData GetHoveredBuildingQueueItem() const;
+
+        void SetHoveredBuildingQueueItem(ImprovementData);
     };
 }

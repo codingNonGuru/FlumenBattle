@@ -55,6 +55,8 @@ static auto nextRaceToEmploy = RaceTypes::NONE;
 
 static auto improvementTypeIndex = 0;
 
+static ImprovementData hoveredBuildingQueueItem;
+
 struct SettleTarget
 {
     settlement::Settlement *Settlement;
@@ -1004,7 +1006,6 @@ void HumanMind::RegisterProductionFinished(settlement::Settlement *settlement, s
             else if(productionClass == settlement::ProductionClasses::TILE_IMPROVEMENT)
             {
                 settlement->StartImprovingTile(slot.Tile, GetProposedImprovement(slot.ImprovementIndex));
-                //settlement->SetBuildingProduction(slot.Option);
             }
             else
             {
@@ -1203,4 +1204,14 @@ settlement::TileImprovements HumanMind::GetQueuedImprovementType(tile::WorldTile
             return settlement::TileImprovements::NONE;
         }
     }
+}
+
+ImprovementData HumanMind::GetHoveredBuildingQueueItem() const
+{
+    return hoveredBuildingQueueItem;
+}
+
+void HumanMind::SetHoveredBuildingQueueItem(ImprovementData item)
+{
+    hoveredBuildingQueueItem = item;
 }
