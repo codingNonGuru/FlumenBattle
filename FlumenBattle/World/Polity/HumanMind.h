@@ -44,7 +44,13 @@ namespace world::polity
 
         int Priority;
 
+        tile::WorldTile *Tile;
+
+        int ImprovementIndex;
+
         bool operator == (int priority) {return priority == Priority;}
+
+        bool operator == (const tile::WorldTile *tile) {return Tile == tile;}
     };
 
     class HumanMind : public Mind, public core::Singleton <HumanMind>
@@ -120,6 +126,8 @@ namespace world::polity
 
         Delegate OnRaceToEmployShifted;
 
+        Delegate OnProductionCancelled;
+
         void ProcessProductionInput(settlement::ProductionOptions, settlement::ProductionClasses, settlement::Settlement *);
 
         void SetResearchTarget(science::Technologies);
@@ -158,6 +166,8 @@ namespace world::polity
 
         settlement::TileImprovements GetProposedImprovement();
 
+        settlement::TileImprovements GetProposedImprovement(int) const;
+
         tile::WorldTile *GetLastExploredTile();
 
         settlement::Settlement *GetLastExplorerSettlement();
@@ -171,5 +181,9 @@ namespace world::polity
         const container::Pool <ProductionQueueSlot> &GetRecruitmentQueue() const;
 
         settlement::Job *GetJobFromInstruction(const WorkInstruction *) const;
+
+        bool IsTileQueuedForImprovement(tile::WorldTile *) const;
+
+        settlement::TileImprovements GetQueuedImprovementType(tile::WorldTile *) const;
     };
 }

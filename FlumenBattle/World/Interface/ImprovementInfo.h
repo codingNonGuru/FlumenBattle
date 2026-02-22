@@ -2,32 +2,36 @@
 
 #include "FlumenEngine/Interface/Element.hpp"
 
+#include "FlumenBattle/World/Settlement/Types.h"
+
 class ProgressBar;
 
 namespace world
 {
     namespace tile {struct WorldTile;}
 
-    namespace settlement
+    /*namespace settlement
     {
         struct ImprovementTarget;
-    }
+    }*/
 }
 
 namespace world::interface
 {
     class ImprovementInfo : public Element
     {
-        const settlement::ImprovementTarget *target;
+        settlement::ImprovementTarget target;
 
         ProgressBar *progressBar;
+
+        bool isCurrentlyBeingBuilt;
 
         void HandleConfigure() override;
 
         void HandleUpdate() override;
 
     public:
-        void Setup(const settlement::ImprovementTarget *);
+        void Setup(settlement::ImprovementTarget);
     };
 
     class ImprovementInfoSet : public Element

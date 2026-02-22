@@ -174,7 +174,7 @@ void ResourceItem::Setup(settlement::Resource *resource, const settlement::Settl
         needLabel->Enable();
     }
 
-    if(resource->Type->IsProductionTileBased == false && resource->Type->RelatedBuilding != settlement::BuildingTypes::NONE)
+    if(buildingCounter == nullptr && resource->Type->IsProductionTileBased == false && resource->Type->RelatedBuilding != settlement::BuildingTypes::NONE)
     {
         SetInteractivity(true);
 

@@ -36,6 +36,8 @@ void ImprovementInfoSet::HandleConfigure()
     WorldController::Get()->OnTileDevelopModeToggled += {this, &ImprovementInfoSet::HandleImproveModeEntered};
 
     polity::HumanMind::Get()->OnImprovementStarted += {this, &ImprovementInfoSet::HandleImproveModeEntered};
+
+    polity::HumanMind::Get()->OnProductionCancelled += {this, &ImprovementInfoSet::HandleImproveModeEntered};
 }
 
 void ImprovementInfoSet::HandleImproveModeEntered()
@@ -47,14 +49,22 @@ void ImprovementInfoSet::HandleImproveModeEntered()
 
     const auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
 
-    if(WorldController::Get()->IsTileDevelopModeActive() == true && playerSettlement->IsImprovingAnyTile() == true)
+    if(WorldController::Get()->IsTileDevelopModeActive() == true /*&& playerSettlement->IsImprovingAnyTile() == true*/)
     {
         Enable();
 
         auto info = infos.GetStart();
 
-        (*info)->Setup(&playerSettlement->GetCurrentImprovement());
-        (*info)->Enable();
+        for(auto &tile : playerSettlement->GetTiles())
+        {
+            if(polity::HumanMind::Get()->IsTileQueuedForImprovement(tile.Tile) == false)
+                continue;
+
+            (*info)->Setup(settlement::ImprovementTarget{&tile, polity::HumanMind::Get()->GetQueuedImprovementType(tile.Tile)});
+            (*info)->Enable();
+
+            info++;
+        }
     }
     else
     {
@@ -73,7 +83,7 @@ void ImprovementInfo::HandleConfigure()
 
 void ImprovementInfo::HandleUpdate()
 {
-    if(target->Tile == nullptr)
+    if(target.Tile == nullptr)
     {
         Disable();
         return;
@@ -88,35 +98,52 @@ void ImprovementInfo::HandleUpdate()
     }
     else
     {
-        progressBar->Enable();
-
         SetOpacity(1.0f);
-
-        auto offset = Position2(0.0f, 20.0f) / zoomFactor;
-        progressBar->SetBasePosition(offset);
 
         SetTextureScale(1.0f / zoomFactor);
 
-        if(zoomFactor < 0.5f)
+        if(isCurrentlyBeingBuilt == true)
         {
-            zoomFactor = 0.5f;
+            progressBar->Enable();
+
+            auto offset = Position2(0.0f, 20.0f) / zoomFactor;
+            progressBar->SetBasePosition(offset);
+
+            if(zoomFactor < 0.5f)
+            {
+                zoomFactor = 0.5f;
+            }
+
+            auto size = BASE_SIZE * (0.4f / zoomFactor);
+            progressBar->SetSize(size);
+
+            const auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
+
+            progressBar->SetProgress(playerSettlement->GetBuildingProduction()->GetProgressRatio());
         }
-
-        auto size = BASE_SIZE * (0.4f / zoomFactor);
-        progressBar->SetSize(size);
-
-        const auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
-
-        progressBar->SetProgress(playerSettlement->GetBuildingProduction()->GetProgressRatio());
+        else
+        {
+            progressBar->Disable();
+        }
     }
 }
 
-void ImprovementInfo::Setup(const settlement::ImprovementTarget *target)
+void ImprovementInfo::Setup(settlement::ImprovementTarget target)
 {
     this->target = target;
 
-    FollowWorldPosition(&target->Tile->Tile->Position, Cameras::WORLD, Scale2(0.0f));
+    FollowWorldPosition(&target.Tile->Tile->Position, Cameras::WORLD, Scale2(0.0f));
 
-    auto type = settlement::TileImprovementFactory::Get()->BuildImprovementType(target->ImprovementType);
+    auto type = settlement::TileImprovementFactory::Get()->BuildImprovementType(target.ImprovementType);
     SetTexture(type->TextureName);
+
+    const auto playerSettlement = WorldScene::Get()->GetPlayerSettlement();
+    if(playerSettlement->IsImprovingTile(this->target.Tile, this->target.ImprovementType) == true)
+    {
+        isCurrentlyBeingBuilt = true;
+    }
+    else
+    {
+        isCurrentlyBeingBuilt = false;
+    }
 }

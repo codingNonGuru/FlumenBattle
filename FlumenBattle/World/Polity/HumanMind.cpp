@@ -53,6 +53,8 @@ static auto workInstructionSets = container::Array <InstructionSet> (INSTRUCTION
 
 static auto nextRaceToEmploy = RaceTypes::NONE;
 
+static auto improvementTypeIndex = 0;
+
 struct SettleTarget
 {
     settlement::Settlement *Settlement;
@@ -323,14 +325,25 @@ void HumanMind::ProcessProductionInput(settlement::ProductionOptions option, set
             }  
         }
     }
-
-    /*for(auto &command : commands)
+    else if(productionClass == settlement::ProductionClasses::TILE_IMPROVEMENT)
     {
-        if(command.Type == option && command.Settlement == settlement)
-            return;
-    }
+        if(queueSet->BuildingQueue.IsFull() == false)
+        {
+            const auto hoveredTile = WorldController::Get()->GetHoveredTile();
 
-    *commands.Add() = {option, settlement};*/
+            auto slot = queueSet->BuildingQueue.Add();
+            *slot = {option, queueSet->BuildingQueue.GetSize(), hoveredTile, improvementTypeIndex};
+
+            if(queueSet->BuildingQueue.GetSize() == 1 && settlement->GetBuildingProduction()->Is(option) == false)
+            {
+                const auto improvementType = settlement::TileImprovementFactory::Get()->BuildImprovementType(settlement::TileImprovements(improvementTypeIndex));
+
+                settlement->StartImprovingTile(hoveredTile, improvementType->Type);
+
+                OnProductionDecided.Invoke();
+            }  
+        }
+    }
 }
 
 void HumanMind::HandleWorkerPlacement()
@@ -472,8 +485,6 @@ void HumanMind::HandleExplorationStarted()
     OnExplorationStarted.Invoke();
 }
 
-auto improvementTypeIndex = 0; 
-
 void HumanMind::HandleImproveSwipeLeft()
 {
     improvementTypeIndex--;
@@ -507,19 +518,25 @@ void HumanMind::HandleTileImproved()
     if(playerSettlement->CanImproveHere(hoveredTile, improvementType->Type) == false)
         return;
 
-    if(playerSettlement->IsImprovingTile(hoveredTile, improvementType->Type) == true)
-        return;
-
-    if(playerSettlement->IsImprovingAnyTile() == true)
+    auto queueSet = productionQueues.Find(playerSettlement);
+    if(queueSet == nullptr)
     {
-        playerSettlement->CancelImproving();
+        queueSet = productionQueues.Add();
+
+        queueSet->Initialize(playerSettlement);
+    }
+
+    auto queueSlot = queueSet->BuildingQueue.Find(hoveredTile);
+    if(queueSlot == nullptr)
+    {
+        this->ProcessProductionInput(settlement::ProductionOptions::FARM, settlement::ProductionClasses::TILE_IMPROVEMENT, playerSettlement);
+
+        OnImprovementStarted.Invoke();
     }
     else
     {
-        playerSettlement->StartImprovingTile(hoveredTile, improvementType->Type);
+        this->CancelProduction(queueSlot);
     }
-
-    OnImprovementStarted.Invoke();
 }
 
 void HumanMind::HandleSceneUpdateEnded()
@@ -558,6 +575,11 @@ void HumanMind::HandleSceneUpdateEnded()
 settlement::TileImprovements HumanMind::GetProposedImprovement() 
 {
     return settlement::TileImprovements(improvementTypeIndex);
+}
+
+settlement::TileImprovements HumanMind::GetProposedImprovement(int index) const
+{
+    return settlement::TileImprovements(index);
 }
 
 settlement::Shipment currentShipment;
@@ -955,7 +977,8 @@ void HumanMind::RegisterProductionFinished(settlement::Settlement *settlement, s
         queueSet->Initialize(settlement);
     }
 
-    auto &queue = settlement::SettlementProduction::GetType(option)->Class == settlement::ProductionClasses::BUILDING ? queueSet->BuildingQueue : queueSet->RecruitmentQueue;
+    auto productionClass = settlement::SettlementProduction::GetType(option)->Class;
+    auto &queue = productionClass == settlement::ProductionClasses::BUILDING || productionClass == settlement::ProductionClasses::TILE_IMPROVEMENT ? queueSet->BuildingQueue : queueSet->RecruitmentQueue;
     for(auto &slot : queue)
     {
         if(slot.Priority == 1)
@@ -974,9 +997,14 @@ void HumanMind::RegisterProductionFinished(settlement::Settlement *settlement, s
     {
         if(slot.Priority == 1)
         {
-            if(settlement::SettlementProduction::GetType(option)->Class == settlement::ProductionClasses::BUILDING)
+            if(productionClass == settlement::ProductionClasses::BUILDING)
             {
                 settlement->SetBuildingProduction(slot.Option);
+            }
+            else if(productionClass == settlement::ProductionClasses::TILE_IMPROVEMENT)
+            {
+                settlement->StartImprovingTile(slot.Tile, GetProposedImprovement(slot.ImprovementIndex));
+                //settlement->SetBuildingProduction(slot.Option);
             }
             else
             {
@@ -1036,13 +1064,17 @@ void HumanMind::CancelProduction(ProductionQueueSlot *queueSlot)
 
     auto queueSet = productionQueues.Find(playerSettlement);
 
-    auto isBuilding = settlement::SettlementProduction::GetType(queueSlot->Option)->Class == settlement::ProductionClasses::BUILDING;
-    auto &queue = isBuilding == true ? queueSet->BuildingQueue : queueSet->RecruitmentQueue;
+    auto productionClass = settlement::SettlementProduction::GetType(queueSlot->Option)->Class;
+
+    auto isBuildingOrImprovement = productionClass == settlement::ProductionClasses::BUILDING || productionClass == settlement::ProductionClasses::TILE_IMPROVEMENT;
+    auto &queue = isBuildingOrImprovement == true ? queueSet->BuildingQueue : queueSet->RecruitmentQueue;
 
     if(queue.GetSize() == 1)
     {
-        if(isBuilding == true)
+        if(productionClass == settlement::ProductionClasses::BUILDING)
             playerSettlement->SetBuildingProduction(settlement::ProductionOptions::NONE);
+        else if(productionClass == settlement::ProductionClasses::TILE_IMPROVEMENT)
+            playerSettlement->CancelImproving();
         else
             playerSettlement->SetGroupProduction(settlement::ProductionOptions::NONE);
 
@@ -1059,8 +1091,13 @@ void HumanMind::CancelProduction(ProductionQueueSlot *queueSlot)
 
         auto highestPrioritySlot = queue.Find(1);
 
-        if(isBuilding == true)
+        if(productionClass == settlement::ProductionClasses::BUILDING)
             playerSettlement->SetBuildingProduction(highestPrioritySlot->Option);
+        else if(productionClass == settlement::ProductionClasses::TILE_IMPROVEMENT)
+        {   
+            auto improvement = this->GetProposedImprovement(highestPrioritySlot->ImprovementIndex);
+            playerSettlement->StartImprovingTile(highestPrioritySlot->Tile, improvement);
+        }
         else
             playerSettlement->SetGroupProduction(highestPrioritySlot->Option);
     }
@@ -1078,6 +1115,8 @@ void HumanMind::CancelProduction(ProductionQueueSlot *queueSlot)
             }
         }
     }
+
+    OnProductionCancelled.Invoke();
 }  
 
 const container::Pool <ProductionQueueSlot> &HumanMind::GetBuildingQueue() const
@@ -1116,4 +1155,52 @@ settlement::Job *HumanMind::GetJobFromInstruction(const WorkInstruction *instruc
     const auto playerSettlement = playerGroup->GetCurrentSettlement();
 
     return playerSettlement->GetResourceHandler().GetJobs().Find(instruction->Cohort);
+}
+
+bool HumanMind::IsTileQueuedForImprovement(tile::WorldTile *tile) const
+{
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    const auto playerSettlement = playerGroup->GetCurrentSettlement();
+
+    auto queueSet = productionQueues.Find(playerSettlement);
+    if(queueSet == nullptr)
+    {
+        return false;
+    }
+    else
+    {
+        auto slot = queueSet->BuildingQueue.Find(tile);
+        if(slot != nullptr)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
+
+settlement::TileImprovements HumanMind::GetQueuedImprovementType(tile::WorldTile *tile) const
+{
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    const auto playerSettlement = playerGroup->GetCurrentSettlement();
+
+    auto queueSet = productionQueues.Find(playerSettlement);
+    if(queueSet == nullptr)
+    {
+        return settlement::TileImprovements::NONE;
+    }
+    else
+    {
+        auto slot = queueSet->BuildingQueue.Find(tile);
+        if(slot != nullptr)
+        {
+            return GetProposedImprovement(slot->ImprovementIndex);
+        }
+        else
+        {
+            return settlement::TileImprovements::NONE;
+        }
+    }
 }

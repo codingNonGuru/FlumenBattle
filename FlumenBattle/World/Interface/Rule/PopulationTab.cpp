@@ -119,15 +119,6 @@ void PopulationTab::HandleUpdate()
 
     auto rate = settlement->GetPopulationHandler().GetGrowthRate();
 
-    /*auto text = Word();
-    if(rate > 0)
-    {
-        text = text << "+";
-    }
-    text = text << rate;
-
-    growthDurationLabel->Setup(text);*/
-
     growthRate = rate;
 
     if(rate == 0)

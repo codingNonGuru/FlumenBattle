@@ -312,24 +312,15 @@ void SettlementModeRenderer::RenderTileDevelopMap()
         if(playerSettlement->CanImproveHere(tile.Tile, improvement) == false)
             continue;
 
-        if(playerSettlement->IsImprovingTile(tile.Tile, improvement) == true)
+        if(polity::HumanMind::Get()->IsTileQueuedForImprovement(tile.Tile) == true)
             continue;
+
+        //if(playerSettlement->IsImprovingTile(tile.Tile, improvement) == true)
+        //    continue;
 
         shader->SetConstant(tile.Tile->Position, "hexPosition");
 
-        auto color = [&]
-        {
-            /*if(playerSettlement->HasAnySettlers() == true)
-            {*/
-                return Color::GREEN;
-            /*}   
-            else
-            {
-                return Color::YELLOW;
-            }*/
-        } ();
-
-        shader->SetConstant(color, "color");
+        shader->SetConstant(Color::GREEN, "color");
 
         glDrawArrays(GL_TRIANGLES, 0, 18);
     }
@@ -338,7 +329,7 @@ void SettlementModeRenderer::RenderTileDevelopMap()
 
     static const auto improvementSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("FarmImprovement"));
 
-    for(auto &tile : playerSettlement->GetTiles())
+    /*for(auto &tile : playerSettlement->GetTiles())
     {
         auto improvement = tile.GetImprovementType();
         if(improvement == nullptr)
@@ -347,11 +338,11 @@ void SettlementModeRenderer::RenderTileDevelopMap()
         improvementSprite->SetTexture(improvement->TextureName);
 
         improvementSprite->Draw(camera, {tile.Tile->Position, Scale2(1.0f), Opacity(1.0f), DrawOrder(-2)});
-    }
+    }*/
 
-    auto hoveredTile = WorldController::Get()->GetHoveredTile();
+    /*auto hoveredTile = WorldController::Get()->GetHoveredTile();
     if(hoveredTile != nullptr && playerSettlement->CanImproveHere(hoveredTile, improvement) == true && playerSettlement->IsImprovingTile(hoveredTile, improvement) == false)
     {
         engine::render::HexRenderer::RenderEmptyHex(camera, hoveredTile->Position, WORLD_TILE_SIZE, 0.7f, Color::WHITE, 0.7f);
-    }
+    }*/
 }

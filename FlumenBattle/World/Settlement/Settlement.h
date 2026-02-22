@@ -87,13 +87,6 @@ namespace world::settlement
         bool operator == (const tile::WorldTile *tile) const {return Tile == tile;}
     };
 
-    struct ImprovementTarget
-    {
-        SettlementTile *Tile;
-
-        TileImprovements ImprovementType;
-    };
-
     struct SimulationUpdateData
     {
         Settlement *Settlement;

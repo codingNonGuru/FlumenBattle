@@ -935,6 +935,11 @@ namespace world
 
         isExploreModeActive = false;
 
-        isTileDevelopModeActive = false;
+        if(isTileDevelopModeActive == true)
+        {
+            isTileDevelopModeActive = false;
+
+            OnTileDevelopModeToggled.Invoke();
+        }
     }
 }

@@ -6,6 +6,8 @@
 
 namespace world::settlement
 {
+    class SettlementTile;
+
     enum class ProductionOptions
     {
         PATROL,
@@ -27,10 +29,11 @@ namespace world::settlement
         TAILORY,
         KEEP,
         POTTERY,
+        //TILE_IMPROVEMENT,
         NONE
     };
 
-    enum class ProductionClasses {RECRUITMENT, BUILDING, NONE};
+    enum class ProductionClasses {RECRUITMENT, BUILDING, TILE_IMPROVEMENT, NONE};
 
     enum class BuildingTypes
     {
@@ -156,5 +159,12 @@ namespace world::settlement
         EPIC_ALLY_GROUP,
         DERELICT_IMPROVEMENT,
         NATURAL_DISASTER
+    };
+
+    struct ImprovementTarget
+    {
+        SettlementTile *Tile;
+
+        TileImprovements ImprovementType;
     };
 }
