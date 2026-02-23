@@ -68,6 +68,8 @@ static Sprite *timberSprite = nullptr;
 
 static Sprite *fiberSprite = nullptr;
 
+static Sprite *claySprite = nullptr;
+
 static Sprite *farmSprite = nullptr;
 
 static Sprite *redFlagSprite = nullptr;
@@ -100,6 +102,8 @@ WorldTileModel::WorldTileModel()
     timberSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("Timber"));
 
     fiberSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("Wool"));
+
+    claySprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("Clay"));    
 
     farmSprite = new Sprite(groupShader, ::render::TextureManager::GetTexture("FarmImprovement"));
 
@@ -475,7 +479,7 @@ void WorldTileModel::Render()
 
     static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
 
-    if(WorldController::Get()->ShouldDisplayNearbyFood() == true || WorldController::Get()->ShouldDisplayNearbyTimber() == true || WorldController::Get()->ShouldDisplayNearbyFiber() == true)
+    if(WorldController::Get()->ShouldDisplayNearbyFood() == true || WorldController::Get()->ShouldDisplayNearbyTimber() == true || WorldController::Get()->ShouldDisplayNearbyFiber() == true || WorldController::Get()->ShouldDisplayNearbyClay() == true)
     {
         auto playerTile = playerGroup->GetTile();
         auto &nearbyTiles = playerTile->GetNearbyTiles(5);
@@ -485,12 +489,14 @@ void WorldTileModel::Render()
             auto resourceAmount = tile->GetResource(
                 [&] 
                 {
-                    if(WorldController::Get()->ShouldDisplayNearbyFood())
+                    if(WorldController::Get()->ShouldDisplayNearbyFood() == true)
                         return settlement::ResourceTypes::FOOD; 
-                    if(WorldController::Get()->ShouldDisplayNearbyTimber())
+                    if(WorldController::Get()->ShouldDisplayNearbyTimber() == true)
                         return settlement::ResourceTypes::TIMBER; 
-                    if(WorldController::Get()->ShouldDisplayNearbyFiber())
-                        return settlement::ResourceTypes::FIBER; 
+                    if(WorldController::Get()->ShouldDisplayNearbyFiber() == true)
+                        return settlement::ResourceTypes::FIBER;
+                    if(WorldController::Get()->ShouldDisplayNearbyClay() == true)
+                        return settlement::ResourceTypes::CLAY; 
                 } ()
             );
 
@@ -500,16 +506,18 @@ void WorldTileModel::Render()
                 {   
                     auto sprite = [&] 
                     {
-                        if(WorldController::Get()->ShouldDisplayNearbyFood())
+                        if(WorldController::Get()->ShouldDisplayNearbyFood() == true)
                             return foodSprite; 
-                        if(WorldController::Get()->ShouldDisplayNearbyTimber())
+                        if(WorldController::Get()->ShouldDisplayNearbyTimber() == true)
                             return timberSprite; 
-                        if(WorldController::Get()->ShouldDisplayNearbyFiber())
-                            return fiberSprite; 
+                        if(WorldController::Get()->ShouldDisplayNearbyFiber() == true)
+                            return fiberSprite;
+                        if(WorldController::Get()->ShouldDisplayNearbyClay() == true)
+                            return claySprite; 
                     } (); 
 
                     auto positionOffset = ((float)i + 0.5f - (float)resourceAmount * 0.5f) * Position2(-10.0f, 0.0f);
-                    sprite->DrawStandalone(camera, {tile->Position + positionOffset, Scale2(0.75f), Opacity(1.0f), DrawOrder(10)});
+                    sprite->DrawStandalone(camera, {tile->Position + positionOffset, Scale2(0.75f), Opacity(1.0f), DrawOrder(25)});
                 }
             }
         }

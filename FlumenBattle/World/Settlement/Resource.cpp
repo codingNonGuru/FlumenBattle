@@ -66,7 +66,7 @@ struct Fiber : public ResourceType
 
 struct Furniture : public ResourceType
 {
-    Furniture() : ResourceType(ResourceTypes::FURNITURE, "Furniture", "Furniture_WildStyle32", 70) 
+    Furniture() : ResourceType(ResourceTypes::FURNITURE, "Furniture", "ResourceFurniture", 70) 
     {
         PopulationConsumption = 1;
         IsProductionTileBased = false; 
