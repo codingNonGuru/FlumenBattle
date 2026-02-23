@@ -43,7 +43,7 @@ void CounterSet::HandleConfigure()
     }
 }
 
-void CounterSet::Setup(const container::Array <ResourceData> &setData)
+void CounterSet::Setup(const container::Array <settlement::ResourceData> &setData)
 {
     for(auto &item : items)
     {
@@ -93,6 +93,21 @@ void CounterSet::Setup(const container::Array <settlement::RaceGroup> &setData)
     UpdatePosition();
 }
 
+void CounterSet::SetDistanceFactor(float factor)
+{
+    distanceFactor = factor;
+
+    list->Setup(ListOrientations::HORIZONTAL, factor);
+}
+
+void CounterSet::SetItemParameters(Position2 position, float size)
+{
+    for(auto &item : items)
+    {
+        item->SetParameters(position, size);
+    }
+}
+
 void SetItem::HandleConfigure()
 {
     counter = ElementFactory::BuildElement <Counter>
@@ -108,4 +123,11 @@ void SetItem::Setup(Word textureName, int amount)
     value = amount;
 
     SetTexture(textureName);
+}
+
+void SetItem::SetParameters(Position2 position, float scale)
+{
+    counter->SetBasePosition(position);
+
+    counter->Setup(Scale2(scale));
 }

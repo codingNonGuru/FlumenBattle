@@ -13,13 +13,6 @@ namespace world::settlement
 
 namespace world::interface
 {
-    struct ResourceData
-    {
-        settlement::ResourceTypes Type;
-
-        int Amount;
-    };
-
     class Counter;
 
     class SetItem : public Element
@@ -32,6 +25,8 @@ namespace world::interface
 
     public:
         void Setup(Word, int);
+
+        void SetParameters(Position2, float);
     };
 
     class CounterSet : public Element
@@ -40,11 +35,21 @@ namespace world::interface
 
         container::Array <SetItem *> items;
 
+        float distanceFactor;
+
+        Position2 itemCounterPosition;
+
+        float itemCounterSize;
+
         void HandleConfigure() override;
 
     public:
-        void Setup(const container::Array <ResourceData> &);
+        void Setup(const container::Array <settlement::ResourceData> &);
 
         void Setup(const container::Array <settlement::RaceGroup> &);
+
+        void SetDistanceFactor(float);
+
+        void SetItemParameters(Position2, float);
     };
 }

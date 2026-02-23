@@ -74,45 +74,6 @@ void BuildingHoverInfo::HandleUpdate()
     auto text = LongWord() << building->GetName();
     nameLabel->Setup(text);
 
-    /*auto instructions = polity::HumanMind::Get()->GetSettlementInstructions();
-    if(instructions == nullptr)
-    {
-        workerLabel->Disable();
-    }
-    else
-    {
-        text = "Worker priorities:\n";
-
-        auto i = 0;
-        for(auto &instruction : *instructions)
-        {
-            if(instruction.PlaceType != polity::WorkInstruction::BUILDING)
-                continue;
-
-            if(instruction.Place.Building != building)
-                continue;
-
-            if(i != 0)
-            {
-                text << ", ";
-            }
-
-            text << instruction.Priority + 1;
-
-            i++;
-        }
-
-        if(i != 0)
-        {
-            workerLabel->Setup(text);
-            workerLabel->Enable();
-        }
-        else
-        {
-            workerLabel->Disable();
-        }
-    }*/
-
     if(workerLabel->IsLocallyActive() == true)
     {
         size_.y = nameLabel->GetHeight() + workerLabel->GetHeight() + NAME_LABEL_OFFSET.y * 2.0f;

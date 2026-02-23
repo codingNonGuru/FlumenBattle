@@ -1321,6 +1321,33 @@ void Settlement::MarkForDeletion()
     GetPolity()->RegisterSettlementDeletion(this);
 }
 
+const container::Array <ResourceData> &Settlement::GetTileResourceData() const
+{
+    static container::Array <ResourceData> datas(BASIC_RESOURCES_COUNT);
+
+    datas.Reset();
+
+    for(auto &tile : tiles)
+    {
+        static const auto resources = {ResourceTypes::FOOD, ResourceTypes::CLAY, ResourceTypes::FIBER, ResourceTypes::TIMBER, ResourceTypes::ORE};
+        for(auto &resource : resources)
+        {
+            auto amount = tile.Tile->GetResource(resource);
+            auto data = datas.Find(resource);
+            if(data == nullptr)
+            {
+                *datas.Add() = {resource, amount};
+            }
+            else
+            {
+                data->Amount += amount;
+            }
+        }
+    }
+
+    return datas;
+}
+
 const ExplorationReward &Settlement::GetLastExplorationReward() const
 {
     return lastExplorationReward;

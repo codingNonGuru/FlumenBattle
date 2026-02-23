@@ -20,6 +20,8 @@ namespace world::interface
 namespace world::interface::rule
 {
     class RuleMenu;
+    class DomainHoverInfo;
+    class RealmTab;
 
     struct DomainItem : public Element
     {
@@ -49,11 +51,15 @@ namespace world::interface::rule
 
         int industry;
 
+        RealmTab *parentTab;
+
         void HandleConfigure() override;
 
         void HandleUpdate() override;
 
-        void Setup(settlement::Settlement *);
+        void Setup(settlement::Settlement *, RealmTab *);
+
+        settlement::Settlement *GetSettlement() {return settlement;}
     };
 
     class RealmTab : public Element
@@ -62,8 +68,13 @@ namespace world::interface::rule
 
         container::Array <DomainItem *> domainItems;
 
+        DomainHoverInfo *hoverInfo;
+
         void HandleConfigure() override;
 
         void HandleUpdate() override;
+
+    public:
+        DomainHoverInfo *GetHoverInfo() {return hoverInfo;}
     };
 }

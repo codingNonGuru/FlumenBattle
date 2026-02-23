@@ -167,4 +167,13 @@ namespace world::settlement
 
         TileImprovements ImprovementType;
     };
+
+    struct ResourceData
+    {
+        ResourceTypes Type;
+
+        int Amount;
+
+        bool operator == (ResourceTypes type) {return Type == type;}
+    };
 }

@@ -3,6 +3,7 @@
 #include "FlumenEngine/Interface/LayoutGroup.h"
 
 #include "RealmTab.h"
+#include "DomainHoverInfo.h"
 #include "FlumenBattle/Config.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Polity/Polity.h"
@@ -16,13 +17,15 @@ static const auto BORDER_COLOR = Color::RED * 0.25f;
 
 static const auto TEXT_COLOR = Color::RED * 0.5f;
 
+static const auto HIGHLIGHT_COLOR = Color::RED * 0.9f;
+
 void DomainItem::HandleConfigure()
 {
     SetSpriteColor(BORDER_COLOR);
 
-    nameLabel = ElementFactory::BuildText(
+    nameLabel = ElementFactory::BuildRichText(
         {drawOrder_ + 1, {Position2(10.0f, 2.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}, 
-        {{"Medium"}, TEXT_COLOR}
+        {{"Medium"}, TEXT_COLOR, HIGHLIGHT_COLOR}
     );
     nameLabel->Enable();
 
@@ -89,6 +92,10 @@ void DomainItem::HandleUpdate()
     if(isHovered_ == true)
     {
         SetOpacity(1.0f);
+
+        auto hoverInfo = parentTab->GetHoverInfo();
+        hoverInfo->Setup(this);
+        hoverInfo->Enable();
     }
     else
     {
@@ -96,11 +103,14 @@ void DomainItem::HandleUpdate()
     }
 }
 
-void DomainItem::Setup(settlement::Settlement *settlement)
+void DomainItem::Setup(settlement::Settlement *settlement, RealmTab *tab)
 {
     this->settlement = settlement;
 
-    nameLabel->Setup(settlement->GetName());
+    this->parentTab = tab;
+
+    auto text = Word("<2>") << settlement->GetName().GetFirstCharacter() << "<1>" << (settlement->GetName().Get() + 1);
+    nameLabel->Setup(text);
 
     const auto playerPolity = WorldScene::Get()->GetPlayerPolity();
     if(playerPolity->GetRuler() == settlement)
@@ -154,6 +164,15 @@ void RealmTab::HandleConfigure()
 
         *domainItems.Allocate() = item;
     }
+
+    hoverInfo = ElementFactory::BuildElement <interface::rule::DomainHoverInfo>
+    (
+        {
+            GetDrawOrder() + 5,
+            {ElementAnchors::MIDDLE_CENTER, ElementPivots::UPPER_CENTER, this},
+            {false}
+        }
+    );
 }
 
 void RealmTab::HandleUpdate()
@@ -166,7 +185,7 @@ void RealmTab::HandleUpdate()
     auto item = domainItems.GetStart();
     for(auto &settlement : playerPolity->GetSettlements())
     {
-        (*item)->Setup(settlement);
+        (*item)->Setup(settlement, this);
         (*item)->Enable();
 
         item++;

@@ -496,5 +496,7 @@ namespace world::settlement
         void PromptWorkReorganizing() {needsToReorganizeWork = true;}
 
         void MarkForDeletion();
+
+        const container::Array <ResourceData> &GetTileResourceData() const;
     };
 }
