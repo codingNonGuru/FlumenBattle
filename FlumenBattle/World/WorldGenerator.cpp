@@ -536,34 +536,52 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
             for(auto &settlement : *settlements)
             {
                 auto distance = tile->GetDistanceTo(*settlement.GetLocation());
-                if(distance < data.Size / 6)
+                if(distance < data.Size / 12)
                 {
                     isSettlementNearby = true;
                     break;
                 }
             }
-            if(isSettlementNearby)
+
+            if(isSettlementNearby == true)
                 continue;
 
-            if(tile->HasBiome(WorldBiomes::STEPPE) && tile->GetSettlement() == nullptr)
+            if(tile->HasBiome(WorldBiomes::STEPPE) == true && tile->GetSettlement() == nullptr)
                 return tile;
         }
     };
     
     settlement::Settlement *newSettlement = nullptr;
 
-    for(auto i = 0; i < 1; ++i)
+    for(auto i = 0; i < 5; ++i)
     {
+        auto settlementCount = utility::GetRandom(4, 7);
+
         auto location = findSettleLocation();
         newSettlement = scene.FoundSettlement(location, location->MajorRace, nullptr);
 
-        for(auto &tile : location->GetTileRing(5).Tiles)
+        int attemptCount = 0;
+        int successCount = 0;
+        while(true)
         {
-            if(tile->Type == WorldTiles::LAND)
+            auto randomSettlement = newSettlement->GetPolity()->GetSettlements().GetRandom();
+            auto randomLocation = (*randomSettlement)->GetLocation();
+
+            auto distance = utility::GetRandom(MINIMUM_COLONIZATION_RANGE, MAXIMUM_COLONIZATION_RANGE);
+            for(auto &tile : randomLocation->GetTileRing(distance).Tiles)
             {
-                scene.FoundSettlement(tile, tile->MajorRace, nullptr);
-                break;
+                if(tile->Type == WorldTiles::LAND && tile->IsBorderingOwnedTile() == false)
+                {
+                    scene.FoundSettlement(tile, tile->MajorRace, *randomSettlement);
+                    successCount++;
+                    break;
+                }
             }
+
+            attemptCount++;
+
+            if(attemptCount == 100 || successCount == settlementCount)
+                break;
         }
     }
 

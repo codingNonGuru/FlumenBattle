@@ -90,7 +90,7 @@ namespace world::settlement
         void RegenerateHealth();
 
     public:
-        void Initialize(Settlement *);
+        void Initialize(Settlement *, int);
 
         void Deepen();
 

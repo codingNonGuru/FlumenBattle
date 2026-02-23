@@ -200,7 +200,7 @@ namespace world::settlement
 
         int turnsUntilDeletion;
 
-        void Initialize(Word, Color, tile::WorldTile *);
+        void Initialize(Word, Color, tile::WorldTile *, int);
 
         void GrowBorders();
 

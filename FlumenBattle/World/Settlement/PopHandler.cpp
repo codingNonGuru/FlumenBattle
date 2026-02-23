@@ -59,7 +59,7 @@ const container::Array <RaceGroup> &PopHandler::GetNeighbourRaces()
     return neighbourRaces;
 }
 
-void PopHandler::Initialize(Settlement *settlement)
+void PopHandler::Initialize(Settlement *settlement, int initialPopulation)
 {
     this->settlement = settlement;
 
@@ -68,7 +68,7 @@ void PopHandler::Initialize(Settlement *settlement)
     highestPopulationEver = 0;
 
     auto &races = GetNeighbourRaces();
-    for(int i = 0; i < 12; ++i)
+    for(int i = 0; i < initialPopulation; ++i)
     {
         IncreasePopulation(settlement, &races);
     }

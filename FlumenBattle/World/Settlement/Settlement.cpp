@@ -43,7 +43,7 @@ bool Link::operator== (const settlement::Path &path) const
     return *Path == path;
 }
 
-void Settlement::Initialize(Word name, Color banner, tile::WorldTile *location)
+void Settlement::Initialize(Word name, Color banner, tile::WorldTile *location, int population)
 {
     this->isValid = true;
 
@@ -82,7 +82,7 @@ void Settlement::Initialize(Word name, Color banner, tile::WorldTile *location)
     tile->IsWorked = true;
     tile->ResetImprovement();
 
-    auto nearbyTiles = location->GetNearbyTiles(1);
+    auto nearbyTiles = location->GetNearbyTiles();
     for(auto &nearbyTile : nearbyTiles)
     {
         if(nearbyTile == this->location)
@@ -94,12 +94,27 @@ void Settlement::Initialize(Word name, Color banner, tile::WorldTile *location)
         tile->ResetImprovement();
     }
 
+    auto outerRimTiles = location->GetTileRing(2);
+    for(auto &outerTile : outerRimTiles)
+    {
+        if(outerTile->IsOwned() == true)
+            continue;
+
+        if(utility::RollD100Dice() < 60)
+            continue;
+
+        tile = tiles.Add();
+        tile->Tile = outerTile;
+        tile->IsWorked = false;
+        tile->ResetImprovement();
+    }
+
     for(auto &tile : tiles)
     {
         tile.Tile->AssertOwnership(this);
     }
 
-    this->popHandler.Initialize(this);
+    this->popHandler.Initialize(this, population);
 
     AddBuilding(BuildingTypes::HOUSING);
 

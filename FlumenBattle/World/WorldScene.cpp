@@ -525,14 +525,14 @@ namespace world
         }
         else
         {
-            if(otherPolity->GetSettlements().GetSize() == 1)
-            {
+            //if(otherPolity->GetSettlements().GetSize() == 1)
+            //{
                 playerGroup->SetDomain(otherPolity);
 
                 otherPolity->SetController(true);
 
                 *politiesAffectedByLinkChange.Add() = otherPolity;
-            }
+            /*}
             else
             {
                 DiminishPolity(otherPolity, conqueredSettlement);
@@ -549,7 +549,7 @@ namespace world
                         UpdateOwnershipChangeQueue(tile.Tile);
                     }
                 }
-            }
+            }*/
 
             OnPlayerBecameRuler.Invoke();
         }
@@ -589,7 +589,8 @@ namespace world
 
     settlement::Settlement * WorldScene::FoundSettlement(tile::WorldTile *location, RaceTypes race, settlement::Settlement *mother)
     {
-        auto settlement = settlement::SettlementFactory::Create({location, race}, false);
+        auto population = utility::GetRandom(5, 12);
+        auto settlement = settlement::SettlementFactory::Create({location, race, population}, false);
 
         auto polity = mother != nullptr ? mother->GetPolity() : nullptr;
         if(polity == nullptr)
@@ -837,6 +838,7 @@ namespace world
 
     void WorldScene::UpdateOwnershipChangeQueue(tile::WorldTile *tile)
     {
+        ownershipChangeQueue;
         *ownershipChangeQueue.Add() = tile;
     }
 

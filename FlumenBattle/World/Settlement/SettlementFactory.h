@@ -19,6 +19,8 @@ namespace world::settlement
         tile::WorldTile * Location;
 
         RaceTypes Race;
+
+        int Population;
     };
 
     class SettlementFactory

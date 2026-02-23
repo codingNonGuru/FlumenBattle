@@ -62,7 +62,7 @@ WorldAllocator::WorldAllocator()
 
 void WorldAllocator::AllocateMap(tile::WorldMap &map, int size)
 {
-    const auto CHANGE_QUEUE_SIZE = size / OWNERSHIP_QUEUE_SIZE_FACTOR;
+    const auto CHANGE_QUEUE_SIZE = (size * size) / OWNERSHIP_QUEUE_SIZE_FACTOR;
     WorldScene::Get()->ownershipChangeQueue.Initialize(CHANGE_QUEUE_SIZE, ownershipChangeMemory);
 
     auto height = size;
