@@ -100,10 +100,14 @@ void CounterSet::SetDistanceFactor(float factor)
     list->Setup(ListOrientations::HORIZONTAL, factor);
 }
 
-void CounterSet::SetItemParameters(Position2 position, float size)
+void CounterSet::SetItemParameters(float itemSize, Position2 position, float size)
 {
     for(auto &item : items)
     {
+        item->SetTextureScale(itemSize);
+
+        item->AdjustSizeToTexture();
+
         item->SetParameters(position, size);
     }
 }
@@ -129,5 +133,5 @@ void SetItem::SetParameters(Position2 position, float scale)
 {
     counter->SetBasePosition(position);
 
-    counter->Setup(Scale2(scale));
+    counter->Setup(Scale2(scale), "Medium");
 }

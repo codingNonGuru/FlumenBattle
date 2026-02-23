@@ -21,7 +21,7 @@ static const auto OPACITY = Opacity(0.7f);
 
 static const auto BORDER_OPACITY = Opacity(0.7f);
 
-static const auto BASE_SIZE = Size(200, 100);
+static const auto BASE_SIZE = Size(200, 140);
 
 static const auto MOUSE_FOLLOW_OFFSET = Position2(0.0f, 10.0f);
 
@@ -39,7 +39,7 @@ void DomainHoverInfo::HandleConfigure()
 
     nameLabel = ElementFactory::BuildRichText(
         {drawOrder_ + 1, {NAME_LABEL_OFFSET, ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}}, 
-        {{"Small"}, TEXT_COLOR, HIGHLIGHT_COLOR}
+        {{"Medium"}, TEXT_COLOR, HIGHLIGHT_COLOR}
     );
     nameLabel->Enable();
 
@@ -48,12 +48,24 @@ void DomainHoverInfo::HandleConfigure()
         {
             Size(), 
             drawOrder_, 
-            {Position2(0.0f, 30.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}, 
+            {Position2(0.0f, 45.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}, 
             {false},
             Opacity(0.0f)
         }
     );
     resourceCounterSet->Enable();
+
+    popCounterSet = ElementFactory::BuildElement <CounterSet>
+    (
+        {
+            Size(), 
+            drawOrder_ + 1, 
+            {Position2(0.0f, 75.0f), ElementAnchors::UPPER_CENTER, ElementPivots::UPPER_CENTER, this}, 
+            {false},
+            Opacity(0.0f)
+        }
+    );
+    popCounterSet->Enable();
 
     FollowMouse(MOUSE_FOLLOW_OFFSET);
 
@@ -85,6 +97,12 @@ void DomainHoverInfo::Setup(DomainItem *item)
     auto &resourceData = this->settlement->GetTileResourceData();
 
     resourceCounterSet->SetDistanceFactor(7.0f);
-    resourceCounterSet->SetItemParameters(Position2{10.0f, 12.0f}, 0.7f);
+    resourceCounterSet->SetItemParameters(1.0f, Position2{10.0f, 12.0f}, 0.7f);
     resourceCounterSet->Setup(resourceData);
+
+    auto &popData = this->settlement->GetRaces();
+
+    popCounterSet->SetDistanceFactor(-20.0f);
+    popCounterSet->SetItemParameters(0.6f, Position2{13.0f, 16.0f}, 0.7f);
+    popCounterSet->Setup(popData);
 }

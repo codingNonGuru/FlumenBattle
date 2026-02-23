@@ -50,6 +50,6 @@ namespace world::interface
 
         void SetDistanceFactor(float);
 
-        void SetItemParameters(Position2, float);
+        void SetItemParameters(float, Position2, float);
     };
 }

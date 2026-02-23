@@ -26,6 +26,8 @@ namespace world::interface::rule
 
         CounterSet *resourceCounterSet;
 
+        CounterSet *popCounterSet;
+
         DomainItem *hoveredItem {nullptr};
 
         const settlement::Settlement *settlement;
