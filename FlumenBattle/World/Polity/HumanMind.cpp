@@ -639,6 +639,9 @@ const settlement::Shipment &HumanMind::GetCurrentShipment()
 
 void HumanMind::AddWorkInstruction(settlement::Settlement *settlement, settlement::SettlementTile *tile)
 {
+    if(this->GetNextRaceToEmploy() == RaceTypes::NONE)
+        return;
+        
     auto instructionSet = workInstructionSets.Find(settlement);
     if(instructionSet == nullptr)
     {

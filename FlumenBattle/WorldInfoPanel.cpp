@@ -327,7 +327,7 @@ void WorldInfoPanel::HandleConfigure()
         {drawOrder_ + 2, {Position2(0.0f, -25.0f), ElementAnchors::LOWER_CENTER, ElementPivots::MIDDLE_CENTER, playerDomainInfoBox}}
     );
     populationCounter->Setup(
-        "Houses64", 
+        "WillSave", 
         std::function <int(void)> (
             [] -> int 
             {
@@ -336,9 +336,9 @@ void WorldInfoPanel::HandleConfigure()
             }
         ),
         "Medium",
-        Scale2(0.6f)
+        Scale2(1.0f)
     );
-    populationCounter->SetOffset(-10.0f);
+    populationCounter->SetOffset(0.0f);
     populationCounter->Enable();
 
     industryCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (

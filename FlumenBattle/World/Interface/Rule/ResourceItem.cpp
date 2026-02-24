@@ -174,10 +174,8 @@ void ResourceItem::Setup(settlement::Resource *resource, const settlement::Settl
         needLabel->Enable();
     }
 
-    if(buildingCounter == nullptr && resource->Type->IsProductionTileBased == false && resource->Type->RelatedBuilding != settlement::BuildingTypes::NONE)
+    if(buildingCounter == nullptr && resource->Type->RelatedBuilding != settlement::BuildingTypes::NONE)
     {
-        SetInteractivity(true);
-
         buildingCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
             {drawOrder_ + 1, {Position2(300.0f, -3.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}
         );
@@ -189,6 +187,11 @@ void ResourceItem::Setup(settlement::Resource *resource, const settlement::Settl
         );
         buildingCounter->SetOffset({-15.0f, 5.0f});
         buildingCounter->Enable();
+    }
+
+    if(resource->Type->IsProductionTileBased == false)
+    {
+        SetInteractivity(true);
     }
 }
 

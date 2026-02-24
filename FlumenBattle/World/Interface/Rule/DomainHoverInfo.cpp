@@ -4,6 +4,7 @@
 
 #include "DomainHoverInfo.h"
 #include "RealmTab.h"
+#include "DomainItem.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Interface/CounterSet.h"
 

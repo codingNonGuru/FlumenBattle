@@ -589,7 +589,7 @@ namespace world
 
     settlement::Settlement * WorldScene::FoundSettlement(tile::WorldTile *location, RaceTypes race, settlement::Settlement *mother)
     {
-        auto population = utility::GetRandom(5, 12);
+        auto population = utility::GetRandom(5, 7);
         auto settlement = settlement::SettlementFactory::Create({location, race, population}, false);
 
         auto polity = mother != nullptr ? mother->GetPolity() : nullptr;

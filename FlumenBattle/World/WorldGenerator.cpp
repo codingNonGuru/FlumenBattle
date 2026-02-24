@@ -291,14 +291,9 @@ int WorldGenerator::GenerateWorld(
 
                 tile->SetResource(settlement::ResourceTypes::FOOD, 1);
                 tile->SetResource(settlement::ResourceTypes::TIMBER, 0);
-                tile->SetResource(settlement::ResourceTypes::ORE, 0);
             }
             else
             {
-                tile->SetResource(settlement::ResourceTypes::ORE, (utility::RollD100Dice() > 100 - METAL_SPAWN_CHANCE) ? 1 : 0);
-
-
-
                 {
                     auto forestValue = *forestNoise.Get(tile->SquareCoordinates.x, tile->SquareCoordinates.y);
 
@@ -389,6 +384,27 @@ int WorldGenerator::GenerateWorld(
                 }
             }
         }
+    };
+
+    auto generateResources = [&]
+    {
+        for(auto &tile : map->tiles)
+        {
+            if(tile.Type == WorldTiles::SEA)
+            {
+                tile.SetResource(settlement::ResourceTypes::ORE, 0);
+            }
+            else
+            {
+                auto spawnChance = METAL_SPAWN_CHANCE;
+                if(tile.HasBiome(world::WorldBiomes::DESERT) == true)
+                {
+                    spawnChance += tile.IsArid() == true ? 5 : 2;
+                }
+
+                tile.SetResource(settlement::ResourceTypes::ORE, (utility::RollD100Dice() > 100 - spawnChance) ? 1 : 0);
+            }    
+        }
 
         //Set fiber resource abundance
         for(auto &tile : map->tiles)
@@ -462,6 +478,8 @@ int WorldGenerator::GenerateWorld(
     generateClimates();
 
     generateBiomes();
+
+    generateResources();
 
     initializeTiles();
 
@@ -561,7 +579,7 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
         newSettlement = scene.FoundSettlement(location, location->MajorRace, nullptr);
 
         int attemptCount = 0;
-        int successCount = 0;
+        int successCount = 1;
         while(true)
         {
             auto randomSettlement = newSettlement->GetPolity()->GetSettlements().GetRandom();

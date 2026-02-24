@@ -86,6 +86,13 @@ void InstructionInfoSet::HandlePlaceModeEntered()
 
 void InstructionInfoSet::HandleEnable()
 {
+    if(world::WorldScene::Get()->GetPlayerSettlement()->GetFreeWorkerCount() == 0)
+    {
+        resourceHoverInfo->Disable();
+
+        return;
+    }
+
     resourceHoverInfo->Enable();
     resourceHoverInfo->Setup();
 }

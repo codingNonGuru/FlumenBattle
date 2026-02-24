@@ -22,45 +22,7 @@ namespace world::interface::rule
     class RuleMenu;
     class DomainHoverInfo;
     class RealmTab;
-
-    struct DomainItem : public Element
-    {
-        Text *nameLabel;
-
-        ResourceCounter *populationCounter;
-
-        ResourceCounter *housingCounter;
-
-        ResourceCounter *distanceCounter;
-
-        ResourceCounter *scienceCounter;
-
-        ResourceCounter *industryCounter;
-
-        Element *capitalIcon;
-
-        settlement::Settlement *settlement;
-
-        int population;
-
-        int housing;
-
-        int distance;
-
-        int science;
-
-        int industry;
-
-        RealmTab *parentTab;
-
-        void HandleConfigure() override;
-
-        void HandleUpdate() override;
-
-        void Setup(settlement::Settlement *, RealmTab *);
-
-        settlement::Settlement *GetSettlement() {return settlement;}
-    };
+    class DomainItem;
 
     class RealmTab : public Element
     {

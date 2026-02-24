@@ -140,6 +140,10 @@ void ResourceHoverInfo::RefreshItems()
     auto raceItem = raceItems.GetStart();
 
     auto nextRaceToEmploy = polity::HumanMind::Get()->GetNextRaceToEmploy();
+    if(nextRaceToEmploy == RaceTypes::NONE)
+    {
+        return;
+    }
 
     auto &races = polity::HumanMind::Get()->GetUnemployedByRace();
     for(auto &race : races)
