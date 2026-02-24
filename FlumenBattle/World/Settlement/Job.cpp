@@ -118,9 +118,7 @@ void Job::FinishProduction(ResourceHandler &handler)
     }
     else
     {
-        static const auto resources = {ResourceTypes::FOOD, ResourceTypes::CLAY, ResourceTypes::TIMBER, ResourceTypes::FIBER, ResourceTypes::ORE};
-
-        for(auto resourceType : resources)
+        for(auto resourceType : BASIC_RESOURCES)
         {
             auto output = GetOutput(resourceType);
 
@@ -169,6 +167,9 @@ int Job::GetOutput(ResourceTypes type) const
         return 0;
 
     auto output = tile->Tile->GetResource(type);
+
+    if(output == 0)
+        return 0;
 
     if(cohort->Race->HasAffinityFor(type) == true)
         output += Resource::PRODUCTION_BOOST_FROM_RACE;

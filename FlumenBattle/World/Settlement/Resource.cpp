@@ -148,7 +148,6 @@ int Resource::GetPotentialMidtermOutput(const ResourceHandler &handler) const
 
         auto cycleCount = ticks / ResourceHandler::GetTotalCycleLength();
         
-        auto jobCount = 0;
         for(auto &job : handler.GetJobs())
         {
             if(job.GetResource() == this->Type->Type)
@@ -550,9 +549,7 @@ void ResourceHandler::FinishCentralTileProduction()
 
     if(centralTileProgress == ResourceHandler::GetTotalCycleLength())
     {
-        static const auto resources = {ResourceTypes::FOOD, ResourceTypes::CLAY, ResourceTypes::TIMBER, ResourceTypes::FIBER, ResourceTypes::ORE};
-
-        for(auto resourceType : resources)
+        for(auto resourceType : BASIC_RESOURCES)
         {
             auto output = parent->GetLocation()->GetResource(resourceType);
 
@@ -760,8 +757,6 @@ void ResourceHandler::FireRandomWorker(SettlementTile *tile)
 
 void ResourceHandler::FireWorker(Job *job)
 {
-    Get(job->GetResource())->Workforce--;
-
     job->GetCohort()->IsHired = false;
 
     job->GetCohort()->Job = nullptr;
@@ -772,6 +767,8 @@ void ResourceHandler::FireWorker(Job *job)
     }
     else
     {
+        Get(job->GetResource())->Workforce--;
+
         if(job->IsUsingBuilding() == true)
         {
             auto &building = parent->GetBuilding(ResourceFactory::Get()->CreateType(job->GetResource())->RelatedBuilding);
@@ -821,7 +818,9 @@ int ResourceHandler::GetWorkforce(ResourceTypes type) const
 int ResourceHandler::GetPotentialMidtermOutput(ResourceTypes resource) const
 {
     if(ResourceFactory::Get()->CreateType(resource)->IsProductionTileBased == false)
+    {
         return Get(resource)->GetPotentialMidtermOutput(*this);
+    }
     else
     {
         static const auto &time = WorldScene::Get()->GetTime();
@@ -833,7 +832,7 @@ int ResourceHandler::GetPotentialMidtermOutput(ResourceTypes resource) const
             if(job.GetTile() == nullptr)
                 continue;
                 
-            output += job.GetTile()->Tile->GetResource(resource);
+            output += job.GetOutput(resource);// job.GetTile()->Tile->GetResource(resource);
         }
 
         output += GetParent()->GetLocation()->GetResource(resource);

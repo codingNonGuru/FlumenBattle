@@ -79,6 +79,8 @@ namespace world::polity
 
         virtual void UpdateWorkforce(Polity &) const override;
 
+        virtual void UpdateWorkforce(settlement::Settlement &) const override {}
+
         virtual void DecideResearch(Polity &) const override;
 
         virtual void ProcessTrade(Polity &) const override;
@@ -100,6 +102,8 @@ namespace world::polity
         void HandleImproveSwipeRight();
 
         void HandleSceneUpdateEnded();
+
+        void HandlePlayerConquest();
 
         void UpdateSettlementWorkforce(settlement::Settlement *) const;
 

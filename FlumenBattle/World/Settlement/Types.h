@@ -1,5 +1,7 @@
 #pragma once
 
+#include <initializer_list>
+
 #define MINIMUM_COLONIZATION_RANGE 5
 
 #define MAXIMUM_COLONIZATION_RANGE 6
@@ -118,6 +120,14 @@ namespace world::settlement
         CLOTHING,
         POTTERY,
         NONE
+    };
+
+    static const auto BASIC_RESOURCES = {
+        settlement::ResourceTypes::FOOD, 
+        settlement::ResourceTypes::CLAY, 
+        settlement::ResourceTypes::FIBER, 
+        settlement::ResourceTypes::TIMBER, 
+        settlement::ResourceTypes::ORE
     };
 
     enum class SettlementAttitudes

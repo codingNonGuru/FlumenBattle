@@ -1344,8 +1344,7 @@ const container::Array <ResourceData> &Settlement::GetTileResourceData() const
 
     for(auto &tile : tiles)
     {
-        static const auto resources = {ResourceTypes::FOOD, ResourceTypes::CLAY, ResourceTypes::FIBER, ResourceTypes::TIMBER, ResourceTypes::ORE};
-        for(auto &resource : resources)
+        for(auto &resource : BASIC_RESOURCES)
         {
             auto amount = tile.Tile->GetResource(resource);
             auto data = datas.Find(resource);

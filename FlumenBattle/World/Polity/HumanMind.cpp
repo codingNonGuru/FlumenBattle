@@ -124,6 +124,8 @@ HumanMind::HumanMind()
     workInstructionSets.Reset();
 
     WorldScene::Get()->OnRefreshCycleFinished += {this, &HumanMind::HandleSceneUpdateEnded};
+
+    WorldScene::Get()->OnPlayerConquest += {this, &HumanMind::HandlePlayerConquest};
 }
 
 void HumanMind::EnableInput()
@@ -571,6 +573,43 @@ void HumanMind::HandleSceneUpdateEnded()
     if(playerGroup->GetTile() != nullptr)
     {
         playerGroup->GetTile()->RevealTile();
+    }
+}
+
+void HumanMind::HandlePlayerConquest()
+{
+    const auto playerPolity = WorldScene::Get()->GetPlayerPolity();
+
+    for(auto &settlement : playerPolity->GetSettlements())
+    {
+        auto set = workInstructionSets.Find(settlement);
+        if(set == nullptr)
+        {
+            auto instructionSet = workInstructionSets.Add();
+
+            instructionSet->settlement = settlement;
+            instructionSet->instructions.Reset();
+
+            auto priority = 0;
+
+            auto &jobs = settlement->GetResourceHandler().GetJobs();
+            for(auto &job : jobs)
+            {
+                auto instruction = instructionSet->instructions.Add();
+
+                if(job.GetTile() == nullptr)
+                {
+                    auto resource = settlement->GetResource(job.GetResource());
+                    *instruction = {priority, WorkInstruction::RESOURCE, {resource}, job.GetCohort()};
+                }
+                else
+                {
+                    *instruction = {priority, WorkInstruction::TILE, {job.GetTile()}, job.GetCohort()};
+                }
+
+                priority++;
+            }
+        }
     }
 }
 

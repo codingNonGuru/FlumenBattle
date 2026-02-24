@@ -65,46 +65,139 @@ void MachineMind::UpdateWorkforce(Polity &polity) const
 {
     for(auto &settlement : polity.GetSettlements())
     {
-        if(settlement->needsToReorganizeWork == false)
-            continue;
+        UpdateWorkforce(*settlement);
+    }
+}
 
-        settlement->needsToReorganizeWork = false;
+void MachineMind::UpdateWorkforce(settlement::Settlement &settlement) const
+{
+    struct TileScore
+    {
+        settlement::SettlementTile *Tile;
 
-        if(settlement->GetPopulation() == 0)
+        int FoodScore;
+
+        int GeneralScore;
+    };
+
+    if(settlement.IsDeepSettlement() == true)
+    {
+        if(settlement.needsToReorganizeWork == false)
+            return;
+
+        settlement.needsToReorganizeWork = false;
+
+        settlement.FireAllWorkers();
+
+        if(settlement.GetPopulation() == 0)
         {
-            for(auto &tile : settlement->tiles)
+            return;
+        }
+
+        auto workerCount = settlement.GetPopulation();
+
+        static auto scores = container::Array <TileScore> (128);
+        scores.Reset();
+
+        for(auto &tile : settlement.GetTiles())
+        {
+            if(tile.Tile == settlement.GetLocation())
+                continue;
+
+            auto foodScore = tile.Tile->GetResource(settlement::ResourceTypes::FOOD);
+
+            auto generalScore = 0;
+            for(auto &resource : settlement::BASIC_RESOURCES)
             {
-                if(tile.Tile == settlement->location)
+                generalScore += tile.Tile->GetResource(resource);
+            }
+
+            *scores.Add() = TileScore{&tile, foodScore, generalScore};
+        }
+
+        scores.Sort([] (TileScore *first, TileScore *second) -> bool {return first->GeneralScore > second->GeneralScore;});
+
+        scores.Sort([] (TileScore *first, TileScore *second) -> bool {return first->FoodScore > second->FoodScore;});
+
+        auto neededFood = settlement.GetPopulationHandler().GetPotentialMidtermConsumption(settlement::ResourceTypes::FOOD);
+
+        for(auto &score : scores)
+        {
+            settlement.HireWorker(score.Tile);
+
+            workerCount--;
+            if(workerCount == 0)
+                break;
+
+            auto foodOutput = settlement.GetResourceHandler().GetPotentialMidtermOutput(settlement::ResourceTypes::FOOD);
+            if(foodOutput > neededFood)
+                break;
+        }
+
+        if(workerCount == 0)
+            return;
+
+        for(auto &score : scores)
+        {
+            if(score.Tile->IsWorked == true)
+                continue;
+
+            if(score.GeneralScore < 4)
+                continue;
+
+            settlement.HireWorker(score.Tile);
+            workerCount--;
+
+            if(workerCount == 0)
+                break;
+        }
+
+        if(workerCount == 0)
+            return;
+    }
+    else
+    {
+        if(settlement.needsToReorganizeWork == false)
+            return;
+
+        settlement.needsToReorganizeWork = false;
+
+        if(settlement.GetPopulation() == 0)
+        {
+            for(auto &tile : settlement.GetTiles())
+            {
+                if(tile.Tile == settlement.GetLocation())
                     continue;
 
                 tile.IsWorked = false;
             }
-            continue;
+
+            return;
         }
 
-        if(settlement->GetPopulation() > settlement->tiles.GetSize())
-            continue;
+        if(settlement.GetPopulation() > settlement.tiles.GetSize())
+            return;
 
-        auto workedTileCount = settlement->GetWorkedTiles();
-        if(workedTileCount == settlement->GetPopulation() + 1)
-            continue;
+        auto workedTileCount = settlement.GetWorkedTiles();
+        if(workedTileCount == settlement.GetPopulation() + 1)
+            return;
 
-        if(workedTileCount == settlement->tiles.GetSize())
-            continue;
+        if(workedTileCount == settlement.GetTiles().GetSize())
+            return;
 
-        for(auto &tile : settlement->tiles)
+        for(auto &tile : settlement.GetTiles())
         {
-            if(tile.Tile == settlement->location)
+            if(tile.Tile == settlement.GetLocation())
                 continue;
 
             tile.IsWorked = false;
         }
 
-        auto workerCount = settlement->GetPopulation();
+        auto workerCount = settlement.GetPopulation();
         
         auto placeWorkersOnTilesOfType = [&] (world::WorldBiomes biomeType) -> bool
         {
-            for(auto &tile : settlement->tiles)
+            for(auto &tile : settlement.GetTiles())
             {
                 if(tile.IsWorked == true)
                     continue;
@@ -125,12 +218,12 @@ void MachineMind::UpdateWorkforce(Polity &polity) const
         auto hasUsedAllWorkers = placeWorkersOnTilesOfType(world::WorldBiomes::STEPPE);
 
         if(hasUsedAllWorkers == true)
-            continue;
+            return;
 
         hasUsedAllWorkers = placeWorkersOnTilesOfType(world::WorldBiomes::WOODS);
 
         if(hasUsedAllWorkers == true)
-            continue;
+            return;
 
         placeWorkersOnTilesOfType(world::WorldBiomes::DESERT);
     }
