@@ -122,7 +122,11 @@ void PopHandler::PlaceOrders(Settlement &settlement)
         auto resource = settlement.GetResource(need.Type);
         auto consumption = GetPopulation() * resource->Type->PopulationConsumption;
 
-        if(consumption <= resource->Storage && need.Satisfaction < need.SatisfactionThreshold)
+        bool isEnoughInStorage = consumption <= resource->Storage;
+
+        bool isNeedSatisfied = need.Satisfaction >= need.SatisfactionThreshold;
+
+        if(isEnoughInStorage == true && isNeedSatisfied == false)
         {
             need.Order = consumption;
 
@@ -133,20 +137,21 @@ void PopHandler::PlaceOrders(Settlement &settlement)
 
     for(auto &hierarchy : needHierarchies)
     {
-        bool isOneNeedFulfilled = false;
+        bool isHighestNeedFulfilled = false;
         for(auto &resourceType : hierarchy)
         {
             auto resource = settlement.GetResource(resourceType);
-            if(isOneNeedFulfilled == true)
+            if(isHighestNeedFulfilled == true)
             {
                 resource->HasPopulationOrdered = false;
                 continue;
             }
 
-            //auto need = needs.Find(resourceType);
-            if(resource->HasPopulationOrdered == true)
+            auto need = needs.Find(resourceType);
+            bool isNeedSatisfied = need->Satisfaction >= need->SatisfactionThreshold;
+            if(isNeedSatisfied == true || resource->HasPopulationOrdered == true)
             {
-                isOneNeedFulfilled = true;
+                isHighestNeedFulfilled = true;
             }
         }
     }
