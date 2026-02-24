@@ -554,7 +554,7 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
             for(auto &settlement : *settlements)
             {
                 auto distance = tile->GetDistanceTo(*settlement.GetLocation());
-                if(distance < data.Size / 12)
+                if(distance < data.Size / 16)
                 {
                     isSettlementNearby = true;
                     break;
@@ -571,7 +571,7 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
     
     settlement::Settlement *newSettlement = nullptr;
 
-    for(auto i = 0; i < 5; ++i)
+    for(auto i = 0; i < 10; ++i)
     {
         auto settlementCount = utility::GetRandom(4, 7);
 
@@ -586,14 +586,27 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
             auto randomLocation = (*randomSettlement)->GetLocation();
 
             auto distance = utility::GetRandom(MINIMUM_COLONIZATION_RANGE, MAXIMUM_COLONIZATION_RANGE);
-            for(auto &tile : randomLocation->GetTileRing(distance).Tiles)
+
+            auto tileRing = randomLocation->GetTileRing(distance);
+
+            int localAttemptCount = 0;
+            while(true)
             {
-                if(tile->Type == WorldTiles::LAND && tile->IsBorderingOwnedTile() == false)
-                {
-                    scene.FoundSettlement(tile, tile->MajorRace, *randomSettlement);
-                    successCount++;
+                auto tile = *tileRing.Tiles.GetRandom();
+
+                localAttemptCount++;
+                if(localAttemptCount == 10)
                     break;
-                }
+
+                if(tile->Type != WorldTiles::LAND) 
+                    continue;
+
+                if(tile->IsBorderingOwnedTile() == true)
+                    continue;
+
+                scene.FoundSettlement(tile, tile->MajorRace, *randomSettlement);
+                successCount++;
+                break;
             }
 
             attemptCount++;
