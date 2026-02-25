@@ -194,15 +194,6 @@ int Resource::GetPotentialMidtermInput(const ResourceHandler &handler) const
         }
 
         return inputAmount + popConsumption;
-
-        /*auto jobCount = 0;
-        for(auto &job : handler.GetJobs())
-        {
-            if(job.GetResource() == this->Type->Type)
-            {
-
-            }
-        }*/
     }
     else
     {
@@ -212,6 +203,16 @@ int Resource::GetPotentialMidtermInput(const ResourceHandler &handler) const
 
         return cycleCount * outputPerCycle + popConsumption;
     }
+}
+
+int Resource::GetPotentialMidtermConsumption(const ResourceHandler &handler, ResourceTypes type) const
+{
+    static const auto &time = WorldScene::Get()->GetTime();
+    static const auto ticks = time.GetTicksFromDays(3);
+
+    auto cycleCount = ticks / ResourceHandler::GetTotalCycleLength();
+
+    return cycleCount * Type->InputResources.Find(type)->Amount;
 }
 
 int Resource::GetProductionFromCenter(const Settlement &settlement) const

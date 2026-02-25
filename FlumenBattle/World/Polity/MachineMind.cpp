@@ -3,6 +3,9 @@
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/Settlement/SettlementProduction.h"
+#include "FlumenBattle/World/Settlement/Job.h"
+#include "FlumenBattle/World/Settlement/Resource.h"
+#include "FlumenBattle/World/Settlement/Cohort.h"
 #include "FlumenBattle/World/Tile/WorldTile.h"
 #include "FlumenBattle/World/Tile/WorldBiome.h"
 #include "FlumenBattle/World/Science/Technology.h"
@@ -69,7 +72,62 @@ void MachineMind::UpdateWorkforce(Polity &polity) const
     }
 }
 
-void MachineMind::UpdateWorkforce(settlement::Settlement &settlement) const
+void MachineMind::UpdateWorkforceBasedOnFreeMarket(settlement::Settlement &settlement) const
+{
+    for(auto &job : settlement.GetResourceHandler().GetJobs())
+    {
+        if(job.GetTile() != nullptr)
+            continue;
+
+        auto resource = settlement.GetResource(job.GetResource());
+        if(resource->AbundanceDegree == 3)
+        {
+            settlement.FireWorker(&job);
+            continue;
+        }
+
+        for(auto &input : resource->Type->InputResources)
+        {
+            auto inputResource = settlement.GetResource(input.Resource);
+            if(inputResource->ScarcityDegree == 3)
+            {
+                settlement.FireWorker(&job);
+                break;
+            }
+        }
+    }
+
+    for(auto &cohort : settlement.GetPopCohorts())
+    {
+        if(cohort.Job != nullptr)
+            continue;        
+
+        auto resourceType = *settlement::INTERMEDIATE_RESOURCES.GetRandom();
+        
+        auto resource = settlement.GetResource(resourceType);
+        if(resource->ScarcityDegree != 3)
+            continue;
+        
+        bool isInputScarce = false;
+        for(auto &input : resource->Type->InputResources)
+        {
+            auto inputResource = settlement.GetResource(input.Resource);
+            if(inputResource->ScarcityDegree != 0)
+            {
+                isInputScarce = true;
+                break;
+            }
+        }
+
+        if(isInputScarce == false)
+        {
+            settlement.HireWorker(resourceType, &cohort);
+            continue;
+        }
+    }
+}
+
+void MachineMind::UpdateWorkforceBasedOnCentralPlan(settlement::Settlement &settlement) const
 {
     struct TileScore
     {
@@ -80,80 +138,87 @@ void MachineMind::UpdateWorkforce(settlement::Settlement &settlement) const
         int GeneralScore;
     };
 
+    if(settlement.needsToReorganizeWork == false)
+        return;
+
+    settlement.needsToReorganizeWork = false;
+
+    settlement.FireAllWorkers();
+
+    if(settlement.GetPopulation() == 0)
+    {
+        return;
+    }
+
+    auto workerCount = settlement.GetPopulation();
+
+    static auto scores = container::Array <TileScore> (128);
+    scores.Reset();
+
+    for(auto &tile : settlement.GetTiles())
+    {
+        if(tile.Tile == settlement.GetLocation())
+            continue;
+
+        auto foodScore = tile.Tile->GetResource(settlement::ResourceTypes::FOOD);
+
+        auto generalScore = 0;
+        for(auto &resource : settlement::BASIC_RESOURCES)
+        {
+            generalScore += tile.Tile->GetResource(resource);
+        }
+
+        *scores.Add() = TileScore{&tile, foodScore, generalScore};
+    }
+
+    scores.Sort([] (TileScore *first, TileScore *second) -> bool {return first->GeneralScore > second->GeneralScore;});
+
+    scores.Sort([] (TileScore *first, TileScore *second) -> bool {return first->FoodScore > second->FoodScore;});
+
+    auto neededFood = settlement.GetPopulationHandler().GetPotentialMidtermConsumption(settlement::ResourceTypes::FOOD);
+
+    for(auto &score : scores)
+    {
+        settlement.HireWorker(score.Tile);
+
+        workerCount--;
+        if(workerCount == 0)
+            break;
+
+        auto foodOutput = settlement.GetResourceHandler().GetPotentialMidtermOutput(settlement::ResourceTypes::FOOD);
+        if(foodOutput > neededFood)
+            break;
+    }
+
+    if(workerCount == 0)
+        return;
+
+    for(auto &score : scores)
+    {
+        if(score.Tile->IsWorked == true)
+            continue;
+
+        if(score.GeneralScore < 4)
+            continue;
+
+        settlement.HireWorker(score.Tile);
+        workerCount--;
+
+        if(workerCount == 0)
+            break;
+    }
+
+    if(workerCount == 0)
+        return;
+}
+
+void MachineMind::UpdateWorkforce(settlement::Settlement &settlement) const
+{
     if(settlement.IsDeepSettlement() == true)
     {
-        if(settlement.needsToReorganizeWork == false)
-            return;
+        UpdateWorkforceBasedOnCentralPlan(settlement);
 
-        settlement.needsToReorganizeWork = false;
-
-        settlement.FireAllWorkers();
-
-        if(settlement.GetPopulation() == 0)
-        {
-            return;
-        }
-
-        auto workerCount = settlement.GetPopulation();
-
-        static auto scores = container::Array <TileScore> (128);
-        scores.Reset();
-
-        for(auto &tile : settlement.GetTiles())
-        {
-            if(tile.Tile == settlement.GetLocation())
-                continue;
-
-            auto foodScore = tile.Tile->GetResource(settlement::ResourceTypes::FOOD);
-
-            auto generalScore = 0;
-            for(auto &resource : settlement::BASIC_RESOURCES)
-            {
-                generalScore += tile.Tile->GetResource(resource);
-            }
-
-            *scores.Add() = TileScore{&tile, foodScore, generalScore};
-        }
-
-        scores.Sort([] (TileScore *first, TileScore *second) -> bool {return first->GeneralScore > second->GeneralScore;});
-
-        scores.Sort([] (TileScore *first, TileScore *second) -> bool {return first->FoodScore > second->FoodScore;});
-
-        auto neededFood = settlement.GetPopulationHandler().GetPotentialMidtermConsumption(settlement::ResourceTypes::FOOD);
-
-        for(auto &score : scores)
-        {
-            settlement.HireWorker(score.Tile);
-
-            workerCount--;
-            if(workerCount == 0)
-                break;
-
-            auto foodOutput = settlement.GetResourceHandler().GetPotentialMidtermOutput(settlement::ResourceTypes::FOOD);
-            if(foodOutput > neededFood)
-                break;
-        }
-
-        if(workerCount == 0)
-            return;
-
-        for(auto &score : scores)
-        {
-            if(score.Tile->IsWorked == true)
-                continue;
-
-            if(score.GeneralScore < 4)
-                continue;
-
-            settlement.HireWorker(score.Tile);
-            workerCount--;
-
-            if(workerCount == 0)
-                break;
-        }
-
-        if(workerCount == 0)
-            return;
+        UpdateWorkforceBasedOnFreeMarket(settlement);
     }
     else
     {

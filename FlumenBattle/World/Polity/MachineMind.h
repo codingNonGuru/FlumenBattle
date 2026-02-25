@@ -23,7 +23,9 @@ namespace world::polity
 
         virtual void UpdateWorkforce(Polity &) const override;
 
-        virtual void UpdateWorkforce(settlement::Settlement &) const override;
+        void UpdateWorkforceBasedOnFreeMarket(settlement::Settlement &) const;
+
+        void UpdateWorkforceBasedOnCentralPlan(settlement::Settlement &) const;
 
         virtual void DecideResearch(Polity &) const override;
 
@@ -44,5 +46,8 @@ namespace world::polity
         void RegisterMarkForDeletion() const override {}
 
         void GrowBorders(settlement::Settlement *);
+
+    public:
+        virtual void UpdateWorkforce(settlement::Settlement &) const override;
     };
 }

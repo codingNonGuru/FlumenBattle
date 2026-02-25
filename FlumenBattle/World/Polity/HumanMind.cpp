@@ -4,6 +4,7 @@
 #include "FlumenEngine/Interface/Element.hpp"
 
 #include "HumanMind.h"
+#include "MachineMind.h"
 #include "FlumenBattle/World/Polity/Polity.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/SettlementTile.h"
@@ -183,7 +184,8 @@ void HumanMind::UpdateWorkforce(Polity &polity) const
 {
     for(auto &settlement : polity.GetSettlements())
     {
-        UpdateSettlementWorkforce(settlement);
+        MachineMind::Get()->UpdateWorkforce(*settlement);
+        //UpdateSettlementWorkforce(settlement);
     }
 }
 
@@ -194,47 +196,6 @@ void HumanMind::UpdateSettlementWorkforce(settlement::Settlement *settlement) co
     {
         return;
     }
-
-    /*settlement->FireAllWorkers();
-
-    static const auto MAX_SETTLEMENT_POPULATION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAX_SETTLEMENT_POPULATION).Integer;
-
-    static auto workQueue = container::Array <WorkInstruction *> (MAX_SETTLEMENT_POPULATION);
-
-    for(auto &instruction : instructionSet->instructions)
-    {
-        *workQueue.Get(instruction.Priority) = &instruction;
-    }
-
-    auto freeWorkerCount = settlement->GetFreeWorkerCount();
-    for(int i = 0; i < instructionSet->instructions.GetSize(); ++i)
-    {
-        if(freeWorkerCount == 0)
-        {
-            break;
-        }
-
-        auto instruction = workQueue[i];
-
-        if(instruction->PlaceType == WorkInstruction::RESOURCE)
-        {
-            auto hasHired = settlement->HireWorker(instruction->Place.Resource->Type->Type, instruction->Cohort);
-            if(hasHired == true)
-            {
-                freeWorkerCount--;
-            }
-        }
-        else if(instruction->PlaceType == WorkInstruction::TILE)
-        {
-            auto hasHired = settlement->HireWorker(instruction->Place.Tile);
-            if(hasHired == true)
-            {
-                freeWorkerCount--;
-            }
-
-            freeWorkerCount--;
-        }
-    }*/
 
     static const auto MAX_SETTLEMENT_POPULATION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAX_SETTLEMENT_POPULATION).Integer;
 
@@ -582,34 +543,40 @@ void HumanMind::HandlePlayerConquest()
 
     for(auto &settlement : playerPolity->GetSettlements())
     {
-        auto set = workInstructionSets.Find(settlement);
-        if(set == nullptr)
+        TranslateJobsIntoInstructions(settlement);
+    }
+}
+
+void HumanMind::TranslateJobsIntoInstructions(settlement::Settlement *settlement) const
+{
+    auto instructionSet = workInstructionSets.Find(settlement);
+    if(instructionSet == nullptr)
+    {
+        instructionSet = workInstructionSets.Add();
+
+        instructionSet->settlement = settlement;
+    }
+
+    instructionSet->instructions.Reset();
+
+    auto priority = 0;
+
+    auto &jobs = settlement->GetResourceHandler().GetJobs();
+    for(auto &job : jobs)
+    {
+        auto instruction = instructionSet->instructions.Add();
+
+        if(job.GetTile() == nullptr)
         {
-            auto instructionSet = workInstructionSets.Add();
-
-            instructionSet->settlement = settlement;
-            instructionSet->instructions.Reset();
-
-            auto priority = 0;
-
-            auto &jobs = settlement->GetResourceHandler().GetJobs();
-            for(auto &job : jobs)
-            {
-                auto instruction = instructionSet->instructions.Add();
-
-                if(job.GetTile() == nullptr)
-                {
-                    auto resource = settlement->GetResource(job.GetResource());
-                    *instruction = {priority, WorkInstruction::RESOURCE, {resource}, job.GetCohort()};
-                }
-                else
-                {
-                    *instruction = {priority, WorkInstruction::TILE, {job.GetTile()}, job.GetCohort()};
-                }
-
-                priority++;
-            }
+            auto resource = settlement->GetResource(job.GetResource());
+            *instruction = {priority, WorkInstruction::RESOURCE, {resource}, job.GetCohort()};
         }
+        else
+        {
+            *instruction = {priority, WorkInstruction::TILE, {job.GetTile()}, job.GetCohort()};
+        }
+
+        priority++;
     }
 }
 
@@ -865,6 +832,8 @@ const container::Pool <WorkInstruction> *HumanMind::GetSettlementInstructions() 
 {
     static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     const auto playerSettlement = playerGroup->GetCurrentSettlement();
+
+    TranslateJobsIntoInstructions(playerSettlement);
 
     if(auto set = workInstructionSets.Find(playerSettlement); set == nullptr)  
     {

@@ -24,6 +24,8 @@ namespace world::settlement
             ResourceTypes Resource;
 
             int Amount;
+
+            bool operator == (ResourceTypes resource) {return Resource == resource;}
         };
 
         ResourceTypes Type;
@@ -96,6 +98,8 @@ namespace world::settlement
         int GetPotentialMidtermOutput(const ResourceHandler &) const;
 
         int GetPotentialMidtermInput(const ResourceHandler &) const;
+
+        int GetPotentialMidtermConsumption(const ResourceHandler &, ResourceTypes) const;
 
         int GetInput(ResourceTypes) const;
 

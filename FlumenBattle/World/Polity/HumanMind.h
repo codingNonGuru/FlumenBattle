@@ -115,6 +115,8 @@ namespace world::polity
 
         void RemoveWorkInstruction(settlement::Settlement *, settlement::Resource *);
 
+        void TranslateJobsIntoInstructions(settlement::Settlement *) const;
+
     public:
         Delegate OnProductionDecided;
 

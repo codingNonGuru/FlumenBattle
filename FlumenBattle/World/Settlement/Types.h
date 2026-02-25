@@ -2,6 +2,8 @@
 
 #include <initializer_list>
 
+#include "FlumenCore/Container/Array.hpp"
+
 #define MINIMUM_COLONIZATION_RANGE 5
 
 #define MAXIMUM_COLONIZATION_RANGE 6
@@ -128,6 +130,20 @@ namespace world::settlement
         settlement::ResourceTypes::FIBER, 
         settlement::ResourceTypes::TIMBER, 
         settlement::ResourceTypes::ORE
+    };
+
+    static const container::Array <ResourceTypes> INTERMEDIATE_RESOURCES = std::initializer_list <ResourceTypes>
+    {
+        ResourceTypes::METAL, 
+        ResourceTypes::POTTERY, 
+        ResourceTypes::COOKED_FOOD, 
+        ResourceTypes::LUMBER, 
+        ResourceTypes::FABRIC
+    };
+
+    static const auto ADVANCED_RESOURCES = {
+        settlement::ResourceTypes::CLOTHING, 
+        settlement::ResourceTypes::FURNITURE
     };
 
     enum class SettlementAttitudes

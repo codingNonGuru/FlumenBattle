@@ -571,9 +571,9 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
     
     settlement::Settlement *newSettlement = nullptr;
 
-    for(auto i = 0; i < 10; ++i)
+    for(auto i = 0; i < 1; ++i)
     {
-        auto settlementCount = utility::GetRandom(4, 7);
+        auto settlementCount = 1;//utility::GetRandom(4, 7);
 
         auto location = findSettleLocation();
         newSettlement = scene.FoundSettlement(location, location->MajorRace, nullptr);
@@ -582,6 +582,9 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
         int successCount = 1;
         while(true)
         {
+            if(attemptCount == 100 || successCount == settlementCount)
+                break;
+
             auto randomSettlement = newSettlement->GetPolity()->GetSettlements().GetRandom();
             auto randomLocation = (*randomSettlement)->GetLocation();
 
@@ -610,9 +613,6 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
             }
 
             attemptCount++;
-
-            if(attemptCount == 100 || successCount == settlementCount)
-                break;
         }
     }
 
