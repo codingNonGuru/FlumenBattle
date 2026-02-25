@@ -127,6 +127,8 @@ void Settlement::Initialize(Word name, Color banner, tile::WorldTile *location, 
     this->needsToReorganizeWork = true;
 
     this->storage = BASE_STORAGE_CAPACITY;
+
+    this->hasGoverningAutonomy = true;
 }
 
 void Settlement::AddPath(Path *path) 

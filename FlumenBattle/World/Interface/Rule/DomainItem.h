@@ -36,6 +36,8 @@ namespace world::interface::rule
 
         Element *capitalIcon;
 
+        Element *autonomyIcon;
+
         settlement::Settlement *settlement;
 
         int population;
@@ -53,6 +55,8 @@ namespace world::interface::rule
         void HandleConfigure() override;
 
         void HandleUpdate() override;
+
+        void HandleLeftClick() override;
 
         void Setup(settlement::Settlement *, RealmTab *);
 

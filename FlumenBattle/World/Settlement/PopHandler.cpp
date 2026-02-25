@@ -148,7 +148,7 @@ void PopHandler::PlaceOrders(Settlement &settlement)
             }
 
             auto need = needs.Find(resourceType);
-            bool isNeedSatisfied = need->Satisfaction >= need->SatisfactionThreshold;
+            bool isNeedSatisfied = need->Satisfaction >= need->SatisfactionThreshold / 2;
             if(isNeedSatisfied == true || resource->HasPopulationOrdered == true)
             {
                 isHighestNeedFulfilled = true;

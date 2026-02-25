@@ -150,6 +150,8 @@ namespace world::settlement
 
         polity::Polity *polity;
 
+        bool hasGoverningAutonomy;
+
         int distanceToCapital;
 
         Pool <Affliction> afflictions;
@@ -498,5 +500,9 @@ namespace world::settlement
         void MarkForDeletion();
 
         const container::Array <ResourceData> &GetTileResourceData() const;
+
+        bool HasGoverningAutonomy() const {return hasGoverningAutonomy;}
+
+        void SetGoverningAutonomy(bool hasAutonomy) {hasGoverningAutonomy = hasAutonomy;}
     };
 }

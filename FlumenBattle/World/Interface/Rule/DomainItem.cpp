@@ -8,6 +8,7 @@
 #include "FlumenBattle/World/Interface/ResourceCounter.h"
 #include "FlumenBattle/World/WorldScene.h"
 #include "FlumenBattle/World/Polity/Polity.h"
+#include "FlumenBattle/World/Polity/HumanMind.h"
 #include "FlumenBattle/World/Settlement/Building.h"
 
 using namespace world::interface::rule;
@@ -37,6 +38,16 @@ void DomainItem::HandleConfigure()
         }
     );
     capitalIcon->AdjustSizeToTexture();
+
+    autonomyIcon = ElementFactory::BuildElement <Element>
+    (
+        { 
+            drawOrder_ + 1, 
+            {Position2(0.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_LEFT, this}, 
+            {"PaperAct", false}
+        }
+    );
+    autonomyIcon->AdjustSizeToTexture();
 
     populationCounter = ElementFactory::BuildElement <ResourceCounter>
     (
@@ -99,6 +110,31 @@ void DomainItem::HandleUpdate()
     else
     {
         SetOpacity(0.5f);
+    }
+
+    if(settlement->HasGoverningAutonomy() == true)
+    {
+        autonomyIcon->Enable();
+    }
+    else
+    {
+        autonomyIcon->Disable();
+    }
+}
+
+void DomainItem::HandleLeftClick()
+{
+    if(settlement->HasGoverningAutonomy() == true)
+    {
+        polity::HumanMind::Get()->RevokeGoverningAutonomy(settlement);
+
+        autonomyIcon->Disable();
+    }
+    else
+    {
+        polity::HumanMind::Get()->GrantGoverningAutonomy(settlement);
+
+        autonomyIcon->Enable();
     }
 }
 

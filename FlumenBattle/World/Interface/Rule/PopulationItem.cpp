@@ -101,6 +101,9 @@ void PopulationItem::HandleLeftClick()
     if(cohort->Job == nullptr)
         return;
 
+    if(polity::HumanMind::Get()->GetCurrentSettlement()->HasGoverningAutonomy() == true)
+        return;
+
     polity::HumanMind::Get()->RemoveWorkInstruction(this->cohort);
 }
 

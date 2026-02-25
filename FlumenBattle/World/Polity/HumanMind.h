@@ -203,5 +203,11 @@ namespace world::polity
         ImprovementData GetHoveredBuildingQueueItem() const;
 
         void SetHoveredBuildingQueueItem(ImprovementData);
+
+        settlement::Settlement *GetCurrentSettlement() const;
+
+        void GrantGoverningAutonomy(settlement::Settlement * = nullptr);
+
+        void RevokeGoverningAutonomy(settlement::Settlement * = nullptr);
     };
 }

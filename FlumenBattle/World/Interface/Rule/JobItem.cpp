@@ -8,6 +8,7 @@
 #include "FlumenBattle/World/Settlement/Resource.h"
 #include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/Settlement/Cohort.h"
+#include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Interface/Counter.h"
 #include "FlumenBattle/World/Tile/WorldTile.h"
 
@@ -99,7 +100,7 @@ void JobItem::HandleUpdate()
         return;
     }
 
-    if(IsHovered() == true)
+    if(IsHovered() == true && polity::HumanMind::Get()->GetCurrentSettlement()->HasGoverningAutonomy() == false)
     {
         SetOpacity(0.8f);
     }
@@ -112,6 +113,9 @@ void JobItem::HandleUpdate()
 void JobItem::HandleLeftClick() 
 {
     if(instruction == nullptr)
+        return;
+
+    if(polity::HumanMind::Get()->GetCurrentSettlement()->HasGoverningAutonomy() == true)
         return;
 
     auto hoverInfo = parentTab->GetJobHoverDevice();

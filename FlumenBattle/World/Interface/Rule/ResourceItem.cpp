@@ -114,7 +114,7 @@ void ResourceItem::HandleUpdate()
     auto storageRatio = (float)resource->Storage / (float)settlement->GetStorage();
     storageBar->SetProgress(storageRatio);
 
-    if(IsHovered() == true)
+    if(IsHovered() == true && settlement->HasGoverningAutonomy() == false)
     {
         SetOpacity(0.8f);
 
@@ -197,11 +197,17 @@ void ResourceItem::Setup(settlement::Resource *resource, const settlement::Settl
 
 void ResourceItem::HandleLeftClick()
 {
+    if(settlement->HasGoverningAutonomy() == true)
+        return;
+
     polity::HumanMind::Get()->ChangeResourceWorkforce(resource, true);
 }
 
 void ResourceItem::HandleRightClick()
 {
+    if(settlement->HasGoverningAutonomy() == true)
+        return;
+        
     polity::HumanMind::Get()->ChangeResourceWorkforce(resource, false);
 }
 

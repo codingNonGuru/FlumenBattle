@@ -184,8 +184,14 @@ void HumanMind::UpdateWorkforce(Polity &polity) const
 {
     for(auto &settlement : polity.GetSettlements())
     {
-        MachineMind::Get()->UpdateWorkforce(*settlement);
-        //UpdateSettlementWorkforce(settlement);
+        if(settlement->HasGoverningAutonomy() == true)
+        {
+            MachineMind::Get()->UpdateWorkforce(*settlement);
+        }
+        else
+        {
+            UpdateSettlementWorkforce(settlement);
+        }
     }
 }
 
@@ -833,7 +839,10 @@ const container::Pool <WorkInstruction> *HumanMind::GetSettlementInstructions() 
     static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
     const auto playerSettlement = playerGroup->GetCurrentSettlement();
 
-    TranslateJobsIntoInstructions(playerSettlement);
+    if(playerSettlement->HasGoverningAutonomy() == true)
+    {
+        TranslateJobsIntoInstructions(playerSettlement);
+    }
 
     if(auto set = workInstructionSets.Find(playerSettlement); set == nullptr)  
     {
@@ -1225,4 +1234,38 @@ ImprovementData HumanMind::GetHoveredBuildingQueueItem() const
 void HumanMind::SetHoveredBuildingQueueItem(ImprovementData item)
 {
     hoveredBuildingQueueItem = item;
+}
+
+settlement::Settlement *HumanMind::GetCurrentSettlement() const
+{
+    static const auto playerGroup = WorldScene::Get()->GetPlayerGroup();
+    return playerGroup->GetCurrentSettlement();
+}
+
+void HumanMind::GrantGoverningAutonomy(settlement::Settlement *settlement)
+{
+    if(settlement == nullptr)
+    {
+        settlement = GetCurrentSettlement();
+    }
+
+    if(settlement->HasGoverningAutonomy() == true)
+        return;
+
+    settlement->SetGoverningAutonomy(true);
+
+    TranslateJobsIntoInstructions(settlement);
+}
+
+void HumanMind::RevokeGoverningAutonomy(settlement::Settlement *settlement)
+{
+    if(settlement == nullptr)
+    {
+        settlement = GetCurrentSettlement();
+    }
+
+    if(settlement->HasGoverningAutonomy() == false)
+        return;
+
+    settlement->SetGoverningAutonomy(false);
 }

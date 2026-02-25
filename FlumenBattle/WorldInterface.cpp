@@ -856,7 +856,7 @@ void WorldInterface::Update()
 {
     auto camera = RenderManager::GetCamera(Cameras::WORLD);
 
-    if(camera->GetZoomFactor() > SETTLEMENT_LABEL_ZOOM_LIMIT || WorldController::Get()->ShouldDisplayResources() == true || WorldController::Get()->IsTileDevelopModeActive() == true)
+    if(camera->GetZoomFactor() > SETTLEMENT_LABEL_ZOOM_LIMIT || WorldController::Get()->ShouldDisplayResources() || WorldController::Get()->IsTileDevelopModeActive() || WorldController::Get()->IsWorkerPlaceModeActive() || WorldController::Get()->IsExploreModeActive() || WorldController::Get()->IsBorderExpandActive() || WorldController::Get()->IsSettleModeActive())
     {
         for(auto label = settlementLabels.GetStart(); label != settlementLabels.GetEnd(); label++)
         {
