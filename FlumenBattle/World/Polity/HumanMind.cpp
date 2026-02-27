@@ -190,12 +190,12 @@ void HumanMind::UpdateWorkforce(Polity &polity) const
         }
         else
         {
-            UpdateSettlementWorkforce(settlement);
+            UpdateSettlementWorkforce(settlement, workInstructionSets.Find(settlement)->instructions);
         }
     }
 }
 
-void HumanMind::UpdateSettlementWorkforce(settlement::Settlement *settlement) const
+/*void HumanMind::UpdateSettlementWorkforce(settlement::Settlement *settlement) const
 {
     auto instructionSet = workInstructionSets.Find(settlement);
     if(instructionSet == nullptr)
@@ -240,7 +240,7 @@ void HumanMind::UpdateSettlementWorkforce(settlement::Settlement *settlement) co
             }   
         }
     }
-}
+}*/
 
 void HumanMind::DecideResearch(Polity &polity) const
 {
@@ -354,7 +354,7 @@ void HumanMind::HandleWorkerPlacement()
         }
     }
 
-    UpdateSettlementWorkforce(playerSettlement);
+    UpdateSettlementWorkforce(playerSettlement, instructionSet->instructions);
 
     OnTileWorkerChanged.Invoke();
 }
@@ -737,7 +737,7 @@ void HumanMind::RemoveWorkInstruction(WorkInstruction *instruction)
 
     instructions.RemoveAt(instruction);
 
-    UpdateSettlementWorkforce(playerSettlement);
+    UpdateSettlementWorkforce(playerSettlement, instructions);
 }
 
 void HumanMind::RemoveWorkInstruction(settlement::Cohort *cohort)
@@ -760,7 +760,7 @@ void HumanMind::RemoveWorkInstruction(settlement::Cohort *cohort)
 
     instructionSet->instructions.RemoveAt(instruction);
 
-    UpdateSettlementWorkforce(playerSettlement);
+    UpdateSettlementWorkforce(playerSettlement, instructionSet->instructions);
 }
 
 void HumanMind::RemoveWorkInstruction(settlement::Settlement *settlement, settlement::SettlementTile *tile)
@@ -831,7 +831,7 @@ void HumanMind::ChangeResourceWorkforce(settlement::Resource *resource, bool isH
         }
     }
 
-    UpdateSettlementWorkforce(playerSettlement);
+    UpdateSettlementWorkforce(playerSettlement, instructionSet->instructions);
 }
 
 const container::Pool <WorkInstruction> *HumanMind::GetSettlementInstructions() const

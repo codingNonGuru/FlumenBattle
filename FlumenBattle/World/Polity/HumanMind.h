@@ -105,7 +105,7 @@ namespace world::polity
 
         void HandlePlayerConquest();
 
-        void UpdateSettlementWorkforce(settlement::Settlement *) const;
+        //void UpdateSettlementWorkforce(settlement::Settlement *) const;
 
         void AddWorkInstruction(settlement::Settlement *, settlement::SettlementTile *);
 

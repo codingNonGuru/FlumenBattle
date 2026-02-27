@@ -47,6 +47,8 @@ namespace world::polity
 
         void GrowBorders(settlement::Settlement *);
 
+        void UpdateIntermediateResourceWorkforce(settlement::Settlement &) const;
+
     public:
         virtual void UpdateWorkforce(settlement::Settlement &) const override;
     };

@@ -24,6 +24,10 @@ namespace world::settlement
 
         bool isUsingBuilding;
 
+        int finishedCycleCount;
+
+        int timeSpent;
+
     public:
         void Initialize(Cohort *, ResourceTypes);
 
@@ -54,6 +58,8 @@ namespace world::settlement
         int GetOutput(ResourceTypes) const;
 
         bool IsUsingBuilding() const {return isUsingBuilding;}
+
+        int GetTimeSpent() const {return timeSpent;}
 
         bool operator == (const Cohort *cohort) {return this->cohort == cohort;}
     };

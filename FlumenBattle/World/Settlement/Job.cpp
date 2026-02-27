@@ -20,6 +20,10 @@ void Job::Initialize(Cohort *cohort, ResourceTypes resource)
     this->tile = nullptr;
 
     this->isUsingBuilding = false;
+
+    this->finishedCycleCount = 0;
+
+    this->timeSpent = 0;
 }
 
 void Job::Initialize(Cohort *cohort, SettlementTile *tile)
@@ -35,6 +39,10 @@ void Job::Initialize(Cohort *cohort, SettlementTile *tile)
     this->tile = tile;
 
     this->isUsingBuilding = false;
+
+    this->finishedCycleCount = 0;
+
+    this->timeSpent = 0;
 }
 
 void Job::PlaceOrders(ResourceHandler &handler)
@@ -94,6 +102,8 @@ void Job::ExecuteOrders(ResourceHandler &handler)
             status = JobStatus::DELIVERING_GOODS;
         }
     }
+
+    timeSpent++;
 }
 
 void Job::FinishProduction(ResourceHandler &handler)
@@ -115,6 +125,8 @@ void Job::FinishProduction(ResourceHandler &handler)
         status = JobStatus::OBTAINING_MATERIALS;
 
         progress = 0;
+
+        finishedCycleCount++;
     }
     else
     {
@@ -133,7 +145,11 @@ void Job::FinishProduction(ResourceHandler &handler)
         status = JobStatus::OBTAINING_MATERIALS;
 
         progress = 0;
+
+        finishedCycleCount++;
     }
+
+    timeSpent++;
 }
 
 int Job::GetOutput() const

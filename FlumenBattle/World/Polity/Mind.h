@@ -1,5 +1,7 @@
 #pragma once
 
+#include "FlumenCore/Container/Pool.hpp"
+
 namespace world
 {
     namespace tile {struct WorldTile;}
@@ -14,6 +16,7 @@ namespace world::settlement
 namespace world::polity
 {
     class Polity;
+    class WorkInstruction;
 
     class Mind
     {
@@ -41,5 +44,7 @@ namespace world::polity
         virtual void RegisterSettlementDeletion(settlement::Settlement *) const = 0;
 
         virtual void RegisterMarkForDeletion() const = 0;
+
+        virtual void UpdateSettlementWorkforce(settlement::Settlement *, const container::Pool <WorkInstruction> &) const;
     };
 }
