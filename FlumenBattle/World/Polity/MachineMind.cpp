@@ -313,7 +313,7 @@ void MachineMind::UpdateIntermediateResourceWorkforce(settlement::Settlement &se
 
     for(auto &score : scores)
     {
-        if(utility::RollD100Dice() > 5)
+        if(utility::RollD100Dice() > 3)
             break;
 
         settlement::Cohort *chosenPop = nullptr;
@@ -352,6 +352,9 @@ void MachineMind::UpdateWorkforceBasedOnCentralPlan(settlement::Settlement &sett
         if(tile.Tile == settlement.GetLocation())
             continue;
 
+        if(tile.IsWorked == true)
+            continue;
+
         auto foodScore = tile.Tile->GetResource(settlement::ResourceTypes::FOOD);
 
         auto generalScore = 0;
@@ -367,11 +370,8 @@ void MachineMind::UpdateWorkforceBasedOnCentralPlan(settlement::Settlement &sett
 
     for(auto &score : scores)
     {
-        if(utility::RollD100Dice() > 10)
+        if(utility::RollD100Dice() > 3)
             break;
-
-        if(score.Tile->IsWorked == true)
-            continue;
 
         settlement::Cohort *chosenPop = nullptr;
         for(auto &pop : settlement.GetPopCohorts())

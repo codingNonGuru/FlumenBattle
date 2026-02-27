@@ -61,6 +61,8 @@ namespace world::settlement
 
         int GetTimeSpent() const {return timeSpent;}
 
+        int GetCycleCount() const {return finishedCycleCount;}
+
         bool operator == (const Cohort *cohort) {return this->cohort == cohort;}
     };
 }

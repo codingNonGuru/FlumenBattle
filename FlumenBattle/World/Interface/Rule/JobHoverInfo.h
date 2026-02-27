@@ -15,6 +15,11 @@ namespace world::polity
     class WorkInstruction;
 }
 
+namespace world::interface
+{
+    class ResourceCounter;
+}
+
 namespace world::interface::rule
 {
     class JobItem;
@@ -34,9 +39,13 @@ namespace world::interface::rule
 
         Element *buildingIcon;
 
+        ResourceCounter *cycleCounter;
+
         polity::WorkInstruction *hoveredJob;
 
         JobItem *hoveredItem;
+
+        int cycleCount;
 
         void HandleConfigure() override;
 

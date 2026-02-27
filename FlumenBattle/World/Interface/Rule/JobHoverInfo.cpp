@@ -8,6 +8,7 @@
 #include "FlumenBattle/World/Settlement/SettlementTile.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
 #include "FlumenBattle/World/Tile/WorldTile.h"
+#include "FlumenBattle/World/Interface/ResourceCounter.h"
 
 using namespace world::interface::rule;
 
@@ -78,6 +79,18 @@ void JobHoverInfo::HandleConfigure()
     );
     buildingIcon->SetTextureScale(0.5f);
     buildingIcon->Disable();
+
+    cycleCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> (
+        {drawOrder_, {Position2(-40.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}}
+    );
+    cycleCounter->Setup(
+        "HourGlass", 
+        &cycleCount,
+        "VerySmall",
+        Scale2(0.7f)
+    );
+    cycleCounter->SetOffset(-5.0f);
+    cycleCounter->Enable();
 }
 
 void JobHoverInfo::HandleUpdate()
@@ -93,6 +106,13 @@ void JobHoverInfo::HandleUpdate()
     }
 
     auto job = polity::HumanMind::Get()->GetJobFromInstruction(this->hoveredJob);
+
+    if(job == nullptr)
+    {
+        hoveredItem = nullptr;
+        Disable();
+        return;
+    }
 
     auto progress = (float)job->GetProgress() / (float)settlement::ResourceHandler::PRODUCTION_DURATION;
     progressBar->SetProgress(progress);
@@ -137,6 +157,8 @@ void JobHoverInfo::HandleUpdate()
 
         buildingIcon->Disable();
     }
+
+    cycleCount = job->GetCycleCount();
 }
 
 void JobHoverInfo::Setup(JobItem *item, polity::WorkInstruction *instruction)
