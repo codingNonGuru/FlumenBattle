@@ -132,6 +132,17 @@ struct Pottery : public ResourceType
     }
 };
 
+struct Tools : public ResourceType
+{
+    Tools() : ResourceType(ResourceTypes::TOOLS, "Tools", "ResourceTools_32", 300) 
+    {
+        IsProductionTileBased = false; 
+        InputResources = {{ResourceTypes::LUMBER, 2}, {ResourceTypes::METAL, 1}};
+        OutputAmount = 1;
+        //RelatedBuilding = BuildingTypes::POTTERY;
+    }
+};
+
 int Resource::GetPotentialProduction(const Settlement &settlement) const
 {
     return GetProductionFromCenter(settlement) + GetProductionFromTiles(settlement);
@@ -152,7 +163,7 @@ int Resource::GetPotentialMidtermOutput(const ResourceHandler &handler) const
         {
             if(job.GetResource() == this->Type->Type)
             {
-                output += cycleCount * job.GetOutput();
+                output += cycleCount * job.GetOutput(handler.GetParent());
             }
         }
 
@@ -487,6 +498,9 @@ void ResourceHandler::Initialize(Settlement *parent)
     static const auto pottery = Pottery();
     *resources.Add() = {&pottery};
 
+    static const auto tools = Tools();
+    *resources.Add() = {&tools};
+
     this->parent = parent;
 
     this->workforce = 0;
@@ -517,6 +531,11 @@ void ResourceHandler::PlaceOrders(Settlement &settlement)
         {
             job.PlaceOrders(*this);
         }
+    }
+
+    if(toolStock <= (MAXIMUM_TOOL_STOCK - 1) * CHARGES_PER_TOOL_UNIT)
+    {
+        Get(ResourceTypes::TOOLS)->Order += 1;
     }
 }
 
@@ -602,6 +621,11 @@ void ResourceHandler::Update(Settlement &settlement)
         {
             resource.FinishProduction();
         }
+    }
+
+    if(Get(ResourceTypes::TOOLS)->CanFulfillOrders == true)
+    {
+        toolStock += Get(ResourceTypes::TOOLS)->Order * CHARGES_PER_TOOL_UNIT;
     }
 
     for(auto &resource : resources)
@@ -833,7 +857,7 @@ int ResourceHandler::GetPotentialMidtermOutput(ResourceTypes resource) const
             if(job.GetTile() == nullptr)
                 continue;
                 
-            output += job.GetOutput(resource);// job.GetTile()->Tile->GetResource(resource);
+            output += job.GetOutput(resource, parent);// job.GetTile()->Tile->GetResource(resource);
         }
 
         output += GetParent()->GetLocation()->GetResource(resource);
@@ -889,6 +913,9 @@ const ResourceType *ResourceFactory::CreateType(ResourceTypes type)
     case ResourceTypes::POTTERY:
         static const auto pottery = Pottery();
         return &pottery;
+    case ResourceTypes::TOOLS:
+        static const auto tools = Tools();
+        return &tools;
     }
 }
 

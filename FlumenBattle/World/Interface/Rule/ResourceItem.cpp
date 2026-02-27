@@ -100,15 +100,24 @@ void ResourceItem::HandleUpdate()
 
     if(needBar != nullptr)
     {
-        static const auto TICKS_PER_NEED_SATISFACTION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::TICKS_PER_NEED_SATISFACTION).Integer;
+        if(resource->Type->Type == settlement::ResourceTypes::TOOLS)
+        {
+            auto progress = (float)settlement->GetResourceHandler().GetToolStock() / (float)settlement->GetResourceHandler().GetMaximumToolCharges();
 
-        auto satisfaction = settlement->GetNeedSatisfaction(resource->Type->Type);
+            needBar->SetProgress(progress);
+        }
+        else
+        {
+            static const auto TICKS_PER_NEED_SATISFACTION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::TICKS_PER_NEED_SATISFACTION).Integer;
 
-        auto progress = (float)satisfaction / (float)TICKS_PER_NEED_SATISFACTION;
+            auto satisfaction = settlement->GetNeedSatisfaction(resource->Type->Type);
 
-        needBar->SetProgress(progress);
+            auto progress = (float)satisfaction / (float)TICKS_PER_NEED_SATISFACTION;
 
-        needLabel->Setup(ShortWord() << satisfaction);
+            needBar->SetProgress(progress);
+
+            needLabel->Setup(ShortWord() << satisfaction);
+        }
     }
 
     auto storageRatio = (float)resource->Storage / (float)settlement->GetStorage();
@@ -159,19 +168,30 @@ void ResourceItem::Setup(settlement::Resource *resource, const settlement::Settl
         resource->Type->Type == settlement::ResourceTypes::POTTERY ||
         resource->Type->Type == settlement::ResourceTypes::FOOD;
 
-    if(needBar == nullptr && relatesToNeed == true)
+    if(needBar == nullptr)
     {
-        needBar = ElementFactory::BuildProgressBar <ProgressBar>(
-            {Size(60, 24), drawOrder_ + 1, {Position2(-10.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}, {"BaseBar", true}},
-            {"BaseFillerRed", {6.0f, 6.0f}}
-        );
-        needBar->Enable();
+        if(relatesToNeed == true)
+        {
+            needBar = ElementFactory::BuildProgressBar <ProgressBar>(
+                {Size(60, 24), drawOrder_ + 1, {Position2(-10.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}, {"BaseBar", true}},
+                {"BaseFillerRed", {6.0f, 6.0f}}
+            );
+            needBar->Enable();
 
-        needLabel = ElementFactory::BuildText(
-            {drawOrder_ + 2, {needBar}}, 
-            {{"VerySmall"}, Color::WHITE}
-        );
-        needLabel->Enable();
+            needLabel = ElementFactory::BuildText(
+                {drawOrder_ + 2, {needBar}}, 
+                {{"VerySmall"}, Color::WHITE}
+            );
+            needLabel->Enable();
+        }
+        else if(resource->Type->Type == settlement::ResourceTypes::TOOLS)
+        {
+            needBar = ElementFactory::BuildProgressBar <ProgressBar>(
+                {Size(60, 24), drawOrder_ + 1, {Position2(-10.0f, 0.0f), ElementAnchors::MIDDLE_RIGHT, ElementPivots::MIDDLE_RIGHT, this}, {"BaseBar", true}},
+                {"BaseFillerCyan", {6.0f, 6.0f}}
+            );
+            needBar->Enable();
+        }
     }
 
     if(buildingCounter == nullptr && resource->Type->RelatedBuilding != settlement::BuildingTypes::NONE)

@@ -121,7 +121,12 @@ namespace world::settlement
         FABRIC,
         CLOTHING,
         POTTERY,
+        TOOLS,
         NONE
+        //TOOLS (input: LUMBER, METAL) advanced
+        //BRICKS (input: CLAY, TIMBER) intermediate
+        //LIVESTOCK (input: RAW_FOOD) intermediate
+        //MACHINERY (input: LUMBER, METAL) advanced
     };
 
     static const auto BASIC_RESOURCES = {
@@ -143,7 +148,8 @@ namespace world::settlement
 
     static const auto ADVANCED_RESOURCES = {
         settlement::ResourceTypes::CLOTHING, 
-        settlement::ResourceTypes::FURNITURE
+        settlement::ResourceTypes::FURNITURE,
+        settlement::ResourceTypes::TOOLS
     };
 
     enum class SettlementAttitudes

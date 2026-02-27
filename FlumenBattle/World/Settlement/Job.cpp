@@ -115,7 +115,7 @@ void Job::FinishProduction(ResourceHandler &handler)
     {
         auto resource = handler.Get(resourceType);
 
-        auto output = GetOutput();
+        auto output = GetOutput(handler.GetParent());
 
         if(resource->Storage + output > handler.GetParent()->GetStorage())
             return;
@@ -127,12 +127,15 @@ void Job::FinishProduction(ResourceHandler &handler)
         progress = 0;
 
         finishedCycleCount++;
+
+        if(handler.GetToolStock() > 0)
+            handler.ConsumeToolCharge();
     }
     else
     {
         for(auto resourceType : BASIC_RESOURCES)
         {
-            auto output = GetOutput(resourceType);
+            auto output = GetOutput(resourceType, handler.GetParent());
 
             auto resource = handler.Get(resourceType);
 
@@ -147,12 +150,15 @@ void Job::FinishProduction(ResourceHandler &handler)
         progress = 0;
 
         finishedCycleCount++;
+
+        if(handler.GetToolStock() > 0)
+            handler.ConsumeToolCharge();
     }
 
     timeSpent++;
 }
 
-int Job::GetOutput() const
+int Job::GetOutput(const Settlement *settlement) const
 {
     if(tile != nullptr)
         return 0;
@@ -174,10 +180,15 @@ int Job::GetOutput() const
         output += Resource::PRODUCTION_BOOST_FROM_EXPERIENCE;
     }
 
+    if(settlement->GetResourceHandler().HasToolProductionBonus() == true)
+    {
+        output += 1;
+    }
+
     return output;
 }
 
-int Job::GetOutput(ResourceTypes type) const
+int Job::GetOutput(ResourceTypes type, const Settlement *settlement) const
 {
     if(tile == nullptr)
         return 0;
@@ -197,6 +208,11 @@ int Job::GetOutput(ResourceTypes type) const
     else if(cohort->GetLevel() > 1)
     {
         output += Resource::PRODUCTION_BOOST_FROM_EXPERIENCE;
+    }
+
+    if(settlement->GetResourceHandler().HasToolProductionBonus() == true)
+    {
+        output += 1;
     }
 
     return output;

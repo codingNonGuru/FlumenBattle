@@ -133,7 +133,7 @@ void JobHoverInfo::HandleUpdate()
 
     if(job->GetTile() == nullptr)
     {
-        outputLabel->Setup(Word("+") << job->GetOutput());
+        outputLabel->Setup(Word("+") << job->GetOutput(polity::HumanMind::Get()->GetCurrentSettlement()));
 
         auto resource = settlement::ResourceFactory::Get()->CreateType(job->GetResource());
         outputIcon->SetTexture(resource->TextureName);
@@ -150,7 +150,7 @@ void JobHoverInfo::HandleUpdate()
     else
     {
         auto resourceType = job->GetTile()->Tile->GetMajorResource();
-        outputLabel->Setup(Word("+") << job->GetOutput(resourceType));
+        outputLabel->Setup(Word("+") << job->GetOutput(resourceType, polity::HumanMind::Get()->GetCurrentSettlement()));
 
         auto resource = settlement::ResourceFactory::Get()->CreateType(resourceType);
         outputIcon->SetTexture(resource->TextureName);

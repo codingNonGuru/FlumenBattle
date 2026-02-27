@@ -7,6 +7,7 @@ namespace world::settlement
     class Cohort;
     class ResourceHandler;
     struct SettlementTile;
+    class Settlement;
 
     enum class JobStatus {OBTAINING_MATERIALS, PRODUCING, DELIVERING_GOODS};
 
@@ -53,9 +54,9 @@ namespace world::settlement
 
         JobStatus GetStatus() const {return status;}
 
-        int GetOutput() const;
+        int GetOutput(const Settlement *settlement) const;
 
-        int GetOutput(ResourceTypes) const;
+        int GetOutput(ResourceTypes, const Settlement *settlement) const;
 
         bool IsUsingBuilding() const {return isUsingBuilding;}
 
