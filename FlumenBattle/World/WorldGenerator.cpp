@@ -573,7 +573,7 @@ void WorldGenerator::GenerateSociety(pregame::NewWorldData data)
 
     for(auto i = 0; i < 1; ++i)
     {
-        auto settlementCount = 1;//utility::GetRandom(4, 7);
+        auto settlementCount = utility::GetRandom(4, 7);
 
         auto location = findSettleLocation();
         newSettlement = scene.FoundSettlement(location, location->MajorRace, nullptr);

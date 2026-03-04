@@ -10,6 +10,8 @@ using namespace world::settlement;
 
 #define VOLUME_PER_SHIPMENT 20
 
+#define TRADE_DEFICIT_PER_POP 300
+
 auto priorities = container::Array <ShipmentPriority> (256);
 
 const auto RELATIVE_THRESHOLDS = container::Array <int> {0, 1000, 2000, 3000, 5000, 7000};
@@ -40,8 +42,10 @@ static const auto MAXIMUM_TRAFFIC = [&RELATIVE_THRESHOLDS]
     return amount;
 } ();
 
-void TradeHandler::Initialize() 
+void TradeHandler::Initialize(Settlement *parent) 
 {
+    this->parent = parent;
+
     lastShipmentTime = 0;
 
     dailyShipmentCount = 0;
@@ -53,6 +57,8 @@ void TradeHandler::Initialize()
     yearlyShipmentCount = 0;
 
     totalShipmentCount = 0;
+
+    tradeBalance = 0;
 }
 
 void TradeHandler::PrepareTransport(Settlement &settlement)
@@ -148,7 +154,7 @@ void TradeHandler::SendTransport(Settlement &settlement)
     } ();
 
     int volumeReceived = VOLUME_PER_SHIPMENT - volumeLoss;
-    finalPriority.To->ReceiveTransport(finalPriority.Resource, volumeReceived);
+    finalPriority.To->ReceiveTransport(ResourceData{finalPriority.Resource, volumeReceived});
 
     willShipThisTurn = false;
 
@@ -165,15 +171,19 @@ void TradeHandler::SendTransport(Settlement &settlement)
     monthlyShipmentCount++;
     yearlyShipmentCount++;
     totalShipmentCount++;
+
+    tradeBalance += ResourceFactory::Get()->CreateType(finalPriority.Resource)->Value * volumeReceived;
 }
 
-void TradeHandler::ReceiveTransport(Settlement &settlement)
+void TradeHandler::ReceiveTransport(Settlement &settlement, ResourceData data)
 {
     dailyShipmentCount++;
     weeklyShipmentCount++;
     monthlyShipmentCount++;
     yearlyShipmentCount++;
     totalShipmentCount++;
+
+    tradeBalance -= ResourceFactory::Get()->CreateType(data.Type)->Value * data.Amount;
 }
 
 void TradeHandler::FinishUpdate(Settlement &settlement)
@@ -223,6 +233,19 @@ int TradeHandler::GetTimeBetweenShipments(const Settlement &settlement) const
 float TradeHandler::GetProgress(const Settlement &settlement) const
 {
     return 1.0f - (float)lastShipmentTime / (float)GetTimeBetweenShipments(settlement);
+}
+
+bool TradeHandler::HasSevereTradeDeficit() const
+{
+    if(tradeBalance >= 0)
+        return false;
+
+    auto threshold = -parent->GetPopulation() * TRADE_DEFICIT_PER_POP;
+
+    if(tradeBalance < threshold)
+        return true;
+    else
+        return false;
 }
 
 int TradeHandler::GetRelationshipLevel(int traffic)

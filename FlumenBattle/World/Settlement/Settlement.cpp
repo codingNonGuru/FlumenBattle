@@ -59,7 +59,7 @@ void Settlement::Initialize(Word name, Color banner, tile::WorldTile *location, 
 
     this->resourceHandler.Initialize(this);
 
-    this->tradeHandler.Initialize();
+    this->tradeHandler.Initialize(this);
 
     this->name = name;
 
@@ -1115,11 +1115,11 @@ void Settlement::FinishTradeUpdate()
     tradeHandler.FinishUpdate(*this);
 }
 
-void Settlement::ReceiveTransport(ResourceTypes resource, int amount)
+void Settlement::ReceiveTransport(ResourceData data)
 {
-    resourceHandler.Get(resource)->Storage += amount;
+    resourceHandler.Get(data.Type)->Storage += data.Amount;
 
-    tradeHandler.ReceiveTransport(*this);
+    tradeHandler.ReceiveTransport(*this, data);
 }
 
 void Settlement::UpdatePolitics()

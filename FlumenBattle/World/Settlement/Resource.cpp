@@ -533,7 +533,7 @@ void ResourceHandler::PlaceOrders(Settlement &settlement)
         }
     }
 
-    if(toolStock <= (MAXIMUM_TOOL_STOCK - 1) * CHARGES_PER_TOOL_UNIT)
+    if(toolCharges <= (MAXIMUM_TOOL_STOCK - 1) * CHARGES_PER_TOOL_UNIT)
     {
         Get(ResourceTypes::TOOLS)->Order += 1;
     }
@@ -625,7 +625,7 @@ void ResourceHandler::Update(Settlement &settlement)
 
     if(Get(ResourceTypes::TOOLS)->CanFulfillOrders == true)
     {
-        toolStock += Get(ResourceTypes::TOOLS)->Order * CHARGES_PER_TOOL_UNIT;
+        toolCharges += Get(ResourceTypes::TOOLS)->Order * CHARGES_PER_TOOL_UNIT;
     }
 
     for(auto &resource : resources)

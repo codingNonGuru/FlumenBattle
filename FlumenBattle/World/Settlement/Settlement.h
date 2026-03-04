@@ -401,13 +401,15 @@ namespace world::settlement
 
         void SendTransport();
 
-        void ReceiveTransport(ResourceTypes, int);
+        void ReceiveTransport(ResourceData);
 
         void FinishTradeUpdate();
 
         float GetTradeProgress() const {return tradeHandler.GetProgress(*this);}
 
         const TradeHandler &GetTradeHandler() const {return tradeHandler;}
+
+        int GetTradeBalance() const {return tradeHandler.GetBalance();}
 
         void AddPath(Path *);
 

@@ -174,7 +174,7 @@ namespace world::settlement
 
         int centralTileProgress;
 
-        int toolStock;
+        int toolCharges;
 
     public:
         static const int PRODUCTION_DURATION = 12;
@@ -187,7 +187,7 @@ namespace world::settlement
 
         static const int CHARGES_PER_TOOL_UNIT = 10;
 
-        void ConsumeToolCharge() {toolStock--;}
+        void ConsumeToolCharge() {toolCharges--;}
 
         Resource *Get(ResourceTypes) const;
 
@@ -205,9 +205,9 @@ namespace world::settlement
 
         int GetPotentialMidtermInput(ResourceTypes) const;
 
-        int GetToolStock() const {return toolStock;}
+        int GetToolStock() const {return toolCharges;}
 
-        bool HasToolProductionBonus() const {return toolStock > 5;}
+        bool HasToolProductionBonus() const {return toolCharges > 5;}
 
         static const int GetMaximumToolCharges() {return MAXIMUM_TOOL_STOCK * CHARGES_PER_TOOL_UNIT;}
 

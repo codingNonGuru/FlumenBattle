@@ -11,6 +11,7 @@
 #include "FlumenBattle/World/Polity/HumanMind.h"
 #include "FlumenBattle/Config.h"
 #include "FlumenBattle/World/Settlement/TradeHandler.h"
+#include "FlumenBattle/World/Interface/ResourceCounter.h"
 
 using namespace world::interface::rule;
 
@@ -209,6 +210,19 @@ void TradeTab::HandleConfigure()
         *linkItems.Allocate() = item;
     }
 
+    tradeCounter = ElementFactory::BuildElement <world::interface::ResourceCounter> 
+    (
+        {drawOrder_, {Position2(20.0f, 0.0f), ElementAnchors::MIDDLE_LEFT, ElementPivots::MIDDLE_LEFT, this}}
+    );
+    tradeCounter->Setup(
+        "Coin", 
+        &tradeBalance,
+        "Small",
+        Scale2(1.0f)
+    );
+    //tradeCounter->SetOffset(0.0f);
+    tradeCounter->Enable();
+
     static const auto ruleMenu = WorldInterface::Get()->GetRuleMenu();
 
     ruleMenu->OnSettlementChanged += {this, &TradeTab::HandleSettlementChanged};
@@ -280,6 +294,8 @@ void TradeTab::HandleUpdate()
     counterText << "All:      " << settlement->GetTradeHandler().totalShipmentCount;
 
     shipmentCounter->Setup(counterText);
+
+    tradeBalance = settlement->GetTradeBalance();
 }
 
 void TradeTab::HandlePlayerShipment()

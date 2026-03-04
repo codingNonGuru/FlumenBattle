@@ -45,13 +45,17 @@ namespace world::settlement
 
         int totalShipmentCount;
 
-        void Initialize();
+        int tradeBalance;
+
+        Settlement *parent;
+
+        void Initialize(Settlement *);
 
         void PrepareTransport(Settlement &);
 
         void SendTransport(Settlement &);
 
-        void ReceiveTransport(Settlement &);
+        void ReceiveTransport(Settlement &, ResourceData);
 
         void FinishUpdate(Settlement &);
 
@@ -65,5 +69,9 @@ namespace world::settlement
         static int GetMaximumTraffic();
 
         float GetProgress(const Settlement &) const;
+
+        int GetBalance() const {return tradeBalance;}
+
+        bool HasSevereTradeDeficit() const;
     };
 }

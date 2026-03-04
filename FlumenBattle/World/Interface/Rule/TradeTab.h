@@ -13,6 +13,11 @@ namespace world::settlement
     struct Link;
 }
 
+namespace world::interface
+{
+    class ResourceCounter;
+}
+
 namespace world::interface::rule
 {
     class LinkItem : public Element
@@ -64,6 +69,10 @@ namespace world::interface::rule
         settlement::Settlement *settlement;
 
         Text *shipmentCounter;
+
+        ResourceCounter *tradeCounter;
+
+        int tradeBalance;
 
         void HandleConfigure() override;
 
