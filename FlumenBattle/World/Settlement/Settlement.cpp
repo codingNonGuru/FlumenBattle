@@ -967,6 +967,11 @@ void Settlement::Update()
             AddCondition({settlement::Conditions::HAPPINESS, 1, 1});
         }
 
+        if(popHandler.IsHungerPresent() == true)
+        {
+            AddCondition({settlement::Conditions::HUNGER, 1, 1});
+        }
+
         polity->ApplyTechnologyModifiers(this);
 
         conditionManager->ApplyModifiers(*this);
@@ -995,12 +1000,11 @@ void Settlement::Update()
         cultureGrowth = BORDER_GROWTH_THRESHOLD;
     }
 
-    auto foodSecurity = GetResource(ResourceTypes::FOOD)->ShortTermAbundance;
-    if(foodSecurity == AbundanceLevels::LACKING || foodSecurity == AbundanceLevels::SORELY_LACKING)
+    if(popHandler.IsHungerPresent() == true)
     {
-        if(afflictions.Find(AfflictionTypes::HUNGER) == nullptr)
+        if(afflictions.Find(AfflictionTypes::STARVATION) == nullptr)
         {
-            *afflictions.Add() = AfflictionFactory::Get()->Create(AfflictionTypes::HUNGER);
+            *afflictions.Add() = AfflictionFactory::Get()->Create(AfflictionTypes::STARVATION);
         }
     }
 

@@ -35,7 +35,8 @@ void ConditionManager::ApplyModifiers(Settlement &settlement)
 
 void ConditionManager::Update()
 {
-    auto &time = WorldScene::Get()->GetTime();
+    static const auto &time = WorldScene::Get()->GetTime();
+    
     for(auto &condition : conditionSet.conditions)
     {
         if(time.MinuteCount == 0)
@@ -72,6 +73,11 @@ void ConditionFactory::OnApplyHappiness(Settlement &settlement)
     settlement.AddModifier({Modifiers::ALL_DICE_ROLLS, 1});
 }
 
+void ConditionFactory::OnApplyHunger(Settlement &settlement)
+{
+    
+}
+
 Condition ConditionFactory::Create(ConditionData conditionData)
 {
     auto &type = BuildType(conditionData.Type);
@@ -90,6 +96,8 @@ const ConditionType &ConditionFactory::BuildType(Conditions condition)
         return BuildRepressed();
     case Conditions::HAPPINESS:
         return BuildHappiness();
+    case Conditions::HUNGER:
+        return BuildHunger();
     }
 }
 
@@ -114,5 +122,11 @@ const ConditionType &ConditionFactory::BuildRepressed()
 const ConditionType &ConditionFactory::BuildHappiness()
 {
     static const ConditionType &type = {Conditions::HAPPINESS, "Happiness", &ConditionFactory::OnApplyHappiness};
+    return type;
+}
+
+const ConditionType &ConditionFactory::BuildHunger()
+{
+    static const ConditionType &type = {Conditions::HUNGER, "Hunger", &ConditionFactory::OnApplyHunger};
     return type;
 }

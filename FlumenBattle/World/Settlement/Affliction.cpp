@@ -20,7 +20,7 @@ const AfflictionType * AfflictionTypeBuilder::BuildMalaria()
 const AfflictionType * AfflictionTypeBuilder::BuildHunger()
 {
     static AfflictionType affliction = {
-        AfflictionTypes::HUNGER, 
+        AfflictionTypes::STARVATION, 
         14,
         7,
         0,
@@ -34,7 +34,7 @@ const AfflictionType * AfflictionTypeBuilder::BuildAffliction(AfflictionTypes af
     {
         case AfflictionTypes::MALARIA:
             return BuildMalaria();
-        case AfflictionTypes::HUNGER:
+        case AfflictionTypes::STARVATION:
             return BuildHunger();
         //case AfflictionTypes::TUBERCULOSIS:
             //return BuildTakeLongRest();
@@ -165,17 +165,15 @@ AfflictionResult AfflictionPerformer::PerformHunger(Settlement &settlement, Affl
 {
     auto result = AfflictionResultTypes::NONE;
 
-    auto foodSecurity = settlement.GetResource(ResourceTypes::FOOD)->ShortTermAbundance;
+    auto isHungerPresent = settlement.GetPopulationHandler().IsHungerPresent();
 
-    if(foodSecurity == AbundanceLevels::SORELY_LACKING || foodSecurity == AbundanceLevels::LACKING)
+    if(isHungerPresent == true)
     {
-        auto foodPrivationPenalty = foodSecurity == AbundanceLevels::SORELY_LACKING ? 3 : (foodSecurity == AbundanceLevels::LACKING ? 1 : 0);
-        auto foodAbundanceBonus = foodSecurity == AbundanceLevels::CORNUCOPIA ? 2 : (foodSecurity == AbundanceLevels::ABUNDANT ? 1 : 0);
+        auto roll = utility::RollD20Dice(affliction.Type->Throw);
 
-        auto diceRoll = utility::GetRandom(1, 20);
-        if(diceRoll + foodAbundanceBonus - foodPrivationPenalty >= affliction.Type->Throw)
+        if(roll.IsAnySuccess() == true)
         {
-            if(diceRoll == 20)
+            if(roll.IsCriticalSuccess() == true)
             {
                 affliction.Stage--;
                 if(affliction.Stage < 0)
@@ -194,7 +192,7 @@ AfflictionResult AfflictionPerformer::PerformHunger(Settlement &settlement, Affl
         else
         {
             affliction.Stage++;
-            if(diceRoll == 1)
+            if(roll.IsCriticalFailure() == true)
             {
                 affliction.Stage++;
             }
@@ -207,10 +205,11 @@ AfflictionResult AfflictionPerformer::PerformHunger(Settlement &settlement, Affl
             }
         }
     }
-    else if(foodSecurity == AbundanceLevels::CORNUCOPIA || foodSecurity == AbundanceLevels::ABUNDANT || foodSecurity == AbundanceLevels::ENOUGH)
+    else 
     {
-        auto diceRoll = utility::GetRandom(1, 20);
-        if(diceRoll >= affliction.Type->Throw)
+        auto roll = utility::RollD20Dice(affliction.Type->Throw);
+
+        if(roll.IsAnySuccess() == true)
         {
             affliction.Stage--;
             if(affliction.Stage == 0)
@@ -222,13 +221,16 @@ AfflictionResult AfflictionPerformer::PerformHunger(Settlement &settlement, Affl
 
     if(affliction.Stage > 4)
     {
-        auto diceRoll = utility::GetRandom(1, 20);
-        if(diceRoll >= affliction.Type->Throw)
+        auto roll = utility::RollD20Dice(affliction.Type->Throw);
+
+        if(roll.IsAnySuccess() == true)
         {
         }
         else
         {
             settlement.KillPopulation();
+
+            affliction.Stage -= 2;
         }
     }
 }
@@ -239,7 +241,7 @@ Affliction AfflictionFactory::Create(AfflictionTypes Type)
     {
     case AfflictionTypes::MALARIA:
         return {AfflictionTypeBuilder::Get()->BuildAffliction(AfflictionTypes::MALARIA), 0, 0};
-    case AfflictionTypes::HUNGER:
-        return {AfflictionTypeBuilder::Get()->BuildAffliction(AfflictionTypes::HUNGER), 1, 0};
+    case AfflictionTypes::STARVATION:
+        return {AfflictionTypeBuilder::Get()->BuildAffliction(AfflictionTypes::STARVATION), 1, 0};
     }
 }

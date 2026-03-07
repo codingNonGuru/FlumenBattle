@@ -26,7 +26,7 @@ namespace world
     {
         MALARIA,
         TUBERCULOSIS,
-        HUNGER
+        STARVATION
     };
 
     enum class AfflictionResultTypes
@@ -50,7 +50,8 @@ namespace world
             SICKENED,
             IMMUNITY_AGAINST_MALARIA,
             REPRESSED,
-            HAPPINESS
+            HAPPINESS,
+            HUNGER
         };
     }
 

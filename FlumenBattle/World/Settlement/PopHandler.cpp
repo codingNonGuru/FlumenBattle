@@ -23,9 +23,11 @@ static const auto ABANDONMENT_RECOVERY_DC = 15;
 
 static const auto COMPLETE_DISAPPEARENCE_TIME = world::WorldTime::GetTicksFromDays(7);
 
-static const auto GROWTH_THRESHOLD = 10000;
+static const auto GROWTH_THRESHOLD = 7000;
 
 static const auto POP_REGENERATION_RATE = 1;
+
+static const auto BASE_GROWTH_VALUE = 4;
 
 const container::Array <RaceGroup> &PopHandler::GetNeighbourRaces()
 {
@@ -83,11 +85,11 @@ void PopHandler::Initialize(Settlement *settlement, int initialPopulation)
 
     needs.Reset();
 
-    *needs.Add() = {ResourceTypes::FOOD, false, true, 500, 15};
-    *needs.Add() = {ResourceTypes::COOKED_FOOD, true, true, 500, 15};
-    *needs.Add() = {ResourceTypes::FURNITURE, true, false, 800, 200};
-    *needs.Add() = {ResourceTypes::CLOTHING, true, false, 800, 150};
-    *needs.Add() = {ResourceTypes::POTTERY, true, false, 800, 100};
+    *needs.Add() = {NeedTypes::BASIC, ResourceTypes::FOOD, false, true, 500, 15};
+    *needs.Add() = {NeedTypes::INTERMEDIATE, ResourceTypes::COOKED_FOOD, true, true, 500, 15};
+    *needs.Add() = {NeedTypes::INTERMEDIATE, ResourceTypes::FURNITURE, true, false, 800, 200};
+    *needs.Add() = {NeedTypes::INTERMEDIATE, ResourceTypes::CLOTHING, true, false, 800, 150};
+    *needs.Add() = {NeedTypes::INTERMEDIATE, ResourceTypes::POTTERY, true, false, 800, 100};
 
     happiness = 0;
 
@@ -107,7 +109,7 @@ void PopHandler::PlaceOrders(Settlement &settlement)
 {
     for(auto &need : needs)
     {
-        settlement.GetResource(need.Type)->HasPopulationOrdered = false;
+        settlement.GetResource(need.ResourceType)->HasPopulationOrdered = false;
 
         need.IsMet = false;
 
@@ -119,7 +121,7 @@ void PopHandler::PlaceOrders(Settlement &settlement)
 
     for(auto &need : needs)
     {
-        auto resource = settlement.GetResource(need.Type);
+        auto resource = settlement.GetResource(need.ResourceType);
         auto consumption = GetPopulation() * resource->Type->PopulationConsumption;
 
         bool isEnoughInStorage = consumption <= resource->Storage;
@@ -158,7 +160,7 @@ void PopHandler::PlaceOrders(Settlement &settlement)
 
     for(auto &need : needs)
     {
-        auto resource = settlement.GetResource(need.Type);
+        auto resource = settlement.GetResource(need.ResourceType);
         if(resource->HasPopulationOrdered == false)
             continue;
 
@@ -175,7 +177,7 @@ void PopHandler::UpdateNeeds(Settlement &settlement)
 
     for(auto &need : needs)
     {
-        auto resource = settlement.GetResource(need.Type);
+        auto resource = settlement.GetResource(need.ResourceType);
         if(resource->HasPopulationOrdered == false)
             continue;
 
@@ -265,29 +267,29 @@ float PopHandler::GetGrowthRatio() const
 
 int PopHandler::GetGrowthRate() const
 {
-    auto foodSecurity = settlement->GetResource(ResourceTypes::FOOD)->ShortTermAbundance;
     auto housingAdequacy = settlement->GetHousingAdequacy();
 
     auto addedGrowth = [&]
     {
-        auto growthFromFood = [&]
+        auto baseValue = BASE_GROWTH_VALUE;
+
+        baseValue += settlement->GetModifier(Modifiers::POPULATION_GROWTH_RATE);
+
+        if(IsHungerPresent() == true)
         {
-            switch(foodSecurity)
-            {
-            case AbundanceLevels::CORNUCOPIA:
-                return 5;
-            case AbundanceLevels::ABUNDANT:
-                return 4;
-            case AbundanceLevels::ENOUGH:
-                return 3;
-            case AbundanceLevels::BARELY_AVAILABLE:
-                return 0;
-            case AbundanceLevels::LACKING:
-                return -5;
-            case AbundanceLevels::SORELY_LACKING:
-                return -7;
-            }
-        } ();
+            baseValue -= 2;
+        }
+
+        auto needCount = GetSatisfiedNeedCount();
+
+        if(needCount >= 3)
+        {
+            baseValue += 2;
+        }
+        else if(needCount >= 1)
+        {
+            baseValue += 1;
+        }
 
         auto growthFromHousing = [&]
         {
@@ -300,13 +302,11 @@ int PopHandler::GetGrowthRate() const
             case AbundanceLevels::LACKING:
                 return -1;
             case AbundanceLevels::SORELY_LACKING:
-                return -3;
+                return -2;
             }
         } ();
 
-        auto modifier = settlement->GetModifier(Modifiers::POPULATION_GROWTH_RATE);
-
-        return growthFromFood + growthFromHousing + modifier;
+        return baseValue + growthFromHousing;
     } ();
 
     return addedGrowth;
@@ -347,6 +347,29 @@ bool PopHandler::IsSettlementRuins() const
 bool PopHandler::IsSettlementCompletelyGone() const
 {
     return IsSettlementRuins() && timeSinceRuined >= COMPLETE_DISAPPEARENCE_TIME;
+}
+
+bool PopHandler::IsHungerPresent() const
+{
+    auto isRawFoodEnough = needs.Find(ResourceTypes::FOOD)->Satisfaction > needs.Find(ResourceTypes::FOOD)->SatisfactionThreshold / 2;
+    auto isCookedFoodEnough = needs.Find(ResourceTypes::COOKED_FOOD)->Satisfaction > needs.Find(ResourceTypes::COOKED_FOOD)->SatisfactionThreshold / 2;
+
+    return isRawFoodEnough == false && isCookedFoodEnough == false;
+}
+
+int PopHandler::GetSatisfiedNeedCount() const
+{
+    auto count = 0;
+    for(auto &need : needs)
+    {
+        if(need.Type != NeedTypes::INTERMEDIATE)
+            continue;
+
+        if(need.Satisfaction >= need.SatisfactionThreshold)
+            count++;
+    }
+
+    return count;
 }
 
 const container::Pool <Cohort> &PopHandler::GetCohorts() const

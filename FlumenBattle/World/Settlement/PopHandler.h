@@ -26,9 +26,18 @@ namespace world::settlement
         operator int() {return this->Size;}
     };
 
+    enum class NeedTypes
+    {
+        BASIC,
+        INTERMEDIATE,
+        ADVANCED
+    };
+
     struct Need
     {
-        ResourceTypes Type;
+        NeedTypes Type;
+        
+        ResourceTypes ResourceType;
 
         bool DoesDetermineHappiness;
 
@@ -46,7 +55,7 @@ namespace world::settlement
 
         int Order {0};
 
-        bool operator ==(const ResourceTypes otherType) {return otherType == Type;}
+        bool operator ==(const ResourceTypes otherType) {return otherType == ResourceType;}
     };
 
     class PopHandler
@@ -149,6 +158,10 @@ namespace world::settlement
         const Race *GetMostPopulousRace();
 
         int GetPotentialMidtermConsumption(ResourceTypes) const;
+
+        bool IsHungerPresent() const;
+
+        int GetSatisfiedNeedCount() const;
     };
 
     class PopAllocator
