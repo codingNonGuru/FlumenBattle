@@ -42,5 +42,6 @@ namespace game
         static constexpr auto PRODUCTION_QUEUE_SIZE = "PRODUCTION_QUEUE_SIZE";
         static constexpr auto MAX_SETTLEMENT_POPULATION = "MAX_SETTLEMENT_POPULATION";
         static constexpr auto RACE_GROUPS_PER_SETTTLEMENT = "RACE_GROUPS_PER_SETTTLEMENT";
+        static constexpr auto MAXIMUM_CONDITIONS_PER_SETTLEMENT = "MAXIMUM_CONDITIONS_PER_SETTLEMENT";
     };
 }

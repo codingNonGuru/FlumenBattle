@@ -26,6 +26,7 @@ namespace world::interface::rule
     class RuleMenu;
     //class ProductionDecisionInterface;
     class PopulationItem;
+    class ConditionItem;
 
     class PopulationTab : public Element
     {
@@ -44,6 +45,10 @@ namespace world::interface::rule
         Text *growthDurationLabel;
 
         Counter *growthRateCounter;
+
+        container::Array <ConditionItem *> conditionItems;
+
+        SimpleList *conditionItemLayout;
 
         int growthRate;
 

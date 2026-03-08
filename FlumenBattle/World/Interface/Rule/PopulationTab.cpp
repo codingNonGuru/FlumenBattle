@@ -1,13 +1,16 @@
 #include "FlumenEngine/Interface/ElementFactory.h"
 #include "FlumenEngine/Interface/LayoutGroup.h"
 #include "FlumenEngine/Interface/ProgressBar.h"
+#include "FlumenEngine/Interface/SimpleList.h"
 
 #include "PopulationTab.h"
 #include "PopulationItem.h"
-#include "FlumenBattle/World/Interface/Rule/RuleMenu.h"
+#include "ConditionItem.h"
+#include "RuleMenu.h"
 #include "FlumenBattle/WorldInterface.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Settlement/Cohort.h"
+#include "FlumenBattle/World/Settlement/Condition.h"
 #include "FlumenBattle/World/Interface/CounterSet.h"
 #include "FlumenBattle/World/Interface/Counter.h"
 #include "FlumenBattle/World/Polity/HumanMind.h"
@@ -21,6 +24,8 @@ static const auto BORDER_COLOR = Color::RED * 0.25f;
 static const auto TEXT_COLOR = Color::RED * 0.5f;
 
 static const auto HIGHLIGHT_COLOR = Color::RED * 0.9f;
+
+#define MAXIMUM_VISIBILE_CONDITIONS 4
 
 void PopulationTab::HandleConfigure() 
 {
@@ -95,6 +100,41 @@ void PopulationTab::HandleConfigure()
     growthRateCounter->MakeSigned();
     growthRateCounter->Enable();
 
+    static const auto MAXIMUM_CONDITIONS_PER_SETTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_CONDITIONS_PER_SETTLEMENT).Integer;
+
+    conditionItemLayout = ElementFactory::BuildSimpleList <SimpleList>
+    (
+        { 
+            drawOrder_,
+            {Position2{5.0f, 0.0f}, ElementAnchors::LOWER_LEFT, ElementPivots::LOWER_LEFT, this}
+        },
+        MAXIMUM_CONDITIONS_PER_SETTLEMENT,
+        ListOrientations::VERTICAL,
+        0.0f
+    );
+    conditionItemLayout->SetFixedElementCount(MAXIMUM_VISIBILE_CONDITIONS);
+    conditionItemLayout->Enable();
+
+    conditionItems.Initialize(MAXIMUM_CONDITIONS_PER_SETTLEMENT);
+
+    for(auto i = 0; i < MAXIMUM_CONDITIONS_PER_SETTLEMENT; ++i)
+    {
+        auto item = ElementFactory::BuildElement <ConditionItem>
+        (
+            {
+                Size(), 
+                drawOrder_ + 1, 
+                {conditionItemLayout}, 
+                {false},
+                Opacity(1.0f)
+            }
+        );
+        item->SetSpriteColor(BORDER_COLOR);
+        item->Disable();
+
+        *conditionItems.Allocate() = item;
+    }
+
     static const auto ruleMenu = WorldInterface::Get()->GetRuleMenu();
 
     ruleMenu->OnSettlementChanged += {this, &PopulationTab::HandleSettlementChanged};
@@ -137,6 +177,20 @@ void PopulationTab::HandleUpdate()
             tickCount /= 24;
             growthDurationLabel->Setup(Word() << tickCount << " days");
         }
+    }
+
+    for(auto &item : conditionItems)
+    {
+        item->Disable();
+    }
+
+    auto item = conditionItems.GetStart();
+    for(auto &condition : settlement->GetConditions())
+    {
+        (*item)->Setup(&condition);
+        (*item)->Enable();
+
+        item++;
     }
 }
 

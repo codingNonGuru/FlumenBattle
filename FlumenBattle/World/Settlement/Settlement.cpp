@@ -1008,7 +1008,7 @@ void Settlement::Update()
         }
     }
 
-    if(worldTime.MinuteCount == 0 && GetPopulation() > 3)
+    if(worldTime.IsNewDayQuarter == true && GetPopulation() > 3)
     {
         auto difficultyBonus = GetModifier(Modifiers::MALARIA_EMERGENCE_DIFFICULTY);
         if(utility::GetRandom(1, 100) > 90 + difficultyBonus)

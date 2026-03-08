@@ -22,8 +22,6 @@
 
 #define MAXIMUM_TILES_PER_SETTLEMENT 37
 
-#define MAXIMUM_CONDITIONS_PER_SETTLEMENT 32
-
 #define MAXIMUM_BUILDINGS_PER_SETTLEMENT 16
 
 #define MAXIMUM_AFFLICTIONS_PER_SETTLEMENT 16
@@ -63,6 +61,8 @@ void SettlementAllocator::PreallocateMaximumMemory()
     static const auto MAX_SETTLEMENT_POPULATION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAX_SETTLEMENT_POPULATION).Integer;
 
     static const auto RACE_GROUPS_PER_SETTTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::RACE_GROUPS_PER_SETTTLEMENT).Integer;
+
+    static const auto MAXIMUM_CONDITIONS_PER_SETTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_CONDITIONS_PER_SETTLEMENT).Integer;
     
 
     std::cout<<"Memory size of a Settlement is "<<sizeof(Settlement)<<"\n";
@@ -135,6 +135,9 @@ void SettlementAllocator::AllocateWorldMemory(int worldSize)
     static const auto MAX_SETTLEMENT_POPULATION = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAX_SETTLEMENT_POPULATION).Integer;
 
     static const auto RACE_GROUPS_PER_SETTTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::RACE_GROUPS_PER_SETTTLEMENT).Integer;
+
+    static const auto MAXIMUM_CONDITIONS_PER_SETTLEMENT = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_CONDITIONS_PER_SETTLEMENT).Integer;
+    
 
     static const auto worldGenerator = WorldGenerator::Get();
 

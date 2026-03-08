@@ -27,6 +27,8 @@ namespace world::settlement
 
         Word Name;
 
+        Word TextureName;
+
         void (*OnApply) (Settlement &);
     };
 

@@ -103,30 +103,30 @@ const ConditionType &ConditionFactory::BuildType(Conditions condition)
 
 const ConditionType &ConditionFactory::BuildMalariaImmunity()
 {
-    static const ConditionType &type = {Conditions::IMMUNITY_AGAINST_MALARIA, "Malaria immunity", &ConditionFactory::OnApplyMalariaImmunity};
+    static const ConditionType &type = {Conditions::IMMUNITY_AGAINST_MALARIA, "Immunity", "ConditionImmunity", &ConditionFactory::OnApplyMalariaImmunity};
     return type;
 }
 
 const ConditionType &ConditionFactory::BuildSickened()
 {
-    static const ConditionType &type = {Conditions::SICKENED, "Sickened", &ConditionFactory::OnApplySickened};
+    static const ConditionType &type = {Conditions::SICKENED, "Sickened", "ConditionSickness", &ConditionFactory::OnApplySickened};
     return type;
 }
 
 const ConditionType &ConditionFactory::BuildRepressed()
 {
-    static const ConditionType &type = {Conditions::REPRESSED, "Repressed", &ConditionFactory::OnApplyRepressed};
+    static const ConditionType &type = {Conditions::REPRESSED, "Repressed", "ConditionRepressed", &ConditionFactory::OnApplyRepressed};
     return type;
 }
 
 const ConditionType &ConditionFactory::BuildHappiness()
 {
-    static const ConditionType &type = {Conditions::HAPPINESS, "Happiness", &ConditionFactory::OnApplyHappiness};
+    static const ConditionType &type = {Conditions::HAPPINESS, "Happiness", "ConditionHappiness", &ConditionFactory::OnApplyHappiness};
     return type;
 }
 
 const ConditionType &ConditionFactory::BuildHunger()
 {
-    static const ConditionType &type = {Conditions::HUNGER, "Hunger", &ConditionFactory::OnApplyHunger};
+    static const ConditionType &type = {Conditions::HUNGER, "Hunger", "ConditionHunger", &ConditionFactory::OnApplyHunger};
     return type;
 }
