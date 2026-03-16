@@ -78,7 +78,15 @@ void HoverExtension::ConditionWidget::HandleUpdate()
     text << Condition->Type->Name;
     Setup(text);
 
-    Progress->SetProgress((float)Condition->HoursElapsed / (float)Condition->Duration);
+    if(Condition->Type->IsDurationBased == true)
+    {
+        Progress->Enable();
+        Progress->SetProgress((float)Condition->HoursElapsed / (float)Condition->Duration);
+    }
+    else
+    {
+        Progress->Disable();
+    }
 }
 
 void HoverExtension::HandleEnable() 

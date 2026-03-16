@@ -29,6 +29,8 @@ namespace world::settlement
 
         Word TextureName;
 
+        bool IsDurationBased;
+
         void (*OnApply) (Settlement &);
     };
 

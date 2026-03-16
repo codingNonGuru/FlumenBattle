@@ -39,6 +39,9 @@ void ConditionManager::Update()
     
     for(auto &condition : conditionSet.conditions)
     {
+        if(condition.Type->IsDurationBased == false)
+            continue;
+
         if(time.MinuteCount == 0)
         {
             condition.HoursElapsed++;
@@ -103,30 +106,30 @@ const ConditionType &ConditionFactory::BuildType(Conditions condition)
 
 const ConditionType &ConditionFactory::BuildMalariaImmunity()
 {
-    static const ConditionType &type = {Conditions::IMMUNITY_AGAINST_MALARIA, "Immunity", "ConditionImmunity", &ConditionFactory::OnApplyMalariaImmunity};
+    static const ConditionType &type = {Conditions::IMMUNITY_AGAINST_MALARIA, "Immunity", "ConditionImmunity", true, &ConditionFactory::OnApplyMalariaImmunity};
     return type;
 }
 
 const ConditionType &ConditionFactory::BuildSickened()
 {
-    static const ConditionType &type = {Conditions::SICKENED, "Sickened", "ConditionSickness", &ConditionFactory::OnApplySickened};
+    static const ConditionType &type = {Conditions::SICKENED, "Sickened", "ConditionSickness", false, &ConditionFactory::OnApplySickened};
     return type;
 }
 
 const ConditionType &ConditionFactory::BuildRepressed()
 {
-    static const ConditionType &type = {Conditions::REPRESSED, "Repressed", "ConditionRepressed", &ConditionFactory::OnApplyRepressed};
+    static const ConditionType &type = {Conditions::REPRESSED, "Repressed", "ConditionRepressed", true, &ConditionFactory::OnApplyRepressed};
     return type;
 }
 
 const ConditionType &ConditionFactory::BuildHappiness()
 {
-    static const ConditionType &type = {Conditions::HAPPINESS, "Happiness", "ConditionHappiness", &ConditionFactory::OnApplyHappiness};
+    static const ConditionType &type = {Conditions::HAPPINESS, "Happiness", "ConditionHappiness", false, &ConditionFactory::OnApplyHappiness};
     return type;
 }
 
 const ConditionType &ConditionFactory::BuildHunger()
 {
-    static const ConditionType &type = {Conditions::HUNGER, "Hunger", "ConditionHunger", &ConditionFactory::OnApplyHunger};
+    static const ConditionType &type = {Conditions::HUNGER, "Hunger", "ConditionHunger", false, &ConditionFactory::OnApplyHunger};
     return type;
 }
