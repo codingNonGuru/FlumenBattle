@@ -359,6 +359,8 @@ namespace world::settlement
 
         void AddCondition(ConditionData);
 
+        void RemoveCondition(Conditions);
+
         void AddBuilding(BuildingTypes);
 
         bool HireWorker(ResourceTypes, Cohort *);

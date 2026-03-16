@@ -50,6 +50,8 @@ AfflictionResult AfflictionPerformer::PerformMalaria(Settlement &settlement, Aff
         auto duration = 24 * utility::GetRandom(1, 4);
 
         settlement.AddCondition({Conditions::IMMUNITY_AGAINST_MALARIA, 1, duration});
+
+        settlement.RemoveCondition(Conditions::SICKENED);
     };
 
     auto result = AfflictionResultTypes::NONE;
@@ -151,6 +153,8 @@ AfflictionResult AfflictionPerformer::PerformMalaria(Settlement &settlement, Aff
 
         result = AfflictionResultTypes::DEATH;
     }
+
+    settlement.AddCondition({Conditions::SICKENED});
 
     affliction.TimeLapsed++;
     if(affliction.TimeLapsed == affliction.Type->Duration)

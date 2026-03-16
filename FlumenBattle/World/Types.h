@@ -22,39 +22,6 @@ namespace world
         PLAINS, HILLS, MOUNTAINS, SEA
     };
 
-    enum class AfflictionTypes
-    {
-        MALARIA,
-        TUBERCULOSIS,
-        STARVATION
-    };
-
-    enum class AfflictionResultTypes
-    {
-        NONE,
-        CURE,
-        REGRESSION,
-        PROGRESSION,
-        DEATH
-    };
-
-    namespace settlement
-    {
-        enum class EventTypes
-        {
-            DEPOPULATION
-        };
-
-        enum class Conditions
-        {
-            SICKENED,
-            IMMUNITY_AGAINST_MALARIA,
-            REPRESSED,
-            HAPPINESS,
-            HUNGER
-        };
-    }
-
     enum class SimulationLevels
     {
         BASIC,

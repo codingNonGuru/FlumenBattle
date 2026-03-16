@@ -144,6 +144,8 @@ void RuleMenu::HandleConfigure()
 
         *tabButtons.Add((RuleMenuTabs)i) = button;
     }
+
+    MakeScrollable(0);
 }
 
 void RuleMenu::HandleEnable()

@@ -193,6 +193,36 @@ namespace world::settlement
         NATURAL_DISASTER
     };
 
+    enum class EventTypes
+    {
+        DEPOPULATION
+    };
+
+    enum class Conditions
+    {
+        SICKENED,
+        IMMUNITY_AGAINST_MALARIA,
+        REPRESSED,
+        HAPPINESS,
+        HUNGER
+    };
+
+    enum class AfflictionTypes
+    {
+        MALARIA,
+        TUBERCULOSIS,
+        STARVATION
+    };
+
+    enum class AfflictionResultTypes
+    {
+        NONE,
+        CURE,
+        REGRESSION,
+        PROGRESSION,
+        DEATH
+    };
+
     struct ImprovementTarget
     {
         SettlementTile *Tile;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FlumenBattle/World/Types.h"
+#include "FlumenBattle/World/Settlement/Types.h"
 
 namespace world::settlement
 {

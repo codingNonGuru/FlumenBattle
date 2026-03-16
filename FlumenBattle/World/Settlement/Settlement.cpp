@@ -827,6 +827,11 @@ void Settlement::AddCondition(ConditionData conditionData)
     conditionManager->AddCondition(conditionData);
 }
 
+void Settlement::RemoveCondition(Conditions condition)
+{
+    conditionManager->RemoveCondition(condition);
+}
+
 void Settlement::AddBuilding(BuildingTypes type)
 {
     buildingManager->AddBuilding(type);

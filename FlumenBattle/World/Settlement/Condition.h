@@ -6,7 +6,7 @@
 
 #include "FlumenCore/Singleton.h"
 
-#include "FlumenBattle/World/Types.h"
+#include "FlumenBattle/World/Settlement/Types.h"
 
 namespace world::settlement
 {
@@ -74,6 +74,8 @@ namespace world::settlement
         friend class ConditionAllocator;
 
         void AddCondition(ConditionData);
+
+        void RemoveCondition(Conditions);
 
         void ApplyModifiers(Settlement &);
 

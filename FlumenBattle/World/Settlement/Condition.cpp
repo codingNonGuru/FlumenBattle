@@ -25,6 +25,11 @@ void ConditionManager::AddCondition(ConditionData conditionData)
     }
 }
 
+void ConditionManager::RemoveCondition(Conditions condition)
+{
+    conditionSet.conditions.Remove(condition);
+}
+
 void ConditionManager::ApplyModifiers(Settlement &settlement)
 {
     for(auto &condition : conditionSet.conditions)
