@@ -29,12 +29,16 @@ namespace world::settlement
 
         int timeSpent;
 
+        bool canProcureMaterials;
+
     public:
         void Initialize(Cohort *, ResourceTypes);
 
         void Initialize(Cohort *, SettlementTile *);
 
         void PlaceOrders(ResourceHandler &);
+
+        void CheckMaterialAvailability(ResourceHandler &);
 
         void ExecuteOrders(ResourceHandler &);
 
@@ -63,6 +67,8 @@ namespace world::settlement
         int GetTimeSpent() const {return timeSpent;}
 
         int GetCycleCount() const {return finishedCycleCount;}
+
+        bool CanProcureMaterials() const {return canProcureMaterials;}
 
         bool operator == (const Cohort *cohort) {return this->cohort == cohort;}
     };

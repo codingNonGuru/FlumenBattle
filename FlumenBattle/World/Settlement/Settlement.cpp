@@ -969,12 +969,16 @@ void Settlement::Update()
 
         if(IsHappy() == true)
         {
-            AddCondition({settlement::Conditions::HAPPINESS, 1, 1});
+            AddCondition({Conditions::HAPPINESS, 1, 1});
         }
 
         if(popHandler.IsHungerPresent() == true)
         {
-            AddCondition({settlement::Conditions::HUNGER, 1, 1});
+            AddCondition({Conditions::HUNGER});
+        }
+        else
+        {
+            RemoveCondition(Conditions::HUNGER);
         }
 
         polity->ApplyTechnologyModifiers(this);

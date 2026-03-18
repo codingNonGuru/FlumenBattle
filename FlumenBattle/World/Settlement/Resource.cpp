@@ -546,6 +546,11 @@ void ResourceHandler::ExecuteOrders(Settlement &settlement)
         resource.CheckOrderFullfilment();
     }
 
+    for(auto &job : jobSet.GetJobs())
+    {
+        job.CheckMaterialAvailability(*this);
+    }
+
     if(settlement.IsDeepSettlement() == true)
     {
         for(auto &job : jobSet.GetJobs())

@@ -65,24 +65,42 @@ void Job::PlaceOrders(ResourceHandler &handler)
     }
 }
 
+void Job::CheckMaterialAvailability(ResourceHandler &handler)
+{
+    if(status != JobStatus::OBTAINING_MATERIALS)
+        return;
+
+    if(this->tile != nullptr)
+        return;
+        
+    auto resource = handler.Get(resourceType);
+
+    canProcureMaterials = true;
+    for(auto &input : resource->Type->InputResources)
+    {
+        if(handler.Get(input.Resource)->CanFulfillOrders == false)
+        {
+            canProcureMaterials = false;
+            break;
+        }
+    }
+
+    if(canProcureMaterials == true)
+        return;
+
+    for(auto &input : resource->Type->InputResources)
+    {
+        auto inputResource = handler.Get(input.Resource);
+        inputResource->Order -= input.Amount;
+    }
+}
+
 void Job::ExecuteOrders(ResourceHandler &handler)
 {
     if(status == JobStatus::OBTAINING_MATERIALS)
     {
         if(this->tile == nullptr)
         {
-            auto resource = handler.Get(resourceType);
-
-            bool canProcureMaterials = true;
-            for(auto &input : resource->Type->InputResources)
-            {
-                if(handler.Get(input.Resource)->CanFulfillOrders == false)
-                {
-                    canProcureMaterials = false;
-                    break;
-                }
-            }
-
             if(canProcureMaterials == true)
             {
                 status = JobStatus::PRODUCING;
