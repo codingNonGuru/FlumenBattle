@@ -455,13 +455,15 @@ void WorldTileModel::Render()
 
     MountainRenderer::Get()->Render();
 
+    SettlementModel::Get()->Render();
+
+    GroupModel::Get()->Render();
+
     BorderModel::Get()->Render();
 
     //RenderPoliticalOverlay();
 
     //RenderInterestMap();
-
-    SettlementModel::Get()->Render();
 
     RenderFogOfWar();
 
@@ -534,8 +536,6 @@ void WorldTileModel::Render()
     SettlementModeRenderer::Get()->RenderExploreMap();
 
     SettlementModeRenderer::Get()->RenderTileDevelopMap();
-
-    GroupModel::Get()->Render();
 
     //RenderGlobalLight();
 

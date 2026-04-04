@@ -118,15 +118,32 @@ Position2 GroupCore::GetVisualPosition() const
 {
     auto progress = GetTravelProgress();
 
+    auto getSimplePositionInterpolation = [&] ()
+    {
+        auto startPosition = GetDestination()->Position;
+        auto endPosition = GetTravelStartPoint()->Position;
+        return endPosition * (1.0f - progress) + startPosition * progress;        
+    };
+
+    auto getBezierAdjustedPosition = [&] (tile::WorldTile *first, tile::WorldTile *middle, tile::WorldTile *last, float t)
+    {
+        auto startPosition = first->Position * 0.5f + middle->Position * 0.5f;
+
+        auto middlePosition = middle->Position;
+
+        auto endPosition = last->Position * 0.5f + middle->Position * 0.5f;
+
+        auto position = (1.0f - t) * (1.0f - t) * startPosition + 2.0f * (1.0f - t) * t * middlePosition + t * t * endPosition;
+        return position;
+    };
+
     if(GetDestination() != nullptr)
     {   
         if(progress < 0.5f)
         {
             if(GetDestination()->IsLinkedTo(GetTravelStartPoint()) == false)
             {
-                auto startPosition = GetDestination()->Position;
-                auto endPosition = GetTravelStartPoint()->Position;
-                return endPosition * (1.0f - progress) + startPosition * progress;        
+                return getSimplePositionInterpolation();
             }
             else if(GetDestination()->IsLinkedTo(GetTravelStartPoint()) == true && GetTravelStartPoint()->GetLinks().GetSize() == 2)
             {
@@ -140,21 +157,11 @@ Position2 GroupCore::GetVisualPosition() const
                     thirdEnd = link->GetOtherEnd(GetTravelStartPoint());
                 }
 
-                auto startPosition = thirdEnd->Position * 0.5f + GetTravelStartPoint()->Position * 0.5f;
-
-                auto middlePosition = GetTravelStartPoint()->Position;
-
-                auto endPosition = GetDestination()->Position * 0.5f + GetTravelStartPoint()->Position * 0.5f;
-
-                auto t = progress + 0.5f;
-                auto position = (1.0f - t) * (1.0f - t) * startPosition + 2.0f * (1.0f - t) * t * middlePosition + t * t * endPosition;
-                return position;
+                return getBezierAdjustedPosition(thirdEnd, GetTravelStartPoint(), GetDestination(), progress + 0.5f);
             }
             else
             {   
-                auto startPosition = GetDestination()->Position;
-                auto endPosition = GetTravelStartPoint()->Position;
-                return endPosition * (1.0f - progress) + startPosition * progress;
+                return getSimplePositionInterpolation();
             }
 
             //render::RoadModel::Get()->GetOffsetedPosition(GetDestination()->SquareCoordinates);
@@ -164,9 +171,7 @@ Position2 GroupCore::GetVisualPosition() const
         {
             if(GetDestination()->IsLinkedTo(GetTravelStartPoint()) == false)
             {
-                auto startPosition = GetDestination()->Position;
-                auto endPosition = GetTravelStartPoint()->Position;
-                return endPosition * (1.0f - progress) + startPosition * progress;        
+                return getSimplePositionInterpolation();
             }
             else if(GetDestination()->IsLinkedTo(GetTravelStartPoint()) == true && GetDestination()->GetLinks().GetSize() == 2)
             {
@@ -180,27 +185,13 @@ Position2 GroupCore::GetVisualPosition() const
                     thirdEnd = link->GetOtherEnd(GetDestination());
                 }
 
-                auto startPosition = GetTravelStartPoint()->Position * 0.5f + GetDestination()->Position * 0.5f;
-
-                auto middlePosition = GetDestination()->Position;
-
-                auto endPosition = thirdEnd->Position * 0.5f + GetDestination()->Position * 0.5f;
-
-                auto t = progress - 0.5f;
-                auto position = (1.0f - t) * (1.0f - t) * startPosition + 2.0f * (1.0f - t) * t * middlePosition + t * t * endPosition;
-                return position;
+                return getBezierAdjustedPosition(GetTravelStartPoint(), GetDestination(), thirdEnd, progress - 0.5f);
             }
             else
             {   
-                auto startPosition = GetDestination()->Position;
-                auto endPosition = GetTravelStartPoint()->Position;
-                return endPosition * (1.0f - progress) + startPosition * progress;
+                return getSimplePositionInterpolation();
             }
         }
-
-        /*auto startPosition = GetDestination()->Position;
-        auto endPosition = GetTravelStartPoint()->Position;
-        return endPosition * (1.0f - progress) + startPosition * progress;*/
     }
     else
     {
@@ -210,15 +201,7 @@ Position2 GroupCore::GetVisualPosition() const
 
             tile::WorldTile *secondEnd = (*tile->GetLinks().Get(1))->GetOtherEnd(tile);
 
-            auto startPosition = firstEnd->Position * 0.5f + tile->Position * 0.5f; 
-
-            auto middlePosition = tile->Position;
-
-            auto endPosition = secondEnd->Position * 0.5f + tile->Position * 0.5f; 
-
-            auto t = 0.5f;
-            auto position = (1.0f - t) * (1.0f - t) * startPosition + 2.0f * (1.0f - t) * t * middlePosition + t * t * endPosition;
-            return position;
+            return getBezierAdjustedPosition(firstEnd, tile, secondEnd, 0.5f);
         }
         else
         {
