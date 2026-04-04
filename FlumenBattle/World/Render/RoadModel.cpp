@@ -14,7 +14,7 @@
 
 using namespace world::render;
 
-#define OFFSET_RANGE 20.0f
+#define OFFSET_RANGE 0.0f
 
 #define ROAD_THICKNESS 3.0f
 
@@ -157,4 +157,10 @@ void RoadModel::Render()
 container::HexGrid <PathTileData> &RoadModel::GetRoadTiles()
 {
     return roadTiles;
+}
+
+Position2 RoadModel::GetOffsetedPosition(Integer2 coords) const
+{
+    auto roadTile = roadTiles.Get(coords.x, coords.y);
+    return roadTile->Offset + roadTile->Tile->Position;
 }

@@ -4,6 +4,8 @@
 
 #include "FlumenEngine/Container/HexGrid.h"
 
+class DataBuffer;
+
 namespace world::tile
 {
     struct WorldTile;
@@ -43,11 +45,13 @@ namespace world::render
 
         void UpdateData();
 
-        container::HexGrid <PathTileData> &GetRoadTiles();
-
     public:
         void Initialize();
 
         void Render();
+
+        container::HexGrid <PathTileData> &GetRoadTiles();
+
+        Position2 GetOffsetedPosition(Integer2) const;
     };
 }

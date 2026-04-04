@@ -19,6 +19,8 @@
 #include "FlumenBattle/World/Polity/Polity.h"
 #include "FlumenBattle/World/Settlement/Settlement.h"
 #include "FlumenBattle/World/Character/NameGenerator.h"
+#include "FlumenBattle/World/Render/RoadModel.h"
+#include "FlumenBattle/World/Settlement/Path.h"
 #include "FlumenBattle/Config.h"
 
 using namespace world::group;
@@ -114,17 +116,114 @@ bool GroupCore::IsAlive()
 
 Position2 GroupCore::GetVisualPosition() const
 {
+    auto progress = GetTravelProgress();
+
     if(GetDestination() != nullptr)
     {   
-        auto progress = GetTravelProgress();
+        if(progress < 0.5f)
+        {
+            if(GetDestination()->IsLinkedTo(GetTravelStartPoint()) == false)
+            {
+                auto startPosition = GetDestination()->Position;
+                auto endPosition = GetTravelStartPoint()->Position;
+                return endPosition * (1.0f - progress) + startPosition * progress;        
+            }
+            else if(GetDestination()->IsLinkedTo(GetTravelStartPoint()) == true && GetTravelStartPoint()->GetLinks().GetSize() == 2)
+            {
+                tile::WorldTile *thirdEnd = nullptr;
 
-        auto startPosition = GetDestination()->Position;
+                for(auto &link : GetTravelStartPoint()->GetLinks())
+                {
+                    if(link->GetOtherEnd(GetTravelStartPoint()) == GetDestination())
+                        continue;
+
+                    thirdEnd = link->GetOtherEnd(GetTravelStartPoint());
+                }
+
+                auto startPosition = thirdEnd->Position * 0.5f + GetTravelStartPoint()->Position * 0.5f;
+
+                auto middlePosition = GetTravelStartPoint()->Position;
+
+                auto endPosition = GetDestination()->Position * 0.5f + GetTravelStartPoint()->Position * 0.5f;
+
+                auto t = progress + 0.5f;
+                auto position = (1.0f - t) * (1.0f - t) * startPosition + 2.0f * (1.0f - t) * t * middlePosition + t * t * endPosition;
+                return position;
+            }
+            else
+            {   
+                auto startPosition = GetDestination()->Position;
+                auto endPosition = GetTravelStartPoint()->Position;
+                return endPosition * (1.0f - progress) + startPosition * progress;
+            }
+
+            //render::RoadModel::Get()->GetOffsetedPosition(GetDestination()->SquareCoordinates);
+            //render::RoadModel::Get()->GetOffsetedPosition(GetTravelStartPoint()->SquareCoordinates);
+        }
+        else
+        {
+            if(GetDestination()->IsLinkedTo(GetTravelStartPoint()) == false)
+            {
+                auto startPosition = GetDestination()->Position;
+                auto endPosition = GetTravelStartPoint()->Position;
+                return endPosition * (1.0f - progress) + startPosition * progress;        
+            }
+            else if(GetDestination()->IsLinkedTo(GetTravelStartPoint()) == true && GetDestination()->GetLinks().GetSize() == 2)
+            {
+                tile::WorldTile *thirdEnd = nullptr;
+
+                for(auto &link : GetDestination()->GetLinks())
+                {
+                    if(link->GetOtherEnd(GetDestination()) == GetTravelStartPoint())
+                        continue;
+
+                    thirdEnd = link->GetOtherEnd(GetDestination());
+                }
+
+                auto startPosition = GetTravelStartPoint()->Position * 0.5f + GetDestination()->Position * 0.5f;
+
+                auto middlePosition = GetDestination()->Position;
+
+                auto endPosition = thirdEnd->Position * 0.5f + GetDestination()->Position * 0.5f;
+
+                auto t = progress - 0.5f;
+                auto position = (1.0f - t) * (1.0f - t) * startPosition + 2.0f * (1.0f - t) * t * middlePosition + t * t * endPosition;
+                return position;
+            }
+            else
+            {   
+                auto startPosition = GetDestination()->Position;
+                auto endPosition = GetTravelStartPoint()->Position;
+                return endPosition * (1.0f - progress) + startPosition * progress;
+            }
+        }
+
+        /*auto startPosition = GetDestination()->Position;
         auto endPosition = GetTravelStartPoint()->Position;
-        return endPosition * (1.0f - progress) + startPosition * progress;
+        return endPosition * (1.0f - progress) + startPosition * progress;*/
     }
     else
     {
-        return tile->Position;
+        if(tile->GetLinks().GetSize() == 2)
+        {
+            tile::WorldTile *firstEnd = (*tile->GetLinks().Get(0))->GetOtherEnd(tile);
+
+            tile::WorldTile *secondEnd = (*tile->GetLinks().Get(1))->GetOtherEnd(tile);
+
+            auto startPosition = firstEnd->Position * 0.5f + tile->Position * 0.5f; 
+
+            auto middlePosition = tile->Position;
+
+            auto endPosition = secondEnd->Position * 0.5f + tile->Position * 0.5f; 
+
+            auto t = 0.5f;
+            auto position = (1.0f - t) * (1.0f - t) * startPosition + 2.0f * (1.0f - t) * t * middlePosition + t * t * endPosition;
+            return position;
+        }
+        else
+        {
+            return tile->Position;
+        }
     }
 }
 
