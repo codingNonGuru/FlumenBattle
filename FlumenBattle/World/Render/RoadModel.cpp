@@ -14,7 +14,7 @@
 
 using namespace world::render;
 
-#define OFFSET_RANGE 0.0f
+#define OFFSET_RANGE 20.0f
 
 #define ROAD_THICKNESS 3.0f
 
