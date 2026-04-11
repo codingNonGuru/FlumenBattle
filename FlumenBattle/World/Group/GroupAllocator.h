@@ -77,5 +77,7 @@ namespace world::group
         void Free(GroupCore *, bool);
 
         void PerformCleanup();
+
+        int GetMaximumGroupCount();
     };
 }

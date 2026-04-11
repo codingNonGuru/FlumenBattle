@@ -5,6 +5,8 @@
 #include "FlumenEngine/Render/DataBuffer.hpp"
 #include "FlumenEngine/Render/SquareRenderer.h"
 #include "FlumenEngine/Interface/Sprite.hpp"
+#include "FlumenEngine/Render/TextureManager.hpp"
+#include "FlumenEngine/Render/Texture.hpp"
 
 #include "GroupModel.h"
 #include "FlumenBattle/World/WorldScene.h"
@@ -15,6 +17,7 @@
 #include "FlumenBattle/World/Group/GroupCore.h"
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Group/GroupSpotting.h"
+#include "FlumenBattle/World/Group/GroupAllocator.h"
 #include "FlumenBattle/Config.h"
 
 using namespace world::render;
@@ -24,9 +27,28 @@ void GroupModel::Initialize()
 
 }
 
+struct GroupRenderData
+{
+    Position2 Position;
+
+    int MemberCount;
+
+    int Padding;
+};
+
 void GroupModel::Render()
 {
+    static const auto GROUP_COUNT = group::GroupAllocator::Get()->GetMaximumGroupCount();
+
+    static auto renderDatas = container::Array <GroupRenderData> (GROUP_COUNT);
+
+    static DataBuffer *renderDataBuffer = new DataBuffer(renderDatas.GetMemoryCapacity(), renderDatas.GetStart());
+
     static const auto camera = RenderManager::GetCamera(Cameras::WORLD);
+
+    renderDatas.Reset();
+
+    int groupCount = 0;
 
     for(auto &group : WorldScene::Get()->GetGroups())
     {
@@ -34,11 +56,43 @@ void GroupModel::Render()
             continue;
 
         auto position = group.GetVisualPosition();
+
+        *renderDatas.Add() = GroupRenderData{position, 1};
+
+        groupCount++;
+    }
+
+    renderDataBuffer->UploadData(renderDatas.GetStart(), renderDatas.GetMemorySize());
+
+    static const auto shader = ShaderManager::GetShader("Group");
+
+    static const auto texture = ::render::TextureManager::GetTexture("Swordsperson");
+
+    shader->Bind();
+
+    shader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	shader->SetConstant(0.5f, "depth");
+
+    renderDataBuffer->Bind(0);
+
+    shader->BindTexture(texture, "diffuse");
+
+    glDrawArrays(GL_TRIANGLES, 0, 6 * groupCount);
+
+    shader->Unbind();
+
+    /*for(auto &group : WorldScene::Get()->GetGroups())
+    {
+        if(group.GetTile()->IsRevealed() == false)
+            continue;
+
+        auto position = group.GetVisualPosition();
         position += Position2(0.0f, -15.0f);
 
-        engine::render::SquareRenderer::DrawSquare(camera, position, Scale2(18.0f, 30.0f), 0.0f, Color::WHITE, 1.0f, 0.4f);
+        engine::render::SquareRenderer::DrawSquare(camera, position, Scale2(18.0f, 30.0f), 0.0f, Color::WHITE, 1.0f, 0.4f);*/
 
-        auto typeColor = [&]
+        /*auto typeColor = [&]
         {
             if(group.GetClass() == group::GroupClasses::BANDIT)
             {
@@ -106,7 +160,7 @@ void GroupModel::Render()
             }
         } ();
 
-        engine::render::SquareRenderer::DrawSquare(camera, position + Position2(0.0f, -10.0f), Scale2(6.0f, 6.0f), 0.0f, actionColor, 1.0f, 0.45f);
+        engine::render::SquareRenderer::DrawSquare(camera, position + Position2(0.0f, -10.0f), Scale2(6.0f, 6.0f), 0.0f, actionColor, 1.0f, 0.45f);*/
 
         /*if(&group == playerGroup)
             continue;
@@ -116,7 +170,7 @@ void GroupModel::Render()
             auto tile = group.travelActionData->Route[i];
             dotSprite->Draw(camera, {tile->Position, Scale2(0.75f, 0.75f), Opacity(0.6f), DrawOrder(-2)});
         }*/
-    }
+    //}
 }
 
 void GroupModel::RenderSightings()

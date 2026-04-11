@@ -22,6 +22,13 @@ static auto lastUniqueId = 0;
 
 namespace world::group
 {
+    int GroupAllocator::GetMaximumGroupCount()
+    {
+        static const auto MAXIMUM_WORLD_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_WORLD_SIZE).Integer;
+
+        return WorldGenerator::Get()->GetMaximumGroupCount(MAXIMUM_WORLD_SIZE);
+    }
+
     void GroupAllocator::PreallocateMaximumMemory()
     {
         static const auto MAXIMUM_WORLD_SIZE = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_WORLD_SIZE).Integer;
