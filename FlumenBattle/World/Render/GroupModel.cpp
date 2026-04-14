@@ -38,7 +38,12 @@ struct GroupRenderData
 
 void GroupModel::Render()
 {
+    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+
     static const auto GROUP_COUNT = group::GroupAllocator::Get()->GetMaximumGroupCount();
+
+    static const auto MAXIMUM_CHARACTERS_PER_GROUP = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_CHARACTERS_PER_GROUP).Integer;
 
     static auto renderDatas = container::Array <GroupRenderData> (GROUP_COUNT);
 
@@ -57,7 +62,7 @@ void GroupModel::Render()
 
         auto position = group.GetVisualPosition();
 
-        *renderDatas.Add() = GroupRenderData{position, 1};
+        *renderDatas.Add() = GroupRenderData{position, group.GetSize()};
 
         groupCount++;
     }
@@ -72,105 +77,19 @@ void GroupModel::Render()
 
     shader->SetConstant(camera->GetMatrix(), "viewMatrix");
 
-	shader->SetConstant(0.5f, "depth");
+	shader->SetConstant(0.4f, "depth");
+
+    shader->SetConstant(MAXIMUM_CHARACTERS_PER_GROUP, "maximumGroupSize");
 
     renderDataBuffer->Bind(0);
 
     shader->BindTexture(texture, "diffuse");
 
-    glDrawArrays(GL_TRIANGLES, 0, 6 * groupCount);
+    glDrawArrays(GL_TRIANGLES, 0, 6 * groupCount * MAXIMUM_CHARACTERS_PER_GROUP);
 
     shader->Unbind();
 
-    /*for(auto &group : WorldScene::Get()->GetGroups())
-    {
-        if(group.GetTile()->IsRevealed() == false)
-            continue;
-
-        auto position = group.GetVisualPosition();
-        position += Position2(0.0f, -15.0f);
-
-        engine::render::SquareRenderer::DrawSquare(camera, position, Scale2(18.0f, 30.0f), 0.0f, Color::WHITE, 1.0f, 0.4f);*/
-
-        /*auto typeColor = [&]
-        {
-            if(group.GetClass() == group::GroupClasses::BANDIT)
-            {
-                return Color::RED;
-            }
-            else if(group.GetClass() == group::GroupClasses::PATROL)
-            {
-                return Color::BLUE;
-            }
-            else if(group.GetClass() == group::GroupClasses::MERCHANT)
-            {
-                return Color::ORANGE;
-            }
-            else if(group.GetClass() == group::GroupClasses::ADVENTURER)
-            {
-                return Color::GREEN;
-            }
-            else if(group.GetClass() == group::GroupClasses::RAIDER)
-            {
-                return Color::BLACK;
-            }
-            else if(group.GetClass() == group::GroupClasses::GARRISON)
-            {
-                return Color::YELLOW;
-            }
-            else if(group.GetClass() == group::GroupClasses::PLAYER)
-            {
-                return Color::MAGENTA;
-            }
-        } ();
-
-        auto opacity = Opacity(1.0f);
-        if(group.IsInEncounter() == false)
-        {
-            auto groupBuffer = WorldScene::Get()->GetNearbyGroups(group.GetTile(), 0);
-            if(groupBuffer.Groups.GetSize() > 1)
-            {
-                opacity = Opacity(0.6f);
-            }
-            else
-            {
-                opacity = Opacity(0.2f);
-            }
-        }
-
-        engine::render::SquareRenderer::DrawSquare(camera, position, Scale2(12.0f, 12.0f), 0.0f, typeColor, 1.0f, 0.45f);
-
-        auto actionColor = [&]
-        {
-            if(group.IsDoingSomething() == false)
-            {
-                return Color::MAGENTA;
-            }
-            else if(group.IsDoing(group::GroupActions::TAKE_LONG_REST))
-            {
-                return Color::RED;
-            }
-            else if(group.IsDoing(group::GroupActions::TRAVEL))
-            {
-                return Color::BLUE;
-            }
-            else if(group.IsDoing(group::GroupActions::ENGAGE))
-            {
-                return Color::GREEN;
-            }
-        } ();
-
-        engine::render::SquareRenderer::DrawSquare(camera, position + Position2(0.0f, -10.0f), Scale2(6.0f, 6.0f), 0.0f, actionColor, 1.0f, 0.45f);*/
-
-        /*if(&group == playerGroup)
-            continue;
-
-        for(int i = 0; i < group.travelActionData->PlannedDestinationCount; ++i)
-        {
-            auto tile = group.travelActionData->Route[i];
-            dotSprite->Draw(camera, {tile->Position, Scale2(0.75f, 0.75f), Opacity(0.6f), DrawOrder(-2)});
-        }*/
-    //}
+    glDisable(GL_MULTISAMPLE);
 }
 
 void GroupModel::RenderSightings()

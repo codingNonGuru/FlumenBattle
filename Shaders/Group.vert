@@ -6,6 +6,8 @@ layout (location = 0) uniform mat4 viewMatrix;
 
 layout (location = 1) uniform float depth;
 
+layout (location = 2) uniform int maximumGroupSize;
+
 struct GroupData
 {
     vec2 Position;
@@ -33,13 +35,27 @@ out vec2 texCoords;
 
 void main()
 {
-    uint groupIndex = uint(gl_VertexID / 6);
+    uint groupIndex = uint(gl_VertexID / (6 * maximumGroupSize));
+
+    uint memberIndex = uint((gl_VertexID / 6) % maximumGroupSize);
 
     uint vertexIndex = uint(gl_VertexID % 6);
 
-    vec2 position = groupData[groupIndex].Position + vertices[vertexIndex] * 17.0f;
+    float size = 8.0f;
+    if(int(memberIndex) >= groupData[groupIndex].MemberCount)
+    {
+        size = 0.0f;
+    }
+
+    float memberFactor = float(memberIndex);
+    float spiralAngle = memberFactor * 2.5f;
+    float rangeFactor = 1.5f + spiralAngle * 0.4f;
+    vec2 offset = vec2(cos(spiralAngle), sin(spiralAngle)) * rangeFactor;
+
+    vec2 basePosition = groupData[groupIndex].Position + offset;
+    vec2 position = basePosition + vertices[vertexIndex] * size;
 
     texCoords = vertices[vertexIndex] + vec2(0.5f, 0.5f);
 
-    gl_Position = viewMatrix * vec4(position.x, position.y, depth, 1.0f);
+    gl_Position = viewMatrix * vec4(position.x, position.y, depth + basePosition.y * 0.000001f, 1.0f);
 }
