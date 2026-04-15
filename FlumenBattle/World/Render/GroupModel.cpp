@@ -18,6 +18,9 @@
 #include "FlumenBattle/World/Group/HumanMind.h"
 #include "FlumenBattle/World/Group/GroupSpotting.h"
 #include "FlumenBattle/World/Group/GroupAllocator.h"
+#include "FlumenBattle/World/Character/Character.h"
+#include "FlumenBattle/World/Character/CharacterClass.h"
+#include "FlumenBattle/World/Group/CharacterEssence.h"
 #include "FlumenBattle/Config.h"
 
 using namespace world::render;
@@ -29,6 +32,8 @@ void GroupModel::Initialize()
 
 struct GroupRenderData
 {
+    container::Block <int, 16> ClassIndices;
+
     Position2 Position;
 
     int MemberCount;
@@ -62,7 +67,42 @@ void GroupModel::Render()
 
         auto position = group.GetVisualPosition();
 
-        *renderDatas.Add() = GroupRenderData{position, group.GetSize()};
+        container::Block <int, 16> classIndices;
+
+        for(auto i = 0; i < group.GetSize(); ++i)
+        {
+            auto characterClass = [&]
+            {
+                if(group.IsDeepGroup() == true)
+                {
+                    return group.GetCharacter(i)->GetClass()->Class;
+                    
+                }
+                else
+                {   
+                    auto &characters = group.GetCharacterEssences();
+                    return characters.Get(i)->characterClass;
+                }
+            } ();
+
+            switch(characterClass)
+            {
+            case character::CharacterClasses::FIGHTER:
+                *classIndices[i] = 0;
+                break;
+            case character::CharacterClasses::RANGER:
+                *classIndices[i] = 1;
+                break;
+            case character::CharacterClasses::WIZARD:
+                *classIndices[i] = 2;
+                break;
+            case character::CharacterClasses::CLERIC:
+                *classIndices[i] = 3;
+                break;
+            }
+        }
+
+        *renderDatas.Add() = GroupRenderData{classIndices, position, group.GetSize()};
 
         groupCount++;
     }
@@ -71,7 +111,7 @@ void GroupModel::Render()
 
     static const auto shader = ShaderManager::GetShader("Group");
 
-    static const auto texture = ::render::TextureManager::GetTexture("Swordsperson");
+    static const auto texture = ::render::TextureManager::GetTexture("WorldMapCharacters");
 
     shader->Bind();
 

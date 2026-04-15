@@ -10,6 +10,8 @@ layout (location = 2) uniform int maximumGroupSize;
 
 struct GroupData
 {
+    int ClassIndices[16];
+
     vec2 Position;
 
     int MemberCount;
@@ -56,6 +58,25 @@ void main()
     vec2 position = basePosition + vertices[vertexIndex] * size;
 
     texCoords = vertices[vertexIndex] + vec2(0.5f, 0.5f);
+    texCoords.x *= 0.1666f;
+
+    int classIndex = groupData[groupIndex].ClassIndices[memberIndex];
+    if(classIndex == 0)
+    {
+        texCoords.x += 0.0f;
+    }
+    else if(classIndex == 1)
+    {
+        texCoords.x += 0.5f;
+    }
+    else if(classIndex == 2)
+    {
+        texCoords.x += 0.6666f;
+    }
+    else if(classIndex == 3)
+    {
+        texCoords.x += 0.8333f;
+    }
 
     gl_Position = viewMatrix * vec4(position.x, position.y, depth + basePosition.y * 0.000001f, 1.0f);
 }
