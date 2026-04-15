@@ -9,7 +9,11 @@ namespace world::render
     public:
         void Initialize();
 
+        void PrepareData();
+
         void Render();
+
+        void RenderShadows();
 
         void RenderSightings();
     };

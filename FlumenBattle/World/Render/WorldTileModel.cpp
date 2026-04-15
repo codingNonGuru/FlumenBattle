@@ -457,6 +457,10 @@ void WorldTileModel::Render()
 
     SettlementModel::Get()->Render();
 
+    GroupModel::Get()->PrepareData();
+
+    GroupModel::Get()->RenderShadows();
+
     GroupModel::Get()->Render();
 
     BorderModel::Get()->Render();

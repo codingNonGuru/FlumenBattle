@@ -41,24 +41,24 @@ struct GroupRenderData
     int Padding;
 };
 
-void GroupModel::Render()
+static DataBuffer *renderDataBuffer = nullptr;
+
+static int groupCount = 0;
+
+void GroupModel::PrepareData()
 {
-    glEnable(GL_MULTISAMPLE);
-    glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
-
     static const auto GROUP_COUNT = group::GroupAllocator::Get()->GetMaximumGroupCount();
-
-    static const auto MAXIMUM_CHARACTERS_PER_GROUP = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_CHARACTERS_PER_GROUP).Integer;
 
     static auto renderDatas = container::Array <GroupRenderData> (GROUP_COUNT);
 
-    static DataBuffer *renderDataBuffer = new DataBuffer(renderDatas.GetMemoryCapacity(), renderDatas.GetStart());
-
-    static const auto camera = RenderManager::GetCamera(Cameras::WORLD);
+    if(renderDataBuffer == nullptr)
+    {
+        renderDataBuffer = new DataBuffer(renderDatas.GetMemoryCapacity(), renderDatas.GetStart());
+    }
 
     renderDatas.Reset();
 
-    int groupCount = 0;
+    groupCount = 0;
 
     for(auto &group : WorldScene::Get()->GetGroups())
     {
@@ -108,8 +108,50 @@ void GroupModel::Render()
     }
 
     renderDataBuffer->UploadData(renderDatas.GetStart(), renderDatas.GetMemorySize());
+}
+
+void GroupModel::Render()
+{
+    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+
+    static const auto MAXIMUM_CHARACTERS_PER_GROUP = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_CHARACTERS_PER_GROUP).Integer;
+
+    static const auto camera = RenderManager::GetCamera(Cameras::WORLD);
 
     static const auto shader = ShaderManager::GetShader("Group");
+
+    static const auto texture = ::render::TextureManager::GetTexture("WorldMapCharacters");
+
+    shader->Bind();
+
+    shader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	shader->SetConstant(0.45f, "depth");
+
+    shader->SetConstant(MAXIMUM_CHARACTERS_PER_GROUP, "maximumGroupSize");
+
+    renderDataBuffer->Bind(0);
+
+    shader->BindTexture(texture, "diffuse");
+
+    glDrawArrays(GL_TRIANGLES, 0, 6 * groupCount * MAXIMUM_CHARACTERS_PER_GROUP);
+
+    shader->Unbind();
+
+    glDisable(GL_MULTISAMPLE);
+}
+
+void GroupModel::RenderShadows()
+{
+    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+
+    static const auto MAXIMUM_CHARACTERS_PER_GROUP = engine::ConfigManager::Get()->GetValue(game::ConfigValues::MAXIMUM_CHARACTERS_PER_GROUP).Integer;
+
+    static const auto camera = RenderManager::GetCamera(Cameras::WORLD);
+
+    static const auto shader = ShaderManager::GetShader("GroupShadow");
 
     static const auto texture = ::render::TextureManager::GetTexture("WorldMapCharacters");
 
