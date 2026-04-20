@@ -324,13 +324,13 @@ void WorldTileModel::RenderPlayerPath()
             if(&tile == pathData.Tiles.GetLast() - 1)
                 break;
                 
-            greenFlagSprite->DrawStandalone(camera, {tile->Position, Scale2(1.0f), Opacity(1.0f), DrawOrder(23)});
+            greenFlagSprite->DrawStandalone(camera, {tile->Position, Scale2(0.7f), Opacity(1.0f), DrawOrder(23)});
         }
 
         auto hoveredTile = WorldController::Get()->GetHoveredTile();
         if(hoveredTile != nullptr)
         {
-            bootSprite->DrawStandalone(camera, {hoveredTile->Position, Scale2(1.0f, 1.0f), Opacity(1.0f), DrawOrder(25)});
+            bootSprite->DrawStandalone(camera, {hoveredTile->Position, Scale2(0.7f), Opacity(1.0f), DrawOrder(25)});
         }
     }
 
@@ -340,14 +340,14 @@ void WorldTileModel::RenderPlayerPath()
         if(&tile == fullPathData.Tiles.GetLast() - 1)
             break;
 
-        redFlagSprite->DrawStandalone(camera, {tile->Position, Scale2(1.0f), Opacity(1.0f), DrawOrder(24)});
+        redFlagSprite->DrawStandalone(camera, {tile->Position, Scale2(0.7f), Opacity(1.0f), DrawOrder(24)});
     }
 
     auto finalDestination = group::HumanMind::Get()->GetFinalDestination();
     if(finalDestination != nullptr)
     {
         auto position = finalDestination->Position;
-        xSprite->DrawStandalone(camera, {position, Scale2(1.0f, 1.0f), Opacity(1.0f), DrawOrder(26)});
+        xSprite->DrawStandalone(camera, {position, Scale2(0.7f), Opacity(1.0f), DrawOrder(26)});
     }
 }
 

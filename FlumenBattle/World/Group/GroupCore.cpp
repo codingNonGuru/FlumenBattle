@@ -125,13 +125,6 @@ Position2 GroupCore::GetVisualPosition() const
         return endPosition * (1.0f - progress) + startPosition * progress;        
     };
 
-    auto getSimplePositionInterpolationWithoutOffset = [&] ()
-    {
-        auto startPosition = GetDestination()->Position;
-        auto endPosition = GetTravelStartPoint()->Position;
-        return endPosition * (1.0f - progress) + startPosition * progress;        
-    };
-
     auto getBezierAdjustedPosition = [&] (Position2 firstPosition, Position2 middlePosition, Position2 lastPosition, float t)
     {
         auto startPosition = firstPosition * 0.5f + middlePosition * 0.5f;
@@ -155,79 +148,77 @@ Position2 GroupCore::GetVisualPosition() const
                 render::RoadModel::Get()->GetOffsetedPosition(end->SquareCoordinates), 
                 0.5f);
         }
+        else if(tile->GetLinks().GetSize() != 0)
+        {
+            return render::RoadModel::Get()->GetOffsetedPosition(tile->SquareCoordinates);
+        }
         else
         {
-            return tile->Position;//render::RoadModel::Get()->GetOffsetedPosition(tile->SquareCoordinates);
+            return tile->Position;
         }
     };
 
     if(GetDestination() != nullptr)
-    {   
-        if(progress < 0.5f)
+    {
+        if(GetDestination()->IsLinkedTo(GetTravelStartPoint()) == false)
         {
-            if(GetDestination()->IsLinkedTo(GetTravelStartPoint()) == true && GetTravelStartPoint()->GetLinks().GetSize() == 2)
-            {
-                tile::WorldTile *thirdEnd = nullptr;
-
-                for(auto &link : GetTravelStartPoint()->GetLinks())
-                {
-                    if(link->GetOtherEnd(GetTravelStartPoint()) == GetDestination())
-                        continue;
-
-                    thirdEnd = link->GetOtherEnd(GetTravelStartPoint());
-                }
-
-                return getBezierAdjustedPosition(
-                    render::RoadModel::Get()->GetOffsetedPosition(thirdEnd->SquareCoordinates),
-                    render::RoadModel::Get()->GetOffsetedPosition(GetTravelStartPoint()->SquareCoordinates),
-                    render::RoadModel::Get()->GetOffsetedPosition(GetDestination()->SquareCoordinates), 
-                    progress + 0.5f);
-            }
-            else if(GetDestination()->IsLinkedTo(GetTravelStartPoint()) == true && GetTravelStartPoint()->GetLinks().GetSize() != 2)
-            {   
-                return getSimplePositionInterpolation();
-            }
-            else
-            {
-                return getTilePosition(GetTravelStartPoint()) * (1.0f - progress) + getTilePosition(GetDestination()) * progress;
-            }
+            return getTilePosition(GetTravelStartPoint()) * (1.0f - progress) + getTilePosition(GetDestination()) * progress;
         }
         else
         {
-            if(GetDestination()->IsLinkedTo(GetTravelStartPoint()) == true && GetDestination()->GetLinks().GetSize() == 2)
+            auto pivotTile = progress < 0.5f ? GetTravelStartPoint() : GetDestination();
+
+            if(pivotTile->GetLinks().GetSize() != 2)
             {
-                tile::WorldTile *thirdEnd = nullptr;
-
-                for(auto &link : GetDestination()->GetLinks())
-                {
-                    if(link->GetOtherEnd(GetDestination()) == GetTravelStartPoint())
-                        continue;
-
-                    thirdEnd = link->GetOtherEnd(GetDestination());
-                }
-
-                return getBezierAdjustedPosition(
-                    render::RoadModel::Get()->GetOffsetedPosition(GetTravelStartPoint()->SquareCoordinates),
-                    render::RoadModel::Get()->GetOffsetedPosition(GetDestination()->SquareCoordinates),
-                    render::RoadModel::Get()->GetOffsetedPosition(thirdEnd->SquareCoordinates),
-                    progress - 0.5f);
-            }
-            else if(GetDestination()->IsLinkedTo(GetTravelStartPoint()) == true && GetDestination()->GetLinks().GetSize() != 2)
-            {   
                 return getSimplePositionInterpolation();
             }
             else
             {
-                return getTilePosition(GetTravelStartPoint()) * (1.0f - progress) + getTilePosition(GetDestination()) * progress;
+                if(progress < 0.5f)
+                {
+                    tile::WorldTile *thirdEnd = nullptr;
+
+                    for(auto &link : GetTravelStartPoint()->GetLinks())
+                    {
+                        if(link->GetOtherEnd(GetTravelStartPoint()) == GetDestination())
+                            continue;
+
+                        thirdEnd = link->GetOtherEnd(GetTravelStartPoint());
+                    }
+
+                    return getBezierAdjustedPosition(
+                        render::RoadModel::Get()->GetOffsetedPosition(thirdEnd->SquareCoordinates),
+                        render::RoadModel::Get()->GetOffsetedPosition(GetTravelStartPoint()->SquareCoordinates),
+                        render::RoadModel::Get()->GetOffsetedPosition(GetDestination()->SquareCoordinates), 
+                        progress + 0.5f);
+                }
+                else
+                {
+                    tile::WorldTile *thirdEnd = nullptr;
+
+                    for(auto &link : GetDestination()->GetLinks())
+                    {
+                        if(link->GetOtherEnd(GetDestination()) == GetTravelStartPoint())
+                            continue;
+
+                        thirdEnd = link->GetOtherEnd(GetDestination());
+                    }
+
+                    return getBezierAdjustedPosition(
+                        render::RoadModel::Get()->GetOffsetedPosition(GetTravelStartPoint()->SquareCoordinates),
+                        render::RoadModel::Get()->GetOffsetedPosition(GetDestination()->SquareCoordinates),
+                        render::RoadModel::Get()->GetOffsetedPosition(thirdEnd->SquareCoordinates),
+                        progress - 0.5f);
+                }
             }
         }
     }
     else
     {
-        if(tile->GetLinks().GetSize() == 2)
+        return getTilePosition(tile);
+        /*if(tile->GetLinks().GetSize() == 2)
         {
             tile::WorldTile *firstEnd = (*tile->GetLinks().Get(0))->GetOtherEnd(tile);
-
             tile::WorldTile *secondEnd = (*tile->GetLinks().Get(1))->GetOtherEnd(tile);
 
             return getBezierAdjustedPosition(
@@ -236,10 +227,14 @@ Position2 GroupCore::GetVisualPosition() const
                 render::RoadModel::Get()->GetOffsetedPosition(secondEnd->SquareCoordinates),
                 0.5f);
         }
+        else if(tile->GetLinks().GetSize() != 0)
+        {
+            return render::RoadModel::Get()->GetOffsetedPosition(tile->SquareCoordinates);
+        }
         else
         {
             return tile->Position;
-        }
+        }*/
     }
 }
 
