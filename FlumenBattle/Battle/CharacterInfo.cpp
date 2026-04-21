@@ -31,11 +31,6 @@ void CharacterInfo::HandleConfigure()
 
     auto textColor = Color::BLACK;
 
-    selectLabel = ElementFactory::BuildText(
-        {Size(150, 150), DrawOrder(2), {Position2(0.0f, 30.0f), this}},
-        {{"Small"}, textColor, "S"}
-    );
-
     targetedLabel = ElementFactory::BuildElement <Element>(
         {DrawOrder(2), {this}, {"RedArrow", false}}
     );
@@ -87,12 +82,10 @@ void CharacterInfo::HandleHover()
 
 void CharacterInfo::Select()
 {
-    //selectLabel->Enable();
 }
 
 void CharacterInfo::Deselect()
 {
-    //selectLabel->Disable();
 }
 
 void CharacterInfo::HandleUpdate()
@@ -150,7 +143,7 @@ void CharacterInfo::HandleUpdate()
 
     if(combatant->IsAlive() == false)
     {
-        //SetOpacity(0.5f);
+        healthBar->Disable();
 
         hitpointLabel->Disable();
 

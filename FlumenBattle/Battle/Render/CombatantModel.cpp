@@ -21,6 +21,8 @@ static DataBuffer *textureOffsetBuffer = nullptr;
 
 static DataBuffer *rotationBuffer = nullptr;
 
+static DataBuffer *opacityBuffer = nullptr;
+
 static const auto MAXIMUM_COMBATANTS_PER_SCENE = 32;
 
 static auto positions = container::Array <Position2> (MAXIMUM_COMBATANTS_PER_SCENE);
@@ -28,6 +30,8 @@ static auto positions = container::Array <Position2> (MAXIMUM_COMBATANTS_PER_SCE
 static auto offsets = container::Array <Position2> (MAXIMUM_COMBATANTS_PER_SCENE);
 
 static auto rotations = container::Array <float> (MAXIMUM_COMBATANTS_PER_SCENE);
+
+static auto opacities = container::Array <float> (MAXIMUM_COMBATANTS_PER_SCENE);
 
 static constexpr auto SPRITE_SIZE = 0.4f;
 
@@ -38,6 +42,8 @@ void CombatantModel::Initialize()
     textureOffsetBuffer = new DataBuffer(offsets.GetMemoryCapacity(), offsets.GetStart());
 
     rotationBuffer = new DataBuffer(rotations.GetMemoryCapacity(), rotations.GetStart());
+
+    opacityBuffer = new DataBuffer(opacities.GetMemoryCapacity(), opacities.GetStart());
 
     camera = RenderManager::GetCamera(Cameras::BATTLE);
 }
@@ -56,6 +62,8 @@ void CombatantModel::Render()
 
     rotations.Reset();
 
+    opacities.Reset();
+
     auto playerGroup = BattleScene::Get()->GetPlayerGroup();
     auto computerGroup = BattleScene::Get()->GetComputerGroup();
     for(auto group : {playerGroup, computerGroup})
@@ -72,6 +80,8 @@ void CombatantModel::Render()
             *offsets.Add() = character->GetClass()->TextureData.Offset;
 
             *rotations.Add() = combatant.GetRotation() + PI / 3.0f;
+
+            *opacities.Add() = combatant.IsAlive() == true ? 1.0f : 0.7f;
         }
     }
 
@@ -80,6 +90,8 @@ void CombatantModel::Render()
     textureOffsetBuffer->UploadData(offsets.GetStart(), offsets.GetMemorySize());
 
     rotationBuffer->UploadData(rotations.GetStart(), rotations.GetMemorySize());
+
+    opacityBuffer->UploadData(opacities.GetStart(), opacities.GetMemorySize());
 
     massShader->Bind();
 
@@ -93,13 +105,15 @@ void CombatantModel::Render()
 
     massShader->SetConstant(1, "hasRotation");
 
-    massShader->SetConstant(0, "hasOpacity");
+    massShader->SetConstant(1, "hasOpacity");
 
     massShader->SetConstant(0, "hasFlip");
 
     positionBuffer->Bind(0);
 
     textureOffsetBuffer->Bind(1);
+
+    opacityBuffer->Bind(2);
 
     rotationBuffer->Bind(4);
 
@@ -115,13 +129,19 @@ void CombatantModel::Render()
 
         rotations.Reset();
 
+        opacities.Reset();
+
         *positions.Add() = selectedCombatant->GetPosition();
 
         *offsets.Add() = selectedCombatant->GetCharacter()->GetClass()->TextureData.Offset;
 
         *rotations.Add() = selectedCombatant->GetRotation() + PI / 3.0f;
 
+        *opacities.Add() = selectedCombatant->IsAlive() ? 1.0f : 0.7f;
+
         positionBuffer->UploadData(positions.GetStart(), positions.GetMemorySize());
+
+        opacityBuffer->UploadData(opacities.GetStart(), opacities.GetMemorySize());
 
         textureOffsetBuffer->UploadData(offsets.GetStart(), offsets.GetMemorySize());
 

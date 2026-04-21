@@ -244,6 +244,9 @@ void BattleTileModel::RenderSpellArea()
 
 void BattleTileModel::Render() 
 {
+    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+
 	shader->Bind();
 
 	shader->SetConstant(camera->GetMatrix(), "viewMatrix");
@@ -265,6 +268,8 @@ void BattleTileModel::Render()
 
         glDrawArrays(GL_TRIANGLES, 0, 18);
     }
+
+    glDisable(GL_MULTISAMPLE);
 
     auto map = battleScene->GetBattleMap();
     auto combatant = battleController->GetSelectedCombatant();

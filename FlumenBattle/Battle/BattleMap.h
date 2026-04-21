@@ -25,7 +25,7 @@ namespace battle
     public:
         static constexpr Float TILE_DISTANCING = 60.0f; 
 
-        static constexpr auto TILE_SIZE = [] {return (TILE_DISTANCING / 2.0f) / 0.8666f;} ();
+        static constexpr auto TILE_SIZE = [] {return (TILE_DISTANCING / 2.0f) / sin(PI / 3.0f);} ();
 
         BattleTile* GetEmptyRandomTile();
 

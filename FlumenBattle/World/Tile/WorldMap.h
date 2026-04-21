@@ -47,7 +47,7 @@ namespace world::tile
     public:
         static constexpr Float TILE_DISTANCING = 60.0f; 
 
-        static constexpr Float WORLD_TILE_SIZE = 34.6666f;
+        static constexpr auto WORLD_TILE_SIZE = [] {return (TILE_DISTANCING / 2.0f) / sin(PI / 3.0f);} ();
 
         WorldTile* GetTileFromPosition(Float2) const;
 
