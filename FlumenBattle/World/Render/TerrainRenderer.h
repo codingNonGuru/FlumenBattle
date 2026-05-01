@@ -20,7 +20,9 @@ namespace world::render
 
         ::render::Texture *distortMap;
 
-        void RenderLandTilesToDiffuseStencil();
+        void ClearStencilBuffer(Color);
+
+        void RenderHexesToDiffuseStencil(Color, float);
 
         void SharpenDiffuseStencil(Color);
 
@@ -28,7 +30,7 @@ namespace world::render
 
         void RenderSeaTilesToScreen();
 
-        void RenderLandTilesToScreen(float);
+        void RenderTextureToScreen(::render::Texture *, float);
 
     public:
         TerrainRenderer();

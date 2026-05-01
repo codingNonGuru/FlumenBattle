@@ -149,7 +149,7 @@ void WorldTileModel::Initialize()
 
 void WorldTileModel::Enable()
 {
-    auto backgroundColor = Color(0.0f, 0.0f, 0.0f, 1.0f);
+    auto backgroundColor = Color(1.0f, 0.0f, 0.0f, 1.0f);
 	RenderManager::SetBackgroundColor(backgroundColor);
 }
 

@@ -24,7 +24,7 @@ void main()
 
 	float baseFactor = clamp(fragment.r, 0.0f, 1.0f);
 	
-	float distortStrength = texture(distort, pos * 0.0015f).r;
+	float distortStrength = texture(distort, pos * 0.0005f).r;
 
 	float height = baseFactor * 0.5f + distortStrength * 0.5f;
 
