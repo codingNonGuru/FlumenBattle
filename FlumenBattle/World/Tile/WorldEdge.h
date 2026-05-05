@@ -22,4 +22,9 @@ namespace world::tile
 
         WorldTile *GetUpstream() {return (Start == Downstream ? End : Start);}
     };
+
+    struct WorldCorner : public core::hex::HexCorner <WorldTile>
+    {
+        
+    };
 }

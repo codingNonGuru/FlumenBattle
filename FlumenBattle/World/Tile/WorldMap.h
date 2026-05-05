@@ -4,7 +4,7 @@
 #include "FlumenCore/Container/Block.hpp"
 #include "FlumenCore/Hex/Hex.h"
 
-#include "FlumenEngine/Container/EdgyHexGrid.h"
+#include "FlumenEngine/Container/CornyEdgyHexGrid.h"
 #include "FlumenEngine/Thread/HexBuffer.h"
 
 #include "FlumenBattle/World/Tile/WorldEdge.h"
@@ -24,7 +24,7 @@ namespace world::tile
 {
     class River;
 
-    class WorldMap : public container::EdgyHexGrid <WorldTile, WorldEdge>
+    class WorldMap : public container::CornyEdgyHexGrid <WorldTile, WorldEdge, WorldCorner>
     {
         friend class world::WorldScene;
 

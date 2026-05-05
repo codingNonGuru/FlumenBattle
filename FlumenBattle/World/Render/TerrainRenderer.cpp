@@ -119,11 +119,11 @@ void TerrainRenderer::Render()
 
     static auto blurKernel = ImageProcessor::GenerateKernel(16);
 
-    ImageProcessor::Blur(colorTexture, blurredTexture, Size(1920, 1080), blurKernel);
+    //ImageProcessor::Blur(colorTexture, blurredTexture, Size(1920, 1080), blurKernel);
 
     //BufferManager::BindFrameBuffer(FrameBuffers::DEFAULT);
 
-    RenderTextureToScreen(blurredTexture, 0.05f);
+    RenderTextureToScreen(colorTexture, 0.05f);
 
     
 

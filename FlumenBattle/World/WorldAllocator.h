@@ -14,6 +14,7 @@ namespace world
     {
         struct WorldTile;
         struct WorldEdge;
+        struct WorldCorner;
         class WorldMap;
         class Ruin;
         class RuinHandler;
@@ -50,6 +51,8 @@ namespace world
         container::Grid <tile::WorldTile>::Memory worldTileMemory;
 
         container::Grid <tile::WorldEdge>::Memory worldEdgeMemory;
+
+        container::Grid <tile::WorldCorner>::Memory worldCornerMemory;
 
         container::Grid <SimulationDomain>::Memory simulationMemory;
 

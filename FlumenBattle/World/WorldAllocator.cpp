@@ -33,6 +33,8 @@ WorldAllocator::WorldAllocator()
 
     worldEdgeMemory = container::Grid <tile::WorldEdge>::PreallocateMemory(MAXIMUM_WORLD_SIZE * MAXIMUM_WORLD_SIZE * 3);
 
+    worldCornerMemory = container::Grid <tile::WorldCorner>::PreallocateMemory(MAXIMUM_WORLD_SIZE * MAXIMUM_WORLD_SIZE * 3);
+
     auto size = MAXIMUM_WORLD_SIZE / TILES_PER_SIMULATION_DOMAIN;
     simulationMemory = container::Grid <SimulationDomain>::PreallocateMemory(size * size);
 
@@ -69,6 +71,8 @@ void WorldAllocator::AllocateMap(tile::WorldMap &map, int size)
     map.tiles.Initialize(size, height, worldTileMemory);
 
     map.AddEdges(worldEdgeMemory);
+
+    map.AddCorners(worldCornerMemory);
 
     auto simulationSize = size / TILES_PER_SIMULATION_DOMAIN;
     SimulationMap::Get()->domains.Initialize(simulationSize, simulationSize, simulationMemory);

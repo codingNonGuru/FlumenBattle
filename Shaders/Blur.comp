@@ -53,13 +53,13 @@ void horizontalPass()
 			}
 		}
 
-		vec4 finalValue = texture(sourceTexture, ivec2(otherX, otherY)); 
+		vec4 finalValue = texelFetch(sourceTexture, ivec2(otherX, otherY), 0); 
 		sum += weights[i + filterSize] * finalValue; 	
 	}
 
-	swapBuffer[thisIndex] = texelFetch(sourceTexture, ivec2(gl_GlobalInvocationID.xy), 0);
+	//swapBuffer[thisIndex] = texelFetch(sourceTexture, ivec2(gl_GlobalInvocationID.xy), 0);
 
-	//swapBuffer[thisIndex] = sum;
+	swapBuffer[thisIndex] = sum;
 
 	//imageStore(swapTexture, ivec2(gl_GlobalInvocationID.xy), sum);
 }
@@ -97,18 +97,13 @@ void verticalPass()
 
 	//imageStore(finalTexture, ivec2(gl_GlobalInvocationID.xy), vec4(0.0f, 1.0f, 0.0f, 1.0f));
 
-	imageStore(finalTexture, ivec2(gl_GlobalInvocationID.xy), swapBuffer[thisIndex]);
+	//imageStore(finalTexture, ivec2(gl_GlobalInvocationID.xy), swapBuffer[thisIndex]);
 
-	//imageStore(finalTexture, ivec2(gl_GlobalInvocationID.xy), sum);
+	imageStore(finalTexture, ivec2(gl_GlobalInvocationID.xy), sum);
 }
 
 void main()
 {
-	ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
-    //ivec2 size = imageSize(outputTex);
-
-    if (texelCoord.x >= size.x || texelCoord.y >= size.y) return;
-
 	if(pass == 0)
 	{
 		horizontalPass();
