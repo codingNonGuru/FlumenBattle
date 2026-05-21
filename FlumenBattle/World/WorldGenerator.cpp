@@ -90,6 +90,11 @@ int WorldGenerator::GenerateWorld(
 
             tile->Elevation = int(height * float(MAXIMUM_TILE_ELEVATION));
         }
+
+        for(auto &corner : map->GetCorners())
+        {
+            corner.IsFullyLand = corner.First->Type == WorldTiles::LAND && corner.Second->Type == WorldTiles::LAND && corner.Third->Type == WorldTiles::LAND ? true : false;
+        }
     };
 
     auto generateRelief = [&] 

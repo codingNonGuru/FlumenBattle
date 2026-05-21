@@ -8,6 +8,8 @@ layout (location = 5) uniform vec4 color;
 
 // TEXTURES
 
+uniform sampler2D blob;
+
 layout (location = 0) out vec4 fragment;
 
 //in vec2 textureCoordinates;
@@ -20,13 +22,13 @@ void main()
 {	
 	fragment = color; //color;//texture(diffuse, textureCoordinates).rgba;
 	
-	fragment.a = alpha;
+	fragment.a = texture(blob, coords).a;
 
-    float distance = length(coords);
+    /*float distance = length(coords);
     float falloff = exp(-distance * distance * 16.0f);
     falloff = pow(falloff, pow(2.0f, 5.0f - 10.0f * falloff));
 
     falloff = clamp(falloff, 0.0f, 1.0f);
 
-    fragment.a *= falloff;
+    fragment.a *= falloff;*/
 }

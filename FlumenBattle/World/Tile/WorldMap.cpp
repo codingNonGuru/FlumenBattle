@@ -43,6 +43,14 @@ WorldMap::WorldMap(Length size)
         edge.Downstream = nullptr;
     }
 
+    SetupCornerTiles();
+
+    for(auto &corner : GetCorners())
+    {
+        corner.Position = corner.First->Position + corner.Second->Position + corner.Third->Position;
+        corner.Position /= 3.0f;
+    }
+
     rivers.Initialize(128);
 }
 

@@ -57,5 +57,5 @@ void main()
 
 	alpha = 1.0f;//reliefs[objectIndex] == 1 ? 1.0f : 0.0f;
 
-    coords = vertices[vertexIndex];
+    coords = vertices[vertexIndex] + vec2(0.5f);
 }

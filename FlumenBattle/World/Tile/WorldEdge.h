@@ -25,6 +25,10 @@ namespace world::tile
 
     struct WorldCorner : public core::hex::HexCorner <WorldTile>
     {
-        
+        Position2 Position;
+
+        bool IsFullyLand;
+
+        bool IsFullySea;
     };
 }

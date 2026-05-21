@@ -26,9 +26,11 @@ void main()
 	
 	float distortStrength = texture(distort, pos * 0.0005f).r;
 
-	float height = baseFactor * 0.5f + distortStrength * 0.5f;
+	distortStrength = clamp(distortStrength, 0.0f, 1.0f);
 
-	fragment.a = height > 0.5f ? 1.0f : 0.0f;
+	float height = baseFactor * 0.6f + distortStrength * 0.4f;
+
+	fragment.a = height >= 0.499f ? 1.0f : 0.0f;
 
 	//if(height > 0.65f)
 		fragment.rgb = color;

@@ -33,7 +33,7 @@ WorldAllocator::WorldAllocator()
 
     worldEdgeMemory = container::Grid <tile::WorldEdge>::PreallocateMemory(MAXIMUM_WORLD_SIZE * MAXIMUM_WORLD_SIZE * 3);
 
-    worldCornerMemory = container::Grid <tile::WorldCorner>::PreallocateMemory(MAXIMUM_WORLD_SIZE * MAXIMUM_WORLD_SIZE * 3);
+    worldCornerMemory = container::Grid <tile::WorldCorner>::PreallocateMemory(MAXIMUM_WORLD_SIZE * MAXIMUM_WORLD_SIZE * 10);
 
     auto size = MAXIMUM_WORLD_SIZE / TILES_PER_SIMULATION_DOMAIN;
     simulationMemory = container::Grid <SimulationDomain>::PreallocateMemory(size * size);

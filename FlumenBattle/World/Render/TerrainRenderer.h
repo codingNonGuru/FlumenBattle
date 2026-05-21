@@ -2,6 +2,8 @@
 
 #include "FlumenCore/Singleton.h"
 
+class DataBuffer;
+
 namespace render
 {
     class Texture;
@@ -22,13 +24,15 @@ namespace world::render
 
         void ClearStencilBuffer(Color);
 
-        void RenderHexesToDiffuseStencil(Color, float);
+        void RenderHexesToDiffuseStencil(DataBuffer *, Color, float);
 
         void SharpenDiffuseStencil(Color);
 
         void RenderSteppeTilesToDiffuseStencil();
 
         void RenderSeaTilesToScreen();
+
+        void RenderCornersToScreen();
 
         void RenderTextureToScreen(::render::Texture *, float);
 

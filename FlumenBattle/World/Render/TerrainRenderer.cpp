@@ -25,6 +25,10 @@ static Camera *camera = nullptr;
 
 static DataBuffer *positionBuffer = nullptr;
 
+static DataBuffer *cornerPositionBuffer = nullptr;
+
+static DataBuffer *cornerColorBuffer = nullptr;
+
 static DataBuffer *colorBuffer = nullptr;
 
 static DataBuffer *elevationBuffer = nullptr;
@@ -53,7 +57,11 @@ void TerrainRenderer::Initialize()
 
     static auto positions = container::Array <Position2> (map->GetTileCount());
 
+    static auto cornerPositions = container::Array <Position2> (map->GetCorners().GetObjectCount());
+
     static auto colors = container::Array <Color> (map->GetTileCount());
+
+    static auto cornerColors = container::Array <Color> (map->GetCorners().GetObjectCount());
 
     static auto elevations = container::Array <Color> (map->GetTileCount());
 
@@ -103,13 +111,25 @@ void TerrainRenderer::Initialize()
     reliefBuffer = new DataBuffer(reliefs.GetMemorySize(), reliefs.GetStart());
 
     tileQueueBuffer = new DataBuffer(tileIndices.GetMemoryCapacity(), tileIndices.GetStart());
+
+
+    for(auto &corner : map->GetCorners())
+    {
+        *cornerPositions.Add() = corner.Position;
+
+        *cornerColors.Add() = Color(1.0f, 0.0f, 0.0f, 1.0f);
+    }
+
+    cornerPositionBuffer = new DataBuffer(cornerPositions.GetMemorySize(), cornerPositions.GetStart());
+
+    cornerColorBuffer = new DataBuffer(cornerColors.GetMemorySize(), cornerColors.GetStart());
 }
 
 void TerrainRenderer::Render()
 {
-    ClearStencilBuffer(Color::BLACK);
+    //ClearStencilBuffer(Color::BLACK);
 
-    RenderSeaTilesToScreen();
+    //RenderSeaTilesToScreen();
 
     static auto stencilBuffer = BufferManager::GetFrameBuffer(FrameBuffers::STENCIL);
 
@@ -123,9 +143,7 @@ void TerrainRenderer::Render()
 
     //BufferManager::BindFrameBuffer(FrameBuffers::DEFAULT);
 
-    RenderTextureToScreen(colorTexture, 0.05f);
-
-    
+    //RenderTextureToScreen(colorTexture, 0.01f);
 
     static const auto map = WorldScene::Get()->GetWorldMap();
 
@@ -133,7 +151,15 @@ void TerrainRenderer::Render()
     auto const DIRT_COLOR = Color(0.9f, 0.7f, 0.5f, 1.0f);
     auto const GRASS_COLOR = Color(0.4f, 0.6f, 0.05f, 1.0f);
 
-    /*tileIndices.Reset();
+
+    ClearStencilBuffer(Color::BLACK);
+
+    //BufferManager::BindFrameBuffer(FrameBuffers::DEFAULT);
+
+    //RenderManager::ClearDefaultBuffer();
+
+
+    tileIndices.Reset();
 
     for(auto &tile : map->GetTiles())
     {
@@ -146,26 +172,28 @@ void TerrainRenderer::Render()
 
     tileQueueBuffer->UploadData(tileIndices.GetStart(), tileIndices.GetMemorySize());
 
-    RenderHexesToDiffuseStencil(Color::WHITE, 7.0f);*/
+    RenderHexesToDiffuseStencil(positionBuffer, Color::WHITE, 4.5f);
 
-    /*tileIndices.Reset();
 
-    for(auto &tile : map->GetTiles())
+    tileIndices.Reset();
+
+    for(auto &corner : map->GetCorners())
     {
-        if(tile.Type == WorldTiles::SEA)
+        if(corner.IsFullyLand == true)
         {
-            auto index = &tile - map->GetTiles().GetStart();
+            auto index = &corner - map->GetCorners().GetStart();
             *tileIndices.Add() = index;
         }
     }
 
     tileQueueBuffer->UploadData(tileIndices.GetStart(), tileIndices.GetMemorySize());
 
-    RenderHexesToDiffuseStencil(Color::BLACK, 4.0f);*/
+    RenderHexesToDiffuseStencil(cornerPositionBuffer, Color::WHITE, 4.5f);
 
-    //SharpenDiffuseStencil(DESERT_COLOR);
 
-    //RenderLandTilesToScreen(0.05f);
+    SharpenDiffuseStencil(DESERT_COLOR);
+
+    RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL)->GetColorTexture(), 0.02f);
 
 
     /*tileIndices.Reset();
@@ -239,7 +267,7 @@ void TerrainRenderer::ClearStencilBuffer(Color color)
     stencilBuffer->Clear(color);
 }
 
-void TerrainRenderer::RenderHexesToDiffuseStencil(Color color, float sizeFactor)
+void TerrainRenderer::RenderHexesToDiffuseStencil(DataBuffer *mainBuffer, Color color, float sizeFactor)
 {
     static const auto map = WorldScene::Get()->GetWorldMap();
 
@@ -253,7 +281,7 @@ void TerrainRenderer::RenderHexesToDiffuseStencil(Color color, float sizeFactor)
     //glEnable(GL_MULTISAMPLE);
     //glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 
-    positionBuffer->Bind(0);
+    mainBuffer->Bind(0);
     reliefBuffer->Bind(1);
     tileQueueBuffer->Bind(2);
 
@@ -265,11 +293,84 @@ void TerrainRenderer::RenderHexesToDiffuseStencil(Color color, float sizeFactor)
     tileShader->SetConstant(color, "color");
     tileShader->SetConstant(map->WORLD_TILE_SIZE * sizeFactor, "hexSize");
 
+    static const auto blobTexture = ::render::TextureManager::GetTexture("GaussianBlot");
+
+    tileShader->BindTexture(blobTexture, "blob");
+
     glDrawArrays(GL_TRIANGLES, 0, 6 * tileIndices.GetSize());
 
     tileShader->Unbind();
 
     //RenderManager::EnableDepthTesting();
+}
+
+void TerrainRenderer::RenderCornersToScreen()
+{
+    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+
+    auto hoveredTile = WorldController::Get()->GetHoveredTile();
+    if(hoveredTile == nullptr)
+        return;
+
+    static const auto map = WorldScene::Get()->GetWorldMap();
+
+    auto newHexShader = ShaderManager::GetShader("BetterHex");
+
+    newHexShader->Bind();
+
+    newHexShader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+	newHexShader->SetConstant(0.5f, "depth");
+
+    newHexShader->SetConstant(1.0f, "opacity");
+
+    newHexShader->SetConstant(map->WORLD_TILE_SIZE * 0.2f, "hexSize");
+
+    //cornerPositionBuffer->Bind(0);
+
+    auto corners = map->GetCornersOfHex(hoveredTile);
+
+    static auto positions = container::Array <Position2> (6);
+
+    positions.Reset();
+
+    for(auto &corner : corners)
+    {
+        *positions.Add() = corner->Position;
+    }
+
+    cornerPositionBuffer->UploadData(positions.GetStart(), positions.GetMemorySize());
+
+    cornerPositionBuffer->Bind(0);
+
+    cornerColorBuffer->Bind(1);
+
+    //glDrawArrays(GL_TRIANGLES, 0, 18 * map->GetCorners().GetObjectCount());
+    glDrawArrays(GL_TRIANGLES, 0, 18 * 6);
+
+    /*auto corner = map->GetCorner(100, 100);
+
+    static auto positions = container::Array <Position2> (4);
+
+    positions.Reset();
+
+    *positions.Add() = corner->Position;
+    *positions.Add() = corner->First->Position;
+    *positions.Add() = corner->Second->Position;
+    *positions.Add() = corner->Third->Position;
+
+    cornerPositionBuffer->UploadData(positions.GetStart(), positions.GetMemorySize());
+
+    cornerPositionBuffer->Bind(0);
+
+    cornerColorBuffer->Bind(1);
+
+    glDrawArrays(GL_TRIANGLES, 0, 18 * 4);*/
+
+    newHexShader->Unbind();
+
+    glDisable(GL_MULTISAMPLE);
 }
 
 void TerrainRenderer::RenderSeaTilesToScreen()
