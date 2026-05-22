@@ -6,6 +6,10 @@ layout (location = 3) uniform float opacity;
 
 layout (location = 5) uniform vec3 color;
 
+layout (location = 6) uniform vec2 heightRange;
+
+layout (location = 7) uniform float distortFactor;
+
 // TEXTURES
 
 uniform sampler2D picture;
@@ -28,9 +32,9 @@ void main()
 
 	distortStrength = clamp(distortStrength, 0.0f, 1.0f);
 
-	float height = baseFactor * 0.6f + distortStrength * 0.4f;
+	float height = baseFactor * (1.0f - distortFactor) + distortStrength * distortFactor;
 
-	fragment.a = height >= 0.499f ? 1.0f : 0.0f;
+	fragment.a = height >= heightRange.x && height <= heightRange.y ? 1.0f : 0.0f;
 
 	//if(height > 0.65f)
 		fragment.rgb = color;

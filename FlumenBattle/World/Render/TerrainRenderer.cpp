@@ -129,7 +129,7 @@ void TerrainRenderer::Render()
 {
     //ClearStencilBuffer(Color::BLACK);
 
-    //RenderSeaTilesToScreen();
+    RenderSeaTilesToScreen();
 
     static auto stencilBuffer = BufferManager::GetFrameBuffer(FrameBuffers::STENCIL);
 
@@ -188,12 +188,27 @@ void TerrainRenderer::Render()
 
     tileQueueBuffer->UploadData(tileIndices.GetStart(), tileIndices.GetMemorySize());
 
-    RenderHexesToDiffuseStencil(cornerPositionBuffer, Color::WHITE, 4.5f);
+    RenderHexesToDiffuseStencil(cornerPositionBuffer, Color::WHITE, 5.5f);
 
 
-    SharpenDiffuseStencil(DESERT_COLOR);
+    SharpenDiffuseStencil(DESERT_COLOR, Range(0.499f, 1.1f), 0.4f);
 
     RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL)->GetColorTexture(), 0.02f);
+
+
+    static const auto BEACH_COLOR = DIRT_COLOR * 0.5f + Color::WHITE * 0.5f;
+    SharpenDiffuseStencil(BEACH_COLOR, Range(0.499f, 0.6f), 0.4f);
+
+    RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL)->GetColorTexture(), 0.03f);
+
+
+    SharpenDiffuseStencil(Color::WHITE, Range(0.35f, 0.4f), 0.25f);
+
+    RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL)->GetColorTexture(), 0.04f);
+
+    SharpenDiffuseStencil(Color::WHITE, Range(0.26f, 0.29f), 0.25f);
+
+    RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL)->GetColorTexture(), 0.04f);
 
 
     /*tileIndices.Reset();
@@ -378,7 +393,7 @@ void TerrainRenderer::RenderSeaTilesToScreen()
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 
-    //BufferManager::BindFrameBuffer(FrameBuffers::DEFAULT);
+    BufferManager::BindFrameBuffer(FrameBuffers::DEFAULT);
 
     static const auto map = WorldScene::Get()->GetWorldMap();
 
@@ -408,7 +423,7 @@ void TerrainRenderer::RenderSeaTilesToScreen()
     glDisable(GL_MULTISAMPLE);
 }
 
-void TerrainRenderer::SharpenDiffuseStencil(Color color)
+void TerrainRenderer::SharpenDiffuseStencil(Color color, Range heightRange, float distortFactor)
 {
     static auto finalStencilBuffer = BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL);
 
@@ -434,6 +449,10 @@ void TerrainRenderer::SharpenDiffuseStencil(Color color)
     shader->SetConstant(Float2{1920.0f, 1080.0f} * camera->GetZoomFactor(), "hexSize");
 
     shader->SetConstant(color.GetRGB(), "color");
+
+    shader->SetConstant(heightRange, "heightRange");
+
+    shader->SetConstant(distortFactor, "distortFactor");
 
     stencilBuffer->BindTexture(shader, "picture");
 

@@ -26,7 +26,7 @@ namespace world::render
 
         void RenderHexesToDiffuseStencil(DataBuffer *, Color, float);
 
-        void SharpenDiffuseStencil(Color);
+        void SharpenDiffuseStencil(Color, Range, float);
 
         void RenderSteppeTilesToDiffuseStencil();
 
