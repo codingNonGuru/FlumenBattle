@@ -30,5 +30,7 @@ namespace world::tile
         bool IsFullyLand;
 
         bool IsFullySea;
+
+        bool IsFullySteppe;
     };
 }

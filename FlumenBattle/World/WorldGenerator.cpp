@@ -466,6 +466,11 @@ int WorldGenerator::GenerateWorld(
         {
             tile->Initialize();
         }
+
+        for(auto &corner : map->GetCorners())
+        {
+            corner.IsFullySteppe = corner.First->HasBiome(WorldBiomes::STEPPE) && corner.Second->HasBiome(WorldBiomes::STEPPE) && corner.Third->HasBiome(WorldBiomes::STEPPE) ? true : false;
+        }
     };
 
     defineContinents();

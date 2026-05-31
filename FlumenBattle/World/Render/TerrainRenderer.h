@@ -3,6 +3,7 @@
 #include "FlumenCore/Singleton.h"
 
 class DataBuffer;
+class FrameBuffer;
 
 namespace render
 {
@@ -26,7 +27,7 @@ namespace world::render
 
         void RenderHexesToDiffuseStencil(DataBuffer *, Color, float);
 
-        void SharpenDiffuseStencil(Color, Range, float);
+        void SharpenDiffuseStencil(FrameBuffer *, FrameBuffer *, Color, Range, float);
 
         void RenderSteppeTilesToDiffuseStencil();
 

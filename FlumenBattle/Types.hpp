@@ -12,7 +12,9 @@ class FrameBuffers
 public:
 	static Word const DEFAULT;
 	static Word const STENCIL;
+	static Word const STENCIL_2;
 	static Word const FINAL_STENCIL;
+	static Word const TERRAIN_BASE_STENCIL;
 };
 
 class Elements

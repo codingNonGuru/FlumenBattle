@@ -36,7 +36,15 @@ void RenderBuilder::Initialize()
 	
 	*frameBuffer = new StencilFrameBuffer(screen->GetSize());
 
+	frameBuffer = BufferManager::GetFrameBuffers().Add(FrameBuffers::STENCIL_2);
+	
+	*frameBuffer = new StencilFrameBuffer(screen->GetSize());
+
 	frameBuffer = BufferManager::GetFrameBuffers().Add(FrameBuffers::FINAL_STENCIL);
+	
+	*frameBuffer = new StencilFrameBuffer(screen->GetSize());
+
+	frameBuffer = BufferManager::GetFrameBuffers().Add(FrameBuffers::TERRAIN_BASE_STENCIL);
 	
 	*frameBuffer = new StencilFrameBuffer(screen->GetSize());
 
