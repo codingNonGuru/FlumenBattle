@@ -470,6 +470,10 @@ int WorldGenerator::GenerateWorld(
         for(auto &corner : map->GetCorners())
         {
             corner.IsFullySteppe = corner.First->HasBiome(WorldBiomes::STEPPE) && corner.Second->HasBiome(WorldBiomes::STEPPE) && corner.Third->HasBiome(WorldBiomes::STEPPE) ? true : false;
+
+            corner.IsNotAridDesert = corner.First->HasBiome(WorldBiomes::DESERT) && corner.First->IsArid() &&
+                corner.Second->HasBiome(WorldBiomes::DESERT) && corner.Second->IsArid() && 
+                corner.Third->HasBiome(WorldBiomes::DESERT) && corner.Third->IsArid() ? false : true;
         }
     };
 
