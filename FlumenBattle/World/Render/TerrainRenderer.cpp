@@ -158,7 +158,7 @@ void TerrainRenderer::Render()
 
     for(auto &tile : map->GetTiles())
     {
-        if(tile.Type == WorldTiles::LAND)
+        if(tile.Type == WorldTiles::LAND && tile.IsCoastline == true)
         {
             auto index = &tile - map->GetTiles().GetStart();
             *tileIndices.Add() = index;
@@ -167,10 +167,26 @@ void TerrainRenderer::Render()
 
     tileQueueBuffer->UploadData(tileIndices.GetStart(), tileIndices.GetMemorySize());
 
-    RenderHexesToDiffuseStencil(positionBuffer, Color::WHITE, 4.5f);
+    RenderHexesToDiffuseStencil(positionBuffer, Color::WHITE, 3.6f);
 
 
     tileIndices.Reset();
+
+    for(auto &tile : map->GetTiles())
+    {
+        if(tile.Type == WorldTiles::LAND && tile.IsCoastline == false)
+        {
+            auto index = &tile - map->GetTiles().GetStart();
+            *tileIndices.Add() = index;
+        }
+    }
+
+    tileQueueBuffer->UploadData(tileIndices.GetStart(), tileIndices.GetMemorySize());
+
+    RenderHexesToDiffuseStencil(positionBuffer, Color::WHITE * 2.0f, 4.5f);
+
+
+    /*tileIndices.Reset();
 
     for(auto &corner : map->GetCorners())
     {
@@ -183,10 +199,10 @@ void TerrainRenderer::Render()
 
     tileQueueBuffer->UploadData(tileIndices.GetStart(), tileIndices.GetMemorySize());
 
-    RenderHexesToDiffuseStencil(cornerPositionBuffer, Color::WHITE, 5.5f);
+    RenderHexesToDiffuseStencil(cornerPositionBuffer, Color::WHITE, 5.5f);*/
 
 
-    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), DESERT_COLOR, Range(0.499f, 1.1f), 0.4f);
+    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), DESERT_COLOR, Range(0.499f, 2.1f), 0.45f);
 
     RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL)->GetColorTexture(), 0.02f);
 
@@ -198,7 +214,7 @@ void TerrainRenderer::Render()
     
     for(auto &tile : map->GetTiles())
     {
-        if(tile.Type == WorldTiles::LAND && tile.IsArid() == false)
+        if(tile.Type == WorldTiles::LAND && tile.IsCoastline == true && tile.IsArid() == false)
         {
             auto index = &tile - map->GetTiles().GetStart();
             *tileIndices.Add() = index;
@@ -207,10 +223,25 @@ void TerrainRenderer::Render()
     
     tileQueueBuffer->UploadData(tileIndices.GetStart(), tileIndices.GetMemorySize());
     
-    RenderHexesToDiffuseStencil(positionBuffer, Color::WHITE, 4.5f);
-    
-    
+    RenderHexesToDiffuseStencil(positionBuffer, Color::WHITE, 3.6f);
+
     tileIndices.Reset();
+    
+    for(auto &tile : map->GetTiles())
+    {
+        if(tile.Type == WorldTiles::LAND && tile.IsCoastline == false && tile.IsArid() == false)
+        {
+            auto index = &tile - map->GetTiles().GetStart();
+            *tileIndices.Add() = index;
+        }
+    }
+    
+    tileQueueBuffer->UploadData(tileIndices.GetStart(), tileIndices.GetMemorySize());
+    
+    RenderHexesToDiffuseStencil(positionBuffer, Color::WHITE, 4.2f);
+    
+    
+    /*tileIndices.Reset();
     
     for(auto &corner : map->GetCorners())
     {
@@ -223,15 +254,27 @@ void TerrainRenderer::Render()
     
     tileQueueBuffer->UploadData(tileIndices.GetStart(), tileIndices.GetMemorySize());
     
-    RenderHexesToDiffuseStencil(cornerPositionBuffer, Color::WHITE, 5.5f);
+    RenderHexesToDiffuseStencil(cornerPositionBuffer, Color::WHITE, 5.5f);*/
     
     
-    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL), DIRT_COLOR * 0.9f + Color::WHITE * 0.1f, Range(0.499f, 1.1f), 0.4f);
+    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL), DIRT_COLOR * 0.9f + Color::WHITE * 0.1f, Range(0.499f, 1.1f), 0.45f);
     
     RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL)->GetColorTexture(), 0.025f);
 
+    /*const auto frustum = WorldTileModel::Get()->GetFrustum();
 
-    
+    for(auto x = frustum.Position.x; x <= frustum.Position.x + frustum.Size.x; ++x)
+    {
+        for(auto y = frustum.Position.y - 5; y <= frustum.Position.y + frustum.Size.y + 6; ++y)
+        {
+            auto tile = map->GetTileWithinBounds(Integer2{x, y});
+            if(tile == nullptr)
+                continue;
+
+            auto index = tile - map->GetTiles().GetStart();
+            *tileQueue.Add() = index;
+        }   
+    }*/
     
     BufferManager::ClearColor(FrameBuffers::STENCIL_2, Color::BLACK);
     
@@ -239,7 +282,7 @@ void TerrainRenderer::Render()
     
     for(auto &tile : map->GetTiles())
     {
-        if(tile.Type == WorldTiles::LAND && tile.HasBiome(WorldBiomes::DESERT) == false)
+        if(tile.Type == WorldTiles::LAND && tile.IsCoastline == true && tile.HasBiome(WorldBiomes::DESERT) == false)
         {
             auto index = &tile - map->GetTiles().GetStart();
             *tileIndices.Add() = index;
@@ -248,44 +291,88 @@ void TerrainRenderer::Render()
     
     tileQueueBuffer->UploadData(tileIndices.GetStart(), tileIndices.GetMemorySize());
     
-    RenderHexesToDiffuseStencil(positionBuffer, Color::WHITE, 4.5f);
-    
-    
+    RenderHexesToDiffuseStencil(positionBuffer, Color::WHITE, 3.6f);
+
     tileIndices.Reset();
     
-    for(auto &corner : map->GetCorners())
+    for(auto &tile : map->GetTiles())
     {
-        if(corner.IsFullySteppe == true)
+        if(tile.Type == WorldTiles::LAND && tile.IsCoastline == false && tile.HasBiome(WorldBiomes::DESERT) == false)
         {
-            auto index = &corner - map->GetCorners().GetStart();
+            auto index = &tile - map->GetTiles().GetStart();
             *tileIndices.Add() = index;
         }
     }
     
     tileQueueBuffer->UploadData(tileIndices.GetStart(), tileIndices.GetMemorySize());
     
-    RenderHexesToDiffuseStencil(cornerPositionBuffer, Color::WHITE, 5.5f);
+    RenderHexesToDiffuseStencil(positionBuffer, Color::WHITE, 4.2f);
+
     
     
-    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL), GRASS_COLOR, Range(0.499f, 1.1f), 0.4f);
+    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL), GRASS_COLOR, Range(0.499f, 1.1f), 0.45f);
     
-    RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL)->GetColorTexture(), 0.03f);   
+    RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL)->GetColorTexture(), 0.03f);
+    
+    
+
+    BufferManager::ClearColor(FrameBuffers::STENCIL_2, Color::BLACK);
+    
+    tileIndices.Reset();
+    
+    for(auto &tile : map->GetTiles())
+    {
+        if(tile.Type == WorldTiles::LAND && tile.IsCoastline == true && tile.HasBiome(WorldBiomes::STEPPE) == true && tile.IsScrubland == true)
+        {
+            auto index = &tile - map->GetTiles().GetStart();
+            *tileIndices.Add() = index;
+        }
+    }
+    
+    tileQueueBuffer->UploadData(tileIndices.GetStart(), tileIndices.GetMemorySize());
+    
+    RenderHexesToDiffuseStencil(positionBuffer, Color::WHITE, 3.6f);
+
+    tileIndices.Reset();
+    
+    for(auto &tile : map->GetTiles())
+    {
+        if(tile.Type == WorldTiles::LAND && tile.IsCoastline == false && tile.HasBiome(WorldBiomes::STEPPE) == true && tile.IsScrubland == true)
+        {
+            auto index = &tile - map->GetTiles().GetStart();
+            *tileIndices.Add() = index;
+        }
+    }
+    
+    tileQueueBuffer->UploadData(tileIndices.GetStart(), tileIndices.GetMemorySize());
+    
+    RenderHexesToDiffuseStencil(positionBuffer, Color::WHITE, 4.2f);
+
+    
+    static const auto SCRUBLAND_COLOR = GRASS_COLOR * 0.6f + DIRT_COLOR * 0.4f;
+    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL), SCRUBLAND_COLOR, Range(0.499f, 1.1f), 0.45f);
+    
+    RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL)->GetColorTexture(), 0.03f);
 
 
     
     static const auto BEACH_COLOR = DIRT_COLOR * 0.3f + Color::WHITE * 0.7f;
-    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), BEACH_COLOR, Range(0.499f, 0.6f), 0.4f);
+    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), BEACH_COLOR, Range(0.499f, 0.6f), 0.45f);
 
     RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL)->GetColorTexture(), 0.04f);
 
 
-    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), Color::WHITE, Range(0.35f, 0.4f), 0.25f);
+    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), Color::WHITE, Range(0.35f, 0.42f), 0.45f);
 
     RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL)->GetColorTexture(), 0.05f);
 
-    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), Color::WHITE, Range(0.26f, 0.29f), 0.25f);
+    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), Color::WHITE, Range(0.24f, 0.28f), 0.45f);
 
     RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL)->GetColorTexture(), 0.06f);
+
+    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), Color::WHITE, Range(0.145f, 0.16f), 0.45f);
+
+    RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL)->GetColorTexture(), 0.07f);
     
     /*tileIndices.Reset();
 
@@ -344,7 +431,7 @@ void TerrainRenderer::RenderHexesToDiffuseStencil(DataBuffer *mainBuffer, Color 
     tileShader->SetConstant(color, "color");
     tileShader->SetConstant(map->WORLD_TILE_SIZE * sizeFactor, "hexSize");
 
-    static const auto blobTexture = ::render::TextureManager::GetTexture("GaussianBlot");
+    static const auto blobTexture = ::render::TextureManager::GetTexture("BlurredCircle");
 
     tileShader->BindTexture(blobTexture, "blob");
 

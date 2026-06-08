@@ -26,15 +26,18 @@ void main()
 {	
 	fragment = texture(picture, coords).rgba;
 
-	float baseFactor = clamp(fragment.r, 0.0f, 1.0f);
+	float baseFactor = fragment.r;
 	
 	float distortStrength = texture(distort, pos * 0.0005f).r;
 
-	distortStrength = clamp(distortStrength, 0.0f, 1.0f);
+	distortStrength *= baseFactor;
 
 	float height = baseFactor * (1.0f - distortFactor) + distortStrength * distortFactor;
 
 	fragment.a = height >= heightRange.x && height <= heightRange.y ? 1.0f : 0.0f;
+
+	/*if(baseFactor > 0.9f)
+		fragment.a = heightRange.y > 0.9f ? 1.0f : 0.0f;*/
 
 	//if(height > 0.65f)
 		fragment.rgb = color;
