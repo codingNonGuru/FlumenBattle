@@ -29,6 +29,8 @@ namespace world::render
 
         void SharpenDiffuseStencil(FrameBuffer *, FrameBuffer *, Color, Range, float);
 
+        void DodgeStencil(FrameBuffer *, FrameBuffer *, float, Position2);
+
         void RenderSteppeTilesToDiffuseStencil();
 
         void RenderSeaTilesToScreen();

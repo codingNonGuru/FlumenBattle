@@ -362,15 +362,21 @@ void TerrainRenderer::Render()
     RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL)->GetColorTexture(), 0.04f);
 
 
-    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), Color::WHITE, Range(0.35f, 0.42f), 0.45f);
+    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), Color::WHITE, Range(0.35f, 0.42f), 0.45f);
+
+    DodgeStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), 0.01f, Position2(0.0f, 0.0f));
 
     RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL)->GetColorTexture(), 0.05f);
 
-    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), Color::WHITE, Range(0.24f, 0.28f), 0.45f);
+    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), Color::WHITE, Range(0.24f, 0.28f), 0.45f);
+
+    DodgeStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), 0.015f, Position2(1500.0f, 400.0f));
 
     RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL)->GetColorTexture(), 0.06f);
 
-    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), Color::WHITE, Range(0.145f, 0.16f), 0.45f);
+    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), Color::WHITE, Range(0.145f, 0.16f), 0.45f);
+
+    DodgeStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), 0.02f, Position2(600.0f, -600.0f));
 
     RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL)->GetColorTexture(), 0.07f);
     
@@ -576,6 +582,40 @@ void TerrainRenderer::SharpenDiffuseStencil(FrameBuffer *sourceBuffer, FrameBuff
     shader->SetConstant(heightRange, "heightRange");
 
     shader->SetConstant(distortFactor, "distortFactor");
+
+    sourceBuffer->BindTexture(shader, "picture");
+
+    shader->BindTexture(distortMap, "distort");
+
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    shader->Unbind();
+}
+
+void TerrainRenderer::DodgeStencil(FrameBuffer *sourceBuffer, FrameBuffer *targetBuffer, float scaleFactor, Position2 displaceFactor)
+{
+    RenderManager::SetBlendMode();
+
+    targetBuffer->BindBuffer();
+    targetBuffer->Clear(Color{0.0f, 0.0f, 0.0f, 0.0f});
+
+    auto position = camera->GetTarget();
+
+    static const auto shader = ShaderManager::GetShader("Dodge");
+
+    shader->Bind();
+
+    shader->SetConstant(camera->GetMatrix(), "viewMatrix");
+
+    shader->SetConstant(0.1f, "depth");
+
+    shader->SetConstant(position, "hexPosition");
+
+    shader->SetConstant(Float2{1920.0f, 1080.0f} * camera->GetZoomFactor(), "hexSize");
+
+    shader->SetConstant(scaleFactor, "scaleFactor");
+
+    shader->SetConstant(displaceFactor, "displaceFactor");
 
     sourceBuffer->BindTexture(shader, "picture");
 
