@@ -17,17 +17,28 @@ namespace world
 
 namespace world::render 
 {
+    struct PerlinData
+    {
+        ::render::Texture *Map;
+
+        float MixStrength;
+
+        float Granularity;
+    };
+
     class TerrainRenderer : public core::Singleton <TerrainRenderer>
     {
         friend class world::WorldGenerator;
 
         ::render::Texture *distortMap;
 
+        ::render::Texture *blotchyMap;
+
         void ClearStencilBuffer(Color);
 
         void RenderHexesToDiffuseStencil(DataBuffer *, Color, float);
 
-        void SharpenDiffuseStencil(FrameBuffer *, FrameBuffer *, Color, Range, float);
+        void SharpenDiffuseStencil(FrameBuffer *, FrameBuffer *, Color, Range, PerlinData);
 
         void DodgeStencil(FrameBuffer *, FrameBuffer *, float, Position2);
 

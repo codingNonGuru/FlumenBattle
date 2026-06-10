@@ -10,6 +10,8 @@ layout (location = 6) uniform vec2 heightRange;
 
 layout (location = 7) uniform float distortFactor;
 
+layout (location = 8) uniform float granularity;
+
 // TEXTURES
 
 uniform sampler2D picture;
@@ -28,7 +30,7 @@ void main()
 
 	float baseFactor = fragment.r;
 	
-	float distortStrength = texture(distort, pos * 0.0005f).r;
+	float distortStrength = texture(distort, pos * granularity).r;
 
 	distortStrength *= baseFactor;
 

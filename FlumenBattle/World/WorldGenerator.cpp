@@ -136,7 +136,7 @@ int WorldGenerator::GenerateWorld(
 
                 mountainChance /= 3;
 
-                mountainChance = 0;
+                //mountainChance = 0;
 
                 if(utility::GetRandom(1, 100) <= mountainChance)
                 {
@@ -685,6 +685,11 @@ void WorldGenerator::FinishGeneration()
     Perlin::Download(&noise);
 
     render::TerrainRenderer::Get()->distortMap = new ::render::Texture(noise.GetSize(), TextureFormats::ONE_FLOAT, &noise);
+
+    Perlin::Generate(noise.GetSize(), 0.6f, ContrastThreshold(0.5f), ContrastStrength(2.0f));
+    Perlin::Download(&noise);
+
+    render::TerrainRenderer::Get()->blotchyMap = new ::render::Texture(noise.GetSize(), TextureFormats::ONE_FLOAT, &noise);
 }
 
 int WorldGenerator::GetMaximumPolityCount(int worldSize) const

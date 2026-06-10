@@ -453,7 +453,7 @@ void WorldTileModel::Render()
 
     TreeModel::Get()->Render();
 
-    MountainRenderer::Get()->Render();
+    //MountainRenderer::Get()->Render();
 
     SettlementModel::Get()->Render();
 

@@ -44,6 +44,8 @@ static container::Array <int> tileIndices;
 TerrainRenderer::TerrainRenderer()
 {
     distortMap = nullptr;
+
+    blotchyMap = nullptr;
 }
 
 void TerrainRenderer::Initialize()
@@ -202,7 +204,8 @@ void TerrainRenderer::Render()
     RenderHexesToDiffuseStencil(cornerPositionBuffer, Color::WHITE, 5.5f);*/
 
 
-    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), DESERT_COLOR, Range(0.499f, 2.1f), 0.45f);
+    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), DESERT_COLOR, Range(0.499f, 2.1f), 
+        PerlinData{distortMap, 0.45f, 0.0005f});
 
     RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL)->GetColorTexture(), 0.02f);
 
@@ -257,7 +260,8 @@ void TerrainRenderer::Render()
     RenderHexesToDiffuseStencil(cornerPositionBuffer, Color::WHITE, 5.5f);*/
     
     
-    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL), DIRT_COLOR * 0.9f + Color::WHITE * 0.1f, Range(0.499f, 1.1f), 0.45f);
+    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL), DIRT_COLOR * 0.9f + Color::WHITE * 0.1f, Range(0.499f, 1.1f), 
+        PerlinData{distortMap, 0.45f, 0.0005f});
     
     RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL)->GetColorTexture(), 0.025f);
 
@@ -310,7 +314,8 @@ void TerrainRenderer::Render()
 
     
     
-    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL), GRASS_COLOR, Range(0.499f, 1.1f), 0.45f);
+    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL), GRASS_COLOR, Range(0.499f, 1.1f), 
+        PerlinData{distortMap, 0.45f, 0.0005f});
     
     RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL)->GetColorTexture(), 0.03f);
     
@@ -350,33 +355,90 @@ void TerrainRenderer::Render()
 
     
     static const auto SCRUBLAND_COLOR = GRASS_COLOR * 0.6f + DIRT_COLOR * 0.4f;
-    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL), SCRUBLAND_COLOR, Range(0.499f, 1.1f), 0.45f);
+    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL), SCRUBLAND_COLOR, Range(0.499f, 1.1f), 
+        PerlinData{distortMap, 0.45f, 0.0005f});
     
     RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL)->GetColorTexture(), 0.03f);
 
 
+
+    BufferManager::ClearColor(FrameBuffers::STENCIL_2, Color::BLACK);
+    
+    tileIndices.Reset();
+    
+    for(auto &tile : map->GetTiles())
+    {
+        if(tile.Type != WorldTiles::LAND || tile.HasRelief(world::WorldReliefs::MOUNTAINS) == false)
+            continue;
+
+        if(tile.IsPeak == false || tile.IsCoastline == true)
+        {
+            auto index = &tile - map->GetTiles().GetStart();
+            *tileIndices.Add() = index;
+        }
+    }
+    
+    tileQueueBuffer->UploadData(tileIndices.GetStart(), tileIndices.GetMemorySize());
+    
+    RenderHexesToDiffuseStencil(positionBuffer, Color::WHITE, 3.5f);
+
+    tileIndices.Reset();
+    
+    for(auto &tile : map->GetTiles())
+    {
+        if(tile.Type != WorldTiles::LAND || tile.HasRelief(world::WorldReliefs::MOUNTAINS) == false)
+            continue;
+
+        if(tile.IsPeak == true && tile.IsCoastline == false)
+        {
+            auto index = &tile - map->GetTiles().GetStart();
+            *tileIndices.Add() = index;
+        }
+    }
+    
+    tileQueueBuffer->UploadData(tileIndices.GetStart(), tileIndices.GetMemorySize());
+    
+    RenderHexesToDiffuseStencil(positionBuffer, Color::WHITE, 4.5f);
+
+    
+    static const auto MOUNTAIN_COLOR = Color(0.3f, 0.3f, 0.3f, 1.0f);
+    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL), MOUNTAIN_COLOR, Range(0.55f, 1.1f), 
+        PerlinData{blotchyMap, 0.75f, 0.0008f});
+    
+    RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL)->GetColorTexture(), 0.035f);
+
+    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL), Color::WHITE * 0.95f, Range(0.8f, 1.1f), 
+        PerlinData{blotchyMap, 0.75f, 0.0008f});
+    
+    RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL)->GetColorTexture(), 0.035f);
+
+
     
     static const auto BEACH_COLOR = DIRT_COLOR * 0.3f + Color::WHITE * 0.7f;
-    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), BEACH_COLOR, Range(0.499f, 0.6f), 0.45f);
+    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), BEACH_COLOR, Range(0.499f, 0.6f), 
+        PerlinData{distortMap, 0.45f, 0.0005f});
 
     RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL)->GetColorTexture(), 0.04f);
 
 
-    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), Color::WHITE, Range(0.35f, 0.42f), 0.45f);
+    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), Color::WHITE, Range(0.35f, 0.42f), 
+        PerlinData{distortMap, 0.45f, 0.0005f});
 
     DodgeStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), 0.01f, Position2(0.0f, 0.0f));
 
     RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL)->GetColorTexture(), 0.05f);
 
-    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), Color::WHITE, Range(0.24f, 0.28f), 0.45f);
+    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), Color::WHITE, Range(0.24f, 0.28f), 
+        PerlinData{distortMap, 0.45f, 0.0005f});
 
-    DodgeStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), 0.015f, Position2(1500.0f, 400.0f));
+    DodgeStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), 0.03f, Position2(1500.0f, 400.0f));
 
     RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL)->GetColorTexture(), 0.06f);
 
-    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), Color::WHITE, Range(0.145f, 0.16f), 0.45f);
+    SharpenDiffuseStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL), BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), Color::WHITE, Range(0.145f, 0.16f), 
+        PerlinData{distortMap, 0.45f, 0.0005f});
 
-    DodgeStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), 0.02f, Position2(600.0f, -600.0f));
+    DodgeStencil(BufferManager::GetFrameBuffer(FrameBuffers::STENCIL_2), BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL), 0.05f, Position2(600.0f, -600.0f));
 
     RenderTextureToScreen(BufferManager::GetFrameBuffer(FrameBuffers::TERRAIN_BASE_STENCIL)->GetColorTexture(), 0.07f);
     
@@ -552,7 +614,7 @@ void TerrainRenderer::RenderSeaTilesToScreen()
     glDisable(GL_MULTISAMPLE);
 }
 
-void TerrainRenderer::SharpenDiffuseStencil(FrameBuffer *sourceBuffer, FrameBuffer *targetBuffer, Color color, Range heightRange, float distortFactor)
+void TerrainRenderer::SharpenDiffuseStencil(FrameBuffer *sourceBuffer, FrameBuffer *targetBuffer, Color color, Range heightRange, PerlinData perlinData)
 {
     //static auto finalStencilBuffer = BufferManager::GetFrameBuffer(FrameBuffers::FINAL_STENCIL);
 
@@ -581,11 +643,13 @@ void TerrainRenderer::SharpenDiffuseStencil(FrameBuffer *sourceBuffer, FrameBuff
 
     shader->SetConstant(heightRange, "heightRange");
 
-    shader->SetConstant(distortFactor, "distortFactor");
+    shader->SetConstant(perlinData.MixStrength, "distortFactor");
+
+    shader->SetConstant(perlinData.Granularity, "granularity");
 
     sourceBuffer->BindTexture(shader, "picture");
 
-    shader->BindTexture(distortMap, "distort");
+    shader->BindTexture(perlinData.Map, "distort");
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
